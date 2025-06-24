@@ -40,34 +40,46 @@ const Index: React.FC = () => {
       <Navigation />
 
       {/* Hero Section */}
-      <div className="relative bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 overflow-hidden min-h-screen flex items-center">
-        <div className="absolute inset-0 bg-black/30"></div>
+      <div className="relative overflow-hidden min-h-screen flex items-center">
+        {/* Background Image */}
         <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20" 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
             backgroundImage: 'url(https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=1600&h=900&fit=crop)'
           }}
         ></div>
+        
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80"></div>
+        
+        {/* Content */}
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 text-center z-10">
-          <h1 className="text-5xl sm:text-7xl font-bold text-white mb-8 leading-tight">
+          <h1 className="text-6xl sm:text-8xl font-bold text-white mb-8 leading-tight tracking-tight">
+            <span className="block text-rose-300 text-4xl sm:text-5xl font-light mb-4 tracking-widest uppercase">
+              Premium Collection
+            </span>
             Samiya Wedding Center
           </h1>
-          <p className="text-xl sm:text-2xl text-white/95 mb-12 max-w-4xl mx-auto leading-relaxed">
-            Your premier destination for exquisite wedding attire, traditional wear, and festive collections for the entire family
+          <p className="text-xl sm:text-2xl text-white/95 mb-12 max-w-4xl mx-auto leading-relaxed font-light tracking-wide">
+            Discover exquisite wedding attire and traditional wear crafted for life's most precious moments. 
+            Where elegance meets tradition in perfect harmony.
           </p>
-          <div className="mb-12">
+          
+          <div className="mb-16">
             <SearchBar />
           </div>
-          <div className="flex flex-col sm:flex-row gap-6 justify-center">
+          
+          <div className="flex flex-col sm:flex-row gap-8 justify-center items-center">
             <button
               onClick={() => navigate('/search?q=wedding')}
-              className="bg-white text-indigo-600 px-10 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:-translate-y-1"
+              className="group relative overflow-hidden bg-rose-600 text-white px-12 py-5 rounded-full font-semibold text-lg hover:bg-rose-700 transition-all duration-500 shadow-2xl hover:shadow-rose-500/25 transform hover:-translate-y-2 tracking-wide uppercase"
             >
-              Shop Wedding Collection
+              <span className="relative z-10">Explore Collection</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-rose-500 to-pink-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
             </button>
             <button
               onClick={() => navigate('/search?q=festive')}
-              className="border-3 border-white text-white px-10 py-4 rounded-full font-bold text-lg hover:bg-white hover:text-indigo-600 transition-all duration-300 transform hover:-translate-y-1"
+              className="group relative border-2 border-white/80 text-white px-12 py-5 rounded-full font-semibold text-lg hover:bg-white hover:text-gray-900 transition-all duration-500 transform hover:-translate-y-2 tracking-wide uppercase backdrop-blur-sm"
             >
               Festive Wear
             </button>
@@ -76,33 +88,36 @@ const Index: React.FC = () => {
       </div>
 
       {/* Featured Categories Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+        <div className="text-center mb-20">
+          <h2 className="text-5xl sm:text-6xl font-bold text-gray-900 mb-8 tracking-tight">
+            <span className="block text-rose-600 text-2xl sm:text-3xl font-light mb-4 tracking-widest uppercase">
+              Curated Excellence
+            </span>
             Shop by Category
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Discover our curated collections designed for every special occasion and celebration
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto font-light leading-relaxed">
+            Discover our meticulously curated collections designed for every special occasion and celebration
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {categories.map(category => (
             <div
               key={category.name}
               onClick={() => handleCategoryClick(category.name)}
-              className="group cursor-pointer bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3"
+              className="group cursor-pointer bg-white rounded-3xl shadow-2xl overflow-hidden hover:shadow-rose-500/20 transition-all duration-700 transform hover:-translate-y-6"
             >
               <div className="relative overflow-hidden">
                 <img
                   src={category.image}
                   alt={category.name}
-                  className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-500"
+                  className="w-full h-96 object-cover group-hover:scale-110 transition-transform duration-700"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-                <div className="absolute bottom-6 left-6 text-white">
-                  <h3 className="text-3xl font-bold mb-3">{category.name}</h3>
-                  <p className="text-white/95 text-lg">{category.description}</p>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent group-hover:from-rose-900/80 transition-all duration-500"></div>
+                <div className="absolute bottom-8 left-8 text-white">
+                  <h3 className="text-4xl font-bold mb-4 tracking-wide">{category.name}</h3>
+                  <p className="text-white/95 text-lg font-light tracking-wide">{category.description}</p>
                 </div>
               </div>
             </div>
@@ -114,29 +129,33 @@ const Index: React.FC = () => {
       <AboutSection />
 
       {/* Featured Products */}
-      <div className="bg-white py-20">
+      <div className="bg-gray-50 py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
+          <div className="text-center mb-20">
+            <h2 className="text-5xl sm:text-6xl font-bold text-gray-900 mb-8 tracking-tight">
+              <span className="block text-rose-600 text-2xl sm:text-3xl font-light mb-4 tracking-widest uppercase">
+                Handpicked Favorites
+              </span>
               Featured Collection
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Handpicked favorites from our latest arrivals, showcasing the finest in traditional and contemporary fashion
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto font-light leading-relaxed">
+              Discover our latest arrivals, showcasing the finest in traditional and contemporary fashion
             </p>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
             {featuredProducts.map(product => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
           
-          <div className="text-center mt-16">
+          <div className="text-center mt-20">
             <button
               onClick={() => navigate('/search?q=')}
-              className="bg-indigo-600 text-white px-12 py-4 rounded-full font-bold text-lg hover:bg-indigo-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
+              className="group relative overflow-hidden bg-gray-900 text-white px-16 py-5 rounded-full font-semibold text-lg hover:bg-gray-800 transition-all duration-500 shadow-2xl hover:shadow-gray-500/25 transform hover:-translate-y-2 tracking-wide uppercase"
             >
-              View All Products
+              <span className="relative z-10">View All Products</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-rose-600 to-pink-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
             </button>
           </div>
         </div>

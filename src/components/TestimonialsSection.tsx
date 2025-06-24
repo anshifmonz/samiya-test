@@ -21,27 +21,30 @@ const TestimonialsSection: React.FC = () => {
   ];
 
   return (
-    <div className="bg-white py-16">
+    <div className="bg-gray-50 py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+        <div className="text-center mb-16">
+          <h2 className="text-5xl sm:text-6xl font-bold text-gray-900 mb-8 tracking-tight">
+            <span className="block text-rose-600 text-2xl sm:text-3xl font-light mb-4 tracking-widest uppercase">
+              Client Stories
+            </span>
             What Our Customers Say
           </h2>
-          <p className="text-lg text-gray-600">
+          <p className="text-xl text-gray-600 font-light">
             Trusted by thousands of families for their special occasions
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           {testimonials.map((testimonial, index) => (
-            <div key={index} className="bg-gray-50 p-6 rounded-lg shadow-sm">
-              <div className="flex mb-4">
+            <div key={index} className="bg-white p-10 rounded-2xl shadow-xl hover:shadow-rose-500/10 transition-all duration-500 group hover:-translate-y-2">
+              <div className="flex mb-6">
                 {[...Array(testimonial.rating)].map((_, i) => (
-                  <span key={i} className="text-yellow-400 text-xl">★</span>
+                  <span key={i} className="text-rose-500 text-2xl">★</span>
                 ))}
               </div>
-              <p className="text-gray-600 mb-4 italic">"{testimonial.text}"</p>
-              <p className="font-semibold text-gray-900">- {testimonial.name}</p>
+              <p className="text-gray-600 mb-8 italic text-lg font-light leading-relaxed">"{testimonial.text}"</p>
+              <p className="font-semibold text-gray-900 text-lg tracking-wide">— {testimonial.name}</p>
             </div>
           ))}
         </div>
