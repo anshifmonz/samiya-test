@@ -44,8 +44,8 @@ const SearchPage: React.FC = () => {
       <Navigation />
       
       {/* Header */}
-      <div className="bg-white/80 backdrop-blur-sm shadow-lg border-b border-rose-100 pt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="bg-white/80 backdrop-blur-sm shadow-lg border-b border-rose-100 pt-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-6">
             <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
               <span 
@@ -62,20 +62,20 @@ const SearchPage: React.FC = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="mb-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
             Search Results for "{q}"
           </h2>
-          <p className="text-gray-600 mt-2 font-light">
+          <p className="text-gray-600 mt-1 font-light">
             {products.length} product{products.length !== 1 ? 's' : ''} found
           </p>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-12">
+        <div className="flex flex-col lg:flex-row gap-8">
           {/* Filter Panel */}
           <div className="lg:w-1/4">
-            <div className="sticky top-8">
+            <div className="sticky top-6">
               <FilterPanel onFiltersChange={handleFiltersChange} />
             </div>
           </div>
@@ -83,7 +83,7 @@ const SearchPage: React.FC = () => {
           {/* Products Grid */}
           <div className="lg:w-3/4">
             {products.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {products.map(product => (
                   <ProductCard key={product.id} product={product} />
                 ))}

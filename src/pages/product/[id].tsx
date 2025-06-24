@@ -93,28 +93,28 @@ const ProductDetailPage: React.FC = () => {
       <Navigation />
       
       {/* Header */}
-      <div className="bg-white/80 backdrop-blur-sm shadow-lg border-b border-rose-100 pt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="bg-white/80 backdrop-blur-sm shadow-lg border-b border-rose-100 pt-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center gap-6">
             <button
               onClick={() => navigate(-1)}
               className="flex items-center gap-3 text-gray-600 hover:text-rose-600 transition-colors duration-300 group"
             >
-              <ArrowLeft size={24} className="group-hover:-translate-x-1 transition-transform duration-300" />
-              <span className="font-medium text-lg">Back</span>
+              <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform duration-300" />
+              <span className="font-medium">Back</span>
             </button>
-            <h1 className="text-2xl font-bold text-rose-600 tracking-tight">
+            <h1 className="text-xl font-bold text-rose-600 tracking-tight">
               Samiya Wedding Center
             </h1>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden border border-rose-100">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 p-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
             {/* Product Image */}
-            <div className="space-y-6">
+            <div className="space-y-4">
               <div className="aspect-square overflow-hidden rounded-2xl bg-gray-100 shadow-lg">
                 <img
                   src={currentImage}
@@ -124,17 +124,17 @@ const ProductDetailPage: React.FC = () => {
               </div>
               
               {/* Color Swatches */}
-              <div className="flex items-center gap-4">
-                <span className="text-lg font-bold text-gray-800">Colors:</span>
-                <div className="flex gap-3">
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-semibold text-gray-800">Colors:</span>
+                <div className="flex gap-2">
                   {Object.keys(product.images).map(color => (
                     <button
                       key={color}
                       onClick={() => handleColorChange(color)}
-                      className={`w-12 h-12 rounded-full border-3 transition-all duration-300 hover:scale-110 ${
+                      className={`w-8 h-8 rounded-full border-2 transition-all duration-300 hover:scale-110 ${
                         selectedColor === color
-                          ? 'border-rose-600 ring-4 ring-rose-200 shadow-lg'
-                          : 'border-gray-300 hover:border-rose-400 shadow-md hover:shadow-lg'
+                          ? 'border-rose-600 ring-2 ring-rose-200 shadow-md'
+                          : 'border-gray-300 hover:border-rose-400 shadow-sm hover:shadow-md'
                       }`}
                       style={{ backgroundColor: getColorStyle(color) }}
                       title={color}
@@ -145,35 +145,35 @@ const ProductDetailPage: React.FC = () => {
             </div>
 
             {/* Product Details */}
-            <div className="space-y-8">
+            <div className="space-y-6">
               <div>
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="bg-rose-100 text-rose-800 px-4 py-2 rounded-full text-sm font-bold border border-rose-200">
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="bg-rose-100 text-rose-800 px-3 py-1 rounded-full text-sm font-bold border border-rose-200">
                     {product.category}
                   </span>
                 </div>
-                <h1 className="text-4xl font-bold text-gray-900 mb-4 tracking-tight">
+                <h1 className="text-3xl font-bold text-gray-900 mb-3 tracking-tight">
                   {product.title}
                 </h1>
-                <p className="text-5xl font-bold text-rose-600 mb-2">
+                <p className="text-4xl font-bold text-rose-600 mb-2">
                   ₹{product.price}
                 </p>
               </div>
 
               <div>
-                <h3 className="text-xl font-bold text-gray-800 mb-4 tracking-wide">Description</h3>
-                <p className="text-gray-700 leading-relaxed text-lg font-light">
+                <h3 className="text-lg font-bold text-gray-800 mb-3 tracking-wide">Description</h3>
+                <p className="text-gray-700 leading-relaxed font-light">
                   {product.description}
                 </p>
               </div>
 
               <div>
-                <h3 className="text-xl font-bold text-gray-800 mb-4 tracking-wide">Tags</h3>
-                <div className="flex flex-wrap gap-3">
+                <h3 className="text-lg font-bold text-gray-800 mb-3 tracking-wide">Tags</h3>
+                <div className="flex flex-wrap gap-2">
                   {product.tags.map(tag => (
                     <span
                       key={tag}
-                      className="px-4 py-2 bg-rose-50 text-rose-700 rounded-full text-sm font-medium border border-rose-200"
+                      className="px-3 py-1 bg-rose-50 text-rose-700 rounded-full text-sm font-medium border border-rose-200"
                     >
                       #{tag}
                     </span>
@@ -181,11 +181,11 @@ const ProductDetailPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="pt-6">
-                <button className="w-full bg-gradient-to-r from-rose-600 to-rose-700 text-white py-4 px-8 rounded-2xl text-xl font-bold hover:from-rose-700 hover:to-rose-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+              <div className="pt-4">
+                <button className="w-full bg-gradient-to-r from-rose-600 to-rose-700 text-white py-3 px-6 rounded-2xl text-lg font-bold hover:from-rose-700 hover:to-rose-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
                   Contact for Purchase
                 </button>
-                <p className="text-sm text-gray-600 mt-4 text-center font-light">
+                <p className="text-sm text-gray-600 mt-3 text-center font-light">
                   Call us at +91 9876543210 or visit our store
                 </p>
               </div>
@@ -195,9 +195,9 @@ const ProductDetailPage: React.FC = () => {
 
         {/* Similar Products */}
         {similarProducts.length > 0 && (
-          <div className="mt-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8 tracking-tight">Similar Products</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="mt-12">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6 tracking-tight">Similar Products</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {similarProducts.map(product => (
                 <ProductCard key={product.id} product={product} />
               ))}

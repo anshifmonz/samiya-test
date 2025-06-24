@@ -97,9 +97,9 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange }) => {
   };
 
   return (
-    <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-rose-100 p-8 space-y-8">
+    <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-rose-100 p-6 space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Filters</h2>
+        <h2 className="text-xl font-bold text-gray-900 tracking-tight">Filters</h2>
         <Button 
           variant="outline" 
           size="sm" 
@@ -112,8 +112,8 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange }) => {
 
       {/* Category Filter */}
       <div>
-        <h3 className="font-bold text-gray-800 mb-4 text-lg tracking-wide">Category</h3>
-        <div className="space-y-3">
+        <h3 className="font-bold text-gray-800 mb-3 tracking-wide">Category</h3>
+        <div className="space-y-2">
           {categories.map(category => (
             <label key={category} className="flex items-center space-x-3 cursor-pointer group">
               <input
@@ -122,7 +122,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange }) => {
                 value={category}
                 checked={selectedCategory === category}
                 onChange={() => handleCategoryChange(category)}
-                className="w-5 h-5 text-rose-600 border-2 border-gray-300 focus:ring-rose-500 focus:ring-2 transition-all duration-200"
+                className="w-4 h-4 text-rose-600 border-2 border-gray-300 focus:ring-rose-500 focus:ring-2 transition-all duration-200"
               />
               <span className="text-gray-700 font-medium capitalize group-hover:text-rose-600 transition-colors duration-200">
                 {category === 'all' ? 'All Categories' : category}
@@ -134,8 +134,8 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange }) => {
 
       {/* Price Filter */}
       <div>
-        <h3 className="font-bold text-gray-800 mb-4 text-lg tracking-wide">Price Range</h3>
-        <div className="px-3">
+        <h3 className="font-bold text-gray-800 mb-3 tracking-wide">Price Range</h3>
+        <div className="px-2">
           <Slider
             value={priceRange}
             onValueChange={handlePriceChange}
@@ -144,7 +144,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange }) => {
             step={50}
             className="w-full"
           />
-          <div className="flex justify-between text-sm text-gray-600 mt-3 font-medium">
+          <div className="flex justify-between text-sm text-gray-600 mt-2 font-medium">
             <span>₹0</span>
             <span className="text-rose-600 font-bold">₹{priceRange[0]}</span>
           </div>
@@ -153,8 +153,8 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange }) => {
 
       {/* Color Filter */}
       <div>
-        <h3 className="font-bold text-gray-800 mb-4 text-lg tracking-wide">Colors</h3>
-        <div className="grid grid-cols-4 gap-3">
+        <h3 className="font-bold text-gray-800 mb-3 tracking-wide">Colors</h3>
+        <div className="grid grid-cols-5 gap-2">
           {colors.map(color => (
             <label key={color} className="flex items-center justify-center cursor-pointer group">
               <input
@@ -164,10 +164,10 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange }) => {
                 className="sr-only"
               />
               <div
-                className={`w-10 h-10 rounded-full border-3 transition-all duration-300 group-hover:scale-110 ${
+                className={`w-7 h-7 rounded-full border-2 transition-all duration-300 group-hover:scale-110 ${
                   selectedColors.includes(color) 
-                    ? 'border-rose-600 ring-4 ring-rose-200 shadow-lg' 
-                    : 'border-gray-300 hover:border-rose-400 shadow-md hover:shadow-lg'
+                    ? 'border-rose-600 ring-2 ring-rose-200 shadow-md' 
+                    : 'border-gray-300 hover:border-rose-400 shadow-sm hover:shadow-md'
                 }`}
                 style={{ backgroundColor: getColorStyle(color) }}
                 title={color}
@@ -179,8 +179,8 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange }) => {
 
       {/* Tags Filter */}
       <div>
-        <h3 className="font-bold text-gray-800 mb-4 text-lg tracking-wide">Tags</h3>
-        <div className="space-y-3">
+        <h3 className="font-bold text-gray-800 mb-3 tracking-wide">Tags</h3>
+        <div className="space-y-2">
           {tags.map(tag => (
             <label key={tag} className="flex items-center space-x-3 cursor-pointer group">
               <Checkbox

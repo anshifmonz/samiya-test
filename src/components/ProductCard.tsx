@@ -24,37 +24,37 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <img
           src={firstImage}
           alt={product.title}
-          className="w-full h-72 object-cover group-hover:scale-110 transition-transform duration-700"
+          className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-700"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm px-3 py-2 rounded-full text-sm font-bold text-rose-600 shadow-lg">
+        <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-bold text-rose-600 shadow-lg">
           {product.category}
         </div>
       </div>
-      <div className="p-6">
-        <h3 className="font-bold text-xl text-gray-900 mb-3 line-clamp-2 tracking-tight group-hover:text-rose-700 transition-colors duration-300">
+      <div className="p-5">
+        <h3 className="font-bold text-lg text-gray-900 mb-3 line-clamp-2 tracking-tight group-hover:text-rose-700 transition-colors duration-300">
           {product.title}
         </h3>
-        <div className="flex items-center justify-between mb-4">
-          <span className="text-3xl font-bold text-rose-600">
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-2xl font-bold text-rose-600">
             ₹{product.price}
           </span>
-          <div className="flex gap-2">
+          <div className="flex gap-1">
             {Object.keys(product.images).slice(0, 3).map(color => (
               <div
                 key={color}
-                className="w-4 h-4 rounded-full border-2 border-white shadow-md"
+                className="w-3 h-3 rounded-full border border-white shadow-sm"
                 style={{ backgroundColor: color === 'cream' ? '#F5F5DC' : color === 'navy' ? '#000080' : color }}
                 title={color}
               />
             ))}
           </div>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-1">
           {product.tags.slice(0, 2).map(tag => (
             <span
               key={tag}
-              className="px-3 py-1 bg-rose-50 text-rose-600 text-xs rounded-full font-medium border border-rose-100"
+              className="px-2 py-1 bg-rose-50 text-rose-600 text-xs rounded-full font-medium border border-rose-100"
             >
               {tag}
             </span>
