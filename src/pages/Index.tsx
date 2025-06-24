@@ -1,12 +1,12 @@
 
 import React from 'react';
-import { useRouter } from 'next/router';
+import { useNavigate } from 'react-router-dom';
 import SearchBar from '../components/SearchBar';
 import ProductCard from '../components/ProductCard';
 import { products } from '../data/products';
 
 const Index: React.FC = () => {
-  const router = useRouter();
+  const navigate = useNavigate();
 
   const featuredProducts = products.slice(0, 6);
   const categories = [
@@ -28,7 +28,7 @@ const Index: React.FC = () => {
   ];
 
   const handleCategoryClick = (category: string) => {
-    router.push(`/search?q=${category.toLowerCase()}`);
+    navigate(`/search?q=${category.toLowerCase()}`);
   };
 
   return (
@@ -49,13 +49,13 @@ const Index: React.FC = () => {
             </div>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
-                onClick={() => router.push('/search?q=wedding')}
+                onClick={() => navigate('/search?q=wedding')}
                 className="bg-white text-indigo-600 px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition-colors shadow-lg"
               >
                 Shop Wedding Collection
               </button>
               <button
-                onClick={() => router.push('/search?q=festive')}
+                onClick={() => navigate('/search?q=festive')}
                 className="border-2 border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white hover:text-indigo-600 transition-colors"
               >
                 Festive Wear
@@ -120,7 +120,7 @@ const Index: React.FC = () => {
           
           <div className="text-center mt-12">
             <button
-              onClick={() => router.push('/search?q=')}
+              onClick={() => navigate('/search?q=')}
               className="bg-indigo-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-indigo-700 transition-colors shadow-lg"
             >
               View All Products
