@@ -1,24 +1,43 @@
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/router';
-import { GetStaticProps, GetStaticPaths } from 'next';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Product, getProductById, products } from '../../data/products';
 import ProductCard from '../../components/ProductCard';
 import { ArrowLeft } from 'lucide-react';
 
-interface ProductDetailPageProps {
-  product: Product;
-  similarProducts: Product[];
-}
+const ProductDetailPage: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [similarProducts, setSimilarProducts] = useState<Product[]>([]);
+  const [selectedColor, setSelectedColor] = useState<string>('');
+  const [currentImage, setCurrentImage] = useState<string>('');
+  const [loading, setLoading] = useState(true);
 
-const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, similarProducts }) => {
-  const router = useRouter();
-  const [selectedColor, setSelectedColor] = useState<string>(Object.keys(product.images)[0]);
-  const [currentImage, setCurrentImage] = useState<string>(product.images[selectedColor]);
+  useEffect(() => {
+    if (id) {
+      const foundProduct = getProductById(id);
+      if (foundProduct) {
+        setProduct(foundProduct);
+        const firstColor = Object.keys(foundProduct.images)[0];
+        setSelectedColor(firstColor);
+        setCurrentImage(foundProduct.images[firstColor]);
+        
+        // Get similar products from the same category, excluding the current product
+        const similar = products
+          .filter(p => p.category === foundProduct.category && p.id !== foundProduct.id)
+          .slice(0, 4);
+        setSimilarProducts(similar);
+      }
+      setLoading(false);
+    }
+  }, [id]);
 
   const handleColorChange = (color: string) => {
-    setSelectedColor(color);
-    setCurrentImage(product.images[color]);
+    if (product) {
+      setSelectedColor(color);
+      setCurrentImage(product.images[color]);
+    }
   };
 
   const getColorStyle = (color: string) => {
@@ -41,12 +60,28 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, similarP
     return colorMap[color] || color;
   };
 
-  if (router.isFallback) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading product...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Product Not Found</h2>
+          <button
+            onClick={() => navigate('/')}
+            className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
+          >
+            Go Home
+          </button>
         </div>
       </div>
     );
@@ -59,7 +94,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, similarP
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center gap-4">
             <button
-              onClick={() => router.back()}
+              onClick={() => navigate(-1)}
               className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
             >
               <ArrowLeft size={20} />
@@ -167,39 +202,6 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, similarP
       </div>
     </div>
   );
-};
-
-export const getStaticPaths: GetStaticPaths = async () => {
-  const paths = products.map(product => ({
-    params: { id: product.id }
-  }));
-
-  return {
-    paths,
-    fallback: false
-  };
-};
-
-export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const product = getProductById(params?.id as string);
-
-  if (!product) {
-    return {
-      notFound: true
-    };
-  }
-
-  // Get similar products from the same category, excluding the current product
-  const similarProducts = products
-    .filter(p => p.category === product.category && p.id !== product.id)
-    .slice(0, 4);
-
-  return {
-    props: {
-      product,
-      similarProducts
-    }
-  };
 };
 
 export default ProductDetailPage;

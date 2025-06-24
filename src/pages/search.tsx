@@ -1,20 +1,21 @@
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { searchProducts, Product } from '../data/products';
 import ProductCard from '../components/ProductCard';
 import FilterPanel from '../components/FilterPanel';
 import SearchBar from '../components/SearchBar';
 
 const SearchPage: React.FC = () => {
-  const router = useRouter();
-  const { q } = router.query;
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const q = searchParams.get('q') || '';
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<any>({});
 
   useEffect(() => {
-    if (typeof q === 'string') {
+    if (q) {
       setLoading(true);
       const results = searchProducts(q, filters);
       setProducts(results);
@@ -46,7 +47,7 @@ const SearchPage: React.FC = () => {
             <h1 className="text-2xl font-bold text-gray-900">
               <span 
                 className="text-indigo-600 cursor-pointer hover:text-indigo-700"
-                onClick={() => router.push('/')}
+                onClick={() => navigate('/')}
               >
                 Samiya Wedding Center
               </span>
@@ -94,7 +95,7 @@ const SearchPage: React.FC = () => {
                   Try adjusting your search terms or filters
                 </p>
                 <button
-                  onClick={() => router.push('/')}
+                  onClick={() => navigate('/')}
                   className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
                 >
                   Browse All Products

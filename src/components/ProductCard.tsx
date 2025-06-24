@@ -1,18 +1,18 @@
 
 import React from 'react';
 import { Product } from '../data/products';
-import { useRouter } from 'next/router';
+import { useNavigate } from 'react-router-dom';
 
 interface ProductCardProps {
   product: Product;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-  const router = useRouter();
+  const navigate = useNavigate();
   const firstImage = Object.values(product.images)[0];
 
   const handleClick = () => {
-    router.push(`/product/${product.id}`);
+    navigate(`/product/${product.id}`);
   };
 
   return (
