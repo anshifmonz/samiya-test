@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import SearchBar from './SearchBar';
+import SearchBar from '../search/SearchBar';
 import ScrollIndicator from './ScrollIndicator';
 
 const LandingSection: React.FC = () => {

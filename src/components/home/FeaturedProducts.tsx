@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import ProductCard from './ProductCard';
-import { products } from '../data/products';
+import ProductCard from '../shared/ProductCard';
+import { products } from '../../data/products';
 
 const FeaturedProducts: React.FC = () => {
   const navigate = useNavigate();

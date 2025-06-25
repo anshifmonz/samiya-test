@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import SearchBar from './SearchBar';
+import SearchBar from '../search/SearchBar';
 
 const Navigation: React.FC = () => {
   const navigate = useNavigate();

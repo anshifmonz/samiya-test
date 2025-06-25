@@ -1,11 +1,11 @@
 import React from 'react';
-import Navigation from '../components/Navigation';
-import AboutSection from '../components/AboutSection';
-import TestimonialsSection from '../components/TestimonialsSection';
-import ContactSection from '../components/ContactSection';
-import FeaturedCategories from '../components/FeaturedCategories';
-import FeaturedProducts from '../components/FeaturedProducts';
-import LandingSection from '../components/LandingSection';
+import Navigation from '../components/shared/Navigation';
+import AboutSection from '../components/home/AboutSection';
+import TestimonialsSection from '../components/home/TestimonialsSection';
+import ContactSection from '../components/home/ContactSection';
+import FeaturedCategories from '../components/home/FeaturedCategories';
+import FeaturedProducts from '../components/home/FeaturedProducts';
+import LandingSection from '../components/home/LandingSection';
 
 const Index: React.FC = () => {
   return (

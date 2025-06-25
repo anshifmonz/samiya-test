@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { searchProducts, Product } from '../data/products';
-import Navigation from '../components/Navigation';
-import SearchResultsHeader from '../components/SearchResultsHeader';
-import SearchContent from '../components/SearchContent';
-import LoadingSpinner from '../components/LoadingSpinner';
+import Navigation from '../components/shared/Navigation';
+import SearchResultsHeader from '../components/search/SearchResultsHeader';
+import SearchContent from '../components/search/SearchContent';
+import LoadingSpinner from '../components/search/LoadingSpinner';
 
 const SearchPage: React.FC = () => {
   const [searchParams] = useSearchParams();

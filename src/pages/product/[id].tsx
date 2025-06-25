@@ -1,9 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Product, getProductById, products } from '../../data/products';
-import ProductCard from '../../components/ProductCard';
-import Navigation from '../../components/Navigation';
+import ProductCard from '../../components/shared/ProductCard';
+import Navigation from '../../components/shared/Navigation';
 import { ArrowLeft } from 'lucide-react';
 
 const ProductDetailPage: React.FC = () => {
@@ -23,7 +22,7 @@ const ProductDetailPage: React.FC = () => {
         const firstColor = Object.keys(foundProduct.images)[0];
         setSelectedColor(firstColor);
         setCurrentImage(foundProduct.images[firstColor]);
-        
+
         // Get similar products from the same category, excluding the current product
         const similar = products
           .filter(p => p.category === foundProduct.category && p.id !== foundProduct.id)
@@ -91,7 +90,7 @@ const ProductDetailPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-rose-50">
       <Navigation />
-      
+
       {/* Header */}
       <div className="bg-white/80 backdrop-blur-sm shadow-lg border-b border-rose-100 pt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -122,7 +121,7 @@ const ProductDetailPage: React.FC = () => {
                   className="w-full h-full object-cover transition-all duration-500"
                 />
               </div>
-              
+
               {/* Color Swatches */}
               <div className="flex items-center gap-3">
                 <span className="text-sm font-semibold text-gray-800">Colors:</span>

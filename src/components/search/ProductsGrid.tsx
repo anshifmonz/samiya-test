@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Product } from '../data/products';
-import ProductCard from './ProductCard';
+import { Product } from '../../data/products';
+import ProductCard from '../shared/ProductCard';
 
 interface ProductsGridProps {
   products: Product[];
