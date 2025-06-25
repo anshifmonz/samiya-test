@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Product, getProductById, products } from '../../data/products';
@@ -62,10 +63,10 @@ const ProductDetailPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-rose-50 flex items-center justify-center">
+      <div className="min-h-screen bg-luxury-cream flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600 font-light">Loading product...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-luxury-gold mx-auto"></div>
+          <p className="mt-4 text-luxury-gray luxury-body">Loading product...</p>
         </div>
       </div>
     );
@@ -73,12 +74,12 @@ const ProductDetailPage: React.FC = () => {
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-rose-50 flex items-center justify-center">
+      <div className="min-h-screen bg-luxury-cream flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6 tracking-tight">Product Not Found</h2>
+          <h2 className="luxury-heading text-3xl text-luxury-black mb-6">Product Not Found</h2>
           <button
             onClick={() => navigate('/')}
-            className="bg-gradient-to-r from-rose-600 to-rose-700 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-rose-700 hover:to-rose-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+            className="luxury-btn-primary px-8 py-4 rounded-xl text-lg font-medium transition-all duration-300"
           >
             Go Home
           </button>
@@ -88,52 +89,52 @@ const ProductDetailPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-rose-50">
+    <div className="min-h-screen bg-luxury-cream">
       <Navigation />
 
       {/* Header */}
-      <div className="bg-white/80 backdrop-blur-sm shadow-lg border-b border-rose-100 pt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div className="bg-white/80 backdrop-blur-md shadow-lg border-b border-luxury-gray/10 pt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center gap-6">
             <button
               onClick={() => navigate(-1)}
-              className="flex items-center gap-3 text-gray-600 hover:text-rose-600 transition-colors duration-300 group"
+              className="flex items-center gap-3 text-luxury-gray hover:text-luxury-gold transition-colors duration-300 group"
             >
               <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform duration-300" />
-              <span className="font-medium">Back</span>
+              <span className="luxury-body font-medium">Back</span>
             </button>
-            <h1 className="text-xl font-bold text-rose-600 tracking-tight">
+            <h1 className="luxury-heading text-xl text-luxury-black">
               Samiya Wedding Center
             </h1>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden border border-rose-100">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="luxury-card rounded-3xl overflow-hidden border border-luxury-gray/10 p-8 lg:p-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Product Image */}
-            <div className="space-y-4">
-              <div className="aspect-square overflow-hidden rounded-2xl bg-gray-100 shadow-lg">
+            <div className="space-y-6">
+              <div className="aspect-square overflow-hidden rounded-2xl bg-luxury-beige shadow-lg">
                 <img
                   src={currentImage}
                   alt={product.title}
-                  className="w-full h-full object-cover transition-all duration-500"
+                  className="w-full h-full object-cover transition-all duration-500 hover:scale-105"
                 />
               </div>
 
               {/* Color Swatches */}
-              <div className="flex items-center gap-3">
-                <span className="text-sm font-semibold text-gray-800">Colors:</span>
-                <div className="flex gap-2">
+              <div className="flex items-center gap-4">
+                <span className="luxury-body text-sm font-medium text-luxury-gray">Colors:</span>
+                <div className="flex gap-3">
                   {Object.keys(product.images).map(color => (
                     <button
                       key={color}
                       onClick={() => handleColorChange(color)}
-                      className={`w-8 h-8 rounded-full border-2 transition-all duration-300 hover:scale-110 ${
+                      className={`w-6 h-6 rounded-full border-2 transition-all duration-300 hover:scale-110 ${
                         selectedColor === color
-                          ? 'border-rose-600 ring-2 ring-rose-200 shadow-md'
-                          : 'border-gray-300 hover:border-rose-400 shadow-sm hover:shadow-md'
+                          ? 'border-luxury-gold ring-2 ring-luxury-gold/30 shadow-md'
+                          : 'border-luxury-gray/30 hover:border-luxury-gold/50 shadow-sm hover:shadow-md'
                       }`}
                       style={{ backgroundColor: getColorStyle(color) }}
                       title={color}
@@ -144,35 +145,35 @@ const ProductDetailPage: React.FC = () => {
             </div>
 
             {/* Product Details */}
-            <div className="space-y-6">
+            <div className="space-y-8">
               <div>
-                <div className="flex items-center gap-3 mb-3">
-                  <span className="bg-rose-100 text-rose-800 px-3 py-1 rounded-full text-sm font-bold border border-rose-200">
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="bg-luxury-gold/10 text-luxury-gold px-4 py-2 rounded-full luxury-body text-sm font-medium border border-luxury-gold/20">
                     {product.category}
                   </span>
                 </div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-3 tracking-tight">
+                <h1 className="luxury-heading text-4xl font-light text-luxury-black mb-4 leading-tight">
                   {product.title}
                 </h1>
-                <p className="text-4xl font-bold text-rose-600 mb-2">
-                  ₹{product.price}
+                <p className="text-4xl font-light text-luxury-gold mb-2">
+                  ₹{product.price.toLocaleString()}
                 </p>
               </div>
 
               <div>
-                <h3 className="text-lg font-bold text-gray-800 mb-3 tracking-wide">Description</h3>
-                <p className="text-gray-700 leading-relaxed font-light">
+                <h3 className="luxury-subheading text-luxury-black mb-4">Description</h3>
+                <p className="luxury-body text-luxury-gray leading-relaxed">
                   {product.description}
                 </p>
               </div>
 
               <div>
-                <h3 className="text-lg font-bold text-gray-800 mb-3 tracking-wide">Tags</h3>
-                <div className="flex flex-wrap gap-2">
+                <h3 className="luxury-subheading text-luxury-black mb-4">Tags</h3>
+                <div className="flex flex-wrap gap-3">
                   {product.tags.map(tag => (
                     <span
                       key={tag}
-                      className="px-3 py-1 bg-rose-50 text-rose-700 rounded-full text-sm font-medium border border-rose-200"
+                      className="px-4 py-2 bg-luxury-cream text-luxury-gray rounded-full luxury-body text-sm border border-luxury-gray/20"
                     >
                       #{tag}
                     </span>
@@ -180,11 +181,11 @@ const ProductDetailPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="pt-4">
-                <button className="w-full bg-gradient-to-r from-rose-600 to-rose-700 text-white py-3 px-6 rounded-2xl text-lg font-bold hover:from-rose-700 hover:to-rose-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+              <div className="pt-6">
+                <button className="w-full luxury-btn-primary py-4 px-8 rounded-2xl luxury-body text-lg font-medium transition-all duration-300">
                   Contact for Purchase
                 </button>
-                <p className="text-sm text-gray-600 mt-3 text-center font-light">
+                <p className="luxury-body text-sm text-luxury-gray mt-4 text-center">
                   Call us at +91 9876543210 or visit our store
                 </p>
               </div>
@@ -194,8 +195,8 @@ const ProductDetailPage: React.FC = () => {
 
         {/* Similar Products */}
         {similarProducts.length > 0 && (
-          <div className="mt-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 tracking-tight">Similar Products</h2>
+          <div className="mt-16">
+            <h2 className="luxury-heading text-3xl text-luxury-black mb-8 text-center">Similar Products</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {similarProducts.map(product => (
                 <ProductCard key={product.id} product={product} />
