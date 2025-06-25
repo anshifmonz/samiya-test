@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import CategoryFilter from './filter/CategoryFilter';
@@ -79,43 +80,41 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange, availableCol
   };
 
   return (
-    <div className="lg:w-1/4">
-      <div className="sticky top-24">
-        <div className="animate-fade-in-left">
-          <div className="luxury-card rounded-xl border border-luxury-gray/10 shadow-lg bg-white/95 backdrop-blur-md p-8 space-y-8">
-            <div className="flex justify-between items-center">
-              <h2 className="luxury-heading text-2xl text-luxury-black">Filters</h2>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={clearFilters}
-                className="border-luxury-gray/30 text-luxury-gray hover:bg-luxury-cream hover:border-luxury-gold/50 transition-all duration-300 luxury-body"
-              >
-                Clear All
-              </Button>
-            </div>
-
-            <CategoryFilter
-              selectedCategory={selectedCategory}
-              onCategoryChange={handleCategoryChange}
-            />
-
-            <PriceFilter
-              priceRange={priceRange}
-              onPriceChange={handlePriceChange}
-            />
-
-            <ColorFilter
-              selectedColors={selectedColors}
-              onColorChange={handleColorChange}
-              availableColors={availableColors}
-            />
-
-            <TagsFilter
-              selectedTags={selectedTags}
-              onTagToggle={handleTagToggle}
-            />
+    <div className="w-80">
+      <div className="sticky top-28">
+        <div className="luxury-card rounded-xl border border-luxury-gray/10 shadow-lg bg-white/95 backdrop-blur-md p-6 space-y-6">
+          <div className="flex justify-between items-center">
+            <h2 className="luxury-heading text-xl text-luxury-black">Filters</h2>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={clearFilters}
+              className="border-luxury-gray/30 text-luxury-gray hover:bg-luxury-cream hover:border-luxury-gold/50 transition-all duration-300 luxury-body text-sm"
+            >
+              Clear All
+            </Button>
           </div>
+
+          <CategoryFilter
+            selectedCategory={selectedCategory}
+            onCategoryChange={handleCategoryChange}
+          />
+
+          <PriceFilter
+            priceRange={priceRange}
+            onPriceChange={handlePriceChange}
+          />
+
+          <ColorFilter
+            selectedColors={selectedColors}
+            onColorChange={handleColorChange}
+            availableColors={availableColors}
+          />
+
+          <TagsFilter
+            selectedTags={selectedTags}
+            onTagToggle={handleTagToggle}
+          />
         </div>
       </div>
     </div>

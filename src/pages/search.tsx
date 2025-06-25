@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { searchProducts, Product } from '../data/products';
@@ -45,7 +46,7 @@ const SearchPage: React.FC = () => {
     <div className="min-h-screen bg-luxury-cream">
       <Navigation />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 pt-32">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24">
         <SearchResultsHeader query={q} productCount={products.length} />
         <SearchContent products={products} onFiltersChange={handleFiltersChange} />
       </div>

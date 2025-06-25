@@ -1,7 +1,9 @@
+
 import React from 'react';
 import { Product } from '../../data/products';
 import FilterPanel from './FilterPanel';
 import ProductsGrid from './ProductsGrid';
+import MobileFilterPanel from './MobileFilterPanel';
 
 interface SearchContentProps {
   products: Product[];
@@ -25,8 +27,17 @@ const SearchContent: React.FC<SearchContentProps> = ({ products, onFiltersChange
   const availableColors = Array.from(colorSet);
 
   return (
-    <div className="flex flex-col lg:flex-row gap-12">
-      <FilterPanel onFiltersChange={onFiltersChange} availableColors={availableColors} />
+    <div className="flex flex-col lg:flex-row gap-8">
+      {/* Desktop Filter Panel */}
+      <div className="hidden lg:block">
+        <FilterPanel onFiltersChange={onFiltersChange} availableColors={availableColors} />
+      </div>
+      
+      {/* Mobile Filter Panel */}
+      <div className="lg:hidden">
+        <MobileFilterPanel onFiltersChange={onFiltersChange} availableColors={availableColors} />
+      </div>
+      
       <ProductsGrid products={products} />
     </div>
   );
