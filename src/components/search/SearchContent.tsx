@@ -5,7 +5,13 @@ import ProductsGrid from './ProductsGrid';
 
 interface SearchContentProps {
   products: Product[];
-  onFiltersChange: (filters: any) => void;
+  onFiltersChange: (filters: {
+    category?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    colors?: string[];
+    tags?: string[];
+  }) => void;
 }
 
 const SearchContent: React.FC<SearchContentProps> = ({ products, onFiltersChange }) => {
