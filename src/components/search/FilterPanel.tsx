@@ -11,6 +11,7 @@ interface FilterPanelProps {
     colors?: string[];
     tags?: string[];
   }) => void;
+  availableColors?: string[];
 }
 
 interface FilterUpdate {
@@ -21,14 +22,14 @@ interface FilterUpdate {
   tags?: string[];
 }
 
-const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange }) => {
+const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange, availableColors }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [priceRange, setPriceRange] = useState<[number]>([2000]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   const categories = ['all', 'Gents', 'Women', 'Kids'];
-  const colors = ['red', 'blue', 'green', 'white', 'cream', 'navy', 'pink', 'yellow', 'purple', 'black', 'emerald', 'maroon', 'gold', 'burgundy'];
+  const defaultColors = ['red', 'blue', 'green', 'white', 'cream', 'navy', 'pink', 'yellow', 'purple', 'black', 'emerald', 'maroon', 'gold', 'burgundy'];
   const tags = ['wedding', 'festive', 'silk', 'cotton', 'traditional', 'formal', 'office', 'embroidery', 'kids'];
 
   const handleCategoryChange = (category: string) => {
@@ -103,6 +104,8 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange }) => {
     return colorMap[color] || color;
   };
 
+  const colorOptions = availableColors && availableColors.length > 0 ? availableColors : defaultColors;
+
   return (
     <div className="lg:w-1/4">
       <div className="sticky top-24">
@@ -165,7 +168,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange }) => {
             <div>
               <h3 className="luxury-subheading text-luxury-black mb-4 tracking-wider">Colors</h3>
               <div className="grid grid-cols-5 gap-3">
-                {colors.map(color => (
+                {colorOptions.map(color => (
                   <label key={color} className="flex items-center justify-center cursor-pointer group">
                     <input
                       type="checkbox"
