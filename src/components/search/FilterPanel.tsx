@@ -13,6 +13,14 @@ interface FilterPanelProps {
   }) => void;
 }
 
+interface FilterUpdate {
+  category?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  colors?: string[];
+  tags?: string[];
+}
+
 const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [priceRange, setPriceRange] = useState<[number]>([2000]);
@@ -49,7 +57,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange }) => {
     updateFilters({ tags: newTags.length > 0 ? newTags : undefined });
   };
 
-  const updateFilters = (partialFilters: any) => {
+  const updateFilters = (partialFilters: FilterUpdate) => {
     const newFilters = {
       category: selectedCategory === 'all' ? undefined : selectedCategory,
       minPrice: 0,
