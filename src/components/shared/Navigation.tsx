@@ -9,12 +9,19 @@ const Navigation: React.FC = () => {
   const isSearchPage = location.pathname === '/search';
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
+    const heroSection = document.getElementById('hero');
+    if (!heroSection) return;
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsScrolled(!entry.isIntersecting);
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(heroSection);
+
+    return () => observer.disconnect();
   }, []);
 
   return (
@@ -22,7 +29,7 @@ const Navigation: React.FC = () => {
       isSearchPage
         ? 'bg-luxury-black/80 backdrop-blur-xl border-b border-luxury-gold/30 shadow-2xl shadow-luxury-black/50'
         : isScrolled
-        ? 'bg-luxury-black/90 backdrop-blur-md border-b border-white/20'
+        ? 'bg-[#2e2e2e]/60 backdrop-blur-md border-b border-[#d6c6ae]/30 shadow-[0_4px_24px_rgba(214,198,174,0.2)] drop-shadow-[0_0_12px_rgba(214,198,174,0.1)]'
         : 'bg-luxury-black/95 backdrop-blur-lg border-b border-white/30'
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

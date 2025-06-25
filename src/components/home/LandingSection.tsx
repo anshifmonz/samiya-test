@@ -12,7 +12,7 @@ const LandingSection: React.FC = () => {
   }, []);
 
   return (
-    <div className="relative overflow-hidden min-h-screen flex items-center justify-center">
+    <div id="hero" className="relative overflow-hidden min-h-screen flex items-center justify-center">
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
