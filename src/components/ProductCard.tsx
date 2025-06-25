@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Product } from '../data/products';
 import { useNavigate } from 'react-router-dom';
@@ -16,45 +15,85 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   };
 
   return (
-    <div 
-      className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 cursor-pointer group border border-rose-100 hover:border-rose-200"
+    <div
+      className="luxury-card rounded-3xl overflow-hidden cursor-pointer group"
       onClick={handleClick}
     >
       <div className="relative overflow-hidden">
         <img
           src={firstImage}
           alt={product.title}
-          className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-700"
+          className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-700"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-bold text-rose-600 shadow-lg">
-          {product.category}
+        <div className="absolute inset-0 bg-gradient-to-t from-luxury-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+        {/* Category Badge */}
+        <div className="absolute top-6 left-6 glass rounded-full px-4 py-2">
+          <span className="luxury-subheading text-xs text-white font-light tracking-wider">
+            {product.category}
+          </span>
+        </div>
+
+        {/* Hover Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-luxury-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+          <div className="absolute bottom-6 left-6 right-6">
+            <div className="flex items-center justify-between">
+              <span className="luxury-body text-white/90 text-sm">
+                View Details
+              </span>
+              <div className="w-10 h-10 bg-luxury-gold rounded-full flex items-center justify-center">
+                <svg className="w-5 h-5 text-luxury-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <div className="p-5">
-        <h3 className="font-bold text-lg text-gray-900 mb-3 line-clamp-2 tracking-tight group-hover:text-rose-700 transition-colors duration-300">
+
+      <div className="p-8">
+        <h3 className="luxury-heading text-xl text-luxury-black mb-4 line-clamp-2 group-hover:text-luxury-gold transition-colors duration-300">
           {product.title}
         </h3>
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-2xl font-bold text-rose-600">
-            ₹{product.price}
+
+        <div className="flex items-center justify-between mb-6">
+          <span className="luxury-heading text-2xl text-luxury-gold">
+            ₹{product.price.toLocaleString()}
           </span>
-          <div className="flex gap-1">
-            {Object.keys(product.images).slice(0, 3).map(color => (
+
+          {/* Color Swatches */}
+          <div className="flex gap-2">
+            {Object.keys(product.images).slice(0, 4).map(color => (
               <div
                 key={color}
-                className="w-3 h-3 rounded-full border border-white shadow-sm"
-                style={{ backgroundColor: color === 'cream' ? '#F5F5DC' : color === 'navy' ? '#000080' : color }}
-                title={color}
+                className="w-4 h-4 rounded-full border-2 border-white shadow-sm ring-1 ring-luxury-gray/20"
+                style={{
+                  backgroundColor: color === 'cream' ? '#F5F5DC' :
+                                 color === 'navy' ? '#000080' :
+                                 color === 'red' ? '#DC2626' :
+                                 color === 'green' ? '#059669' :
+                                 color === 'blue' ? '#2563EB' :
+                                 color === 'purple' ? '#7C3AED' :
+                                 color === 'pink' ? '#EC4899' :
+                                 color === 'yellow' ? '#EAB308' :
+                                 color === 'orange' ? '#EA580C' :
+                                 color === 'brown' ? '#92400E' :
+                                 color === 'gray' ? '#6B7280' :
+                                 color === 'black' ? '#000000' :
+                                 color === 'white' ? '#FFFFFF' : color
+                }}
+                title={color.charAt(0).toUpperCase() + color.slice(1)}
               />
             ))}
           </div>
         </div>
-        <div className="flex flex-wrap gap-1">
-          {product.tags.slice(0, 2).map(tag => (
+
+        {/* Tags */}
+        <div className="flex flex-wrap gap-2">
+          {product.tags.slice(0, 3).map(tag => (
             <span
               key={tag}
-              className="px-2 py-1 bg-rose-50 text-rose-600 text-xs rounded-full font-medium border border-rose-100"
+              className="px-3 py-1 bg-luxury-cream text-luxury-gray text-xs rounded-full luxury-body border border-luxury-gray/20"
             >
               {tag}
             </span>

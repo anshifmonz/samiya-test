@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search } from 'lucide-react';
@@ -16,20 +15,23 @@ const SearchBar: React.FC = () => {
 
   return (
     <form onSubmit={handleSubmit} className="relative max-w-2xl mx-auto">
-      <div className="relative">
+      <div className="relative group">
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search for wedding dresses, kurtas, sherwanis..."
-          className="w-full px-6 py-4 pr-12 text-lg border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-lg"
+          placeholder="Search for bridal wear, sherwanis, festive attire..."
+          className="w-full px-8 py-6 pr-16 luxury-body text-lg bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl focus:outline-none focus:ring-2 focus:ring-luxury-gold/50 focus:border-luxury-gold/30 text-white placeholder-white/60 transition-all duration-300 group-hover:bg-white/15 group-hover:border-white/30"
         />
         <button
           type="submit"
-          className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-indigo-600 text-white p-2 rounded-full hover:bg-indigo-700 transition-colors duration-200"
+          className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-luxury-gold text-luxury-black p-3 rounded-xl hover:bg-luxury-gold-light transition-all duration-300 hover:scale-105 shadow-lg"
         >
           <Search size={20} />
         </button>
+
+        {/* Subtle glow effect */}
+        <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-luxury-gold/10 via-transparent to-luxury-gold/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
       </div>
     </form>
   );
