@@ -107,7 +107,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange }) => {
     <div className="lg:w-1/4">
       <div className="sticky top-24">
         <div className="animate-fade-in-left">
-          <div className="luxury-card rounded-3xl p-8 space-y-8">
+          <div className="luxury-card rounded-xl border border-luxury-gray/10 shadow-lg bg-white/95 backdrop-blur-md p-8 space-y-8">
             <div className="flex justify-between items-center">
               <h2 className="luxury-heading text-2xl text-luxury-black">Filters</h2>
               <Button

@@ -16,7 +16,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   return (
     <div
-      className="luxury-card rounded-3xl overflow-hidden cursor-pointer group"
+      className="luxury-card rounded-xl md:rounded-2xl overflow-hidden cursor-pointer group shadow-lg hover:shadow-2xl transition-all duration-500 border border-luxury-gray/10 hover:border-luxury-gold/30 bg-white/95 backdrop-blur-md"
       onClick={handleClick}
     >
       <div className="relative overflow-hidden">
