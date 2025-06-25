@@ -9,12 +9,9 @@ const SearchResultsHeader: React.FC<SearchResultsHeaderProps> = ({ query, produc
   return (
     <div className="mb-12">
       <div className="animate-fade-in-up">
-        <h2 className="luxury-heading text-4xl sm:text-5xl text-luxury-black mb-4">
-          Search Results
+        <h2 className="luxury-heading text-2xl sm:text-3xl text-luxury-black mb-2">
+          Search Results for "{query}"
         </h2>
-        <p className="luxury-body text-xl text-luxury-gray mb-2">
-          "{query}"
-        </p>
         <p className="luxury-subheading text-luxury-gold text-lg tracking-wider">
           {productCount} product{productCount !== 1 ? 's' : ''} found
         </p>
