@@ -16,7 +16,7 @@ const LandingSection: React.FC = () => {
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: 'url(https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=1920&h=1080&fit=crop&crop=center)'
+          backgroundImage: 'url(https://lulucelebrate.in/cdn/shop/files/banner3.jpg?v=1660111150&width=1500)'
         }}
       ></div>
 
@@ -30,9 +30,9 @@ const LandingSection: React.FC = () => {
       <div className={`relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 text-center z-10 transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
         <div className="animate-fade-in-up">
           <h1 className="luxury-heading text-7xl sm:text-9xl text-white mb-8 leading-none">
-            <span className="luxury-subheading block text-luxury-gold text-2xl sm:text-3xl mb-8 tracking-[0.3em]">
+            {/* <span className="luxury-subheading block text-luxury-gold text-2xl sm:text-3xl mb-8 tracking-[0.3em]">
               Luxury Wedding Collection
-            </span>
+            </span> */}
             Samiya
             <span className="block text-4xl sm:text-5xl luxury-subheading tracking-[0.2em] mt-4 text-luxury-gold">
               Wedding Center
