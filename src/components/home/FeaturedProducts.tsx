@@ -1,10 +1,8 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import ProductCard from '../shared/ProductCard';
 import { products } from '../../data/products';
 
 const FeaturedProducts: React.FC = () => {
-  const navigate = useNavigate();
   const featuredProducts = products.slice(0, 6);
 
   return (
@@ -36,15 +34,6 @@ const FeaturedProducts: React.FC = () => {
               <ProductCard product={product} />
             </div>
           ))}
-        </div>
-
-        <div className="text-center mt-24">
-          <button
-            onClick={() => navigate('/search?q=')}
-            className="luxury-btn-primary px-20 py-6 rounded-full font-medium text-lg tracking-wider uppercase shadow-2xl"
-          >
-            View All Products
-          </button>
         </div>
       </div>
     </div>
