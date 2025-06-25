@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { searchProducts, Product } from '../data/products';
 import Navigation from '../components/shared/Navigation';
 import SearchResultsHeader from '../components/search/SearchResultsHeader';
@@ -16,19 +16,22 @@ interface FilterState {
 
 const SearchPage: React.FC = () => {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const q = searchParams.get('q') || '';
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<FilterState>({});
 
   useEffect(() => {
-    if (q) {
-      setLoading(true);
-      const results = searchProducts(q, filters);
-      setProducts(results);
-      setLoading(false);
+    if (q.trim() === '') {
+      navigate('/', { replace: true });
+      return;
     }
-  }, [q, filters]);
+    setLoading(true);
+    const results = searchProducts(q, filters);
+    setProducts(results);
+    setLoading(false);
+  }, [q, filters, navigate]);
 
   const handleFiltersChange = (newFilters: FilterState) => {
     setFilters(newFilters);
