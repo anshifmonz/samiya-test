@@ -29,11 +29,11 @@ const Navigation: React.FC = () => {
 
   // Determine navbar background and styling based on page
   const getNavbarStyling = () => {
-    if (isSearchPage) {
-      return 'bg-luxury-black/90 backdrop-blur-xl border-b border-luxury-gold/30 shadow-2xl shadow-luxury-black/50';
+    if (isSearchPage || isProductPage) {
+      return 'bg-luxury-black/95 backdrop-blur-xl border-b border-luxury-gold/30 shadow-xl';
     }
     
-    if (isAdminPage || isProductPage) {
+    if (isAdminPage) {
       return 'bg-luxury-black/95 backdrop-blur-xl border-b border-luxury-gold/30 shadow-xl';
     }
     
