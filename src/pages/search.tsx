@@ -6,12 +6,20 @@ import SearchResultsHeader from '../components/search/SearchResultsHeader';
 import SearchContent from '../components/search/SearchContent';
 import LoadingSpinner from '../components/search/LoadingSpinner';
 
+interface FilterState {
+  category?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  colors?: string[];
+  tags?: string[];
+}
+
 const SearchPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const q = searchParams.get('q') || '';
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState<any>({});
+  const [filters, setFilters] = useState<FilterState>({});
 
   useEffect(() => {
     if (q) {
@@ -22,7 +30,7 @@ const SearchPage: React.FC = () => {
     }
   }, [q, filters]);
 
-  const handleFiltersChange = (newFilters: any) => {
+  const handleFiltersChange = (newFilters: FilterState) => {
     setFilters(newFilters);
   };
 
