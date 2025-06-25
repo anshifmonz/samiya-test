@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Slider } from '@/components/ui/slider';
 
 interface FilterPanelProps {
@@ -12,14 +11,6 @@ interface FilterPanelProps {
     tags?: string[];
   }) => void;
   availableColors?: string[];
-}
-
-interface FilterUpdate {
-  category?: string;
-  minPrice?: number;
-  maxPrice?: number;
-  colors?: string[];
-  tags?: string[];
 }
 
 const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange, availableColors }) => {
@@ -50,15 +41,19 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange, availableCol
     updateFilters({ colors: newColors.length > 0 ? newColors : undefined });
   };
 
-  const handleTagChange = (tag: string, checked: boolean) => {
-    const newTags = checked
-      ? [...selectedTags, tag]
-      : selectedTags.filter(t => t !== tag);
-    setSelectedTags(newTags);
-    updateFilters({ tags: newTags.length > 0 ? newTags : undefined });
+  const handleTagToggle = (tag: string) => {
+    setSelectedTags(prevTags => {
+      const isCurrentlySelected = prevTags.includes(tag);
+      const newTags = isCurrentlySelected
+        ? prevTags.filter(t => t !== tag)
+        : [...prevTags, tag];
+
+      updateFilters({ tags: newTags.length > 0 ? newTags : undefined });
+      return newTags;
+    });
   };
 
-  const updateFilters = (partialFilters: FilterUpdate) => {
+  const updateFilters = (partialFilters: any) => {
     const newFilters = {
       category: selectedCategory === 'all' ? undefined : selectedCategory,
       minPrice: 0,
@@ -194,18 +189,26 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange, availableCol
             <div>
               <h3 className="luxury-subheading text-luxury-black mb-4 tracking-wider">Tags</h3>
               <div className="space-y-3">
-                {tags.map(tag => (
-                  <label key={tag} className="flex items-center space-x-3 cursor-pointer group">
-                    <Checkbox
-                      checked={selectedTags.includes(tag)}
-                      onCheckedChange={(checked) => handleTagChange(tag, checked as boolean)}
-                      className="border-2 border-luxury-gray/30 data-[state=checked]:bg-luxury-gold data-[state=checked]:border-luxury-gold"
-                    />
-                    <span className="luxury-body text-luxury-gray font-medium capitalize group-hover:text-luxury-gold transition-colors duration-200">
-                      {tag}
-                    </span>
-                  </label>
-                ))}
+                {tags.map(tag => {
+                  const isSelected = selectedTags.includes(tag);
+                  return (
+                    <label key={tag} className="flex items-center space-x-3 cursor-pointer group">
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => handleTagToggle(tag)}
+                        className="w-4 h-4 text-luxury-gold border-2 border-luxury-gray/30 focus:ring-luxury-gold/50 focus:ring-2 transition-all duration-200 rounded-sm cursor-pointer"
+                      />
+                      <span className={`luxury-body font-medium capitalize transition-colors duration-200 ${
+                        isSelected
+                          ? 'text-luxury-gold'
+                          : 'text-luxury-gray group-hover:text-luxury-gold'
+                      }`}>
+                        {tag}
+                      </span>
+                    </label>
+                  );
+                })}
               </div>
             </div>
           </div>
