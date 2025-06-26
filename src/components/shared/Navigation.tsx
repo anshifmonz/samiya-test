@@ -6,11 +6,9 @@ const Navigation: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
+  const isHomePage = location.pathname === '/';
   const isSearchPage = location.pathname === '/search';
   const isAdminPage = location.pathname === '/admin';
-  const isProductPage = location.pathname.startsWith('/product/');
-  const isAboutPage = location.pathname === '/about';
-  const isCollectionsPage = location.pathname === '/collections';
 
   useEffect(() => {
     const heroSection = document.getElementById('hero');
@@ -30,25 +28,22 @@ const Navigation: React.FC = () => {
 
   // Determine navbar background and styling based on page
   const getNavbarStyling = () => {
-    if (isSearchPage || isProductPage || isAdminPage || isAboutPage || isCollectionsPage || isScrolled) {
-      return 'bg-[#5c5b5b]/60 backdrop-blur-md border-b border-[#d6c6ae]/30 shadow-[0_4px_24px_rgba(214,198,174,0.2)] drop-shadow-[0_0_12px_rgba(214,198,174,0.1)]';
-    }
-
-    // Home page styling
-    return 'bg-luxury-black/95 backdrop-blur-lg border-b border-white/30 shadow-[0_4px_24px_rgba(214,198,174,0.2)] drop-shadow-[0_0_12px_rgba(214,198,174,0.1)]';
+    const DEFAULT_STYLE = 'bg-[#5c5b5b]/60 backdrop-blur-md border-b border-[#d6c6ae]/30 shadow-[0_4px_24px_rgba(214,198,174,0.2)] drop-shadow-[0_0_12px_rgba(214,198,174,0.1)]';
+    if (isScrolled) return DEFAULT_STYLE;
+    if (isHomePage)
+      return 'bg-luxury-black/95 backdrop-blur-lg border-b border-white/30 shadow-[0_4px_24px_rgba(214,198,174,0.2)] drop-shadow-[0_0_12px_rgba(214,198,174,0.1)]';
+    return DEFAULT_STYLE;
   };
 
   // Determine text styling based on page
   const getTextStyling = () => {
-    if (isSearchPage || isAdminPage || isProductPage || isAboutPage || isCollectionsPage) {
+    if (isHomePage) {
       return {
         logo: 'text-white hover:text-luxury-gold',
         logoSubtext: 'text-luxury-gold',
         navLinks: 'text-white hover:text-luxury-gold'
       };
     }
-
-    // Home page styling
     return {
       logo: 'text-white hover:text-luxury-gold',
       logoSubtext: 'text-luxury-gold',
