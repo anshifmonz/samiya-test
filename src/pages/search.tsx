@@ -5,7 +5,7 @@ import { searchProducts, Product } from '../data/products';
 import Navigation from '../components/shared/Navigation';
 import SearchResultsHeader from '../components/search/SearchResultsHeader';
 import SearchContent from '../components/search/SearchContent';
-import LoadingSpinner from '../components/search/LoadingSpinner';
+import LoadingSpinner from '../components/shared/LoadingSpinner';
 
 interface FilterState {
   category?: string;
@@ -39,7 +39,7 @@ const SearchPage: React.FC = () => {
   };
 
   if (loading) {
-    return <LoadingSpinner />;
+    return <LoadingSpinner text="Searching products..." />;
   }
 
   return (
