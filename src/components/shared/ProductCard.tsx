@@ -51,7 +51,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </div>
       </div>
 
-      <div className="p-8">
+      <div className="p-5">
         <h3 className="luxury-heading text-xl text-luxury-black mb-4 line-clamp-2 group-hover:text-luxury-gold transition-colors duration-300">
           {product.title}
         </h3>
@@ -86,18 +86,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               />
             ))}
           </div>
-        </div>
-
-        {/* Tags */}
-        <div className="flex flex-wrap gap-2">
-          {product.tags.slice(0, 3).map(tag => (
-            <span
-              key={tag}
-              className="px-3 py-1 bg-luxury-cream text-luxury-gray text-xs rounded-full luxury-body border border-luxury-gray/20"
-            >
-              {tag}
-            </span>
-          ))}
         </div>
       </div>
     </div>
