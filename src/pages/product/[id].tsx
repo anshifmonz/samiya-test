@@ -92,25 +92,7 @@ const ProductDetailPage: React.FC = () => {
     <div className="min-h-screen bg-luxury-cream">
       <Navigation />
 
-      {/* Header */}
-      <div className="bg-white/80 backdrop-blur-md shadow-lg border-b border-luxury-gray/10 pt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center gap-6">
-            <button
-              onClick={() => navigate(-1)}
-              className="flex items-center gap-3 text-luxury-gray hover:text-luxury-gold transition-colors duration-300 group"
-            >
-              <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform duration-300" />
-              <span className="luxury-body font-medium">Back</span>
-            </button>
-            <h1 className="luxury-heading text-xl text-luxury-black">
-              Samiya Wedding Center
-            </h1>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-32">
         <div className="luxury-card rounded-3xl overflow-hidden border border-luxury-gray/10 p-8 lg:p-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Product Image */}
