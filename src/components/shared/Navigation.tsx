@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import SearchBar from '../search/SearchBar';
@@ -10,6 +9,7 @@ const Navigation: React.FC = () => {
   const isSearchPage = location.pathname === '/search';
   const isAdminPage = location.pathname === '/admin';
   const isProductPage = location.pathname.startsWith('/product/');
+  const isAboutPage = location.pathname === '/about';
 
   useEffect(() => {
     const heroSection = document.getElementById('hero');
@@ -29,7 +29,7 @@ const Navigation: React.FC = () => {
 
   // Determine navbar background and styling based on page
   const getNavbarStyling = () => {
-    if (isSearchPage || isProductPage || isAdminPage || isScrolled) {
+    if (isSearchPage || isProductPage || isAdminPage || isAboutPage || isScrolled) {
       return 'bg-[#5c5b5b]/60 backdrop-blur-md border-b border-[#d6c6ae]/30 shadow-[0_4px_24px_rgba(214,198,174,0.2)] drop-shadow-[0_0_12px_rgba(214,198,174,0.1)]';
     }
 
@@ -39,7 +39,7 @@ const Navigation: React.FC = () => {
 
   // Determine text styling based on page
   const getTextStyling = () => {
-    if (isSearchPage || isAdminPage || isProductPage) {
+    if (isSearchPage || isAdminPage || isProductPage || isAboutPage) {
       return {
         logo: 'text-white hover:text-luxury-gold',
         logoSubtext: 'text-luxury-gold',
@@ -78,7 +78,10 @@ const Navigation: React.FC = () => {
             >
               Home
             </button>
-            <button className={`luxury-body font-light transition-colors duration-300 tracking-wide relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-luxury-gold after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left ${textStyles.navLinks}`}>
+            <button
+              onClick={() => navigate('/about')}
+              className={`luxury-body font-light transition-colors duration-300 tracking-wide relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-luxury-gold after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left ${textStyles.navLinks}`}
+            >
               About
             </button>
             <button className={`luxury-body font-light transition-colors duration-300 tracking-wide relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-luxury-gold after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left ${textStyles.navLinks}`}>
