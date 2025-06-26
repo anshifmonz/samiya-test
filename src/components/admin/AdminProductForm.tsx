@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Product } from '../../data/products';
 import { X, Plus, Trash } from 'lucide-react';
@@ -181,16 +180,16 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, onSave, on
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {Object.entries(formData.images).map(([color, url]) => (
-                  <div key={color} className="flex items-center gap-3 p-3 border border-luxury-gray/20 rounded-lg">
-                    <img src={url} alt={color} className="w-12 h-12 object-cover rounded" />
-                    <div className="flex-1">
-                      <p className="luxury-body text-sm font-medium">{color}</p>
-                      <p className="luxury-body text-xs text-luxury-gray truncate">{url}</p>
+                  <div key={color} className="flex items-start gap-3 p-3 border border-luxury-gray/20 rounded-lg">
+                    <img src={url} alt={color} className="w-12 h-12 object-cover rounded flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="luxury-body text-sm font-medium text-luxury-black">{color}</p>
+                      <p className="luxury-body text-xs text-luxury-gray break-all leading-relaxed">{url}</p>
                     </div>
                     <button
                       type="button"
                       onClick={() => removeImage(color)}
-                      className="text-red-500 hover:text-red-700 transition-colors duration-200"
+                      className="text-red-600 hover:text-red-800 transition-colors duration-200 flex-shrink-0 p-1 rounded hover:bg-red-50"
                     >
                       <Trash size={16} />
                     </button>
