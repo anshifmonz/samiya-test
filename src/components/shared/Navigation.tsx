@@ -29,18 +29,12 @@ const Navigation: React.FC = () => {
 
   // Determine navbar background and styling based on page
   const getNavbarStyling = () => {
-    if (isSearchPage || isProductPage) {
-      return 'bg-luxury-black/95 backdrop-blur-xl border-b border-luxury-gold/30 shadow-xl';
+    if (isSearchPage || isProductPage || isAdminPage || isScrolled) {
+      return 'bg-[#5c5b5b]/60 backdrop-blur-md border-b border-[#d6c6ae]/30 shadow-[0_4px_24px_rgba(214,198,174,0.2)] drop-shadow-[0_0_12px_rgba(214,198,174,0.1)]';
     }
-    
-    if (isAdminPage) {
-      return 'bg-luxury-black/95 backdrop-blur-xl border-b border-luxury-gold/30 shadow-xl';
-    }
-    
+
     // Home page styling
-    return isScrolled
-      ? 'bg-[#2e2e2e]/60 backdrop-blur-md border-b border-[#d6c6ae]/30 shadow-[0_4px_24px_rgba(214,198,174,0.2)] drop-shadow-[0_0_12px_rgba(214,198,174,0.1)]'
-      : 'bg-luxury-black/95 backdrop-blur-lg border-b border-white/30';
+    return 'bg-luxury-black/95 backdrop-blur-lg border-b border-white/30 shadow-[0_4px_24px_rgba(214,198,174,0.2)] drop-shadow-[0_0_12px_rgba(214,198,174,0.1)]';
   };
 
   // Determine text styling based on page
@@ -52,7 +46,7 @@ const Navigation: React.FC = () => {
         navLinks: 'text-white hover:text-luxury-gold'
       };
     }
-    
+
     // Home page styling
     return {
       logo: 'text-white hover:text-luxury-gold',
