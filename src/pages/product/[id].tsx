@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Product, getProductById, products } from '../../data/products';
-import ProductCard from '../../components/shared/ProductCard';
 import Navigation from '../../components/shared/Navigation';
+import ProductImage from '../../components/product/ProductImage';
+import ProductDetails from '../../components/product/ProductDetails';
+import ProductColorSwatches from '../../components/product/ProductColorSwatches';
+import SimilarProducts from '../../components/product/SimilarProducts';
+import ProductNotFound from '../../components/product/ProductNotFound';
+import LoadingSpinner from '../../components/shared/LoadingSpinner';
 
 const ProductDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -60,118 +65,30 @@ const ProductDetailPage: React.FC = () => {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-luxury-cream flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-luxury-gold mx-auto"></div>
-          <p className="mt-4 text-luxury-gray luxury-body">Loading product...</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner text="Loading product details..." />;
   }
 
   if (!product) {
-    return (
-      <div className="min-h-screen bg-luxury-cream flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="luxury-heading text-3xl text-luxury-black mb-6">Product Not Found</h2>
-          <button
-            onClick={() => navigate('/')}
-            className="luxury-btn-primary px-8 py-4 rounded-xl text-lg font-medium transition-all duration-300"
-          >
-            Go Home
-          </button>
-        </div>
-      </div>
-    );
+    return <ProductNotFound onGoHome={() => navigate('/')} />;
   }
 
   return (
     <div className="min-h-screen bg-luxury-cream">
       <Navigation />
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-32">
         <div className="luxury-card rounded-3xl overflow-hidden border border-luxury-gray/10 p-8 lg:p-12">
-          {/* Image and Product Details Container */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            {/* Product Image */}
-            <div className="flex flex-col items-center">
-              <div className="aspect-square w-full overflow-hidden rounded-2xl bg-luxury-beige shadow-lg">
-                <img
-                  src={currentImage}
-                  alt={product.title}
-                  className="w-full h-full object-cover transition-all duration-500 hover:scale-105"
-                />
-              </div>
-            </div>
-
-            {/* Product Details */}
-            <div className="space-y-8 flex flex-col justify-center">
-              <div>
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="bg-luxury-gold/10 text-luxury-gold px-4 py-2 rounded-full luxury-body text-sm font-medium border border-luxury-gold/20">
-                    {product.category}
-                  </span>
-                </div>
-                <h1 className="luxury-heading text-3xl lg:text-4xl font-light text-luxury-black mb-4 leading-tight">
-                  {product.title}
-                </h1>
-                <p className="text-3xl lg:text-4xl font-light text-luxury-gold mb-2">
-                  ₹{product.price.toLocaleString()}
-                </p>
-              </div>
-
-              <div>
-                <h3 className="luxury-subheading text-luxury-black mb-4">Description</h3>
-                <p className="luxury-body text-luxury-gray leading-relaxed">
-                  {product.description}
-                </p>
-              </div>
-
-              <div className="pt-6">
-                <button className="w-full luxury-btn-primary py-4 px-8 rounded-2xl luxury-body text-lg font-medium transition-all duration-300">
-                  Contact for Purchase
-                </button>
-                <p className="luxury-body text-sm text-luxury-gray mt-4 text-center">
-                  Call us at +91 9876543210 or visit our store
-                </p>
-              </div>
-            </div>
+            <ProductImage product={product} currentImage={currentImage} />
+            <ProductDetails product={product} />
           </div>
-
-          {/* Color Swatches Section - Separate Container */}
-          <div className="mt-6">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 justify-start">
-              <div className="flex flex-wrap gap-3 justify-center sm:justify-start">
-                {Object.keys(product.images).map(color => (
-                  <button
-                    key={color}
-                    onClick={() => handleColorChange(color)}
-                    className={`w-8 h-8 rounded-full border-2 transition-all duration-300 hover:scale-110 ${
-                      selectedColor === color
-                        ? 'border-luxury-gold ring-2 ring-luxury-gold/30 shadow-md scale-110'
-                        : 'border-luxury-gray/30 hover:border-luxury-gold/50 shadow-sm hover:shadow-md'
-                    }`}
-                    style={{ backgroundColor: getColorStyle(color) }}
-                    title={color.charAt(0).toUpperCase() + color.slice(1)}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
+          <ProductColorSwatches
+            product={product}
+            selectedColor={selectedColor}
+            handleColorChange={handleColorChange}
+            getColorStyle={getColorStyle}
+          />
         </div>
-
-        {/* Similar Products */}
-        {similarProducts.length > 0 && (
-          <div className="mt-16">
-            <h2 className="luxury-heading text-3xl text-luxury-black mb-8 text-center">Similar Products</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {similarProducts.map(product => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          </div>
-        )}
+        <SimilarProducts similarProducts={similarProducts} />
       </div>
     </div>
   );
