@@ -1,8 +1,9 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Product, getProductById, products } from '../../data/products';
 import Navigation from '../../components/shared/Navigation';
-import ProductImage from '../../components/product/ProductImage';
+import ProductImageGallery from '../../components/product/ProductImageGallery';
 import ProductDetails from '../../components/product/ProductDetails';
 import ProductColorSwatches from '../../components/product/ProductColorSwatches';
 import SimilarProducts from '../../components/product/SimilarProducts';
@@ -15,7 +16,6 @@ const ProductDetailPage: React.FC = () => {
   const [product, setProduct] = useState<Product | null>(null);
   const [similarProducts, setSimilarProducts] = useState<Product[]>([]);
   const [selectedColor, setSelectedColor] = useState<string>('');
-  const [currentImage, setCurrentImage] = useState<string>('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -25,7 +25,6 @@ const ProductDetailPage: React.FC = () => {
         setProduct(foundProduct);
         const firstColor = Object.keys(foundProduct.images)[0];
         setSelectedColor(firstColor);
-        setCurrentImage(foundProduct.images[firstColor]);
 
         // Get similar products from the same category, excluding the current product
         const similar = products
@@ -38,10 +37,7 @@ const ProductDetailPage: React.FC = () => {
   }, [id]);
 
   const handleColorChange = (color: string) => {
-    if (product) {
-      setSelectedColor(color);
-      setCurrentImage(product.images[color]);
-    }
+    setSelectedColor(color);
   };
 
   const getColorStyle = (color: string) => {
@@ -77,8 +73,8 @@ const ProductDetailPage: React.FC = () => {
       <Navigation />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-32">
         <div className="luxury-card rounded-3xl overflow-hidden border border-luxury-gray/10 p-8 lg:p-12">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            <ProductImage product={product} currentImage={currentImage} />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
+            <ProductImageGallery product={product} selectedColor={selectedColor} />
             <ProductDetails product={product} />
           </div>
           <ProductColorSwatches
