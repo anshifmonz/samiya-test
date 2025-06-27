@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { searchProducts, Product } from '../data/products';
@@ -6,14 +5,7 @@ import Navigation from '../components/shared/Navigation';
 import SearchResultsHeader from '../components/search/SearchResultsHeader';
 import SearchContent from '../components/search/SearchContent';
 import LoadingSpinner from '../components/shared/LoadingSpinner';
-
-interface FilterState {
-  category?: string;
-  minPrice?: number;
-  maxPrice?: number;
-  colors?: string[];
-  tags?: string[];
-}
+import { type ProductFilters } from '@/hooks/useProductFilters';
 
 const SearchPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -21,7 +13,7 @@ const SearchPage: React.FC = () => {
   const q = searchParams.get('q') || '';
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState<FilterState>({});
+  const [filters, setFilters] = useState<ProductFilters>({});
 
   useEffect(() => {
     if (q.trim() === '') {
@@ -34,7 +26,7 @@ const SearchPage: React.FC = () => {
     setLoading(false);
   }, [q, filters, navigate]);
 
-  const handleFiltersChange = (newFilters: FilterState) => {
+  const handleFiltersChange = (newFilters: ProductFilters) => {
     setFilters(newFilters);
   };
 

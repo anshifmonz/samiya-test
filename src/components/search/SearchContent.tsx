@@ -1,19 +1,13 @@
-
 import React from 'react';
 import { Product } from '../../data/products';
 import FilterPanel from './FilterPanel';
 import ProductsGrid from './ProductsGrid';
 import MobileFilterPanel from './MobileFilterPanel';
+import { type ProductFilters } from '@/hooks/useProductFilters';
 
 interface SearchContentProps {
   products: Product[];
-  onFiltersChange: (filters: {
-    category?: string;
-    minPrice?: number;
-    maxPrice?: number;
-    colors?: string[];
-    tags?: string[];
-  }) => void;
+  onFiltersChange: (filters: ProductFilters) => void;
 }
 
 const SearchContent: React.FC<SearchContentProps> = ({ products, onFiltersChange }) => {
@@ -32,12 +26,12 @@ const SearchContent: React.FC<SearchContentProps> = ({ products, onFiltersChange
       <div className="hidden lg:block">
         <FilterPanel onFiltersChange={onFiltersChange} availableColors={availableColors} />
       </div>
-      
+
       {/* Mobile Filter Panel */}
       <div className="lg:hidden">
         <MobileFilterPanel onFiltersChange={onFiltersChange} availableColors={availableColors} />
       </div>
-      
+
       <ProductsGrid products={products} />
     </div>
   );

@@ -1,3 +1,4 @@
+import { type ProductFilters } from '@/hooks/useProductFilters';
 
 export interface Product {
   id: string;
@@ -103,7 +104,7 @@ export const products: Product[] = [
   },
   {
     id: "8",
-    title: "Men’s Blazer Jacket",
+    title: "Men's Blazer Jacket",
     description: "Tailored blazer with premium wool blend fabric, perfect for formal gatherings.",
     images: {
       grey: ["https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=400&h=600&fit=crop"],
@@ -142,7 +143,7 @@ export const products: Product[] = [
   },
   {
     id: "11",
-    title: "Gent’s Tuxedo",
+    title: "Gent's Tuxedo",
     description: "Classic black tuxedo with satin lapels and a tailored fit for special events.",
     images: {
       black: ["https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=400&h=600&fit=crop"],
@@ -476,13 +477,7 @@ export const getProductsByCategory = (category: string): Product[] => {
   return products.filter(product => product.category.toLowerCase() === category.toLowerCase());
 };
 
-export const searchProducts = (query: string, filters?: {
-  category?: string;
-  minPrice?: number;
-  maxPrice?: number;
-  colors?: string[];
-  tags?: string[];
-}): Product[] => {
+export const searchProducts = (query: string, filters?: ProductFilters): Product[] => {
   let filtered = products;
 
   // Text search
