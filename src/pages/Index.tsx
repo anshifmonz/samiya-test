@@ -1,6 +1,5 @@
 import React from 'react';
 import Navigation from '../components/shared/Navigation';
-import AboutSection from '../components/home/AboutSection';
 import TestimonialsSection from '../components/home/TestimonialsSection';
 import ContactSection from '../components/home/ContactSection';
 import FeaturedCategories from '../components/home/FeaturedCategories';
@@ -15,8 +14,6 @@ const Index: React.FC = () => {
       <LandingSection />
 
       <FeaturedCategories />
-
-      <AboutSection />
 
       <FeaturedProducts />
 
