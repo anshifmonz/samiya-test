@@ -1,7 +1,8 @@
 import React from 'react';
+import { Product } from '../../data/products';
 
 interface ProductImageProps {
-  product: any;
+  product: Product;
   currentImage: string;
 }
 

@@ -1,7 +1,8 @@
 import React from 'react';
+import { Product } from '../../data/products';
 
 interface ProductColorSwatchesProps {
-  product: any;
+  product: Product;
   selectedColor: string;
   handleColorChange: (color: string) => void;
   getColorStyle: (color: string) => string;

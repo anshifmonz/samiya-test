@@ -1,9 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Product } from '../../data/products';
 
 interface ProductImageGalleryProps {
-  product: any;
+  product: Product;
   selectedColor: string;
 }
 
@@ -17,13 +17,13 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({ product, sele
   }, [selectedColor]);
 
   const goToPrevious = () => {
-    setCurrentImageIndex(prev => 
+    setCurrentImageIndex(prev =>
       prev === 0 ? currentImages.length - 1 : prev - 1
     );
   };
 
   const goToNext = () => {
-    setCurrentImageIndex(prev => 
+    setCurrentImageIndex(prev =>
       prev === currentImages.length - 1 ? 0 : prev + 1
     );
   };
@@ -73,7 +73,7 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({ product, sele
             alt={`${product.title} ${selectedColor}`}
             className="w-full h-full object-cover transition-all duration-500"
           />
-          
+
           {/* Navigation Arrows - Only show if multiple images */}
           {currentImages.length > 1 && (
             <>
@@ -84,7 +84,7 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({ product, sele
               >
                 <ChevronLeft className="w-5 h-5 text-luxury-black" />
               </button>
-              
+
               <button
                 onClick={goToNext}
                 className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 hover:bg-white rounded-full shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"

@@ -1,7 +1,8 @@
 import React from 'react';
+import { Product } from '../../data/products';
 
 interface ProductDetailsProps {
-  product: any;
+  product: Product;
 }
 
 const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
