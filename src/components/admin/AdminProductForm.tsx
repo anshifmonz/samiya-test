@@ -24,6 +24,9 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, onSave, on
   const [newImageUrl, setNewImageUrl] = useState('');
   const [newTag, setNewTag] = useState('');
   const [activeColorTab, setActiveColorTab] = useState<string>('');
+  const [showAddColorDialog, setShowAddColorDialog] = useState(false);
+  const [showAddImageDialog, setShowAddImageDialog] = useState(false);
+  const [selectedColorForImage, setSelectedColorForImage] = useState('');
 
   useEffect(() => {
     if (product) {
@@ -60,20 +63,35 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, onSave, on
     }
   };
 
-  const addImage = () => {
-    if (newImageColor && newImageUrl) {
+  const addColor = () => {
+    if (newImageColor && !formData.images[newImageColor]) {
       setFormData(prev => ({
         ...prev,
         images: {
           ...prev.images,
-          [newImageColor]: prev.images[newImageColor]
-            ? [...prev.images[newImageColor], newImageUrl]
-            : [newImageUrl]
+          [newImageColor]: []
         }
       }));
       setNewImageColor('');
-      setNewImageUrl('');
+      setShowAddColorDialog(false);
       setActiveColorTab(newImageColor);
+    }
+  };
+
+  const addImage = () => {
+    if (selectedColorForImage && newImageUrl) {
+      setFormData(prev => ({
+        ...prev,
+        images: {
+          ...prev.images,
+          [selectedColorForImage]: prev.images[selectedColorForImage]
+            ? [...prev.images[selectedColorForImage], newImageUrl]
+            : [newImageUrl]
+        }
+      }));
+      setNewImageUrl('');
+      setShowAddImageDialog(false);
+      setSelectedColorForImage('');
     }
   };
 
@@ -207,95 +225,97 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, onSave, on
               Product Images
             </label>
 
-            {/* Add New Image */}
-            <div className="bg-luxury-cream/30 rounded-xl p-4 mb-6">
-              <h4 className="luxury-body font-medium text-luxury-black mb-3">Add New Image</h4>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  placeholder="Color name"
-                  value={newImageColor}
-                  onChange={(e) => setNewImageColor(e.target.value)}
-                  className="px-4 py-2 rounded-lg border border-luxury-gray/30 focus:outline-none focus:ring-2 focus:ring-luxury-gold/50"
-                />
-                <input
-                  type="url"
-                  placeholder="Image URL"
-                  value={newImageUrl}
-                  onChange={(e) => setNewImageUrl(e.target.value)}
-                  className="flex-1 px-4 py-2 rounded-lg border border-luxury-gray/30 focus:outline-none focus:ring-2 focus:ring-luxury-gold/50"
-                />
+            {/* Color Tabs for Images */}
+            <Tabs value={activeColorTab} onValueChange={setActiveColorTab} className="w-full">
+              <TabsList className="grid w-full grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-2 h-auto p-1 bg-luxury-gray/10">
+                {colorVariants.map((color) => (
+                  <TabsTrigger
+                    key={color}
+                    value={color}
+                    className="flex items-center gap-2 px-3 py-2 text-sm capitalize data-[state=active]:bg-luxury-gold data-[state=active]:text-luxury-black"
+                  >
+                    <div
+                      className="w-3 h-3 rounded-full border border-white shadow-sm"
+                      style={{
+                        backgroundColor: color === 'cream' ? '#F5F5DC' :
+                                       color === 'navy' ? '#000080' :
+                                       color === 'red' ? '#DC2626' :
+                                       color === 'green' ? '#059669' :
+                                       color === 'blue' ? '#2563EB' :
+                                       color === 'purple' ? '#7C3AED' :
+                                       color === 'pink' ? '#EC4899' :
+                                       color === 'yellow' ? '#EAB308' :
+                                       color === 'orange' ? '#EA580C' :
+                                       color === 'brown' ? '#92400E' :
+                                       color === 'gray' ? '#6B7280' :
+                                       color === 'black' ? '#000000' :
+                                       color === 'white' ? '#FFFFFF' : color
+                      }}
+                    />
+                    {color}
+                    <span className="text-xs">({formData.images[color]?.length || 0})</span>
+                  </TabsTrigger>
+                ))}
+
+                {/* Add Color Button */}
                 <button
                   type="button"
-                  onClick={addImage}
-                  className="bg-luxury-gold text-luxury-black px-4 py-2 rounded-lg hover:bg-luxury-gold-light transition-colors duration-200"
+                  onClick={() => setShowAddColorDialog(true)}
+                  className="flex items-center justify-center gap-2 px-3 py-2 text-sm bg-luxury-gold/20 text-luxury-black rounded-lg hover:bg-luxury-gold/30 transition-colors duration-200"
                 >
                   <Plus size={16} />
+                  Add Color
                 </button>
-              </div>
-            </div>
+              </TabsList>
 
-            {/* Color Tabs for Images */}
-            {colorVariants.length > 0 && (
-              <Tabs value={activeColorTab} onValueChange={setActiveColorTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-2 h-auto p-1 bg-luxury-gray/10">
-                  {colorVariants.map((color) => (
-                    <TabsTrigger
-                      key={color}
-                      value={color}
-                      className="flex items-center gap-2 px-3 py-2 text-sm capitalize data-[state=active]:bg-luxury-gold data-[state=active]:text-luxury-black"
-                    >
-                      <div
-                        className="w-3 h-3 rounded-full border border-white shadow-sm"
-                        style={{
-                          backgroundColor: color === 'cream' ? '#F5F5DC' :
-                                         color === 'navy' ? '#000080' :
-                                         color === 'red' ? '#DC2626' :
-                                         color === 'green' ? '#059669' :
-                                         color === 'blue' ? '#2563EB' :
-                                         color === 'purple' ? '#7C3AED' :
-                                         color === 'pink' ? '#EC4899' :
-                                         color === 'yellow' ? '#EAB308' :
-                                         color === 'orange' ? '#EA580C' :
-                                         color === 'brown' ? '#92400E' :
-                                         color === 'gray' ? '#6B7280' :
-                                         color === 'black' ? '#000000' :
-                                         color === 'white' ? '#FFFFFF' : color
-                        }}
-                      />
-                      {color}
-                      <span className="text-xs">({formData.images[color]?.length || 0})</span>
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
-
-                {colorVariants.map((color) => (
-                  <TabsContent key={color} value={color} className="mt-4">
-                    <div className="border border-luxury-gray/20 rounded-xl p-4">
-                      <div className="flex items-center justify-between mb-4">
-                        <h4 className="luxury-body font-medium text-luxury-black capitalize">
-                          {color} Images ({formData.images[color]?.length || 0})
-                        </h4>
-                        <button
-                          type="button"
-                          onClick={() => removeColor(color)}
-                          className="text-red-600 hover:text-red-800 transition-colors duration-200 text-sm flex items-center gap-1"
-                        >
-                          <Trash size={14} />
-                          Remove Color
-                        </button>
-                      </div>
-
-                      <DraggableImageList
-                        images={formData.images[color] || []}
-                        onReorder={(newImages) => reorderImages(color, newImages)}
-                        onRemove={(index) => removeImage(color, index)}
-                      />
+              {colorVariants.map((color) => (
+                <TabsContent key={color} value={color} className="mt-4">
+                  <div className="border border-luxury-gray/20 rounded-xl p-4">
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="luxury-body font-medium text-luxury-black capitalize">
+                        {color} Images ({formData.images[color]?.length || 0})
+                      </h4>
+                      <button
+                        type="button"
+                        onClick={() => removeColor(color)}
+                        className="text-red-600 hover:text-red-800 transition-colors duration-200 text-sm flex items-center gap-1"
+                      >
+                        <Trash size={14} />
+                        Remove Color
+                      </button>
                     </div>
-                  </TabsContent>
-                ))}
-              </Tabs>
-            )}
+
+                    <DraggableImageList
+                      images={formData.images[color] || []}
+                      onReorder={(newImages) => reorderImages(color, newImages)}
+                      onRemove={(index) => removeImage(color, index)}
+                    />
+
+                    {/* Add Image Button for this color */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedColorForImage(color);
+                        setShowAddImageDialog(true);
+                      }}
+                      className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-3 bg-luxury-cream/30 text-luxury-black rounded-lg hover:bg-luxury-cream/50 transition-colors duration-200 border-2 border-dashed border-luxury-gray/30"
+                    >
+                      <Plus size={16} />
+                      Add Image to {color}
+                    </button>
+                  </div>
+                </TabsContent>
+              ))}
+
+              {/* Show message when no colors exist */}
+              {colorVariants.length === 0 && (
+                <TabsContent value="" className="mt-4">
+                  <div className="border border-luxury-gray/20 rounded-xl p-8 text-center">
+                    <p className="text-luxury-gray mb-4">No colors added yet. Click "Add Color" to get started.</p>
+                  </div>
+                </TabsContent>
+              )}
+            </Tabs>
           </div>
 
           {/* Tags Section */}
@@ -357,6 +377,81 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, onSave, on
             </button>
           </div>
         </form>
+
+        {/* Add Color Dialog */}
+        {showAddColorDialog && (
+          <div className="fixed inset-0 bg-luxury-black/60 backdrop-blur-sm z-60 flex items-center justify-center p-4">
+            <div className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full">
+              <h3 className="luxury-heading text-xl text-luxury-black mb-4">Add New Color</h3>
+              <input
+                type="text"
+                placeholder="Color name (e.g., red, navy, cream)"
+                value={newImageColor}
+                onChange={(e) => setNewImageColor(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-luxury-gray/30 focus:outline-none focus:ring-2 focus:ring-luxury-gold/50 transition-all duration-300 mb-4"
+                autoFocus
+              />
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAddColorDialog(false);
+                    setNewImageColor('');
+                  }}
+                  className="flex-1 px-4 py-2 border border-luxury-gray/30 text-luxury-gray rounded-lg hover:bg-luxury-gray/10 transition-colors duration-200"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={addColor}
+                  className="flex-1 bg-luxury-gold text-luxury-black px-4 py-2 rounded-lg hover:bg-luxury-gold-light transition-colors duration-200"
+                >
+                  Add Color
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Add Image Dialog */}
+        {showAddImageDialog && (
+          <div className="fixed inset-0 bg-luxury-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
+            <div className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full">
+              <h3 className="luxury-heading text-xl text-luxury-black mb-4">
+                Add Image to {selectedColorForImage}
+              </h3>
+              <input
+                type="url"
+                placeholder="Image URL"
+                value={newImageUrl}
+                onChange={(e) => setNewImageUrl(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-luxury-gray/30 focus:outline-none focus:ring-2 focus:ring-luxury-gold/50 transition-all duration-300 mb-4"
+                autoFocus
+              />
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAddImageDialog(false);
+                    setNewImageUrl('');
+                    setSelectedColorForImage('');
+                  }}
+                  className="flex-1 px-4 py-2 border border-luxury-gray/30 text-luxury-gray rounded-lg hover:bg-luxury-gray/10 transition-colors duration-200"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={addImage}
+                  className="flex-1 bg-luxury-gold text-luxury-black px-4 py-2 rounded-lg hover:bg-luxury-gold-light transition-colors duration-200"
+                >
+                  Add Image
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
