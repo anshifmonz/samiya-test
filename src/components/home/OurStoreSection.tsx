@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { MapPin, Clock, Phone } from 'lucide-react';
 
@@ -98,21 +97,23 @@ const OurStoreSection: React.FC = () => {
                   </div>
                 )}
 
-                <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                  <h3 className="luxury-heading text-2xl sm:text-3xl mb-3 text-white">{store.name}</h3>
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <div className="glass-dark rounded-xl p-4 backdrop-blur-sm">
+                    <h3 className="luxury-heading text-2xl sm:text-3xl mb-3 text-white">{store.name}</h3>
 
-                  <div className="space-y-2 mb-4">
-                    <div className="flex items-start gap-3">
-                      <MapPin className="w-4 h-4 mt-1 text-luxury-gold flex-shrink-0" />
-                      <span className="luxury-body text-white/90 text-sm">{store.address}</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Phone className="w-4 h-4 text-luxury-gold" />
-                      <span className="luxury-body text-white/90 text-sm">{store.phone}</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Clock className="w-4 h-4 text-luxury-gold" />
-                      <span className="luxury-body text-white/90 text-sm">{store.hours}</span>
+                    <div className="space-y-2 mb-4">
+                      <div className="flex items-start gap-3">
+                        <MapPin className="w-4 h-4 mt-1 text-luxury-gold flex-shrink-0" />
+                        <span className="luxury-body text-white/90 text-sm">{store.address}</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Phone className="w-4 h-4 text-luxury-gold" />
+                        <span className="luxury-body text-white/90 text-sm">{store.phone}</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Clock className="w-4 h-4 text-luxury-gold" />
+                        <span className="luxury-body text-white/90 text-sm">{store.hours}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
