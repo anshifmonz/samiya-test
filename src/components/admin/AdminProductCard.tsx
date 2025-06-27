@@ -10,7 +10,7 @@ interface AdminProductCardProps {
 }
 
 const AdminProductCard: React.FC<AdminProductCardProps> = ({ product, onEdit, onDelete }) => {
-  const firstImage = Object.values(product.images)[0];
+  const firstImage = Object.values(product.images)[0]?.[0]; // Get first image from first color
 
   const handleDelete = () => {
     if (window.confirm(`Are you sure you want to delete "${product.title}"?`)) {

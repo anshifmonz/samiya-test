@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Product } from '../../data/products';
 import { useNavigate } from 'react-router-dom';
@@ -8,7 +9,7 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const navigate = useNavigate();
-  const firstImage = Object.values(product.images)[0];
+  const firstImage = Object.values(product.images)[0]?.[0]; // Get first image from first color
 
   const handleClick = () => {
     navigate(`/product/${product.id}`);
