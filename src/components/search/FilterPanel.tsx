@@ -6,14 +6,16 @@ import PriceFilter from './filter/PriceFilter';
 import ColorFilter from './filter/ColorFilter';
 import TagsFilter from './filter/TagsFilter';
 
+type ProductFilters = {
+  category?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  colors?: string[];
+  tags?: string[];
+};
+
 interface FilterPanelProps {
-  onFiltersChange: (filters: {
-    category?: string;
-    minPrice?: number;
-    maxPrice?: number;
-    colors?: string[];
-    tags?: string[];
-  }) => void;
+  onFiltersChange: (filters: ProductFilters) => void;
   availableColors?: string[];
 }
 
@@ -53,7 +55,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange, availableCol
     });
   };
 
-  const updateFilters = (partialFilters: any) => {
+  const updateFilters = (partialFilters: ProductFilters) => {
     const newFilters = {
       category: selectedCategory === 'all' ? undefined : selectedCategory,
       minPrice: 0,

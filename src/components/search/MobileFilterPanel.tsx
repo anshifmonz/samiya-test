@@ -15,14 +15,16 @@ import PriceFilter from './filter/PriceFilter';
 import ColorFilter from './filter/ColorFilter';
 import TagsFilter from './filter/TagsFilter';
 
+type ProductFilters = {
+  category?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  colors?: string[];
+  tags?: string[];
+};
+
 interface MobileFilterPanelProps {
-  onFiltersChange: (filters: {
-    category?: string;
-    minPrice?: number;
-    maxPrice?: number;
-    colors?: string[];
-    tags?: string[];
-  }) => void;
+  onFiltersChange: (filters: ProductFilters) => void;
   availableColors?: string[];
 }
 
@@ -63,7 +65,7 @@ const MobileFilterPanel: React.FC<MobileFilterPanelProps> = ({ onFiltersChange, 
     });
   };
 
-  const updateFilters = (partialFilters: any) => {
+  const updateFilters = (partialFilters: ProductFilters) => {
     const newFilters = {
       category: selectedCategory === 'all' ? undefined : selectedCategory,
       minPrice: 0,
@@ -124,7 +126,7 @@ const MobileFilterPanel: React.FC<MobileFilterPanelProps> = ({ onFiltersChange, 
               Refine your search results
             </SheetDescription>
           </SheetHeader>
-          
+
           <div className="flex flex-col h-full">
             <div className="flex-1 overflow-y-auto py-6 space-y-8">
               <CategoryFilter
@@ -148,7 +150,7 @@ const MobileFilterPanel: React.FC<MobileFilterPanelProps> = ({ onFiltersChange, 
                 onTagToggle={handleTagToggle}
               />
             </div>
-            
+
             <div className="border-t border-luxury-gray/20 pt-6 pb-4 space-y-3">
               <Button
                 onClick={clearFilters}
