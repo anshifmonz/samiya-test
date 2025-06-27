@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Product } from '../../data/products';
 import { X, Plus, Trash } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
+import DraggableImageList from './DraggableImageList';
 
 interface AdminProductFormProps {
   product?: Product | null;
@@ -14,13 +16,14 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, onSave, on
     description: '',
     price: 0,
     category: 'Women' as 'Gents' | 'Women' | 'Kids',
-    images: {} as Record<string, string>,
+    images: {} as Record<string, string[]>,
     tags: [] as string[]
   });
 
   const [newImageColor, setNewImageColor] = useState('');
   const [newImageUrl, setNewImageUrl] = useState('');
   const [newTag, setNewTag] = useState('');
+  const [activeColorTab, setActiveColorTab] = useState<string>('');
 
   useEffect(() => {
     if (product) {
@@ -32,8 +35,21 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, onSave, on
         images: { ...product.images },
         tags: [...product.tags]
       });
+      // Set the first color as active tab
+      const colors = Object.keys(product.images);
+      if (colors.length > 0) {
+        setActiveColorTab(colors[0]);
+      }
     }
   }, [product]);
+
+  useEffect(() => {
+    // Update active tab when colors change
+    const colors = Object.keys(formData.images);
+    if (colors.length > 0 && !colors.includes(activeColorTab)) {
+      setActiveColorTab(colors[0]);
+    }
+  }, [formData.images, activeColorTab]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,40 +62,74 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, onSave, on
 
   const addImage = () => {
     if (newImageColor && newImageUrl) {
-      setFormData({
-        ...formData,
-        images: { ...formData.images, [newImageColor]: newImageUrl }
-      });
+      setFormData(prev => ({
+        ...prev,
+        images: {
+          ...prev.images,
+          [newImageColor]: prev.images[newImageColor]
+            ? [...prev.images[newImageColor], newImageUrl]
+            : [newImageUrl]
+        }
+      }));
       setNewImageColor('');
       setNewImageUrl('');
+      setActiveColorTab(newImageColor);
     }
   };
 
-  const removeImage = (color: string) => {
-    const { [color]: removed, ...rest } = formData.images;
-    setFormData({ ...formData, images: rest });
+  const reorderImages = useCallback((color: string, newImages: string[]) => {
+    setFormData(prev => ({
+      ...prev,
+      images: {
+        ...prev.images,
+        [color]: newImages
+      }
+    }));
+  }, []);
+
+  const removeImage = useCallback((color: string, imageIndex: number) => {
+    setFormData(prev => {
+      const updatedImages = { ...prev.images };
+      updatedImages[color] = updatedImages[color].filter((_, index) => index !== imageIndex);
+      if (updatedImages[color].length === 0) {
+        delete updatedImages[color];
+      }
+      return { ...prev, images: updatedImages };
+    });
+  }, []);
+
+  const removeColor = (colorToRemove: string) => {
+    if (window.confirm(`Remove all images for ${colorToRemove}?`)) {
+      setFormData(prev => {
+        const updatedImages = { ...prev.images };
+        delete updatedImages[colorToRemove];
+        return { ...prev, images: updatedImages };
+      });
+    }
   };
 
   const addTag = () => {
     if (newTag && !formData.tags.includes(newTag)) {
-      setFormData({
-        ...formData,
-        tags: [...formData.tags, newTag]
-      });
+      setFormData(prev => ({
+        ...prev,
+        tags: [...prev.tags, newTag]
+      }));
       setNewTag('');
     }
   };
 
   const removeTag = (tagToRemove: string) => {
-    setFormData({
-      ...formData,
-      tags: formData.tags.filter(tag => tag !== tagToRemove)
-    });
+    setFormData(prev => ({
+      ...prev,
+      tags: prev.tags.filter(tag => tag !== tagToRemove)
+    }));
   };
+
+  const colorVariants = Object.keys(formData.images);
 
   return (
     <div className="fixed inset-0 bg-luxury-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-white rounded-t-2xl border-b border-luxury-gray/20 p-6 flex items-center justify-between">
           <h2 className="luxury-heading text-2xl text-luxury-black">
             {product ? 'Edit Product' : 'Add New Product'}
@@ -87,12 +137,14 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, onSave, on
           <button
             onClick={onCancel}
             className="text-luxury-gray hover:text-luxury-black transition-colors duration-200"
+            type="button"
           >
             <X size={24} />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          {/* Basic Product Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block luxury-subheading text-luxury-black mb-2 tracking-wider">
@@ -101,7 +153,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, onSave, on
               <input
                 type="text"
                 value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
                 className="w-full px-4 py-3 rounded-xl border border-luxury-gray/30 focus:outline-none focus:ring-2 focus:ring-luxury-gold/50 transition-all duration-300"
                 required
               />
@@ -113,7 +165,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, onSave, on
               </label>
               <select
                 value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value as any })}
+                onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value as any }))}
                 className="w-full px-4 py-3 rounded-xl border border-luxury-gray/30 focus:outline-none focus:ring-2 focus:ring-luxury-gold/50 transition-all duration-300"
               >
                 <option value="Women">Women</option>
@@ -129,7 +181,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, onSave, on
             </label>
             <textarea
               value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
               rows={4}
               className="w-full px-4 py-3 rounded-xl border border-luxury-gray/30 focus:outline-none focus:ring-2 focus:ring-luxury-gold/50 transition-all duration-300"
               required
@@ -143,17 +195,21 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, onSave, on
             <input
               type="number"
               value={formData.price}
-              onChange={(e) => setFormData({ ...formData, price: parseInt(e.target.value) || 0 })}
+              onChange={(e) => setFormData(prev => ({ ...prev, price: parseInt(e.target.value) || 0 }))}
               className="w-full px-4 py-3 rounded-xl border border-luxury-gray/30 focus:outline-none focus:ring-2 focus:ring-luxury-gold/50 transition-all duration-300"
               required
             />
           </div>
 
+          {/* Images Section */}
           <div>
-            <label className="block luxury-subheading text-luxury-black mb-2 tracking-wider">
+            <label className="block luxury-subheading text-luxury-black mb-4 tracking-wider">
               Product Images
             </label>
-            <div className="space-y-4">
+
+            {/* Add New Image */}
+            <div className="bg-luxury-cream/30 rounded-xl p-4 mb-6">
+              <h4 className="luxury-body font-medium text-luxury-black mb-3">Add New Image</h4>
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -177,28 +233,72 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, onSave, on
                   <Plus size={16} />
                 </button>
               </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {Object.entries(formData.images).map(([color, url]) => (
-                  <div key={color} className="flex items-start gap-3 p-3 border border-luxury-gray/20 rounded-lg">
-                    <img src={url} alt={color} className="w-12 h-12 object-cover rounded flex-shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <p className="luxury-body text-sm font-medium text-luxury-black">{color}</p>
-                      <p className="luxury-body text-xs text-luxury-gray break-all leading-relaxed">{url}</p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => removeImage(color)}
-                      className="text-red-600 hover:text-red-800 transition-colors duration-200 flex-shrink-0 p-1 rounded hover:bg-red-50"
-                    >
-                      <Trash size={16} />
-                    </button>
-                  </div>
-                ))}
-              </div>
             </div>
+
+            {/* Color Tabs for Images */}
+            {colorVariants.length > 0 && (
+              <Tabs value={activeColorTab} onValueChange={setActiveColorTab} className="w-full">
+                <TabsList className="grid w-full grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-2 h-auto p-1 bg-luxury-gray/10">
+                  {colorVariants.map((color) => (
+                    <TabsTrigger
+                      key={color}
+                      value={color}
+                      className="flex items-center gap-2 px-3 py-2 text-sm capitalize data-[state=active]:bg-luxury-gold data-[state=active]:text-luxury-black"
+                    >
+                      <div
+                        className="w-3 h-3 rounded-full border border-white shadow-sm"
+                        style={{
+                          backgroundColor: color === 'cream' ? '#F5F5DC' :
+                                         color === 'navy' ? '#000080' :
+                                         color === 'red' ? '#DC2626' :
+                                         color === 'green' ? '#059669' :
+                                         color === 'blue' ? '#2563EB' :
+                                         color === 'purple' ? '#7C3AED' :
+                                         color === 'pink' ? '#EC4899' :
+                                         color === 'yellow' ? '#EAB308' :
+                                         color === 'orange' ? '#EA580C' :
+                                         color === 'brown' ? '#92400E' :
+                                         color === 'gray' ? '#6B7280' :
+                                         color === 'black' ? '#000000' :
+                                         color === 'white' ? '#FFFFFF' : color
+                        }}
+                      />
+                      {color}
+                      <span className="text-xs">({formData.images[color]?.length || 0})</span>
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+
+                {colorVariants.map((color) => (
+                  <TabsContent key={color} value={color} className="mt-4">
+                    <div className="border border-luxury-gray/20 rounded-xl p-4">
+                      <div className="flex items-center justify-between mb-4">
+                        <h4 className="luxury-body font-medium text-luxury-black capitalize">
+                          {color} Images ({formData.images[color]?.length || 0})
+                        </h4>
+                        <button
+                          type="button"
+                          onClick={() => removeColor(color)}
+                          className="text-red-600 hover:text-red-800 transition-colors duration-200 text-sm flex items-center gap-1"
+                        >
+                          <Trash size={14} />
+                          Remove Color
+                        </button>
+                      </div>
+
+                      <DraggableImageList
+                        images={formData.images[color] || []}
+                        onReorder={(newImages) => reorderImages(color, newImages)}
+                        onRemove={(index) => removeImage(color, index)}
+                      />
+                    </div>
+                  </TabsContent>
+                ))}
+              </Tabs>
+            )}
           </div>
 
+          {/* Tags Section */}
           <div>
             <label className="block luxury-subheading text-luxury-black mb-2 tracking-wider">
               Tags
