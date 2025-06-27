@@ -1,0 +1,153 @@
+
+import React from 'react';
+import { MapPin, Clock, Phone } from 'lucide-react';
+
+const OurStoreSection: React.FC = () => {
+  const stores = [
+    {
+      name: 'Mannarkkad Flagship Store',
+      address: 'Palakkad - Kozhikode Hwy, Kodanjipadd, Mannarkkad',
+      phone: '+91 98765 43210',
+      hours: '10:00 AM - 8:00 PM',
+      image: 'https://www.shutterstock.com/image-illustration/store-facade-large-storefronts-wellilluminated-600nw-2301241861.jpg',
+      mapLink: 'https://maps.app.goo.gl/d6ozK7iH2rDe5g4f6',
+      isMain: true
+    },
+    {
+      name: 'Pattambi Boutique',
+      address: 'MES Pattambi, Kerala 679303',
+      phone: '+91 98765 43211',
+      hours: '10:30 AM - 7:30 PM',
+      image: 'https://thumbs.dreamstime.com/b/clothing-store-exterior-featuring-large-glass-facade-illuminated-signage-th-text-gelug-mannequins-display-various-371057012.jpg',
+      mapLink: 'https://maps.app.goo.gl/nRt2dmo19V24Pubu9',
+      isMain: false
+    },
+    {
+      name: 'Alanallur Collection',
+      address: 'Alanallur, Alanallur-L, Kerala 678601',
+      phone: '+91 98765 43212',
+      hours: '10:00 AM - 8:00 PM',
+      image: 'https://www.shutterstock.com/image-illustration/modern-facade-clothes-store-empty-600nw-1946298958.jpg',
+      mapLink: 'https://maps.app.goo.gl/yJFiLEsFDfkrRPRq9',
+      isMain: false
+    },
+    {
+      name: 'Cherpulassery Branch',
+      address: 'Pattambi - Cherpulassery Rd, Cherpulassery, Kerala',
+      phone: '+91 98765 43213',
+      hours: '10:30 AM - 7:30 PM',
+      image: 'https://images.squarespace-cdn.com/content/v1/5bcdd396ab1a62465f5dfb97/1655831835900-YI0W6VDAW05U6I9FAUM5/IMG_1386.jpg?format=1500w',
+      mapLink: 'https://maps.app.goo.gl/593xnm5J6yo3guFaA',
+      isMain: false
+    }
+  ];
+
+  const handleViewOnMap = (mapLink: string) => {
+    window.open(mapLink, '_blank');
+  };
+
+  return (
+    <div className="bg-luxury-cream py-32 relative overflow-hidden">
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-luxury-gold/5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-luxury-beige/30 rounded-full blur-3xl"></div>
+      </div>
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-20">
+          <div className="animate-fade-in-up">
+            <span className="luxury-subheading block text-luxury-gold text-lg sm:text-xl mb-6 tracking-[0.3em]">
+              Visit Our Locations
+            </span>
+            <h2 className="luxury-heading text-5xl sm:text-6xl text-luxury-black mb-8">
+              Our Stores
+            </h2>
+          </div>
+          <div className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+            <p className="luxury-body text-xl text-luxury-gray max-w-3xl mx-auto leading-relaxed">
+              Experience our collections in person at our beautifully designed showrooms across Kerala,
+              where luxury meets personalized service.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {stores.map((store, index) => (
+            <div
+              key={store.name}
+              className={`group luxury-card rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-700 transform hover:-translate-y-4 animate-fade-in-up ${
+                store.isMain ? 'md:col-span-2 lg:col-span-1' : ''
+              }`}
+              style={{ animationDelay: `${0.4 + index * 0.1}s` }}
+            >
+              <div className="relative">
+                <div className="aspect-[16/10] overflow-hidden">
+                  <img
+                    src={store.image}
+                    alt={store.name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-luxury-black/80 via-luxury-black/20 to-transparent"></div>
+                </div>
+
+                {store.isMain && (
+                  <div className="absolute top-4 left-4">
+                    <span className="luxury-subheading bg-luxury-gold text-luxury-black px-4 py-2 rounded-full text-xs tracking-wider">
+                      FLAGSHIP STORE
+                    </span>
+                  </div>
+                )}
+
+                <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                  <h3 className="luxury-heading text-2xl sm:text-3xl mb-3 text-white">{store.name}</h3>
+
+                  <div className="space-y-2 mb-4">
+                    <div className="flex items-start gap-3">
+                      <MapPin className="w-4 h-4 mt-1 text-luxury-gold flex-shrink-0" />
+                      <span className="luxury-body text-white/90 text-sm">{store.address}</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Phone className="w-4 h-4 text-luxury-gold" />
+                      <span className="luxury-body text-white/90 text-sm">{store.phone}</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Clock className="w-4 h-4 text-luxury-gold" />
+                      <span className="luxury-body text-white/90 text-sm">{store.hours}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-6 bg-white">
+                <button
+                  onClick={() => handleViewOnMap(store.mapLink)}
+                  className="w-full luxury-btn-primary py-3 px-6 rounded-xl font-medium text-sm tracking-wider uppercase transition-all duration-300 hover:shadow-lg"
+                >
+                  <MapPin className="w-4 h-4 inline-block mr-2" />
+                  View on Map
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="text-center mt-20 animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
+          <div className="glass-dark rounded-2xl p-8 max-w-2xl mx-auto">
+            <h3 className="luxury-heading text-3xl text-white mb-4">
+              Visit Us Today
+            </h3>
+            <p className="luxury-body text-white/90 text-lg mb-6 leading-relaxed">
+              Experience our premium collections and receive personalized styling consultation
+              from our expert team.
+            </p>
+            <button className="luxury-btn-secondary px-8 py-3 rounded-full font-medium text-sm tracking-wider uppercase">
+              Schedule Appointment
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default OurStoreSection;

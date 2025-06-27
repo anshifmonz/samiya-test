@@ -1,10 +1,6 @@
 import React from 'react';
 import Navigation from '../components/shared/Navigation';
-import TestimonialsSection from '../components/home/TestimonialsSection';
-import ContactSection from '../components/home/ContactSection';
-import FeaturedCategories from '../components/home/FeaturedCategories';
-import FeaturedProducts from '../components/home/FeaturedProducts';
-import LandingSection from '../components/home/LandingSection';
+import { LandingSection, FeaturedCategories, OurStoreSection, FeaturedProducts, TestimonialsSection, ContactSection } from '../components/home';
 
 const Index: React.FC = () => {
   return (
@@ -14,6 +10,8 @@ const Index: React.FC = () => {
       <LandingSection />
 
       <FeaturedCategories />
+
+      <OurStoreSection />
 
       <FeaturedProducts />
 
