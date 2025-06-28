@@ -281,6 +281,10 @@
     color: hsl(var(--luxury-gold));
   }
 
+  .text-luxury-gold-dark {
+    color: hsl(var(--luxury-gold-dark));
+  }
+
   .text-luxury-cream {
     color: hsl(var(--luxury-cream));
   }

@@ -51,10 +51,10 @@ const OurStoreSection: React.FC = () => {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-20">
           <div className="animate-fade-in-up">
-            <span className="luxury-subheading block text-luxury-gold text-lg sm:text-xl mb-6 tracking-[0.3em]">
-              Visit Our Locations
-            </span>
-            <h2 className="luxury-heading text-5xl sm:text-6xl text-luxury-black mb-8">
+            <h2 className="luxury-heading text-6xl sm:text-7xl text-luxury-black mb-8">
+              <span className="luxury-subheading block text-luxury-gold-dark text-2xl sm:text-3xl mb-8 tracking-[0.3em]">
+                Visit Our Locations
+              </span>
               Our Stores
             </h2>
           </div>

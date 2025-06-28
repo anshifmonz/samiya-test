@@ -57,7 +57,7 @@ const TestimonialsSection: React.FC = () => {
             </div>
             <div className="animate-fade-in-up">
               <h2 className="luxury-heading text-6xl sm:text-7xl text-luxury-black mb-8">
-                <span className="luxury-subheading block text-luxury-gold text-2xl sm:text-3xl mb-8 tracking-[0.3em]">
+                <span className="luxury-subheading block text-luxury-gold-dark text-2xl sm:text-3xl mb-8 tracking-[0.3em]">
                   Client Stories
                 </span>
                 What Our Customers Say
