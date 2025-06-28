@@ -1,42 +1,8 @@
 import React from 'react';
 import { MapPin, Clock, Phone } from 'lucide-react';
+import stores from '@/data/stores';
 
 const OurStoreSection: React.FC = () => {
-  const stores = [
-    {
-      name: 'Samiya Silks',
-      address: 'Palakkad - Kozhikode Hwy, Kodanjipadd, Mannarkkad',
-      phone: '+91 98765 43210',
-      hours: '10:00 AM - 8:00 PM',
-      image: '/assets/images/home/stores/mannarkkad.jpg',
-      mapLink: 'https://maps.app.goo.gl/d6ozK7iH2rDe5g4f6',
-    },
-    {
-      name: 'Samiya Wedding Palace',
-      address: 'MES Pattambi, Kerala 679303',
-      phone: '+91 98765 43211',
-      hours: '10:30 AM - 7:30 PM',
-      image: '/assets/images/home/stores/pattambi.jpg',
-      mapLink: 'https://maps.app.goo.gl/nRt2dmo19V24Pubu9',
-    },
-    {
-      name: 'Samiya Silks',
-      address: 'Alanallur, Alanallur-L, Kerala 678601',
-      phone: '+91 98765 43212',
-      hours: '10:00 AM - 8:00 PM',
-      image: '/assets/images/home/stores/alanallur.jpg',
-      mapLink: 'https://maps.app.goo.gl/yJFiLEsFDfkrRPRq9',
-    },
-    {
-      name: 'Samiya Wedding Center',
-      address: 'Pattambi - Cherpulassery Rd, Cherpulassery, Kerala',
-      phone: '+91 98765 43213',
-      hours: '10:30 AM - 7:30 PM',
-      image: '/assets/images/home/stores/cherpulassery-road.jpg',
-      mapLink: 'https://maps.app.goo.gl/593xnm5J6yo3guFaA',
-    }
-  ];
-
   const handleViewOnMap = (mapLink: string) => {
     window.open(mapLink, '_blank');
   };
@@ -69,7 +35,7 @@ const OurStoreSection: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {stores.map((store, index) => (
             <div
-              key={store.name}
+              key={store.id}
               className={`group luxury-card rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-700 transform hover:-translate-y-4 animate-fade-in-up`}
               style={{ animationDelay: `${0.4 + index * 0.1}s` }}
             >
