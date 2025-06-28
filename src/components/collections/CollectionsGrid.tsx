@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -92,19 +91,21 @@ const CollectionsGrid: React.FC = () => {
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                 />
                 <div className={`absolute inset-0 bg-gradient-to-t ${collection.gradient} group-hover:opacity-90 transition-opacity duration-500`}></div>
-                
-                {/* Content Overlay */}
+
                 <div className="absolute inset-0 flex flex-col justify-end p-8">
-                  <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                    <h3 className="luxury-heading text-3xl text-white mb-4 group-hover:text-luxury-gold transition-colors duration-300">
-                      {collection.title}
-                    </h3>
-                    <p className="luxury-body text-white/90 text-lg leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
-                      {collection.description}
-                    </p>
+                  <div className="glass-dark rounded-xl p-4 backdrop-blur-sm transition-all duration-500 ease-out group-hover:pb-6 flex items-center group-hover:items-start">
+                    <div className="transform group-hover:translate-y-0 transition-transform duration-500 w-full">
+                      <h3 className="luxury-heading text-3xl text-white  group-hover:mb-4 transition-all duration-500 group-hover:text-luxury-gold text-left">
+                        {collection.title}
+                      </h3>
+                      <div className="overflow-hidden transition-all duration-500 ease-out max-h-0 group-hover:max-h-32">
+                        <p className="luxury-body text-white/90 text-lg leading-relaxed pt-2">
+                          {collection.description}
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  
-                  {/* Action Button */}
+
                   <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                     <div className="w-12 h-12 bg-luxury-gold rounded-full flex items-center justify-center">
                       <svg className="w-6 h-6 text-luxury-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -114,7 +115,6 @@ const CollectionsGrid: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Shimmer Effect */}
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-700">
                   <div className="shimmer absolute inset-0"></div>
                 </div>
@@ -123,7 +123,6 @@ const CollectionsGrid: React.FC = () => {
           ))}
         </div>
 
-        {/* Call to Action */}
         <div className="text-center mt-20 animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
           <p className="luxury-body text-xl text-luxury-gray mb-8">
             Can't find what you're looking for?
