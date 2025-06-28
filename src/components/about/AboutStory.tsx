@@ -25,7 +25,7 @@ const AboutStory: React.FC = () => {
           <div className="animate-fade-in-right">
             <div className="aspect-square rounded-2xl overflow-hidden shadow-2xl">
               <img
-                src="https://img.pikbest.com/templates/20250310/muslim-couple-in-wedding-attire-with-floral-frame_11586620.jpg!w700wp"
+                src="assets/images/about/about-story.webp"
                 alt="Samiya Wedding Center Heritage"
                 className="w-full h-full object-cover"
               />

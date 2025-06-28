@@ -21,7 +21,7 @@ const AboutTeam: React.FC = () => {
           <div className="animate-fade-in-left">
             <div className="aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl">
               <img
-                src="https://cdn.aib.edu.au/public-website/uploads/p/2019/03/form-submission-7464-teamworkisimportantintheworkplace-desktop-768x432-1606698141-85.jpg"
+                src="assets/images/about/about-team.jpg"
                 alt="Samiya Team"
                 className="w-full h-full object-cover"
               />

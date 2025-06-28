@@ -4,40 +4,36 @@ import { MapPin, Clock, Phone } from 'lucide-react';
 const OurStoreSection: React.FC = () => {
   const stores = [
     {
-      name: 'Mannarkkad Flagship Store',
+      name: 'Samiya Silks',
       address: 'Palakkad - Kozhikode Hwy, Kodanjipadd, Mannarkkad',
       phone: '+91 98765 43210',
       hours: '10:00 AM - 8:00 PM',
-      image: 'https://www.shutterstock.com/image-illustration/store-facade-large-storefronts-wellilluminated-600nw-2301241861.jpg',
+      image: '/assets/images/home/stores/mannarkkad.jpg',
       mapLink: 'https://maps.app.goo.gl/d6ozK7iH2rDe5g4f6',
-      isMain: true
     },
     {
-      name: 'Pattambi Boutique',
+      name: 'Samiya Wedding Palace',
       address: 'MES Pattambi, Kerala 679303',
       phone: '+91 98765 43211',
       hours: '10:30 AM - 7:30 PM',
-      image: 'https://thumbs.dreamstime.com/b/clothing-store-exterior-featuring-large-glass-facade-illuminated-signage-th-text-gelug-mannequins-display-various-371057012.jpg',
+      image: '/assets/images/home/stores/pattambi.jpg',
       mapLink: 'https://maps.app.goo.gl/nRt2dmo19V24Pubu9',
-      isMain: false
     },
     {
-      name: 'Alanallur Collection',
+      name: 'Samiya Silks',
       address: 'Alanallur, Alanallur-L, Kerala 678601',
       phone: '+91 98765 43212',
       hours: '10:00 AM - 8:00 PM',
-      image: 'https://www.shutterstock.com/image-illustration/modern-facade-clothes-store-empty-600nw-1946298958.jpg',
+      image: '/assets/images/home/stores/alanallur.jpg',
       mapLink: 'https://maps.app.goo.gl/yJFiLEsFDfkrRPRq9',
-      isMain: false
     },
     {
-      name: 'Cherpulassery Branch',
+      name: 'Samiya Wedding Center',
       address: 'Pattambi - Cherpulassery Rd, Cherpulassery, Kerala',
       phone: '+91 98765 43213',
       hours: '10:30 AM - 7:30 PM',
-      image: 'https://images.squarespace-cdn.com/content/v1/5bcdd396ab1a62465f5dfb97/1655831835900-YI0W6VDAW05U6I9FAUM5/IMG_1386.jpg?format=1500w',
+      image: '/assets/images/home/stores/cherpulassery-road.jpg',
       mapLink: 'https://maps.app.goo.gl/593xnm5J6yo3guFaA',
-      isMain: false
     }
   ];
 
@@ -74,9 +70,7 @@ const OurStoreSection: React.FC = () => {
           {stores.map((store, index) => (
             <div
               key={store.name}
-              className={`group luxury-card rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-700 transform hover:-translate-y-4 animate-fade-in-up ${
-                store.isMain ? 'md:col-span-2 lg:col-span-1' : ''
-              }`}
+              className={`group luxury-card rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-700 transform hover:-translate-y-4 animate-fade-in-up`}
               style={{ animationDelay: `${0.4 + index * 0.1}s` }}
             >
               <div className="relative">
@@ -88,14 +82,6 @@ const OurStoreSection: React.FC = () => {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-luxury-black/80 via-luxury-black/20 to-transparent"></div>
                 </div>
-
-                {store.isMain && (
-                  <div className="absolute top-4 left-4">
-                    <span className="luxury-subheading bg-luxury-gold text-luxury-black px-4 py-2 rounded-full text-xs tracking-wider">
-                      FLAGSHIP STORE
-                    </span>
-                  </div>
-                )}
 
                 <div className="absolute bottom-0 left-0 right-0 p-6">
                   <div className="glass-dark rounded-xl p-4 backdrop-blur-sm">

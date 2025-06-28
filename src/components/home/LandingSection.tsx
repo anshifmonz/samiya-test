@@ -16,7 +16,7 @@ const LandingSection: React.FC = () => {
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: 'url(https://lulucelebrate.in/cdn/shop/files/banner3.jpg?v=1660111150&width=1500)'
+          backgroundImage: 'url(/assets/images/home/landing-hero.jpg)'
         }}
       ></div>
 
