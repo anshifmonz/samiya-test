@@ -61,7 +61,7 @@ const TestimonialsSection: React.FC = () => {
                   Client Stories
                 </span>
                 What Our Customers Say
-              </h2>
+            </h2>
             </div>
           </div>
 

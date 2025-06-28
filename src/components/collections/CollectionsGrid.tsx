@@ -30,7 +30,7 @@ const CollectionsGrid: React.FC = () => {
           {collections.map((collection, index) => (
             <div
               key={collection.id}
-              onClick={() => handleCollectionClick(collection.searchQuery)}
+              onClick={() => handleCollectionClick(collection.title)}
               className={`group cursor-pointer luxury-card rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-700 transform hover:-translate-y-6 animate-fade-in-up`}
               style={{ animationDelay: `${0.2 + index * 0.1}s` }}
             >
@@ -40,8 +40,7 @@ const CollectionsGrid: React.FC = () => {
                   alt={collection.title}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                 />
-                <div className={`absolute inset-0 bg-gradient-to-t ${collection.gradient} group-hover:opacity-90 transition-opacity duration-500`}></div>
-
+                <div className="absolute inset-0 bg-gradient-to-t from-luxury-black/80 via-luxury-black/20 to-transparent group-hover:opacity-90 transition-opacity duration-500"></div>
                 <div className="absolute inset-0 flex flex-col justify-end p-8">
                   <div className="glass-dark rounded-xl p-4 backdrop-blur-sm transition-all duration-500 ease-out group-hover:pb-6 flex items-center group-hover:items-start">
                     <div className="transform group-hover:translate-y-0 transition-transform duration-500 w-full">

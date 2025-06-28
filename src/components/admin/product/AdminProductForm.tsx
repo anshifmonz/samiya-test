@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Product } from '../../data/products';
+import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
+import { Product } from '@/data/products';
 import { X } from 'lucide-react';
 import {
   ProductTitleInput,
@@ -28,6 +29,17 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, onSave, on
   });
 
   const [activeColorTab, setActiveColorTab] = useState<string>('');
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    // Prevent body scroll when modal is open
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, []);
 
   useEffect(() => {
     if (product) {
@@ -64,7 +76,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, onSave, on
     }
   };
 
-  return (
+  const modalContent = (
     <div className="fixed inset-0 bg-luxury-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-white rounded-t-2xl border-b border-luxury-gray/20 p-6 flex items-center justify-between">
@@ -123,6 +135,8 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, onSave, on
       </div>
     </div>
   );
+
+  return mounted ? createPortal(modalContent, document.body) : null;
 };
 
 export default AdminProductForm;

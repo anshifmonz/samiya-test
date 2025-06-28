@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Product } from '../../data/products';
+import { Product } from '@/data/products';
 import { Edit, Trash } from 'lucide-react';
 
 interface AdminProductCardProps {

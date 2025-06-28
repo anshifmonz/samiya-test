@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { Plus, Trash, Crown } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../ui/tabs';
 import DraggableImageList from '../DraggableImageList';
 import {
   DndContext,
