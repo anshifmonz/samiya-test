@@ -1,8 +1,8 @@
-"use client";
-
-import React from 'react';
+import React, { Suspense } from 'react';
 import Navigation from '@/components/shared/Navigation';
-import { LandingSection, FeaturedCategories, OurStoreSection, FeaturedProducts, TestimonialsSection, ContactSection } from '@/components/home';
+import { LandingSection, FeaturedCategories, OurStoreSection, TestimonialsSection, ContactSection } from '@/components/home';
+import FeaturedProductsServer from '@/components/home/FeaturedProductsServer';
+import LoadingSpinner from '@/components/shared/LoadingSpinner';
 
 export default function HomePage() {
   return (
@@ -15,7 +15,9 @@ export default function HomePage() {
 
       <OurStoreSection />
 
-      <FeaturedProducts />
+      <Suspense fallback={<LoadingSpinner text="Loading featured products..." />}>
+        <FeaturedProductsServer />
+      </Suspense>
 
       <TestimonialsSection />
 
