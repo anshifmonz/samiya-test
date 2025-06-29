@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { products, Product } from '@/data/products';
 import collections from '@/data/collections';
+import { categories, Category } from '@/data/categories';
 import Navigation from '../components/shared/Navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import AdminProductsTab from '../components/admin/product/AdminProductsTab';
 import AdminCollectionsTab from '../components/admin/collection/AdminCollectionsTab';
+import AdminCategoriesTab from '../components/admin/category/AdminCategoriesTab';
 
 const AdminDashboard: React.FC = () => {
   const [productList, setProductList] = useState<Product[]>(products);
   const [collectionList, setCollectionList] = useState(collections);
+  const [categoryList, setCategoryList] = useState<Category[]>(categories);
 
   const handleAddProduct = (newProduct: Omit<Product, 'id'>) => {
     const id = (Math.max(...productList.map(p => parseInt(p.id))) + 1).toString();
@@ -38,6 +41,40 @@ const AdminDashboard: React.FC = () => {
     setCollectionList(collectionList.filter(c => c.id !== collectionId));
   };
 
+  const handleAddCategory = (newCategory: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>) => {
+    const id = `category-${Date.now()}`;
+    const now = new Date().toISOString();
+    const category: Category = {
+      ...newCategory,
+      id,
+      createdAt: now,
+      updatedAt: now
+    };
+    setCategoryList([...categoryList, category]);
+  };
+
+  const handleEditCategory = (updatedCategory: Category) => {
+    const now = new Date().toISOString();
+    const categoryWithUpdatedTime = { ...updatedCategory, updatedAt: now };
+    setCategoryList(categoryList.map(c => c.id === updatedCategory.id ? categoryWithUpdatedTime : c));
+  };
+
+  const handleDeleteCategory = (categoryId: string) => {
+    // also delete all child categories
+    const deleteCategoryAndChildren = (id: string): string[] => {
+      const toDelete = [id];
+      categoryList.forEach(category => {
+        if (category.parentId === id) {
+          toDelete.push(...deleteCategoryAndChildren(category.id));
+        }
+      });
+      return toDelete;
+    };
+
+    const categoriesToDelete = deleteCategoryAndChildren(categoryId);
+    setCategoryList(categoryList.filter(c => !categoriesToDelete.includes(c.id)));
+  };
+
   return (
     <div className="min-h-screen bg-luxury-cream">
       <Navigation />
@@ -49,25 +86,31 @@ const AdminDashboard: React.FC = () => {
               Admin Dashboard
             </h1>
             <p className="luxury-body text-luxury-gray text-lg mb-8">
-              Manage your products and collections with ease
+              Manage your products, collections, and categories with ease
             </p>
           </div>
         </div>
 
         <div className="bg-white/80 backdrop-blur-sm border border-luxury-gray/20 rounded-xl p-6">
         <Tabs defaultValue="products" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-8 bg-transparent border-none p-1">
+            <TabsList className="grid w-full grid-cols-3 mb-8 bg-transparent border-none p-1">
             <TabsTrigger
               value="products"
-              className="rounded-lg px-8 py-3 text-sm font-medium tracking-wide transition-all duration-300 data-[state=active]:bg-luxury-gold data-[state=active]:text-luxury-black data-[state=active]:shadow-md"
+              className="rounded-lg px-6 py-3 text-sm font-medium tracking-wide transition-all duration-300 data-[state=active]:bg-luxury-gold data-[state=active]:text-luxury-black data-[state=active]:shadow-md"
             >
-              Products Management
+              Products
             </TabsTrigger>
             <TabsTrigger
               value="collections"
-              className="rounded-lg px-8 py-3 text-sm font-medium tracking-wide transition-all duration-300 data-[state=active]:bg-luxury-gold data-[state=active]:text-luxury-black data-[state=active]:shadow-md"
+              className="rounded-lg px-6 py-3 text-sm font-medium tracking-wide transition-all duration-300 data-[state=active]:bg-luxury-gold data-[state=active]:text-luxury-black data-[state=active]:shadow-md"
             >
-              Collections Management
+              Collections
+            </TabsTrigger>
+            <TabsTrigger
+              value="categories"
+              className="rounded-lg px-6 py-3 text-sm font-medium tracking-wide transition-all duration-300 data-[state=active]:bg-luxury-gold data-[state=active]:text-luxury-black data-[state=active]:shadow-md"
+            >
+              Categories
             </TabsTrigger>
           </TabsList>
 
@@ -86,6 +129,15 @@ const AdminDashboard: React.FC = () => {
               onAddCollection={handleAddCollection}
               onEditCollection={handleEditCollection}
               onDeleteCollection={handleDeleteCollection}
+            />
+          </TabsContent>
+
+          <TabsContent value="categories" className="mt-0">
+            <AdminCategoriesTab
+              categories={categoryList}
+              onAddCategory={handleAddCategory}
+              onEditCategory={handleEditCategory}
+              onDeleteCategory={handleDeleteCategory}
             />
           </TabsContent>
         </Tabs>
