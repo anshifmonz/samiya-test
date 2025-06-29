@@ -23,7 +23,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, onSave, on
     title: '',
     description: '',
     price: 0,
-    category: 'Women' as 'Gents' | 'Women' | 'Kids',
+    category: '',
     images: {} as Record<string, string[]>,
     tags: [] as string[]
   });

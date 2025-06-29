@@ -7,7 +7,7 @@ export interface Product {
   images: Record<string, string[]>;
   price: number;
   tags: string[];
-  category: 'Gents' | 'Women' | 'Kids';
+  category: string;
 }
 
 export const products: Product[] = [
@@ -35,7 +35,7 @@ export const products: Product[] = [
     },
     price: 899,
     tags: ["festive", "cotton", "traditional"],
-    category: "Gents"
+    category: "Men"
   },
   {
     id: "3",
@@ -61,7 +61,7 @@ export const products: Product[] = [
     },
     price: 599,
     tags: ["formal", "office", "cotton"],
-    category: "Gents"
+    category: "Men"
   },
   {
     id: "5",
@@ -113,7 +113,7 @@ export const products: Product[] = [
     },
     price: 2199,
     tags: ["formal", "wool", "premium"],
-    category: "Gents"
+    category: "Men"
   },
   {
     id: "9",
@@ -152,7 +152,7 @@ export const products: Product[] = [
     },
     price: 2499,
     tags: ["formal", "tuxedo", "premium"],
-    category: "Gents"
+    category: "Men"
   },
   {
     id: "12",
@@ -191,7 +191,7 @@ export const products: Product[] = [
     },
     price: 999,
     tags: ["traditional", "cultural", "festive"],
-    category: "Gents"
+    category: "Men"
   },
   {
     id: "15",
@@ -256,7 +256,7 @@ export const products: Product[] = [
     },
     price: 299,
     tags: ["casual", "cotton", "comfortable"],
-    category: "Gents"
+    category: "Men"
   },
   {
     id: "20",
@@ -269,7 +269,7 @@ export const products: Product[] = [
     },
     price: 699,
     tags: ["casual", "denim", "stylish"],
-    category: "Gents"
+    category: "Men"
   },
   {
     id: "21",
@@ -282,7 +282,7 @@ export const products: Product[] = [
     },
     price: 2999,
     tags: ["formal", "business", "tailored"],
-    category: "Gents"
+    category: "Men"
   },
   {
     id: "22",
@@ -360,7 +360,7 @@ export const products: Product[] = [
     },
     price: 599,
     tags: ["casual", "hoodie", "comfortable"],
-    category: "Gents"
+    category: "Men"
   },
   {
     id: "28",
@@ -397,61 +397,61 @@ export const products: Product[] = [
       brown: ["https://images.unsplash.com/photo-1556905055-8f358a7a47b4?w=400&h=600&fit=crop"],
       tan: ["https://images.unsplash.com/photo-1599732212902-ed8a5641514a?w=400&h=600&fit=crop"]
     },
-    price: 1999,
-    tags: ["leather", "stylish", "casual"],
-    category: "Gents"
+    price: 2499,
+    tags: ["leather", "stylish", "edgy"],
+    category: "Jacket"
   },
   {
     id: "31",
-    title: "Kids Party Suit",
-    description: "Dapper suit for boys, perfect for parties and special occasions.",
+    title: "Trend1 Casual Pants",
+    description: "Comfortable casual pants in the latest Trend1 style.",
     images: {
       navy: ["https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=400&h=600&fit=crop"],
-      grey: ["https://images.unsplash.com/photo-1593032465170-d8ec1696716a?w=400&h=600&fit=crop"],
+      grey: ["https://images.unsplash.com/photo-1599732212902-ed8a5641514a?w=400&h=600&fit=crop"],
       black: ["https://images.unsplash.com/photo-1586370479860-0718d4577f64?w=400&h=600&fit=crop"]
     },
-    price: 699,
-    tags: ["party", "formal", "kids"],
-    category: "Kids"
+    price: 899,
+    tags: ["casual", "trendy", "comfortable"],
+    category: "Trend1"
   },
   {
     id: "32",
-    title: "Embroidered Blouse",
-    description: "Elegant blouse with detailed embroidery, pairs well with sarees or lehengas.",
+    title: "Premium Casual Trend1 Pants",
+    description: "Premium quality casual pants in Trend1 style with superior comfort.",
     images: {
-      gold: ["https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=400&h=600&fit=crop"],
-      silver: ["https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=400&h=600&fit=crop"],
-      pink: ["https://images.unsplash.com/photo-1583391733981-4679ba36b40a?w=400&h=600&fit=crop"]
+      charcoal: ["https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=400&h=600&fit=crop"],
+      darkBlue: ["https://images.unsplash.com/photo-1556905055-8f358a7a47b4?w=400&h=600&fit=crop"],
+      olive: ["https://images.unsplash.com/photo-1599732212902-ed8a5641514a?w=400&h=600&fit=crop"]
     },
-    price: 599,
-    tags: ["traditional", "embroidered", "elegant"],
-    category: "Women"
+    price: 1299,
+    tags: ["premium", "casual", "luxury"],
+    category: "Premium Casual"
   },
   {
     id: "33",
-    title: "Cargo Pants",
-    description: "Rugged cargo pants with multiple pockets for a utilitarian style.",
+    title: "Traditional Silk Saree",
+    description: "Elegant silk saree with traditional designs and patterns.",
     images: {
-      khaki: ["https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=400&h=600&fit=crop"],
-      black: ["https://images.unsplash.com/photo-1556905055-8f358a7a47b4?w=400&h=600&fit=crop"],
-      olive: ["https://images.unsplash.com/photo-1599732212902-ed8a5641514a?w=400&h=600&fit=crop"]
+      red: ["https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=400&h=600&fit=crop"],
+      green: ["https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=400&h=600&fit=crop"],
+      gold: ["https://images.unsplash.com/photo-1583391733981-4679ba36b40a?w=400&h=600&fit=crop"]
     },
-    price: 799,
-    tags: ["casual", "cargo", "rugged"],
-    category: "Gents"
+    price: 1899,
+    tags: ["traditional", "silk", "elegant"],
+    category: "Sarees"
   },
   {
     id: "34",
-    title: "Kids Raincoat",
-    description: "Bright and waterproof raincoat for kids, perfect for rainy days.",
+    title: "Summer Trend2 Pants",
+    description: "Lightweight summer pants in Trend2 style for hot weather.",
     images: {
-      yellow: ["https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=400&h=600&fit=crop"],
-      blue: ["https://images.unsplash.com/photo-1593032465170-d8ec1696716a?w=400&h=600&fit=crop"],
-      red: ["https://images.unsplash.com/photo-1586370479860-0718d4577f64?w=400&h=600&fit=crop"]
+      beige: ["https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=400&h=600&fit=crop"],
+      white: ["https://images.unsplash.com/photo-1599732212902-ed8a5641514a?w=400&h=600&fit=crop"],
+      lightBlue: ["https://images.unsplash.com/photo-1586370479860-0718d4577f64?w=400&h=600&fit=crop"]
     },
-    price: 399,
-    tags: ["rainwear", "waterproof", "kids"],
-    category: "Kids"
+    price: 799,
+    tags: ["summer", "lightweight", "breathable"],
+    category: "Summer Trend2"
   },
   {
     id: "35",
