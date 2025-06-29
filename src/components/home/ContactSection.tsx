@@ -1,5 +1,7 @@
+"use client";
+
 import React from 'react';
-import { Mail, Phone, MapPin, Clock } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock } from 'lucide-react';
 
 const ContactSection: React.FC = () => {
   return (

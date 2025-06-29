@@ -1,8 +1,10 @@
+"use client";
+
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 
 const FeaturedCategories: React.FC = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const categories = [
     {
@@ -26,7 +28,7 @@ const FeaturedCategories: React.FC = () => {
   ];
 
   const handleCategoryClick = (category: string) => {
-    navigate(`/search?q=${category.toLowerCase()}`);
+    router.push(`/search?q=${category.toLowerCase()}`);
   };
 
   return (

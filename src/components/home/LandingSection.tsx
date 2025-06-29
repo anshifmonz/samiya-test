@@ -1,10 +1,12 @@
+"use client";
+
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import SearchBar from '../search/SearchBar';
 import ScrollIndicator from './ScrollIndicator';
 
 const LandingSection: React.FC = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
@@ -56,13 +58,13 @@ const LandingSection: React.FC = () => {
 
         <div className="animate-fade-in-up flex flex-col sm:flex-row gap-8 justify-center items-center" style={{ animationDelay: '0.6s' }}>
           <button
-            onClick={() => navigate('/search?q=wedding')}
+            onClick={() => router.push('/search?q=wedding')}
             className="luxury-btn-primary px-16 py-6 rounded-full font-medium text-lg tracking-wider uppercase shadow-2xl"
           >
             Explore Collection
           </button>
           <button
-            onClick={() => navigate('/search?q=festive')}
+            onClick={() => router.push('/search?q=festive')}
             className="luxury-btn-secondary px-16 py-6 rounded-full font-medium text-lg tracking-wider uppercase"
           >
             Festive Wear
