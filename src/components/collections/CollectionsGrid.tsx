@@ -1,12 +1,14 @@
+"use client";
+
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import collections from '@/data/collections';
 
 const CollectionsGrid: React.FC = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleCollectionClick = (searchQuery: string) => {
-    navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+    router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
   };
 
   return (
@@ -77,7 +79,7 @@ const CollectionsGrid: React.FC = () => {
             Can't find what you're looking for?
           </p>
           <button
-            onClick={() => navigate('/search')}
+            onClick={() => router.push('/search')}
             className="luxury-btn-primary px-12 py-4 rounded-full text-lg font-light tracking-wide"
           >
             Browse All Products
