@@ -1,14 +1,17 @@
+"use client";
+
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
 import SearchBar from '../search/SearchBar';
 
 const Navigation: React.FC = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const router = useRouter();
+  const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
-  const isHomePage = location.pathname === '/';
-  const isSearchPage = location.pathname === '/search';
-  const isAdminPage = location.pathname === '/admin';
+  const isHomePage = pathname === '/';
+  const isSearchPage = pathname === '/search';
+  const isAdminPage = pathname === '/admin';
 
   useEffect(() => {
     const heroSection = document.getElementById('hero');
@@ -57,35 +60,32 @@ const Navigation: React.FC = () => {
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${getNavbarStyling()}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
-          <div
-            onClick={() => navigate('/')}
-            className={`luxury-heading text-2xl font-light cursor-pointer transition-colors duration-300 tracking-wide ${textStyles.logo}`}
-          >
+          <Link href="/" className={`luxury-heading text-2xl font-light cursor-pointer transition-colors duration-300 tracking-wide ${textStyles.logo}`}>
             Samiya
             <span className={`block text-sm luxury-subheading tracking-[0.2em] ${textStyles.logoSubtext}`}>
               Wedding Center
             </span>
-          </div>
+          </Link>
 
           <div className="hidden md:flex space-x-12">
-            <button
-              onClick={() => navigate('/')}
+            <Link
+              href="/"
               className={`luxury-body font-light transition-colors duration-300 tracking-wide relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-luxury-gold after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left ${textStyles.navLinks}`}
             >
               Home
-            </button>
-            <button
-              onClick={() => navigate('/about')}
+            </Link>
+            <Link
+              href="/about"
               className={`luxury-body font-light transition-colors duration-300 tracking-wide relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-luxury-gold after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left ${textStyles.navLinks}`}
             >
               About
-            </button>
-            <button
-              onClick={() => navigate('/collections')}
+            </Link>
+            <Link
+              href="/collections"
               className={`luxury-body font-light transition-colors duration-300 tracking-wide relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-luxury-gold after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left ${textStyles.navLinks}`}
             >
               Collections
-            </button>
+            </Link>
             <button className={`luxury-body font-light transition-colors duration-300 tracking-wide relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-luxury-gold after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left ${textStyles.navLinks}`}>
               Contact
             </button>

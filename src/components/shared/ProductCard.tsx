@@ -1,25 +1,18 @@
 
 import React from 'react';
+import Link from 'next/link';
 import { Product } from '../../data/products';
-import { useNavigate } from 'react-router-dom';
 
 interface ProductCardProps {
   product: Product;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-  const navigate = useNavigate();
   const firstImage = Object.values(product.images)[0]?.[0]; // Get first image from first color
 
-  const handleClick = () => {
-    navigate(`/product/${product.id}`);
-  };
-
   return (
-    <div
-      className="luxury-card rounded-xl md:rounded-2xl overflow-hidden cursor-pointer group shadow-lg hover:shadow-2xl transition-all duration-500 border border-luxury-gray/10 hover:border-luxury-gold/30 bg-white/95 backdrop-blur-md"
-      onClick={handleClick}
-    >
+    <Link href={`/product/${product.id}`}>
+      <div className="luxury-card rounded-xl md:rounded-2xl overflow-hidden cursor-pointer group shadow-lg hover:shadow-2xl transition-all duration-500 border border-luxury-gray/10 hover:border-luxury-gold/30 bg-white/95 backdrop-blur-md">
       <div className="relative overflow-hidden">
         <img
           src={firstImage}
@@ -89,7 +82,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </Link>
   );
 };
 

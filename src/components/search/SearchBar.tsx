@@ -1,17 +1,19 @@
+"use client";
+
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useRouter, usePathname } from 'next/navigation';
 import { Search } from 'lucide-react';
 
 const SearchBar: React.FC = () => {
   const [query, setQuery] = useState('');
-  const navigate = useNavigate();
-  const location = useLocation();
-  const isSearchPage = location.pathname === '/search';
+  const router = useRouter();
+  const pathname = usePathname();
+  const isSearchPage = pathname === '/search';
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
-      navigate(`/search?q=${encodeURIComponent(query.trim())}`);
+      router.push(`/search?q=${encodeURIComponent(query.trim())}`);
     }
   };
 
