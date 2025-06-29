@@ -1,92 +1,48 @@
-"use client";
-
-import React, { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { Product, getProductById, products } from '@/data/products';
+import React, { Suspense } from 'react';
+import { notFound } from 'next/navigation';
+import { products } from '@/data/products';
 import Navigation from '@/components/shared/Navigation';
-import ProductImageGallery from '@/components/product/ProductImageGallery';
 import ProductDetails from '@/components/product/ProductDetails';
-import ProductColorSwatches from '@/components/product/ProductColorSwatches';
 import SimilarProducts from '@/components/product/SimilarProducts';
-import ProductNotFound from '@/components/product/ProductNotFound';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
+import ProductClient from './ProductClient';
+import { getProductById } from '@/lib/api';
 
-export default function ProductDetailPage() {
-  const params = useParams();
-  const router = useRouter();
-  const id = params.id as string;
-  const [product, setProduct] = useState<Product | null>(null);
-  const [similarProducts, setSimilarProducts] = useState<Product[]>([]);
-  const [selectedColor, setSelectedColor] = useState<string>('');
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (id) {
-      const foundProduct = getProductById(id);
-      if (foundProduct) {
-        setProduct(foundProduct);
-        const firstColor = Object.keys(foundProduct.images)[0];
-        setSelectedColor(firstColor);
-
-        // Get similar products from the same category, excluding the current product
-        const similar = products
-          .filter(p => p.category === foundProduct.category && p.id !== foundProduct.id)
-          .slice(0, 4);
-        setSimilarProducts(similar);
-      }
-      setLoading(false);
-    }
-  }, [id]);
-
-  const handleColorChange = (color: string) => {
-    setSelectedColor(color);
+interface Props {
+  params: {
+    id: string;
   };
+}
 
-  const getColorStyle = (color: string) => {
-    const colorMap: Record<string, string> = {
-      red: '#DC2626',
-      blue: '#2563EB',
-      green: '#16A34A',
-      white: '#FFFFFF',
-      cream: '#F5F5DC',
-      navy: '#000080',
-      pink: '#EC4899',
-      yellow: '#EAB308',
-      purple: '#9333EA',
-      black: '#000000',
-      emerald: '#059669',
-      maroon: '#7C2D12',
-      gold: '#D97706',
-      burgundy: '#7C2D12'
-    };
-    return colorMap[color] || color;
-  };
+// Generate static params for all products (if using static generation)
+export async function generateStaticParams() {
+  return products.map((product) => ({
+    id: product.id,
+  }));
+}
 
-  if (loading) {
-    return <LoadingSpinner text="Loading product details..." />;
-  }
-
+export default async function ProductDetailPage({ params }: Props) {
+  const { product, similarProducts } = await getProductById(params.id);
+  
   if (!product) {
-    return <ProductNotFound onGoHome={() => router.push('/')} />;
+    notFound();
   }
+
+  const firstColor = Object.keys(product.images)[0];
 
   return (
     <div className="min-h-screen bg-luxury-cream">
       <Navigation />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-32">
-        <div className="luxury-card rounded-3xl overflow-hidden border border-luxury-gray/10 p-8 lg:p-12">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
-            <ProductImageGallery product={product} selectedColor={selectedColor} />
-            <ProductDetails product={product} />
+        <Suspense fallback={<LoadingSpinner text="Loading product details..." />}>
+          <div className="luxury-card rounded-3xl overflow-hidden border border-luxury-gray/10 p-8 lg:p-12">
+            <ProductClient 
+              product={product} 
+              initialColor={firstColor}
+            />
           </div>
-          <ProductColorSwatches
-            product={product}
-            selectedColor={selectedColor}
-            handleColorChange={handleColorChange}
-            getColorStyle={getColorStyle}
-          />
-        </div>
-        <SimilarProducts similarProducts={similarProducts} />
+          <SimilarProducts similarProducts={similarProducts} />
+        </Suspense>
       </div>
     </div>
   );
