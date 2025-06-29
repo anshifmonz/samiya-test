@@ -1,6 +1,8 @@
 
+"use client";
+
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { Product } from '../../data/products';
 import ProductCard from '../shared/ProductCard';
 
@@ -9,7 +11,7 @@ interface ProductsGridProps {
 }
 
 const ProductsGrid: React.FC<ProductsGridProps> = ({ products }) => {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   return (
     <div className="flex-1 min-w-0">
@@ -37,7 +39,7 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({ products }) => {
             Try adjusting your search terms or filters to discover our exquisite collection
           </p>
           <button
-            onClick={() => navigate('/')}
+            onClick={() => router.push('/')}
             className="luxury-btn-primary px-8 md:px-12 py-4 md:py-6 rounded-full text-base md:text-lg tracking-wider uppercase shadow-2xl"
           >
             Browse All Products
