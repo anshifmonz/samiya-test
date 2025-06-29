@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { buildCategoryTree } from '@/data/categories';
+import { buildCategoryTree, Category } from '@/data/categories';
 import { ChevronRight, ChevronDown } from 'lucide-react';
 
 interface CategoryFilterProps {
   selectedCategory: string;
   onCategoryChange: (category: string) => void;
+  availableCategories?: string[];
 }
 
-const CategoryFilter: React.FC<CategoryFilterProps> = ({ selectedCategory, onCategoryChange }) => {
+const CategoryFilter: React.FC<CategoryFilterProps> = ({ selectedCategory, onCategoryChange, availableCategories }) => {
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
 
   // get the hierarchical tree structure
@@ -27,8 +28,34 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ selectedCategory, onCat
     onCategoryChange(categoryName);
   };
 
+  // filter categories to show only those that have products in current results
+  const filterCategoryTree = (categories: Category[]): Category[] => {
+    return categories
+      .map(category => {
+        const hasChildren = category.children && category.children.length > 0;
+        const filteredChildren = hasChildren ? filterCategoryTree(category.children) : [];
+
+        // include category if it's available in search results or has available children
+        const isAvailable = availableCategories?.includes(category.name) || filteredChildren.length > 0;
+
+        if (isAvailable) {
+          return {
+            ...category,
+            children: filteredChildren
+          };
+        }
+        return null;
+      })
+      .filter((category): category is NonNullable<typeof category> => category !== null);
+  };
+
+  // get filtered category tree
+  const filteredCategoryTree = availableCategories && availableCategories.length > 0
+    ? filterCategoryTree(categoryTree)
+    : categoryTree;
+
   // recursive function to render category tree
-  const renderCategoryTree = (categoryList: any[], level: number = 0) => {
+  const renderCategoryTree = (categoryList: Category[], level: number = 0) => {
     return categoryList.map((category) => {
       const hasChildren = category.children && category.children.length > 0;
       const isExpanded = expandedCategories.has(category.id);
@@ -57,7 +84,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ selectedCategory, onCat
                 )}
               </button>
             ) : (
-              /* placeholder div to maintain consistent spacing */
+              // placeholder div to maintain consistent spacing
               <div className="w-6 h-6" />
             )}
 
@@ -67,7 +94,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ selectedCategory, onCat
               value={category.name}
               checked={selectedCategory === category.name}
               onChange={() => handleCategoryClick(category.name)}
-              onClick={(e) => e.stopPropagation()} // Prevent double triggering
+              onClick={(e) => e.stopPropagation()} // prevent double triggering
               className="w-4 h-4 text-luxury-gold border-2 border-luxury-gray/30 focus:ring-luxury-gold/50 focus:ring-2 transition-all duration-200"
             />
 
@@ -79,7 +106,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ selectedCategory, onCat
           {/* render children recursively when expanded */}
           {hasChildren && isExpanded && (
             <div className="mt-2">
-              {renderCategoryTree(category.children, level + 1)}
+              {renderCategoryTree(category.children!, level + 1)}
             </div>
           )}
         </div>
@@ -101,7 +128,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ selectedCategory, onCat
             value="all"
             checked={selectedCategory === 'all'}
             onChange={() => handleCategoryClick('all')}
-            onClick={(e) => e.stopPropagation()} // Prevent double triggering
+            onClick={(e) => e.stopPropagation()} // prevent double triggering
             className="w-4 h-4 text-luxury-gold border-2 border-luxury-gray/30 focus:ring-luxury-gold/50 focus:ring-2 transition-all duration-200"
           />
           <span className="luxury-body text-luxury-gray font-medium capitalize group-hover:text-luxury-gold transition-colors duration-200">
@@ -110,7 +137,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ selectedCategory, onCat
         </label>
 
         {/* dynamic categories from data with expandable hierarchy */}
-        {renderCategoryTree(categoryTree)}
+        {renderCategoryTree(filteredCategoryTree)}
       </div>
     </div>
   );

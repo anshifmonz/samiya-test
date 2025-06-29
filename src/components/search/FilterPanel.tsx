@@ -9,9 +9,10 @@ import { useProductFilters, type ProductFilters } from '@/hooks/useProductFilter
 interface FilterPanelProps {
   onFiltersChange: (filters: ProductFilters) => void;
   availableColors?: string[];
+  availableCategories?: string[];
 }
 
-const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange, availableColors }) => {
+const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange, availableColors, availableCategories }) => {
   const {
     selectedCategory,
     priceRange,
@@ -43,6 +44,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange, availableCol
           <CategoryFilter
             selectedCategory={selectedCategory}
             onCategoryChange={handleCategoryChange}
+            availableCategories={availableCategories}
           />
 
           <PriceFilter

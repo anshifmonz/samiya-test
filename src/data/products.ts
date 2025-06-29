@@ -1,4 +1,5 @@
 import { type ProductFilters } from '@/hooks/useProductFilters';
+import { categories } from './categories';
 
 export interface Product {
   id: string;
@@ -492,9 +493,35 @@ export const searchProducts = (query: string, filters?: ProductFilters): Product
   // Apply filters
   if (filters) {
     if (filters.category && filters.category !== 'all') {
-      filtered = filtered.filter(product =>
-        product.category.toLowerCase() === filters.category?.toLowerCase()
-      );
+      // Get the selected category from the categories data
+      const selectedCategory = categories.find(cat => cat.name === filters.category);
+
+      if (selectedCategory) {
+        // Get all categories that should be included (selected category + all its descendants)
+        const includedCategories = new Set<string>();
+        includedCategories.add(selectedCategory.name);
+
+        // Add all descendant categories
+        const addDescendants = (parentId: string) => {
+          categories.forEach(cat => {
+            if (cat.parentId === parentId) {
+              includedCategories.add(cat.name);
+              addDescendants(cat.id);
+            }
+          });
+        };
+        addDescendants(selectedCategory.id);
+
+        // Filter products by included categories
+        filtered = filtered.filter(product =>
+          includedCategories.has(product.category)
+        );
+      } else {
+        // Fallback to exact match if category not found in hierarchy
+        filtered = filtered.filter(product =>
+          product.category.toLowerCase() === filters.category?.toLowerCase()
+        );
+      }
     }
 
     if (filters.minPrice !== undefined) {

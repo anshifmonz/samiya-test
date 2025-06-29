@@ -20,16 +20,33 @@ const SearchContent: React.FC<SearchContentProps> = ({ products, onFiltersChange
   });
   const availableColors = Array.from(colorSet);
 
+  // Collect all unique categories from the current products
+  const categorySet = new Set<string>();
+  products.forEach(product => {
+    if (product.category) {
+      categorySet.add(product.category);
+    }
+  });
+  const availableCategories = Array.from(categorySet);
+
   return (
     <div className="flex flex-col lg:flex-row gap-8">
       {/* Desktop Filter Panel */}
       <div className="hidden lg:block">
-        <FilterPanel onFiltersChange={onFiltersChange} availableColors={availableColors} />
+        <FilterPanel
+          onFiltersChange={onFiltersChange}
+          availableColors={availableColors}
+          availableCategories={availableCategories}
+        />
       </div>
 
       {/* Mobile Filter Panel */}
       <div className="lg:hidden">
-        <MobileFilterPanel onFiltersChange={onFiltersChange} availableColors={availableColors} />
+        <MobileFilterPanel
+          onFiltersChange={onFiltersChange}
+          availableColors={availableColors}
+          availableCategories={availableCategories}
+        />
       </div>
 
       <ProductsGrid products={products} />
