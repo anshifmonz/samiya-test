@@ -22,7 +22,7 @@ const TagsSection: React.FC<TagsSectionProps> = ({ tags, onTagsChange }) => {
 
   return (
     <div>
-      <label className="block luxury-subheading text-luxury-black mb-2 tracking-wider">
+      <label className="block luxury-subheading text-sm text-luxury-black mb-2">
         Tags
       </label>
       <div className="space-y-4">
@@ -32,12 +32,12 @@ const TagsSection: React.FC<TagsSectionProps> = ({ tags, onTagsChange }) => {
             placeholder="Add tag"
             value={newTag}
             onChange={(e) => setNewTag(e.target.value)}
-            className="flex-1 px-4 py-2 rounded-lg border border-luxury-gray/30 focus:outline-none focus:ring-2 focus:ring-luxury-gold/50"
+            className="flex-1 px-4 py-3 luxury-body text-sm rounded-xl bg-luxury-cream/50 text-luxury-black border border-luxury-gray/20 focus:outline-none focus:ring-2 focus:ring-luxury-gold/50 focus:border-luxury-gold/30 transition-all duration-300"
           />
           <button
             type="button"
             onClick={addTag}
-            className="bg-luxury-gold text-luxury-black px-4 py-2 rounded-lg hover:bg-luxury-gold-light transition-colors duration-200"
+            className="bg-luxury-gold text-luxury-black px-4 py-3 rounded-xl hover:bg-luxury-gold-light transition-colors duration-200"
           >
             <Plus size={16} />
           </button>

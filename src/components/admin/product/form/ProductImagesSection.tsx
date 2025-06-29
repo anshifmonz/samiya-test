@@ -209,7 +209,7 @@ const ProductImagesSection: React.FC<ProductImagesSectionProps> = ({
 
   return (
     <div>
-      <label className="block luxury-subheading text-luxury-black mb-4 tracking-wider">
+      <label className="block luxury-subheading text-sm text-luxury-black mb-4">
         Product Images
       </label>
 
@@ -313,7 +313,7 @@ const ProductImagesSection: React.FC<ProductImagesSectionProps> = ({
               placeholder="Color name (e.g., red, navy, cream)"
               value={newImageColor}
               onChange={(e) => setNewImageColor(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-luxury-gray/30 focus:outline-none focus:ring-2 focus:ring-luxury-gold/50 transition-all duration-300 mb-4"
+              className="w-full px-4 py-3 luxury-body text-sm rounded-xl bg-luxury-cream/50 text-luxury-black border border-luxury-gray/20 focus:outline-none focus:ring-2 focus:ring-luxury-gold/50 focus:border-luxury-gold/30 transition-all duration-300 mb-4"
               autoFocus
             />
             <div className="flex gap-3">
@@ -323,14 +323,14 @@ const ProductImagesSection: React.FC<ProductImagesSectionProps> = ({
                   setShowAddColorDialog(false);
                   setNewImageColor('');
                 }}
-                className="flex-1 px-4 py-2 border border-luxury-gray/30 text-luxury-gray rounded-lg hover:bg-luxury-gray/10 transition-colors duration-200"
+                className="flex-1 px-4 py-2 luxury-body text-sm font-medium text-luxury-gray bg-luxury-cream/50 rounded-xl hover:bg-luxury-cream transition-all duration-300 border border-luxury-gray/20"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={addColor}
-                className="flex-1 bg-luxury-gold text-luxury-black px-4 py-2 rounded-lg hover:bg-luxury-gold-light transition-colors duration-200"
+                className="flex-1 bg-luxury-gold text-luxury-black px-4 py-2 rounded-xl hover:bg-luxury-gold-light transition-colors duration-200"
               >
                 Add Color
               </button>
@@ -351,7 +351,7 @@ const ProductImagesSection: React.FC<ProductImagesSectionProps> = ({
               placeholder="Image URL"
               value={newImageUrl}
               onChange={(e) => setNewImageUrl(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-luxury-gray/30 focus:outline-none focus:ring-2 focus:ring-luxury-gold/50 transition-all duration-300 mb-4"
+              className="w-full px-4 py-3 luxury-body text-sm rounded-xl bg-luxury-cream/50 text-luxury-black border border-luxury-gray/20 focus:outline-none focus:ring-2 focus:ring-luxury-gold/50 focus:border-luxury-gold/30 transition-all duration-300 mb-4"
               autoFocus
             />
             <div className="flex gap-3">
@@ -362,14 +362,14 @@ const ProductImagesSection: React.FC<ProductImagesSectionProps> = ({
                   setNewImageUrl('');
                   setSelectedColorForImage('');
                 }}
-                className="flex-1 px-4 py-2 border border-luxury-gray/30 text-luxury-gray rounded-lg hover:bg-luxury-gray/10 transition-colors duration-200"
+                className="flex-1 px-4 py-2 luxury-body text-sm font-medium text-luxury-gray bg-luxury-cream/50 rounded-xl hover:bg-luxury-cream transition-all duration-300 border border-luxury-gray/20"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={addImage}
-                className="flex-1 bg-luxury-gold text-luxury-black px-4 py-2 rounded-lg hover:bg-luxury-gold-light transition-colors duration-200"
+                className="flex-1 bg-luxury-gold text-luxury-black px-4 py-2 rounded-xl hover:bg-luxury-gold-light transition-colors duration-200"
               >
                 Add Image
               </button>
