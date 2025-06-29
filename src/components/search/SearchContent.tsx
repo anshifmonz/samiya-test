@@ -29,6 +29,15 @@ const SearchContent: React.FC<SearchContentProps> = ({ products, onFiltersChange
   });
   const availableCategories = Array.from(categorySet);
 
+  // Collect all unique tags from the current products
+  const tagSet = new Set<string>();
+  products.forEach(product => {
+    if (product.tags) {
+      product.tags.forEach((tag: string) => tagSet.add(tag));
+    }
+  });
+  const availableTags = Array.from(tagSet);
+
   return (
     <div className="flex flex-col lg:flex-row gap-8">
       {/* Desktop Filter Panel */}
@@ -37,6 +46,7 @@ const SearchContent: React.FC<SearchContentProps> = ({ products, onFiltersChange
           onFiltersChange={onFiltersChange}
           availableColors={availableColors}
           availableCategories={availableCategories}
+          availableTags={availableTags}
         />
       </div>
 
@@ -46,6 +56,7 @@ const SearchContent: React.FC<SearchContentProps> = ({ products, onFiltersChange
           onFiltersChange={onFiltersChange}
           availableColors={availableColors}
           availableCategories={availableCategories}
+          availableTags={availableTags}
         />
       </div>
 

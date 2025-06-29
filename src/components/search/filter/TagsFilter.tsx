@@ -3,10 +3,14 @@ import React from 'react';
 interface TagsFilterProps {
   selectedTags: string[];
   onTagToggle: (tag: string) => void;
+  availableTags?: string[];
 }
 
-const TagsFilter: React.FC<TagsFilterProps> = ({ selectedTags, onTagToggle }) => {
-  const tags = ['wedding', 'festive', 'silk', 'cotton', 'traditional', 'formal', 'office', 'embroidery', 'kids'];
+const TagsFilter: React.FC<TagsFilterProps> = ({ selectedTags, onTagToggle, availableTags }) => {
+  const defaultTags = ['wedding', 'festive', 'silk', 'cotton', 'traditional', 'formal', 'office', 'embroidery', 'kids'];
+
+  // set available tags if provided, otherwise use default tags
+  const tags = availableTags && availableTags.length > 0 ? availableTags : defaultTags;
 
   return (
     <div>

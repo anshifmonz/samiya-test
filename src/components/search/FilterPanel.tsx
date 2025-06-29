@@ -10,9 +10,10 @@ interface FilterPanelProps {
   onFiltersChange: (filters: ProductFilters) => void;
   availableColors?: string[];
   availableCategories?: string[];
+  availableTags?: string[];
 }
 
-const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange, availableColors, availableCategories }) => {
+const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange, availableColors, availableCategories, availableTags }) => {
   const {
     selectedCategory,
     priceRange,
@@ -61,6 +62,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange, availableCol
           <TagsFilter
             selectedTags={selectedTags}
             onTagToggle={handleTagToggle}
+            availableTags={availableTags}
           />
         </div>
       </div>

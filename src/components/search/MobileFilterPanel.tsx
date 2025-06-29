@@ -19,9 +19,10 @@ interface MobileFilterPanelProps {
   onFiltersChange: (filters: ProductFilters) => void;
   availableColors?: string[];
   availableCategories?: string[];
+  availableTags?: string[];
 }
 
-const MobileFilterPanel: React.FC<MobileFilterPanelProps> = ({ onFiltersChange, availableColors, availableCategories }) => {
+const MobileFilterPanel: React.FC<MobileFilterPanelProps> = ({ onFiltersChange, availableColors, availableCategories, availableTags }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const {
@@ -86,6 +87,7 @@ const MobileFilterPanel: React.FC<MobileFilterPanelProps> = ({ onFiltersChange, 
               <TagsFilter
                 selectedTags={selectedTags}
                 onTagToggle={handleTagToggle}
+                availableTags={availableTags}
               />
             </div>
 
