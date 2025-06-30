@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Star } from 'lucide-react';
+import Image from 'next/image';
 
 const TestimonialsSection: React.FC = () => {
   const testimonials = [
@@ -105,10 +106,12 @@ const TestimonialsSection: React.FC = () => {
                   >
                     {/* fallback for browsers that don't support video */}
                     <source src={testimonial.video} type="video/mp4" />
-                    <img
+                    <Image
                       src={testimonial.fallbackImage}
                       alt={testimonial.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 rounded-xl"
+                      width={400}
+                      height={400}
                     />
                   </video>
                 </div>

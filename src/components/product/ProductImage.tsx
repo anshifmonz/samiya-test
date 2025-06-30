@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { Product } from '@/data/products';
 
 interface ProductImageProps {
@@ -10,10 +11,13 @@ const ProductImage: React.FC<ProductImageProps> = ({ product, currentImage }) =>
   return (
     <div className="flex flex-col items-center">
       <div className="aspect-square w-full overflow-hidden rounded-2xl bg-luxury-beige shadow-lg">
-        <img
+        <Image
           src={currentImage}
           alt={product.title}
           className="w-full h-full object-cover transition-all duration-500 hover:scale-105"
+          width={600}
+          height={600}
+          priority
         />
       </div>
     </div>

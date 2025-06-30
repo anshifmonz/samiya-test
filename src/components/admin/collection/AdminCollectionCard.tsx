@@ -1,5 +1,6 @@
 import React from 'react';
 import { Edit, Trash } from 'lucide-react';
+import Image from 'next/image';
 import { type Collection } from '@/data/collections';
 
 interface AdminCollectionCardProps {
@@ -18,10 +19,12 @@ const AdminCollectionCard: React.FC<AdminCollectionCardProps> = ({ collection, o
   return (
     <div className="luxury-card rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border border-luxury-gray/10 hover:border-luxury-gold/30 bg-white/95 backdrop-blur-md group">
       <div className="relative overflow-hidden aspect-[4/3]">
-        <img
+        <Image
           src={collection.image}
           alt={collection.title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          width={400}
+          height={300}
         />
 
         <div className="absolute inset-0 bg-luxury-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Product } from '@/data/products';
 
@@ -56,10 +57,12 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({ product, sele
                 : 'border-luxury-gray/20 hover:border-luxury-gold/50'
             }`}
           >
-            <img
+            <Image
               src={image}
               alt={`${product.title} ${selectedColor} view ${index + 1}`}
               className="w-full h-full object-cover"
+              width={80}
+              height={80}
             />
           </button>
         ))}
@@ -68,10 +71,13 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({ product, sele
       {/* Main Image with Navigation */}
       <div className="order-1 lg:order-2 flex-1 relative">
         <div className="aspect-square w-full overflow-hidden rounded-2xl bg-luxury-beige shadow-lg relative group">
-          <img
+          <Image
             src={currentImages[currentImageIndex]}
             alt={`${product.title} ${selectedColor}`}
             className="w-full h-full object-cover transition-all duration-500"
+            width={600}
+            height={600}
+            priority={currentImageIndex === 0}
           />
 
           {/* Navigation Arrows - Only show if multiple images */}

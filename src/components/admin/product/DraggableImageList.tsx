@@ -1,5 +1,5 @@
-
 import React from 'react';
+import Image from 'next/image';
 import {
   DndContext,
   closestCenter,
@@ -29,12 +29,12 @@ interface DraggableImageItemProps {
   isPrimary?: boolean;
 }
 
-const DraggableImageItem: React.FC<DraggableImageItemProps> = ({ 
-  id, 
-  url, 
-  index, 
+const DraggableImageItem: React.FC<DraggableImageItemProps> = ({
+  id,
+  url,
+  index,
   onRemove,
-  isPrimary 
+  isPrimary
 }) => {
   const {
     attributes,
@@ -65,7 +65,7 @@ const DraggableImageItem: React.FC<DraggableImageItemProps> = ({
           <Crown size={12} />
         </div>
       )}
-      
+
       <button
         {...attributes}
         {...listeners}
@@ -75,21 +75,22 @@ const DraggableImageItem: React.FC<DraggableImageItemProps> = ({
       >
         <GripVertical size={16} />
       </button>
-      
-      <img 
-        src={url} 
-        alt={`Image ${index + 1}`} 
-        className="w-16 h-16 object-cover rounded flex-shrink-0" 
-        draggable={false}
+
+      <Image
+        src={url}
+        alt={`Image ${index + 1}`}
+        className="w-16 h-16 object-cover rounded flex-shrink-0"
+        width={64}
+        height={64}
       />
-      
+
       <div className="flex-1 min-w-0">
         <p className="luxury-body text-xs text-luxury-gray break-all leading-relaxed">
           {isPrimary && <span className="text-luxury-gold font-medium">Primary • </span>}
           {url}
         </p>
       </div>
-      
+
       <button
         type="button"
         onClick={onRemove}
@@ -130,7 +131,7 @@ const DraggableImageList: React.FC<DraggableImageListProps> = ({
     if (active.id !== over?.id) {
       const oldIndex = images.findIndex((_, index) => `image-${index}` === active.id);
       const newIndex = images.findIndex((_, index) => `image-${index}` === over?.id);
-      
+
       if (oldIndex !== -1 && newIndex !== -1) {
         const newImages = arrayMove(images, oldIndex, newIndex);
         onReorder(newImages);

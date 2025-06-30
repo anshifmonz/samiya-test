@@ -1,5 +1,5 @@
-
 import React from 'react';
+import Image from 'next/image';
 
 const AboutStory: React.FC = () => {
   return (
@@ -24,10 +24,13 @@ const AboutStory: React.FC = () => {
           </div>
           <div className="animate-fade-in-right">
             <div className="aspect-square rounded-2xl overflow-hidden shadow-2xl">
-              <img
+              <Image
                 src="assets/images/about/about-story.webp"
                 alt="Samiya Wedding Center Heritage"
                 className="w-full h-full object-cover"
+                width={600}
+                height={600}
+                priority
               />
             </div>
           </div>

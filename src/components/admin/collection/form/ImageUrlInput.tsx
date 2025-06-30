@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 
 interface ImageUrlInputProps {
   value: string;
@@ -21,10 +22,12 @@ const ImageUrlInput: React.FC<ImageUrlInputProps> = ({ value, onChange }) => {
       />
       {value && (
         <div className="mt-3">
-          <img
+          <Image
             src={value}
             alt="Preview"
             className="w-full h-32 object-cover rounded-lg"
+            width={400}
+            height={128}
           />
         </div>
       )}

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { MapPin, Clock, Phone } from 'lucide-react';
+import Image from 'next/image';
 import stores from '@/data/stores';
 
 const OurStoreSection: React.FC = () => {
@@ -43,10 +44,13 @@ const OurStoreSection: React.FC = () => {
             >
               <div className="relative">
                 <div className="aspect-[16/10] overflow-hidden">
-                  <img
+                  <Image
                     src={store.image}
                     alt={store.name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    width={600}
+                    height={375}
+                    priority
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-luxury-black/80 via-luxury-black/20 to-transparent"></div>
                 </div>

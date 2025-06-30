@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import collections from '@/data/collections';
 
 const CollectionsGrid: React.FC = () => {
@@ -37,10 +38,13 @@ const CollectionsGrid: React.FC = () => {
               style={{ animationDelay: `${0.2 + index * 0.1}s` }}
             >
               <div className="relative overflow-hidden aspect-[4/5]">
-                <img
+                <Image
                   src={collection.image}
                   alt={collection.title}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  width={400}
+                  height={500}
+                  priority
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-luxury-black/80 via-luxury-black/20 to-transparent group-hover:opacity-90 transition-opacity duration-500"></div>
                 <div className="absolute inset-0 flex flex-col justify-end p-8">

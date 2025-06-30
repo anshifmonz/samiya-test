@@ -1,6 +1,7 @@
 import React from 'react';
 import { Product } from '@/data/products';
 import { Edit, Trash } from 'lucide-react';
+import Image from 'next/image';
 
 interface AdminProductCardProps {
   product: Product;
@@ -20,10 +21,12 @@ const AdminProductCard: React.FC<AdminProductCardProps> = ({ product, onEdit, on
   return (
     <div className="luxury-card rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border border-luxury-gray/10 hover:border-luxury-gold/30 bg-white/95 backdrop-blur-md group">
       <div className="relative overflow-hidden">
-        <img
+        <Image
           src={firstImage}
           alt={product.title}
           className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500"
+          width={400}
+          height={192}
         />
 
         {/* Admin Actions Overlay */}

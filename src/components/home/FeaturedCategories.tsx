@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 const FeaturedCategories: React.FC = () => {
   const router = useRouter();
@@ -59,10 +60,13 @@ const FeaturedCategories: React.FC = () => {
               style={{ animationDelay: `${0.4 + index * 0.1}s` }}
             >
               <div className="relative overflow-hidden">
-                <img
+                <Image
                   src={category.image}
                   alt={category.name}
                   className="w-full h-96 object-cover group-hover:scale-110 transition-transform duration-700"
+                  width={400}
+                  height={384}
+                  priority
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-luxury-black/90 via-luxury-black/30 to-transparent group-hover:from-luxury-gold/20 transition-all duration-500"></div>
                 <div className="absolute bottom-8 left-8 text-white">

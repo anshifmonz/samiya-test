@@ -1,5 +1,5 @@
-
 import React from 'react';
+import Image from 'next/image';
 
 const AboutTeam: React.FC = () => {
   return (
@@ -20,10 +20,13 @@ const AboutTeam: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div className="animate-fade-in-left">
             <div className="aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl">
-              <img
+              <Image
                 src="assets/images/about/about-team.jpg"
                 alt="Samiya Team"
                 className="w-full h-full object-cover"
+                width={600}
+                height={450}
+                priority
               />
             </div>
           </div>

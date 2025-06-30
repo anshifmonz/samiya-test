@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Product } from '@/data/products';
 
 interface ProductCardProps {
@@ -13,10 +14,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     <Link href={`/product/${product.id}`}>
       <div className="luxury-card rounded-xl md:rounded-2xl overflow-hidden cursor-pointer group shadow-lg hover:shadow-2xl transition-all duration-500 border border-luxury-gray/10 hover:border-luxury-gold/30 bg-white/95 backdrop-blur-md">
       <div className="relative overflow-hidden">
-        <img
+        <Image
           src={firstImage}
           alt={product.title}
           className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-700"
+          width={400}
+          height={320}
+          priority
         />
         <div className="absolute inset-0 bg-gradient-to-t from-luxury-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
