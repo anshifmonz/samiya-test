@@ -1,8 +1,7 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 import Navigation from 'components/shared/Navigation';
 import { LandingSection, Collections, TestimonialsSection, ContactSection, NewArrivals, BudgetSection } from 'components/home';
-import FeaturedProductsServer from 'components/home/FeaturedProductsServer';
-import LoadingSpinner from 'components/shared/LoadingSpinner';
+import FeaturedProducts from 'components/home/FeaturedProducts';
 import getCollections from '@/lib/collections';
 import getNewArrivals from '@/lib/newarrivals';
 
@@ -22,9 +21,7 @@ export default async function HomePage() {
 
       <BudgetSection />
 
-      <Suspense fallback={<LoadingSpinner text="Loading featured products..." />}>
-        <FeaturedProductsServer />
-      </Suspense>
+      <FeaturedProducts />
 
       <TestimonialsSection />
 
