@@ -5,6 +5,7 @@ import { QueryProvider } from "./providers/QueryProvider";
 import { ToasterProvider } from "./providers/ToasterProvider";
 import "./globals.css";
 import Footer from "@/components/shared/Footer";
+import Navigation from "@/components/shared/Navigation";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -47,6 +48,7 @@ export default function RootLayout({
         <QueryProvider>
           <TooltipProvider>
             <ToasterProvider />
+            <Navigation />
             {children}
             <Footer />
           </TooltipProvider>

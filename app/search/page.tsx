@@ -1,7 +1,6 @@
 import React, { Suspense } from 'react';
 import { redirect } from 'next/navigation';
 import { searchProducts, Product } from '@/data/products';
-import Navigation from 'components/shared/Navigation';
 import SearchResultsHeader from 'components/search/SearchResultsHeader';
 import LoadingSpinner from 'components/shared/LoadingSpinner';
 import SearchClient from './SearchClient';
@@ -72,8 +71,6 @@ export default async function SearchPage({ searchParams }: Props) {
 
   return (
     <div className="min-h-screen bg-luxury-cream">
-      <Navigation />
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24">
         <SearchResultsHeader query={query} productCount={products.length} />
         <Suspense fallback={<LoadingSpinner text="Loading search results..." />}>

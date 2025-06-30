@@ -1,7 +1,6 @@
 "use client";
 
 import React from 'react';
-import Navigation from 'components/shared/Navigation';
 import { Button } from 'ui/button';
 import { Home, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
@@ -9,8 +8,6 @@ import Link from 'next/link';
 export default function NotFound() {
   return (
     <div className="min-h-screen bg-luxury-cream">
-      <Navigation />
-
       <div className="flex items-center justify-center min-h-screen pt-16">
         <div className="max-w-md mx-auto text-center px-4">
           <div className="mb-8">

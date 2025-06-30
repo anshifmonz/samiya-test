@@ -2,7 +2,6 @@ import React, { Suspense } from 'react';
 import { products } from '@/data/products';
 import collections from '@/data/collections';
 import { categories } from '@/data/categories';
-import Navigation from 'components/shared/Navigation';
 import LoadingSpinner from 'components/shared/LoadingSpinner';
 import AdminDashboardClient from './AdminDashboardClient';
 
@@ -23,8 +22,6 @@ export default async function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-luxury-cream">
-      <Navigation />
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24">
         <div className="mb-8">
           <div className="animate-fade-in-up">

@@ -3,7 +3,6 @@ import { LandingSection, Collections, NewArrivals, BudgetSection } from 'compone
 import FeaturedProducts from 'components/home/FeaturedProducts';
 import getCollections from '@/lib/collections';
 import getNewArrivals from '@/lib/newarrivals';
-import Navigation from 'components/shared/Navigation';
 
 export default async function HomePage() {
   const collections = await getCollections();
@@ -11,8 +10,6 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-luxury-cream">
-      <Navigation />
-
       <LandingSection />
 
       <Collections collections={collections} />
