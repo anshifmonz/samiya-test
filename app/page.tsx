@@ -1,17 +1,20 @@
 import React, { Suspense } from 'react';
 import Navigation from 'components/shared/Navigation';
-import { LandingSection, FeaturedCategories, OurStoreSection, TestimonialsSection, ContactSection } from 'components/home';
+import { LandingSection, Collections, OurStoreSection, TestimonialsSection, ContactSection } from 'components/home';
 import FeaturedProductsServer from 'components/home/FeaturedProductsServer';
 import LoadingSpinner from 'components/shared/LoadingSpinner';
+import { getCollections } from '@/lib/api';
 
-export default function HomePage() {
+export default async function HomePage() {
+  const collections = await getCollections();
+
   return (
     <div className="min-h-screen bg-luxury-cream">
       <Navigation />
 
       <LandingSection />
 
-      <FeaturedCategories />
+      <Collections collections={collections} />
 
       <OurStoreSection />
 

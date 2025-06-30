@@ -341,6 +341,16 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
+
+  /* Hide scrollbar */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 @media (max-width: 590px) {
