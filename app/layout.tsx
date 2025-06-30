@@ -4,8 +4,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryProvider } from "./providers/QueryProvider";
 import { ToasterProvider } from "./providers/ToasterProvider";
 import "./globals.css";
+import Footer from "@/components/shared/Footer";
 
-const inter = Inter({ 
+const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
 });
@@ -47,6 +48,7 @@ export default function RootLayout({
           <TooltipProvider>
             <ToasterProvider />
             {children}
+            <Footer />
           </TooltipProvider>
         </QueryProvider>
       </body>
