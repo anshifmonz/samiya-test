@@ -1,10 +1,10 @@
 import React from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from 'ui/button';
 import CategoryFilter from './filter/CategoryFilter';
 import PriceFilter from './filter/PriceFilter';
 import ColorFilter from './filter/ColorFilter';
 import TagsFilter from './filter/TagsFilter';
-import { useProductFilters, type ProductFilters } from '@/hooks/useProductFilters';
+import { useProductFilters, type ProductFilters } from 'hooks/useProductFilters';
 
 interface FilterPanelProps {
   onFiltersChange: (filters: ProductFilters) => void;

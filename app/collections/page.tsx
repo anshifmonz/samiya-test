@@ -1,8 +1,8 @@
 import React, { Suspense } from 'react';
-import Navigation from '@/components/shared/Navigation';
-import CollectionsHero from '@/components/collections/CollectionsHero';
-import CollectionsGridServer from '@/components/collections/CollectionsGridServer';
-import LoadingSpinner from '@/components/shared/LoadingSpinner';
+import Navigation from 'components/shared/Navigation';
+import CollectionsHero from 'components/collections/CollectionsHero';
+import CollectionsGridServer from 'components/collections/CollectionsGridServer';
+import LoadingSpinner from 'components/shared/LoadingSpinner';
 
 export default function CollectionsPage() {
   return (

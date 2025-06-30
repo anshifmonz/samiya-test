@@ -1,17 +1,16 @@
 import React, { Suspense } from 'react';
-import { products, Product } from '@/data/products';
+import { products } from '@/data/products';
 import collections from '@/data/collections';
-import { categories, Category } from '@/data/categories';
-import Navigation from '@/components/shared/Navigation';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import LoadingSpinner from '@/components/shared/LoadingSpinner';
+import { categories } from '@/data/categories';
+import Navigation from 'components/shared/Navigation';
+import LoadingSpinner from 'components/shared/LoadingSpinner';
 import AdminDashboardClient from './AdminDashboardClient';
 
 // Server functions to fetch data
 async function getAdminData() {
   // Simulate API calls (in real implementation, these would be actual API calls)
   await new Promise(resolve => setTimeout(resolve, 100));
-  
+
   return {
     products: [...products],
     collections: [...collections],
@@ -40,7 +39,7 @@ export default async function AdminDashboard() {
 
         <div className="bg-white/80 backdrop-blur-sm border border-luxury-gray/20 rounded-xl p-6">
           <Suspense fallback={<LoadingSpinner text="Loading admin dashboard..." />}>
-            <AdminDashboardClient 
+            <AdminDashboardClient
               initialProducts={productList}
               initialCollections={collectionList}
               initialCategories={categoryList}

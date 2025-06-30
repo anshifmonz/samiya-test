@@ -1,5 +1,5 @@
 import React from 'react';
-import { Slider } from '@/components/ui/slider';
+import { Slider } from 'ui/slider';
 
 interface PriceFilterProps {
   priceRange: [number];

@@ -1,5 +1,5 @@
 import React from 'react';
-import Navigation from '../../components/shared/Navigation';
+import Navigation from 'components/shared/Navigation';
 
 interface ProductNotFoundProps {
   onGoHome: () => void;

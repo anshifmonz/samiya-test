@@ -1,9 +1,8 @@
-
 "use client";
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { Product } from '../../data/products';
+import { Product } from '@/data/products';
 import ProductCard from '../shared/ProductCard';
 
 interface ProductsGridProps {

@@ -4,10 +4,10 @@ import React, { useState } from 'react';
 import { Product } from '@/data/products';
 import { type Collection } from '@/data/collections';
 import { Category } from '@/data/categories';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import AdminProductsTab from '@/components/admin/product/AdminProductsTab';
-import AdminCollectionsTab from '@/components/admin/collection/AdminCollectionsTab';
-import AdminCategoriesTab from '@/components/admin/category/AdminCategoriesTab';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from 'ui/tabs';
+import AdminProductsTab from 'components/admin/product/AdminProductsTab';
+import AdminCollectionsTab from 'components/admin/collection/AdminCollectionsTab';
+import AdminCategoriesTab from 'components/admin/category/AdminCategoriesTab';
 
 interface Props {
   initialProducts: Product[];
@@ -15,10 +15,10 @@ interface Props {
   initialCategories: Category[];
 }
 
-export default function AdminDashboardClient({ 
-  initialProducts, 
-  initialCollections, 
-  initialCategories 
+export default function AdminDashboardClient({
+  initialProducts,
+  initialCollections,
+  initialCategories
 }: Props) {
   const [productList, setProductList] = useState<Product[]>(initialProducts);
   const [collectionList, setCollectionList] = useState<Collection[]>(initialCollections);

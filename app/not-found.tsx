@@ -1,6 +1,6 @@
 import React from 'react';
-import Navigation from '@/components/shared/Navigation';
-import { Button } from '@/components/ui/button';
+import Navigation from 'components/shared/Navigation';
+import { Button } from 'ui/button';
 import { Home, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
@@ -8,7 +8,7 @@ export default function NotFound() {
   return (
     <div className="min-h-screen bg-luxury-cream">
       <Navigation />
-      
+
       <div className="flex items-center justify-center min-h-screen pt-16">
         <div className="max-w-md mx-auto text-center px-4">
           <div className="mb-8">
@@ -20,7 +20,7 @@ export default function NotFound() {
               The page you're looking for doesn't exist or has been moved.
             </p>
           </div>
-          
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
               asChild
@@ -31,7 +31,7 @@ export default function NotFound() {
                 Go Home
               </Link>
             </Button>
-            
+
             <Button
               variant="outline"
               onClick={() => window.history.back()}

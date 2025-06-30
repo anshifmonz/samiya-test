@@ -1,12 +1,12 @@
 import React from 'react';
 import ProductCard from '../shared/ProductCard';
-import { products } from '../../data/products';
+import { products } from '@/data/products';
 
 // Server function to fetch featured products
 async function getFeaturedProducts() {
   // Simulate API call delay (remove this in real implementation)
   await new Promise(resolve => setTimeout(resolve, 100));
-  
+
   // Get the first 6 products as featured
   return products.slice(0, 6);
 }

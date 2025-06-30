@@ -1,6 +1,6 @@
 import React from 'react';
 import { Category } from '@/data/categories';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui/select';
 
 interface ParentCategorySelectProps {
   value: string;

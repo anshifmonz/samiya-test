@@ -1,6 +1,6 @@
 import React from 'react';
 import ProductCard from '../shared/ProductCard';
-import { products } from '../../data/products';
+import { products } from '@/data/products';
 
 const FeaturedProducts: React.FC = () => {
   const featuredProducts = products.slice(0, 6);

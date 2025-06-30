@@ -2,9 +2,9 @@
 
 import React, { useState } from 'react';
 import { Product } from '@/data/products';
-import ProductImageGallery from '@/components/product/ProductImageGallery';
-import ProductDetails from '@/components/product/ProductDetails';
-import ProductColorSwatches from '@/components/product/ProductColorSwatches';
+import ProductImageGallery from 'components/product/ProductImageGallery';
+import ProductDetails from 'components/product/ProductDetails';
+import ProductColorSwatches from 'components/product/ProductColorSwatches';
 
 interface Props {
   product: Product;

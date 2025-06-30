@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Filter } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from 'ui/button';
 import {
   Sheet,
   SheetContent,

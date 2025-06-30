@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { products, Product, getProductById } from '@/data/products';
+import { products, Product } from '@/data/products';
 
 // In a real application, you would use a database
 // For this example, we'll use in-memory storage
@@ -11,7 +11,7 @@ export async function GET(
 ) {
   try {
     const product = productsData.find(p => p.id === params.id);
-    
+
     if (!product) {
       return NextResponse.json(
         { error: 'Product not found' },
@@ -43,9 +43,9 @@ export async function PUT(
 ) {
   try {
     const productData: Product = await request.json();
-    
+
     const index = productsData.findIndex(p => p.id === params.id);
-    
+
     if (index === -1) {
       return NextResponse.json(
         { error: 'Product not found' },
@@ -74,7 +74,7 @@ export async function DELETE(
 ) {
   try {
     const index = productsData.findIndex(p => p.id === params.id);
-    
+
     if (index === -1) {
       return NextResponse.json(
         { error: 'Product not found' },

@@ -1,8 +1,8 @@
 import React, { Suspense } from 'react';
-import Navigation from '@/components/shared/Navigation';
-import { LandingSection, FeaturedCategories, OurStoreSection, TestimonialsSection, ContactSection } from '@/components/home';
-import FeaturedProductsServer from '@/components/home/FeaturedProductsServer';
-import LoadingSpinner from '@/components/shared/LoadingSpinner';
+import Navigation from 'components/shared/Navigation';
+import { LandingSection, FeaturedCategories, OurStoreSection, TestimonialsSection, ContactSection } from 'components/home';
+import FeaturedProductsServer from 'components/home/FeaturedProductsServer';
+import LoadingSpinner from 'components/shared/LoadingSpinner';
 
 export default function HomePage() {
   return (
