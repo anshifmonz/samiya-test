@@ -1,7 +1,9 @@
 /** @type {import('next').NextConfig} */
+const path = require('path')
+
 const nextConfig = {
   images: {
-    domains: ['images.jdmagicbox.com', 'lovable.dev'],
+    domains: [],
     unoptimized: true,
   },
   eslint: {
@@ -10,9 +12,20 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
+  webpack(config) {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      components: path.resolve(__dirname, "src/components"),
+      ui:         path.resolve(__dirname, "src/components/ui"),
+      utils:      path.resolve(__dirname, "src/lib/utils"),
+      lib:        path.resolve(__dirname, "src/lib"),
+      hooks:      path.resolve(__dirname, "src/hooks"),
+    };
+    return config;
+  },
   async rewrites() {
     return [
-      // Support for dynamic product routes
+      // support for dynamic product routes
       {
         source: '/product/:id',
         destination: '/product/[id]',
