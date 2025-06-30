@@ -16,11 +16,12 @@ const LandingSection: React.FC = () => {
   return (
     <div id="hero" className="relative overflow-hidden min-h-screen flex items-center justify-center">
       <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: 'url(/assets/images/home/landing-hero.jpg)'
+          className="absolute inset-0 bg-cover bg-[position:20%_center] sm:bg-[position:10%_center] xs740:bg-center bg-no-repeat landing-bg-pos"
+          style={{
+          backgroundImage: 'url(/assets/images/home/landing-hero.jpg)',
         }}
-      ></div>
+      >
+      </div>
 
       <div className="absolute inset-0 luxury-gradient-overlay"></div>
 
@@ -31,19 +32,16 @@ const LandingSection: React.FC = () => {
 
       <div className={`relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 text-center z-10 transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
         <div className="animate-fade-in-up">
-          <h1 className="luxury-heading text-7xl sm:text-9xl text-white mb-8 leading-none">
-            {/* <span className="luxury-subheading block text-luxury-gold text-2xl sm:text-3xl mb-8 tracking-[0.3em]">
-              Luxury Wedding Collection
-            </span> */}
+          <h1 className="luxury-heading text-8xl sm:text-9xl text-white mb-8 leading-none">
             Samiya
-            <span className="block text-4xl sm:text-5xl luxury-subheading tracking-[0.2em] mt-4 text-luxury-gold">
+            <span className="block xs:text-3xl text-4xl sm:text-5xl md:text-2xl lg:text-3xl luxury-subheading tracking-[0.2em] mt-4 text-luxury-gold">
               Wedding Center
             </span>
           </h1>
         </div>
 
         <div className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-          <p className="luxury-body text-xl sm:text-2xl text-white/90 mb-16 max-w-4xl mx-auto leading-relaxed">
+          <p className="luxury-body text-lg sm:text-1xl text-white/90 mb-16 max-w-4xl mx-auto leading-relaxed">
             Where timeless elegance meets contemporary sophistication.
             Discover our curated collection of premium wedding attire,
             crafted for life's most precious moments.

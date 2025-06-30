@@ -342,3 +342,24 @@
     overflow: hidden;
   }
 }
+
+@media (max-width: 590px) {
+  .landing-bg-pos {
+    background-position: calc(-280px) center !important;
+  }
+}
+@media (max-width: 480px) {
+  .landing-bg-pos {
+    background-position: calc(-375px) center !important;
+  }
+}
+@media (max-width: 430px) {
+  .landing-bg-pos {
+    background-position: calc(-395px) center !important;
+  }
+}
+@media (max-width: 420px) {
+  .landing-bg-pos {
+    background-position: calc(-415px) center !important;
+  }
+}
