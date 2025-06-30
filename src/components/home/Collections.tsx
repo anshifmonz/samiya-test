@@ -33,7 +33,7 @@ const Collections = ({ collections }: { collections: Collection[] }) => {
           </div>
         </div>
 
-        <Carousel className="w-full" opts={{ align: "start", loop: true }}>
+        <Carousel className="w-full" opts={{ align: "start", loop: false }}>
           <CarouselContent className="-ml-2 md:-ml-4">
             {collections.map((collection) => (
               <CarouselItem key={collection.id} className="pl-2 md:pl-4 basis-4/5 md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
