@@ -3,7 +3,7 @@ import Navigation from 'components/shared/Navigation';
 import { LandingSection, Collections, OurStoreSection, TestimonialsSection, ContactSection } from 'components/home';
 import FeaturedProductsServer from 'components/home/FeaturedProductsServer';
 import LoadingSpinner from 'components/shared/LoadingSpinner';
-import { getCollections } from '@/lib/api';
+import getCollections from '@/lib/collections';
 
 export default async function HomePage() {
   const collections = await getCollections();

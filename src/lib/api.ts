@@ -2,15 +2,16 @@ import { Product, searchProducts } from '@/data/products';
 import { type Collection } from '@/data/collections';
 import { Category } from '@/data/categories';
 import { type ProductFilters } from '@/hooks/useProductFilters';
+import getCollections from './collections';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '';
 
 // Generic fetch function with caching
 async function fetchWithCache<T>(
-  url: string, 
-  options: RequestInit & { 
-    cache?: RequestCache; 
-    next?: { revalidate?: number | false; tags?: string[] }; 
+  url: string,
+  options: RequestInit & {
+    cache?: RequestCache;
+    next?: { revalidate?: number | false; tags?: string[] };
   } = {}
 ): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${url}`, {
@@ -32,11 +33,11 @@ export async function getProducts(filters?: ProductFilters): Promise<Product[]> 
     // For this implementation, we'll use the local search function
     // In a real app, this would be an API call with caching
     await new Promise(resolve => setTimeout(resolve, 100)); // Simulate API delay
-    
+
     if (filters) {
       return searchProducts('', filters);
     }
-    
+
     return (await import('@/data/products')).products;
   } catch (error) {
     console.error('Error fetching products:', error);
@@ -47,10 +48,10 @@ export async function getProducts(filters?: ProductFilters): Promise<Product[]> 
 export async function getProductById(id: string): Promise<{ product: Product | null; similarProducts: Product[] }> {
   try {
     await new Promise(resolve => setTimeout(resolve, 100)); // Simulate API delay
-    
+
     const { getProductById, products } = await import('@/data/products');
     const product = getProductById(id);
-    
+
     if (!product) {
       return { product: null, similarProducts: [] };
     }
@@ -69,7 +70,7 @@ export async function getProductById(id: string): Promise<{ product: Product | n
 export async function getFeaturedProducts(): Promise<Product[]> {
   try {
     await new Promise(resolve => setTimeout(resolve, 100)); // Simulate API delay
-    
+
     const { products } = await import('@/data/products');
     return products.slice(0, 6);
   } catch (error) {
@@ -78,24 +79,11 @@ export async function getFeaturedProducts(): Promise<Product[]> {
   }
 }
 
-// Collection API functions
-export async function getCollections(): Promise<Collection[]> {
-  try {
-    await new Promise(resolve => setTimeout(resolve, 100)); // Simulate API delay
-    
-    const collections = (await import('@/data/collections')).default;
-    return collections;
-  } catch (error) {
-    console.error('Error fetching collections:', error);
-    return [];
-  }
-}
-
 // Category API functions
 export async function getCategories(): Promise<Category[]> {
   try {
     await new Promise(resolve => setTimeout(resolve, 100)); // Simulate API delay
-    
+
     const { categories } = await import('@/data/categories');
     return categories;
   } catch (error) {
@@ -108,7 +96,7 @@ export async function getCategories(): Promise<Category[]> {
 export async function searchProductsAPI(query: string, filters?: ProductFilters): Promise<Product[]> {
   try {
     await new Promise(resolve => setTimeout(resolve, 100)); // Simulate API delay
-    
+
     return searchProducts(query, filters);
   } catch (error) {
     console.error('Error searching products:', error);
