@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react';
 import Navigation from 'components/shared/Navigation';
-import { LandingSection, Collections, TestimonialsSection, ContactSection, NewArrivals } from 'components/home';
+import { LandingSection, Collections, TestimonialsSection, ContactSection, NewArrivals, BudgetSection } from 'components/home';
 import FeaturedProductsServer from 'components/home/FeaturedProductsServer';
 import LoadingSpinner from 'components/shared/LoadingSpinner';
 import getCollections from '@/lib/collections';
@@ -20,10 +20,11 @@ export default async function HomePage() {
 
       <NewArrivals newArrivals={newArrivals} />
 
+      <BudgetSection />
+
       <Suspense fallback={<LoadingSpinner text="Loading featured products..." />}>
         <FeaturedProductsServer />
       </Suspense>
-
 
       <TestimonialsSection />
 
