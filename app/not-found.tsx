@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import Navigation from 'components/shared/Navigation';
 import { Button } from 'ui/button';
