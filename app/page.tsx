@@ -1,9 +1,9 @@
 import React from 'react';
-import Navigation from 'components/shared/Navigation';
-import { LandingSection, Collections, TestimonialsSection, ContactSection, NewArrivals, BudgetSection } from 'components/home';
+import { LandingSection, Collections, NewArrivals, BudgetSection, TestimonialsSection } from 'components/home';
 import FeaturedProducts from 'components/home/FeaturedProducts';
 import getCollections from '@/lib/collections';
 import getNewArrivals from '@/lib/newarrivals';
+import Navigation from 'components/shared/Navigation';
 
 export default async function HomePage() {
   const collections = await getCollections();
@@ -24,8 +24,6 @@ export default async function HomePage() {
       <FeaturedProducts />
 
       <TestimonialsSection />
-
-      <ContactSection />
     </div>
   );
 }
