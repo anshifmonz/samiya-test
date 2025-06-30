@@ -1,5 +1,5 @@
 import React from 'react';
-import { LandingSection, Collections, NewArrivals, BudgetSection, TestimonialsSection } from 'components/home';
+import { LandingSection, Collections, NewArrivals, BudgetSection } from 'components/home';
 import FeaturedProducts from 'components/home/FeaturedProducts';
 import getCollections from '@/lib/collections';
 import getNewArrivals from '@/lib/newarrivals';
@@ -22,8 +22,6 @@ export default async function HomePage() {
       <BudgetSection />
 
       <FeaturedProducts />
-
-      <TestimonialsSection />
     </div>
   );
 }
