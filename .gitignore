@@ -27,3 +27,5 @@ data.txt
 /.next/
 .env
 db.sql
+*.md
+scripts
