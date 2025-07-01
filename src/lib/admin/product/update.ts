@@ -62,6 +62,56 @@ export default async function updateProduct(product: Product): Promise<Product |
     }
   }
 
-  // 5. Return the updated product
+  // 5. Handle tags
+  // First, delete all existing tag relationships
+  const { error: delTagError } = await supabaseAdmin
+    .from('product_tags')
+    .delete()
+    .eq('product_id', product.id);
+  if (delTagError) {
+    console.error('Error deleting old product tags:', delTagError);
+  }
+  
+  // Then add new tag relationships
+  if (product.tags && product.tags.length > 0) {
+    for (const tagName of product.tags) {
+      // Find or create tag
+      let { data: tagData, error: tagFindError } = await supabaseAdmin
+        .from('tags')
+        .select('id')
+        .eq('name', tagName)
+        .limit(1);
+      
+      let tagId;
+      if (tagFindError || !tagData || tagData.length === 0) {
+        // Create new tag
+        const { data: newTagData, error: tagCreateError } = await supabaseAdmin
+          .from('tags')
+          .insert({ name: tagName })
+          .select()
+          .single();
+        if (tagCreateError || !newTagData) {
+          console.error('Error creating tag:', tagCreateError);
+          continue;
+        }
+        tagId = newTagData.id;
+      } else {
+        tagId = tagData[0].id;
+      }
+      
+      // Link product to tag
+      const { error: linkError } = await supabaseAdmin
+        .from('product_tags')
+        .insert({
+          product_id: product.id,
+          tag_id: tagId,
+        });
+      if (linkError) {
+        console.error('Error linking product to tag:', linkError);
+      }
+    }
+  }
+
+  // 6. Return the updated product
   return product;
 }

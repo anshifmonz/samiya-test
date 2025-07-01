@@ -54,6 +54,46 @@ export default async function createProduct(newProduct: NewProductInput): Promis
     }
   }
 
+  // 3. Handle tags
+  if (newProduct.tags && newProduct.tags.length > 0) {
+    for (const tagName of newProduct.tags) {
+      // Find or create tag
+      let { data: tagData, error: tagFindError } = await supabaseAdmin
+        .from('tags')
+        .select('id')
+        .eq('name', tagName)
+        .limit(1);
+      
+      let tagId;
+      if (tagFindError || !tagData || tagData.length === 0) {
+        // Create new tag
+        const { data: newTagData, error: tagCreateError } = await supabaseAdmin
+          .from('tags')
+          .insert({ name: tagName })
+          .select()
+          .single();
+        if (tagCreateError || !newTagData) {
+          console.error('Error creating tag:', tagCreateError);
+          continue;
+        }
+        tagId = newTagData.id;
+      } else {
+        tagId = tagData[0].id;
+      }
+      
+      // Link product to tag
+      const { error: linkError } = await supabaseAdmin
+        .from('product_tags')
+        .insert({
+          product_id: productId,
+          tag_id: tagId,
+        });
+      if (linkError) {
+        console.error('Error linking product to tag:', linkError);
+      }
+    }
+  }
+
   return {
     id: productId,
     title: productData.title,

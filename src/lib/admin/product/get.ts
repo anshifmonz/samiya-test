@@ -13,7 +13,8 @@ async function getActiveProductsFromSupabase(): Promise<Product[]> {
       primary_image_url,
       category_id,
       category:categories(name),
-      product_images:product_images(color_name,image_url)
+      product_images:product_images(color_name,image_url),
+      product_tags:product_tags(tag:tags(name))
     `)
     .eq('is_active', true);
 
@@ -30,13 +31,23 @@ async function getActiveProductsFromSupabase(): Promise<Product[]> {
         images[img.color_name].push(img.image_url);
       });
     }
+    
+    const tags: string[] = [];
+    if (row.product_tags) {
+      row.product_tags.forEach((pt: any) => {
+        if (pt.tag?.name) {
+          tags.push(pt.tag.name);
+        }
+      });
+    }
+    
     return {
       id: row.id,
       title: row.title,
       description: row.description,
       images,
       price: Number(row.price),
-      tags: [],
+      tags,
       category: row.category?.name || '',
     };
   });
