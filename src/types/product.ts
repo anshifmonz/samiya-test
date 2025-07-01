@@ -1,0 +1,17 @@
+export interface Product {
+  id: string;
+  title: string;
+  description: string;
+  images: Record<string, string[]>;
+  price: number;
+  tags: string[];
+  category: string;
+}
+
+export type ProductFilters = {
+  category?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  colors?: string[];
+  tags?: string[];
+};
