@@ -6,7 +6,7 @@ const FeaturedProducts: React.FC = () => {
   const featuredProducts = products.slice(0, 6);
 
   return (
-    <div className="bg-luxury-beige py-32 relative">
+    <div className="bg-luxury-cream py-32 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-24">
           <div className="animate-fade-in-up">
