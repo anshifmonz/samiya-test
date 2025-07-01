@@ -14,6 +14,11 @@ export default async function createProduct(newProduct: NewProductInput): Promis
   }
   const category_id = categories[0].id;
 
+  // Determine primary color and image (first color, first image of that color)
+  const colorKeys = Object.keys(newProduct.images);
+  const primaryColor = colorKeys[0] || null;
+  const primaryImageUrl = primaryColor ? newProduct.images[primaryColor]?.[0] || null : null;
+
   const { data: productData, error: prodError } = await supabaseAdmin
     .from('products')
     .insert({
@@ -22,8 +27,8 @@ export default async function createProduct(newProduct: NewProductInput): Promis
       price: newProduct.price,
       category_id,
       is_active: true,
-      primary_color: Object.keys(newProduct.images)[0] || null,
-      primary_image_url: Object.values(newProduct.images)[0]?.[0] || null,
+      primary_color: primaryColor,
+      primary_image_url: primaryImageUrl,
     })
     .select()
     .single();
@@ -34,13 +39,18 @@ export default async function createProduct(newProduct: NewProductInput): Promis
 
   const productId = productData.id;
   const imageRows = [];
-  for (const [color, urls] of Object.entries(newProduct.images)) {
+  const colorKeys = Object.keys(newProduct.images);
+  
+  for (const [colorIndex, color] of colorKeys.entries()) {
+    const urls = newProduct.images[color];
     urls.forEach((url, idx) => {
+      // Primary image is the first image of the first color
+      const isPrimary = colorIndex === 0 && idx === 0;
       imageRows.push({
         product_id: productId,
         color_name: color,
         image_url: url,
-        is_primary: idx === 0,
+        is_primary: isPrimary,
         sort_order: idx,
       });
     });
@@ -51,6 +61,25 @@ export default async function createProduct(newProduct: NewProductInput): Promis
       .insert(imageRows);
     if (imgError) {
       console.error('Error inserting product images:', imgError);
+    }
+  }
+
+  // 2.5. Insert product colors
+  const colorRows = [];
+  for (const [colorIndex, color] of colorKeys.entries()) {
+    colorRows.push({
+      product_id: productId,
+      color_name: color,
+      is_primary: colorIndex === 0,
+      sort_order: colorIndex,
+    });
+  }
+  if (colorRows.length > 0) {
+    const { error: colorError } = await supabaseAdmin
+      .from('product_colors')
+      .insert(colorRows);
+    if (colorError) {
+      console.error('Error inserting product colors:', colorError);
     }
   }
 

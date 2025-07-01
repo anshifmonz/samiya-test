@@ -14,7 +14,12 @@ export default async function updateProduct(product: Product): Promise<Product |
   }
   const category_id = categories[0].id;
 
-  // 2. Update product
+  // 2. Determine primary color and image (first color, first image of that color)
+  const colorKeys = Object.keys(product.images);
+  const primaryColor = colorKeys[0] || null;
+  const primaryImageUrl = primaryColor ? product.images[primaryColor]?.[0] || null : null;
+
+  // Update product
   const { error: prodError } = await supabaseAdmin
     .from('products')
     .update({
@@ -22,8 +27,8 @@ export default async function updateProduct(product: Product): Promise<Product |
       description: product.description,
       price: product.price,
       category_id,
-      primary_color: Object.keys(product.images)[0] || null,
-      primary_image_url: Object.values(product.images)[0]?.[0] || null,
+      primary_color: primaryColor,
+      primary_image_url: primaryImageUrl,
     })
     .eq('id', product.id);
   if (prodError) {
@@ -42,13 +47,18 @@ export default async function updateProduct(product: Product): Promise<Product |
 
   // 4. Insert new images
   const imageRows = [];
-  for (const [color, urls] of Object.entries(product.images)) {
+  const colorKeys = Object.keys(product.images);
+  
+  for (const [colorIndex, color] of colorKeys.entries()) {
+    const urls = product.images[color];
     urls.forEach((url, idx) => {
+      // Primary image is the first image of the first color
+      const isPrimary = colorIndex === 0 && idx === 0;
       imageRows.push({
         product_id: product.id,
         color_name: color,
         image_url: url,
-        is_primary: idx === 0,
+        is_primary: isPrimary,
         sort_order: idx,
       });
     });
@@ -59,6 +69,34 @@ export default async function updateProduct(product: Product): Promise<Product |
       .insert(imageRows);
     if (imgError) {
       console.error('Error inserting product images:', imgError);
+    }
+  }
+
+  // 4.5. Delete old colors and insert new ones
+  const { error: delColorError } = await supabaseAdmin
+    .from('product_colors')
+    .delete()
+    .eq('product_id', product.id);
+  if (delColorError) {
+    console.error('Error deleting old product colors:', delColorError);
+  }
+
+  // Insert new colors
+  const colorRows = [];
+  for (const [colorIndex, color] of colorKeys.entries()) {
+    colorRows.push({
+      product_id: product.id,
+      color_name: color,
+      is_primary: colorIndex === 0,
+      sort_order: colorIndex,
+    });
+  }
+  if (colorRows.length > 0) {
+    const { error: colorError } = await supabaseAdmin
+      .from('product_colors')
+      .insert(colorRows);
+    if (colorError) {
+      console.error('Error inserting product colors:', colorError);
     }
   }
 

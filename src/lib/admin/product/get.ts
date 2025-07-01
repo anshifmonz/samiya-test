@@ -13,7 +13,7 @@ async function getActiveProductsFromSupabase(): Promise<Product[]> {
       primary_image_url,
       category_id,
       category:categories(name),
-      product_images:product_images(color_name,image_url),
+      product_images:product_images(color_name,image_url,sort_order,is_primary),
       product_tags:product_tags(tag:tags(name))
     `)
     .eq('is_active', true);
@@ -26,7 +26,18 @@ async function getActiveProductsFromSupabase(): Promise<Product[]> {
   return (data || []).map((row: any) => {
     const images: Record<string, string[]> = {};
     if (row.product_images) {
-      row.product_images.forEach((img: any) => {
+      // Sort images by color and then by sort_order to maintain proper ordering
+      const sortedImages = row.product_images.sort((a: any, b: any) => {
+        if (a.color_name !== b.color_name) {
+          // Prioritize primary color first, then alphabetical
+          if (a.color_name === row.primary_color) return -1;
+          if (b.color_name === row.primary_color) return 1;
+          return a.color_name.localeCompare(b.color_name);
+        }
+        return a.sort_order - b.sort_order;
+      });
+      
+      sortedImages.forEach((img: any) => {
         if (!images[img.color_name]) images[img.color_name] = [];
         images[img.color_name].push(img.image_url);
       });
