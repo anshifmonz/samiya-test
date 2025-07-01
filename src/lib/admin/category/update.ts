@@ -1,8 +1,8 @@
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import { Category } from '@/data/categories';
 
 export default async function updateCategory(category: Category): Promise<Category | null> {
-  const { error } = await supabase
+  const { error } = await supabaseAdmin
     .from('categories')
     .update({
       name: category.name,

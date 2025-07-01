@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import { Product } from '@/data/products';
 
 interface NewProductInput {
@@ -12,7 +12,7 @@ interface NewProductInput {
 
 export default async function createProduct(newProduct: NewProductInput): Promise<Product | null> {
   // 1. Find category_id by name
-  const { data: categories, error: catError } = await supabase
+  const { data: categories, error: catError } = await supabaseAdmin
     .from('categories')
     .select('id')
     .eq('name', newProduct.category)
@@ -23,7 +23,7 @@ export default async function createProduct(newProduct: NewProductInput): Promis
   }
   const category_id = categories[0].id;
 
-  const { data: productData, error: prodError } = await supabase
+  const { data: productData, error: prodError } = await supabaseAdmin
     .from('products')
     .insert({
       title: newProduct.title,
@@ -55,7 +55,7 @@ export default async function createProduct(newProduct: NewProductInput): Promis
     });
   }
   if (imageRows.length > 0) {
-    const { error: imgError } = await supabase
+    const { error: imgError } = await supabaseAdmin
       .from('product_images')
       .insert(imageRows);
     if (imgError) {

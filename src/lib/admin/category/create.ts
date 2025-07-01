@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import { Category } from '@/data/categories';
 
 interface NewCategoryInput {
@@ -11,7 +11,7 @@ interface NewCategoryInput {
 }
 
 export default async function createCategory(newCategory: NewCategoryInput): Promise<Category | null> {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('categories')
     .insert({
       name: newCategory.name,

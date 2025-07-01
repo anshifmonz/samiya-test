@@ -1,8 +1,8 @@
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import { Collection } from '@/data/collections';
 
 export default async function updateCollection(collection: Collection): Promise<Collection | null> {
-  const { error } = await supabase
+  const { error } = await supabaseAdmin
     .from('collections')
     .update({
       title: collection.title,

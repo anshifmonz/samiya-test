@@ -1,9 +1,9 @@
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import { Product } from '@/data/products';
 
 export default async function updateProduct(product: Product): Promise<Product | null> {
   // 1. Find category_id by name
-  const { data: categories, error: catError } = await supabase
+  const { data: categories, error: catError } = await supabaseAdmin
     .from('categories')
     .select('id')
     .eq('name', product.category)
@@ -15,7 +15,7 @@ export default async function updateProduct(product: Product): Promise<Product |
   const category_id = categories[0].id;
 
   // 2. Update product
-  const { error: prodError } = await supabase
+  const { error: prodError } = await supabaseAdmin
     .from('products')
     .update({
       title: product.title,
@@ -32,7 +32,7 @@ export default async function updateProduct(product: Product): Promise<Product |
   }
 
   // 3. Delete old images
-  const { error: delImgError } = await supabase
+  const { error: delImgError } = await supabaseAdmin
     .from('product_images')
     .delete()
     .eq('product_id', product.id);
@@ -54,7 +54,7 @@ export default async function updateProduct(product: Product): Promise<Product |
     });
   }
   if (imageRows.length > 0) {
-    const { error: imgError } = await supabase
+    const { error: imgError } = await supabaseAdmin
       .from('product_images')
       .insert(imageRows);
     if (imgError) {

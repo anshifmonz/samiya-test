@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import { Collection } from '@/data/collections';
 
 interface NewCollectionInput {
@@ -8,7 +8,7 @@ interface NewCollectionInput {
 }
 
 export default async function createCollection(newCollection: NewCollectionInput): Promise<Collection | null> {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('collections')
     .insert({
       title: newCollection.title,

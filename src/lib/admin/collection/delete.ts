@@ -1,7 +1,7 @@
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabaseAdmin';
 
 export default async function deleteCollection(collectionId: string): Promise<boolean> {
-  const { error } = await supabase
+  const { error } = await supabaseAdmin
     .from('collections')
     .delete()
     .eq('id', collectionId);

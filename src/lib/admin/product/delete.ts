@@ -1,8 +1,8 @@
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabaseAdmin';
 
 export default async function deleteProduct(productId: string): Promise<boolean> {
   // 1. Delete product_images (should cascade, but explicit for safety)
-  const { error: imgError } = await supabase
+  const { error: imgError } = await supabaseAdmin
     .from('product_images')
     .delete()
     .eq('product_id', productId);
@@ -12,7 +12,7 @@ export default async function deleteProduct(productId: string): Promise<boolean>
   }
 
   // 2. Delete product
-  const { error: prodError } = await supabase
+  const { error: prodError } = await supabaseAdmin
     .from('products')
     .delete()
     .eq('id', productId);

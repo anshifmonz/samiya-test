@@ -1,7 +1,7 @@
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabaseAdmin';
 
 export default async function deleteCategory(categoryId: string): Promise<boolean> {
-  const { error } = await supabase
+  const { error } = await supabaseAdmin
     .from('categories')
     .delete()
     .eq('id', categoryId);
