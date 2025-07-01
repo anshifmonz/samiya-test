@@ -25,3 +25,5 @@ dist-ssr
 
 data.txt
 /.next/
+.env
+db.sql
