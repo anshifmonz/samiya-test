@@ -8,9 +8,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from 'ui/tabs';
 import AdminProductsTab from 'components/admin/product/AdminProductsTab';
 import AdminCollectionsTab from 'components/admin/collection/AdminCollectionsTab';
 import AdminCategoriesTab from 'components/admin/category/AdminCategoriesTab';
+
 import createProduct from '@/lib/admin/product/create';
 import updateProduct from '@/lib/admin/product/update';
 import deleteProduct from '@/lib/admin/product/delete';
+import createCollection from '@/lib/admin/collection/create';
+import updateCollection from '@/lib/admin/collection/update';
+import deleteCollection from '@/lib/admin/collection/delete';
 
 interface Props {
   initialProducts: Product[];
@@ -70,17 +74,9 @@ export default function AdminDashboardClient({
   // Collection handlers with API calls
   const handleAddCollection = async (newCollection: Omit<Collection, 'id'>) => {
     try {
-      const response = await fetch('/api/collections', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newCollection),
-      });
-
-      if (response.ok) {
-        const { collection } = await response.json();
-        setCollectionList([...collectionList, collection]);
+      const created = await createCollection(newCollection);
+      if (created) {
+        setCollectionList([...collectionList, created]);
       } else {
         console.error('Failed to add collection');
       }
@@ -89,12 +85,30 @@ export default function AdminDashboardClient({
     }
   };
 
-  const handleEditCollection = (updatedCollection: Collection) => {
-    setCollectionList(collectionList.map(c => c.id === updatedCollection.id ? updatedCollection : c));
+  const handleEditCollection = async (updatedCollection: Collection) => {
+    try {
+      const updated = await updateCollection(updatedCollection);
+      if (updated) {
+        setCollectionList(collectionList.map(c => c.id === updatedCollection.id ? updated : c));
+      } else {
+        console.error('Failed to update collection');
+      }
+    } catch (error) {
+      console.error('Error updating collection:', error);
+    }
   };
 
-  const handleDeleteCollection = (collectionId: string) => {
-    setCollectionList(collectionList.filter(c => c.id !== collectionId));
+  const handleDeleteCollection = async (collectionId: string) => {
+    try {
+      const deleted = await deleteCollection(collectionId);
+      if (deleted) {
+        setCollectionList(collectionList.filter(c => c.id !== collectionId));
+      } else {
+        console.error('Failed to delete collection');
+      }
+    } catch (error) {
+      console.error('Error deleting collection:', error);
+    }
   };
 
   // Category handlers with API calls

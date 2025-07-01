@@ -1,16 +1,17 @@
 import React, { Suspense } from 'react';
-import collections from '@/data/collections';
 import { categories } from '@/data/categories';
 import LoadingSpinner from 'components/shared/LoadingSpinner';
 import AdminDashboardClient from './AdminDashboardClient';
 import getActiveProductsFromSupabase from '@/lib/admin/product/get';
+import getCollections from '@/lib/admin/collection/get';
 
 async function getAdminData() {
   const products = await getActiveProductsFromSupabase();
+  const collections = await getCollections();
 
   return {
     products,
-    collections: [...collections],
+    collections,
     categories: [...categories]
   };
 }
