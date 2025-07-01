@@ -3,12 +3,12 @@ import { LandingSection, Collections, NewArrivals, BudgetSection, SelectionSecti
 import FeaturedProducts from 'components/home/FeaturedProducts';
 import getCollections from '@/lib/collections';
 import getNewArrivals from '@/lib/newarrivals';
-import getSelections from '@/lib/selections';
+import getSpecials from '@/lib/specials';
 
 export default async function HomePage() {
   const collections = await getCollections();
   const newArrivals = await getNewArrivals();
-  const specials = await getSelections();
+  const specials = await getSpecials();
 
   return (
     <div className="min-h-screen bg-luxury-cream">
