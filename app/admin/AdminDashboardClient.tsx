@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Product } from '@/data/products';
+import { type Product } from '@/data/products';
 import { type Collection } from '@/data/collections';
-import { Category } from '@/data/categories';
+import { type Category } from '@/data/categories';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from 'ui/tabs';
 import AdminProductsTab from 'components/admin/product/AdminProductsTab';
 import AdminCollectionsTab from 'components/admin/collection/AdminCollectionsTab';
@@ -15,6 +15,10 @@ import deleteProduct from '@/lib/admin/product/delete';
 import createCollection from '@/lib/admin/collection/create';
 import updateCollection from '@/lib/admin/collection/update';
 import deleteCollection from '@/lib/admin/collection/delete';
+import getCategories from '@/lib/admin/category/get';
+import createCategory from '@/lib/admin/category/create';
+import updateCategory from '@/lib/admin/category/update';
+import deleteCategory from '@/lib/admin/category/delete';
 
 interface Props {
   initialProducts: Product[];
@@ -112,19 +116,12 @@ export default function AdminDashboardClient({
   };
 
   // Category handlers with API calls
-  const handleAddCategory = async (newCategory: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const handleAddCategory = async (newCategory: Omit<Category, 'id' | 'createdAt' | 'updatedAt' | 'children'>) => {
     try {
-      const response = await fetch('/api/categories', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newCategory),
-      });
-
-      if (response.ok) {
-        const { category } = await response.json();
-        setCategoryList([...categoryList, category]);
+      const created = await createCategory(newCategory as any);
+      if (created) {
+        // Refetch all categories to get updated tree
+        setCategoryList(await getCategories());
       } else {
         console.error('Failed to add category');
       }
@@ -133,26 +130,30 @@ export default function AdminDashboardClient({
     }
   };
 
-  const handleEditCategory = (updatedCategory: Category) => {
-    const now = new Date().toISOString();
-    const categoryWithUpdatedTime = { ...updatedCategory, updatedAt: now };
-    setCategoryList(categoryList.map(c => c.id === updatedCategory.id ? categoryWithUpdatedTime : c));
+  const handleEditCategory = async (updatedCategory: Category) => {
+    try {
+      const updated = await updateCategory(updatedCategory);
+      if (updated) {
+        setCategoryList(await getCategories());
+      } else {
+        console.error('Failed to update category');
+      }
+    } catch (error) {
+      console.error('Error updating category:', error);
+    }
   };
 
-  const handleDeleteCategory = (categoryId: string) => {
-    // also delete all child categories
-    const deleteCategoryAndChildren = (id: string): string[] => {
-      const toDelete = [id];
-      categoryList.forEach(category => {
-        if (category.parentId === id) {
-          toDelete.push(...deleteCategoryAndChildren(category.id));
-        }
-      });
-      return toDelete;
-    };
-
-    const categoriesToDelete = deleteCategoryAndChildren(categoryId);
-    setCategoryList(categoryList.filter(c => !categoriesToDelete.includes(c.id)));
+  const handleDeleteCategory = async (categoryId: string) => {
+    try {
+      const deleted = await deleteCategory(categoryId);
+      if (deleted) {
+        setCategoryList(await getCategories());
+      } else {
+        console.error('Failed to delete category');
+      }
+    } catch (error) {
+      console.error('Error deleting category:', error);
+    }
   };
 
   return (
