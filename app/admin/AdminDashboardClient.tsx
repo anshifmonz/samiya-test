@@ -27,7 +27,7 @@ export default function AdminDashboardClient({
   // product handlers with API calls
   const handleAddProduct = async (newProduct: Omit<Product, 'id'>) => {
     try {
-      const response = await fetch('/api/products', {
+      const response = await fetch('/api/admin/product/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newProduct),
@@ -45,7 +45,7 @@ export default function AdminDashboardClient({
 
   const handleEditProduct = async (updatedProduct: Product) => {
     try {
-      const response = await fetch(`/api/products/${updatedProduct.id}`, {
+      const response = await fetch('/api/admin/product/update', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedProduct),
@@ -63,7 +63,7 @@ export default function AdminDashboardClient({
 
   const handleDeleteProduct = async (productId: string) => {
     try {
-      const response = await fetch(`/api/products/${productId}`, {
+      const response = await fetch(`/api/admin/product/delete?id=${encodeURIComponent(productId)}`, {
         method: 'DELETE',
       });
       if (response.ok) {
@@ -121,10 +121,8 @@ export default function AdminDashboardClient({
 
   const handleDeleteCollection = async (collectionId: string) => {
     try {
-      const response = await fetch('/api/admin/collection/delete', {
+      const response = await fetch(`/api/admin/collection/delete?id=${encodeURIComponent(collectionId)}`, {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: collectionId }),
       });
       if (response.ok) {
         await fetchCollections();
@@ -138,7 +136,7 @@ export default function AdminDashboardClient({
 
   // Category handlers with API calls
   const fetchCategories = async () => {
-    const response = await fetch('/api/categories');
+    const response = await fetch('/api/admin/category/get');
     if (response.ok) {
       const { categories } = await response.json();
       setCategoryList(categories);
@@ -147,7 +145,7 @@ export default function AdminDashboardClient({
 
   const handleAddCategory = async (newCategory: Omit<Category, 'id' | 'createdAt' | 'updatedAt' | 'children'>) => {
     try {
-      const response = await fetch('/api/categories', {
+      const response = await fetch('/api/admin/category/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newCategory),
@@ -164,7 +162,7 @@ export default function AdminDashboardClient({
 
   const handleEditCategory = async (updatedCategory: Category) => {
     try {
-      const response = await fetch(`/api/categories/${updatedCategory.id}`, {
+      const response = await fetch('/api/admin/category/update', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedCategory),
@@ -181,7 +179,7 @@ export default function AdminDashboardClient({
 
   const handleDeleteCategory = async (categoryId: string) => {
     try {
-      const response = await fetch(`/api/categories/${categoryId}`, {
+      const response = await fetch(`/api/admin/category/delete?id=${encodeURIComponent(categoryId)}`, {
         method: 'DELETE',
       });
       if (response.ok) {
