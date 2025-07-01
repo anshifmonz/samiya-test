@@ -1,17 +1,15 @@
 import React, { Suspense } from 'react';
-import { products } from '@/data/products';
 import collections from '@/data/collections';
 import { categories } from '@/data/categories';
 import LoadingSpinner from 'components/shared/LoadingSpinner';
 import AdminDashboardClient from './AdminDashboardClient';
+import getActiveProductsFromSupabase from '@/lib/admin/product/get';
 
-// Server functions to fetch data
 async function getAdminData() {
-  // Simulate API calls (in real implementation, these would be actual API calls)
-  await new Promise(resolve => setTimeout(resolve, 100));
+  const products = await getActiveProductsFromSupabase();
 
   return {
-    products: [...products],
+    products,
     collections: [...collections],
     categories: [...categories]
   };
