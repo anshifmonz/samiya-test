@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from 'ui/tabs';
 import AdminProductsTab from 'components/admin/product/AdminProductsTab';
 import AdminCollectionsTab from 'components/admin/collection/AdminCollectionsTab';
 import AdminCategoriesTab from 'components/admin/category/AdminCategoriesTab';
+import createProduct from '@/lib/admin/product/create';
 
 interface Props {
   initialProducts: Product[];
@@ -24,20 +25,12 @@ export default function AdminDashboardClient({
   const [collectionList, setCollectionList] = useState<Collection[]>(initialCollections);
   const [categoryList, setCategoryList] = useState<Category[]>(initialCategories);
 
-  // Product handlers with API calls
+  // product handlers with API calls
   const handleAddProduct = async (newProduct: Omit<Product, 'id'>) => {
     try {
-      const response = await fetch('/api/products', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newProduct),
-      });
-
-      if (response.ok) {
-        const { product } = await response.json();
-        setProductList([...productList, product]);
+      const created = await createProduct(newProduct);
+      if (created) {
+        setProductList([...productList, created]);
       } else {
         console.error('Failed to add product');
       }
