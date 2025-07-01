@@ -1,13 +1,13 @@
 import React from 'react';
 import Image from 'next/image';
-import { type NewArrival } from '@/data/newarrivals';
+import { type Product } from '@/data/specials';
 
-const NewArrivalsCard = ({ product }: { product: NewArrival }) => {
+const NewArrivalsCard = ({ product }: { product: Product }) => {
   return (
     <div className="relative bg-card rounded-sm overflow-hidden shadow-sm group cursor-pointer">
       <div className="relative h-[350px] overflow-hidden">
         <Image
-          src={product.image}
+          src={product.images[0]}
           alt={product.title}
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           width={270}
