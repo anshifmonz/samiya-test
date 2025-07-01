@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import CollectionsCard from './collections/CollectionsCard';
-import { type Collection } from '@/data/collections';
+import { type Collection } from '@/types/collection';
 
 const Collections = ({ collections }: { collections: Collection[] }) => {
   const router = useRouter();

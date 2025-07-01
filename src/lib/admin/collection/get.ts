@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import { Collection } from '@/data/collections';
+import { type Collection } from '@/types/collection';
 
 export default async function getCollections(): Promise<Collection[]> {
   const { data, error } = await supabase

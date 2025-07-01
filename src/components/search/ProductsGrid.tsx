@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { Product } from '@/data/products';
+import { type Product } from '@/types/product';
 import ProductCard from '../shared/ProductCard';
 
 interface ProductsGridProps {

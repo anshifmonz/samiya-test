@@ -1,5 +1,5 @@
 import React from 'react';
-import { Category } from '@/data/categories';
+import { type Category } from '@/types/category';
 
 interface CategoryPathPreviewProps {
   parentId: string;

@@ -1,11 +1,5 @@
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
-import { Collection } from '@/data/collections';
-
-interface NewCollectionInput {
-  title: string;
-  description: string;
-  image: string;
-}
+import type { Collection, NewCollectionInput } from '@/types';
 
 export default async function createCollection(newCollection: NewCollectionInput): Promise<Collection | null> {
   const { data, error } = await supabaseAdmin

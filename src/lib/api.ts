@@ -1,7 +1,5 @@
-import { Product, searchProducts } from '@/data/products';
-import { type Collection } from '@/data/collections';
-import { Category } from '@/data/categories';
-import { type ProductFilters } from '@/hooks/useProductFilters';
+import { searchProducts } from '@/data/products';
+import type { Product, ProductFilters, Collection, Category } from '@/types';
 import getCollections from './collections';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '';

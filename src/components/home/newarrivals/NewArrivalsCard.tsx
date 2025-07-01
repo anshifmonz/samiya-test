@@ -1,8 +1,8 @@
 import React from 'react';
 import Image from 'next/image';
-import { type Product } from '@/data/specials';
+import { type SpecialProduct } from '@/types/special';
 
-const NewArrivalsCard = ({ product }: { product: Product }) => {
+const NewArrivalsCard = ({ product }: { product: SpecialProduct }) => {
   return (
     <div className="relative bg-card rounded-sm overflow-hidden shadow-sm group cursor-pointer">
       <div className="relative h-[350px] overflow-hidden">

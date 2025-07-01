@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import collections, { type Collection } from '@/data/collections';
+import { type Collection } from '@/types/collection';
+import collections from '@/data/collections';
 
 // In a real application, you would use a database
 // For this example, we'll use in-memory storage
@@ -23,10 +24,10 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const collectionData: Omit<Collection, 'id'> = await request.json();
-    
+
     // Generate new ID
     const id = `collection-${Date.now()}`;
-    
+
     const newCollection: Collection = {
       ...collectionData,
       id

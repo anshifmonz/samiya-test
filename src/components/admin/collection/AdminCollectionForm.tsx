@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
-import { type Collection } from '@/data/collections';
+import { type Collection } from '@/types/collection';
 import {
   CollectionTitleInput,
   DescriptionTextarea,

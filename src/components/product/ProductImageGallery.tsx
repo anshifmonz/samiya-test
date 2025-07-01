@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Product } from '@/data/products';
+import { type Product } from '@/types/product';
 
 interface ProductImageGalleryProps {
   product: Product;

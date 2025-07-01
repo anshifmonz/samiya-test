@@ -1,6 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
-import { Product } from '@/data/products';
+import { type Product } from '@/types/product';
 
 interface ProductImageProps {
   product: Product;

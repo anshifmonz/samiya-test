@@ -1,9 +1,8 @@
 import React from 'react';
-import { Product } from '@/data/products';
+import { type Product, type ProductFilters } from '@/types/product';
 import FilterPanel from './FilterPanel';
 import ProductsGrid from './ProductsGrid';
 import MobileFilterPanel from './MobileFilterPanel';
-import { type ProductFilters } from 'hooks/useProductFilters';
 
 interface SearchContentProps {
   products: Product[];

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { products, Product } from '@/data/products';
+import { type Product } from '@/types/product';
+import { products } from '@/data/products';
 
 // In a real application, you would use a database
 // For this example, we'll use in-memory storage
@@ -80,10 +81,10 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const productData: Omit<Product, 'id'> = await request.json();
-    
+
     // Generate new ID
     const id = (Math.max(...productsData.map(p => parseInt(p.id))) + 1).toString();
-    
+
     const newProduct: Product = {
       ...productData,
       id

@@ -1,5 +1,5 @@
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
-import { Product } from '@/data/products';
+import { type Product } from '@/types/product';
 
 export default async function updateProduct(product: Product): Promise<Product | null> {
   // 1. Find category_id by name

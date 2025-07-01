@@ -1,16 +1,5 @@
 import { useState } from 'react';
-
-export type ProductFilters = {
-  category?: string;
-  minPrice?: number;
-  maxPrice?: number;
-  colors?: string[];
-  tags?: string[];
-};
-
-interface UseProductFiltersProps {
-  onFiltersChange: (filters: ProductFilters) => void;
-}
+import type { ProductFilters, UseProductFiltersProps } from '@/types';
 
 export const useProductFilters = ({ onFiltersChange }: UseProductFiltersProps) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');

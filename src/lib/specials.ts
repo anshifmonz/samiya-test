@@ -1,4 +1,4 @@
-import { type Special } from '@/data/specials';
+import { type Special } from '@/types/special';
 
 async function getSelections(): Promise<Special[]> {
   try {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Category } from '@/data/categories';
+import { type Category } from '@/types/category';
 import {
   CategoryNameInput,
   DescriptionTextarea,

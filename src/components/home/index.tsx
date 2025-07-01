@@ -1,5 +1,5 @@
-import { type Product, type Special } from '@/data/specials';
-import { type Collection } from '@/data/collections';
+import { type Special, type SpecialProduct } from '@/types/special';
+import { type Collection } from '@/types/collection';
 
 import LandingSection from './LandingSection';
 import Collections from './Collections';
@@ -8,7 +8,7 @@ import NewArrivals from './NewArrivals';
 import BudgetSection from './BudgetSelection';
 import SelectionSections from './SpecialSections';
 
-const Home = ({ collections, newArrivals, specials }: { collections: Collection[], newArrivals: Product[], specials: Special[] }) => {
+const Home = ({ collections, newArrivals, specials }: { collections: Collection[], newArrivals: SpecialProduct[], specials: Special[] }) => {
   return (
     <div className="min-h-screen bg-luxury-cream">
       <LandingSection />

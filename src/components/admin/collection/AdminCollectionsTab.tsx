@@ -3,7 +3,7 @@ import AdminSearchBar from '../AdminSearchBar';
 import AdminCollectionGrid from './AdminCollectionGrid';
 import AdminCollectionForm from './AdminCollectionForm';
 import { Plus } from 'lucide-react';
-import { type Collection } from '@/data/collections';
+import { type Collection } from '@/types/collection';
 
 interface AdminCollectionsTabProps {
   collections: Collection[];

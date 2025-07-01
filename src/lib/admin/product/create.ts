@@ -1,14 +1,5 @@
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
-import { Product } from '@/data/products';
-
-interface NewProductInput {
-  title: string;
-  description: string;
-  price: number;
-  category: string; // category name, will need to resolve to category_id
-  images: Record<string, string[]>;
-  tags: string[];
-}
+import type { Product, NewProductInput } from '@/types';
 
 export default async function createProduct(newProduct: NewProductInput): Promise<Product | null> {
   // 1. Find category_id by name

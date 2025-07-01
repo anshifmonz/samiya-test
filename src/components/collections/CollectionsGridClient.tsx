@@ -3,7 +3,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { type Collection } from '@/data/collections';
+import { type Collection } from '@/types/collection';
 
 interface Props {
   collections: Collection[];

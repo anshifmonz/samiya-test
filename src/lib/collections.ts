@@ -1,4 +1,4 @@
-import { type Collection } from '@/data/collections';
+import { type Collection } from '@/types/collection';
 
 async function getCollections(): Promise<Collection[]> {
   try {

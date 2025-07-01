@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState } from 'react';
-import { type Product } from '@/data/products';
-import { type Collection } from '@/data/collections';
-import { type Category } from '@/data/categories';
+import { type Product } from '@/types/product';
+import { type Collection } from '@/types/collection';
+import { type Category } from '@/types/category';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from 'ui/tabs';
 import AdminProductsTab from 'components/admin/product/AdminProductsTab';
 import AdminCollectionsTab from 'components/admin/collection/AdminCollectionsTab';

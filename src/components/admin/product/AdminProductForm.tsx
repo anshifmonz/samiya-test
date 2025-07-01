@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Product } from '@/data/products';
+import { type Product } from '@/types/product';
 import { X } from 'lucide-react';
 import {
   ProductTitleInput,

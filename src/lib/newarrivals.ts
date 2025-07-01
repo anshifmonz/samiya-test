@@ -1,6 +1,6 @@
-import { type NewArrival } from '@/data/newarrivals';
+import { type SpecialProduct } from '@/types/special';
 
-async function getNewArrivals(): Promise<NewArrival[]> {
+async function getNewArrivals(): Promise<SpecialProduct[]> {
   try {
     const new_arrivals = (await import('@/data/newarrivals')).default;
     return new_arrivals;

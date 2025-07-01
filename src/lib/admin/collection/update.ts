@@ -1,5 +1,5 @@
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
-import { Collection } from '@/data/collections';
+import { type Collection } from '@/types/collection';
 
 export default async function updateCollection(collection: Collection): Promise<Collection | null> {
   const { error } = await supabaseAdmin

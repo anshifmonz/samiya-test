@@ -1,6 +1,6 @@
 import React from 'react';
 import AdminCollectionCard from './AdminCollectionCard';
-import { type Collection } from '@/data/collections';
+import { type Collection } from '@/types/collection';
 
 interface AdminCollectionGridProps {
   collections: Collection[];

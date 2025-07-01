@@ -1,5 +1,5 @@
 import React from 'react';
-import { Product } from '@/data/products';
+import { type Product } from '@/types/product';
 import { Edit, Trash } from 'lucide-react';
 import Image from 'next/image';
 

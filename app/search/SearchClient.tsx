@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { searchProducts, Product } from '@/data/products';
+import { searchProducts } from '@/data/products';
 import SearchContent from 'components/search/SearchContent';
-import { type ProductFilters } from 'hooks/useProductFilters';
+import { type Product, type ProductFilters } from '@/types/product';
 
 interface Props {
   initialProducts: Product[];

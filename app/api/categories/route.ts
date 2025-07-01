@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { categories, type Category } from '@/data/categories';
+import { type Category } from '@/types/category';
+import { categories } from '@/data/categories';
 
 // In a real application, you would use a database
 // For this example, we'll use in-memory storage
@@ -23,11 +24,11 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const categoryData: Omit<Category, 'id' | 'createdAt' | 'updatedAt'> = await request.json();
-    
+
     // Generate new ID
     const id = `category-${Date.now()}`;
     const now = new Date().toISOString();
-    
+
     const newCategory: Category = {
       ...categoryData,
       id,

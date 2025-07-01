@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { categories, Category, buildCategoryTree } from '@/data/categories';
+import { categories, buildCategoryTree } from '@/data/categories';
+import { type Category } from '@/types/category';
 import { ChevronDown, Check, ChevronRight } from 'lucide-react';
 
 interface CategorySelectProps {

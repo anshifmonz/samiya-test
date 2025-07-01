@@ -1,5 +1,5 @@
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
-import { Category } from '@/data/categories';
+import { type Category } from '@/types/category';
 
 export default async function updateCategory(category: Category): Promise<Category | null> {
   const { error } = await supabaseAdmin

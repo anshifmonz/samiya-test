@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import { Category } from '@/data/categories';
+import { type Category } from '@/types/category';
 
 export default async function getCategories(): Promise<Category[]> {
   const { data, error } = await supabase

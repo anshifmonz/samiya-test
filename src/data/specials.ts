@@ -1,16 +1,4 @@
-export interface Product {
-  id: string;
-  title: string;
-  images: string[];
-  price: number;
-}
-
-export interface Special {
-  id: string;
-  name: string;
-  description: string;
-  products: Product[];
-}
+import type { Special, SpecialProduct } from '@/types/special';
 
 export const specials: Special[] = [
   {

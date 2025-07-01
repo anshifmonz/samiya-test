@@ -1,7 +1,7 @@
 import React from 'react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { type Special } from '@/data/specials';
 import ProductCard from './shared/ProductCard';
+import { type Special } from '@/types/special';
 
 interface SpecialSectionsProps {
   specials: Special[];

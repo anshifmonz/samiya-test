@@ -1,5 +1,5 @@
 import React from 'react';
-import { Category } from '@/data/categories';
+import { type Category } from '@/types/category';
 import { Edit, Trash2, ChevronRight, ChevronDown, Folder, FolderOpen } from 'lucide-react';
 import { Card, CardContent } from '../../../ui/card';
 import { Button } from '../../../ui/button';

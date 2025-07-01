@@ -1,14 +1,5 @@
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
-import { Category } from '@/data/categories';
-
-interface NewCategoryInput {
-  name: string;
-  description?: string;
-  parentId?: string;
-  level: number;
-  path: string[];
-  isActive: boolean;
-}
+import type { Category, NewCategoryInput } from '@/types';
 
 export default async function createCategory(newCategory: NewCategoryInput): Promise<Category | null> {
   const { data, error } = await supabaseAdmin

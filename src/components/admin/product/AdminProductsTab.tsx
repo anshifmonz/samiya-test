@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Product } from '@/data/products';
+import { type Product } from '@/types/product';
 import AdminSearchBar from '../AdminSearchBar';
 import AdminProductGrid from './AdminProductGrid';
 import AdminProductForm from './AdminProductForm';

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { buildCategoryTree, Category } from '@/data/categories';
+import { buildCategoryTree } from '@/data/categories';
+import { type Category } from '@/types/category';
 import { ChevronRight, ChevronDown } from 'lucide-react';
 
 interface CategoryFilterProps {

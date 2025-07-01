@@ -1,7 +1,8 @@
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "ui/carousel";
-import ProductCard, { type Product } from '../shared/ProductCard';
-
-const NewArrivalCarousel = ({ newArrivals }: { newArrivals: Product[] }) => {
+import ProductCard from '../shared/ProductCard';
+import { type SpecialProduct } from '@/types/special';
+  
+const NewArrivalCarousel = ({ newArrivals }: { newArrivals: SpecialProduct[] }) => {
   return (
     <div className="relative ml-10 mr-10 mx-auto px-4">
       <Carousel className="w-full" opts={{ align: "start", loop: false }}>

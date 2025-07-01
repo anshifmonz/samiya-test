@@ -4,7 +4,8 @@ import CategoryFilter from './filter/CategoryFilter';
 import PriceFilter from './filter/PriceFilter';
 import ColorFilter from './filter/ColorFilter';
 import TagsFilter from './filter/TagsFilter';
-import { useProductFilters, type ProductFilters } from 'hooks/useProductFilters';
+import { useProductFilters } from 'hooks/useProductFilters';
+import { type ProductFilters } from '@/types/product';
 
 interface FilterPanelProps {
   onFiltersChange: (filters: ProductFilters) => void;

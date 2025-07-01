@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import { type Product } from '@/data/products';
+import { type Product } from '@/types/product';
 
 async function getActiveProductsFromSupabase(): Promise<Product[]> {
   const { data, error } = await supabase

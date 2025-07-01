@@ -1,7 +1,7 @@
 import React from 'react';
 import { Edit, Trash } from 'lucide-react';
 import Image from 'next/image';
-import { type Collection } from '@/data/collections';
+import { type Collection } from '@/types/collection';
 
 interface AdminCollectionCardProps {
   collection: Collection;

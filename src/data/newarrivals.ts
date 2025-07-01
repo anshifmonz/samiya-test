@@ -1,6 +1,6 @@
-import { type Product } from "./specials";
+import type { SpecialProduct } from '@/types/special';
 
-const newArrivals: Product[] = [
+const newArrivals: SpecialProduct[] = [
   {
     id: "1",
     images: ["https://images.unsplash.com/photo-1649972904349-6e44c42644a7?auto=format&fit=crop&w=600&q=80"],

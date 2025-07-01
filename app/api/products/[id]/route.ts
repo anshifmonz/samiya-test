@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { products, Product } from '@/data/products';
+import { type Product } from '@/types/product';
+import { products } from '@/data/products';
 
 // In a real application, you would use a database
 // For this example, we'll use in-memory storage

@@ -1,15 +1,5 @@
-import { type ProductFilters } from '@/hooks/useProductFilters';
+import type { Product, ProductFilters } from '@/types/product';
 import { categories } from './categories';
-
-export interface Product {
-  id: string;
-  title: string;
-  description: string;
-  images: Record<string, string[]>;
-  price: number;
-  tags: string[];
-  category: string;
-}
 
 export const products: Product[] = [
   {

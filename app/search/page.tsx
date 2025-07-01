@@ -1,10 +1,10 @@
 import React, { Suspense } from 'react';
 import { redirect } from 'next/navigation';
-import { searchProducts, Product } from '@/data/products';
+import { searchProducts } from '@/data/products';
 import SearchResultsHeader from 'components/search/SearchResultsHeader';
 import LoadingSpinner from 'components/shared/LoadingSpinner';
 import SearchClient from './SearchClient';
-import { type ProductFilters } from 'hooks/useProductFilters';
+import { type Product, type ProductFilters } from '@/types/product';
 
 interface Props {
   searchParams: {

@@ -1,6 +1,6 @@
 import React from 'react';
 import ProductCard from '../shared/ProductCard';
-import { Product } from '@/data/products';
+import { type Product } from '@/types/product';
 
 interface SimilarProductsProps {
   similarProducts: Product[];

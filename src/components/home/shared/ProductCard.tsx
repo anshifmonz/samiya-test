@@ -1,13 +1,8 @@
 import React from 'react';
 import Image from 'next/image';
-export interface Product {
-  id: string;
-  title: string;
-  images: string[];
-  price: number;
-}
+import { type SpecialProduct } from '@/types/special';
 
-const Productcard = ({ product }: { product: Product }) => {
+const Productcard = ({ product }: { product: SpecialProduct }) => {
   return (
     <div className="relative bg-card rounded-sm overflow-hidden shadow-sm group cursor-pointer">
       <div className="relative h-[350px] overflow-hidden">

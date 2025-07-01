@@ -3,7 +3,7 @@ import AdminSearchBar from '../AdminSearchBar';
 import AdminCategoryGrid from './AdminCategoryGrid';
 import AdminCategoryForm from './AdminCategoryForm';
 import { Plus } from 'lucide-react';
-import { type Category } from '@/data/categories';
+import { type Category } from '@/types/category';
 
 interface AdminCategoriesTabProps {
   categories: Category[];
