@@ -9,17 +9,6 @@ import AdminProductsTab from 'components/admin/product/AdminProductsTab';
 import AdminCollectionsTab from 'components/admin/collection/AdminCollectionsTab';
 import AdminCategoriesTab from 'components/admin/category/AdminCategoriesTab';
 
-import createProduct from '@/lib/admin/product/create';
-import updateProduct from '@/lib/admin/product/update';
-import deleteProduct from '@/lib/admin/product/delete';
-import createCollection from '@/lib/admin/collection/create';
-import updateCollection from '@/lib/admin/collection/update';
-import deleteCollection from '@/lib/admin/collection/delete';
-import getCategories from '@/lib/admin/category/get';
-import createCategory from '@/lib/admin/category/create';
-import updateCategory from '@/lib/admin/category/update';
-import deleteCategory from '@/lib/admin/category/delete';
-
 interface Props {
   initialProducts: Product[];
   initialCollections: Collection[];
@@ -38,9 +27,14 @@ export default function AdminDashboardClient({
   // product handlers with API calls
   const handleAddProduct = async (newProduct: Omit<Product, 'id'>) => {
     try {
-      const created = await createProduct(newProduct);
-      if (created) {
-        setProductList([...productList, created]);
+      const response = await fetch('/api/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newProduct),
+      });
+      if (response.ok) {
+        const { product } = await response.json();
+        setProductList([...productList, product]);
       } else {
         console.error('Failed to add product');
       }
@@ -51,9 +45,14 @@ export default function AdminDashboardClient({
 
   const handleEditProduct = async (updatedProduct: Product) => {
     try {
-      const updated = await updateProduct(updatedProduct);
-      if (updated) {
-        setProductList(productList.map(p => p.id === updatedProduct.id ? updated : p));
+      const response = await fetch(`/api/products/${updatedProduct.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedProduct),
+      });
+      if (response.ok) {
+        const { product } = await response.json();
+        setProductList(productList.map(p => p.id === updatedProduct.id ? product : p));
       } else {
         console.error('Failed to update product');
       }
@@ -64,8 +63,10 @@ export default function AdminDashboardClient({
 
   const handleDeleteProduct = async (productId: string) => {
     try {
-      const deleted = await deleteProduct(productId);
-      if (deleted) {
+      const response = await fetch(`/api/products/${productId}`, {
+        method: 'DELETE',
+      });
+      if (response.ok) {
         setProductList(productList.filter(p => p.id !== productId));
       } else {
         console.error('Failed to delete product');
@@ -76,11 +77,23 @@ export default function AdminDashboardClient({
   };
 
   // Collection handlers with API calls
+  const fetchCollections = async () => {
+    const response = await fetch('/api/admin/collection/get');
+    if (response.ok) {
+      const { collections } = await response.json();
+      setCollectionList(collections);
+    }
+  };
+
   const handleAddCollection = async (newCollection: Omit<Collection, 'id'>) => {
     try {
-      const created = await createCollection(newCollection);
-      if (created) {
-        setCollectionList([...collectionList, created]);
+      const response = await fetch('/api/admin/collection/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newCollection),
+      });
+      if (response.ok) {
+        await fetchCollections();
       } else {
         console.error('Failed to add collection');
       }
@@ -91,9 +104,13 @@ export default function AdminDashboardClient({
 
   const handleEditCollection = async (updatedCollection: Collection) => {
     try {
-      const updated = await updateCollection(updatedCollection);
-      if (updated) {
-        setCollectionList(collectionList.map(c => c.id === updatedCollection.id ? updated : c));
+      const response = await fetch('/api/admin/collection/update', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedCollection),
+      });
+      if (response.ok) {
+        await fetchCollections();
       } else {
         console.error('Failed to update collection');
       }
@@ -104,9 +121,13 @@ export default function AdminDashboardClient({
 
   const handleDeleteCollection = async (collectionId: string) => {
     try {
-      const deleted = await deleteCollection(collectionId);
-      if (deleted) {
-        setCollectionList(collectionList.filter(c => c.id !== collectionId));
+      const response = await fetch('/api/admin/collection/delete', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: collectionId }),
+      });
+      if (response.ok) {
+        await fetchCollections();
       } else {
         console.error('Failed to delete collection');
       }
@@ -116,12 +137,23 @@ export default function AdminDashboardClient({
   };
 
   // Category handlers with API calls
+  const fetchCategories = async () => {
+    const response = await fetch('/api/categories');
+    if (response.ok) {
+      const { categories } = await response.json();
+      setCategoryList(categories);
+    }
+  };
+
   const handleAddCategory = async (newCategory: Omit<Category, 'id' | 'createdAt' | 'updatedAt' | 'children'>) => {
     try {
-      const created = await createCategory(newCategory as any);
-      if (created) {
-        // Refetch all categories to get updated tree
-        setCategoryList(await getCategories());
+      const response = await fetch('/api/categories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newCategory),
+      });
+      if (response.ok) {
+        await fetchCategories();
       } else {
         console.error('Failed to add category');
       }
@@ -132,9 +164,13 @@ export default function AdminDashboardClient({
 
   const handleEditCategory = async (updatedCategory: Category) => {
     try {
-      const updated = await updateCategory(updatedCategory);
-      if (updated) {
-        setCategoryList(await getCategories());
+      const response = await fetch(`/api/categories/${updatedCategory.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedCategory),
+      });
+      if (response.ok) {
+        await fetchCategories();
       } else {
         console.error('Failed to update category');
       }
@@ -145,9 +181,11 @@ export default function AdminDashboardClient({
 
   const handleDeleteCategory = async (categoryId: string) => {
     try {
-      const deleted = await deleteCategory(categoryId);
-      if (deleted) {
-        setCategoryList(await getCategories());
+      const response = await fetch(`/api/categories/${categoryId}`, {
+        method: 'DELETE',
+      });
+      if (response.ok) {
+        await fetchCategories();
       } else {
         console.error('Failed to delete category');
       }
