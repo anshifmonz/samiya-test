@@ -9,6 +9,8 @@ import AdminProductsTab from 'components/admin/product/AdminProductsTab';
 import AdminCollectionsTab from 'components/admin/collection/AdminCollectionsTab';
 import AdminCategoriesTab from 'components/admin/category/AdminCategoriesTab';
 import createProduct from '@/lib/admin/product/create';
+import updateProduct from '@/lib/admin/product/update';
+import deleteProduct from '@/lib/admin/product/delete';
 
 interface Props {
   initialProducts: Product[];
@@ -41,16 +43,9 @@ export default function AdminDashboardClient({
 
   const handleEditProduct = async (updatedProduct: Product) => {
     try {
-      const response = await fetch(`/api/products/${updatedProduct.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedProduct),
-      });
-
-      if (response.ok) {
-        setProductList(productList.map(p => p.id === updatedProduct.id ? updatedProduct : p));
+      const updated = await updateProduct(updatedProduct);
+      if (updated) {
+        setProductList(productList.map(p => p.id === updatedProduct.id ? updated : p));
       } else {
         console.error('Failed to update product');
       }
@@ -61,11 +56,8 @@ export default function AdminDashboardClient({
 
   const handleDeleteProduct = async (productId: string) => {
     try {
-      const response = await fetch(`/api/products/${productId}`, {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
+      const deleted = await deleteProduct(productId);
+      if (deleted) {
         setProductList(productList.filter(p => p.id !== productId));
       } else {
         console.error('Failed to delete product');
