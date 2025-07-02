@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { type Category } from '@/types/category';
 import { ChevronDown, Check, ChevronRight } from 'lucide-react';
+import { buildCategoryTree } from '@/lib/utils/buildCategoryTree';
 
 interface CategorySelectProps {
   value: string;
@@ -30,6 +31,8 @@ const CategorySelect: React.FC<CategorySelectProps> = ({ value, onChange, catego
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const categoryTree = buildCategoryTree(categories);
 
   // recursive function to render category tree
   const renderCategoryTree = (categoryList: Category[], level: number = 0) => {
@@ -135,7 +138,7 @@ const CategorySelect: React.FC<CategorySelectProps> = ({ value, onChange, catego
       {/* custom dropdown */}
       {isOpen && (
         <div className="absolute z-50 w-full mt-1 bg-white border border-luxury-gray/20 rounded-xl shadow-lg max-h-60 overflow-y-auto">
-          {renderCategoryTree(categories)}
+          {renderCategoryTree(categoryTree)}
         </div>
       )}
     </div>
