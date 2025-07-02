@@ -221,30 +221,6 @@ export const getRootCategories = (): Category[] => {
   return getCategoriesByParentId(undefined);
 };
 
-export const buildCategoryTree = (): Category[] => {
-  const categoryMap = new Map<string, Category>();
-  const rootCategories: Category[] = [];
-
-  categories.forEach(category => {
-    categoryMap.set(category.id, { ...category, children: [] });
-  });
-
-  categories.forEach(category => {
-    const categoryWithChildren = categoryMap.get(category.id)!;
-
-    if (category.parentId) {
-      const parent = categoryMap.get(category.parentId);
-      if (parent) {
-        parent.children!.push(categoryWithChildren);
-      }
-    } else {
-      rootCategories.push(categoryWithChildren);
-    }
-  });
-
-  return rootCategories;
-};
-
 export const getCategoryPath = (categoryId: string): string[] => {
   const category = getCategoryById(categoryId);
   return category ? category.path : [];
