@@ -1,7 +1,7 @@
 import { supabaseAdmin } from '@/lib/supabase';
 import { type Product } from '@/types/product';
 
-async function getActiveProductsFromSupabase(): Promise<Product[]> {
+async function getProduct(): Promise<Product[]> {
   const { data, error } = await supabaseAdmin
     .from('products')
     .select(`
@@ -15,8 +15,7 @@ async function getActiveProductsFromSupabase(): Promise<Product[]> {
       category:categories(name),
       product_images:product_images(color_name,image_url,sort_order,is_primary),
       product_tags:product_tags(tag:tags(name))
-    `)
-    .eq('is_active', true);
+    `);
 
   if (error) {
     console.error('Error fetching products from Supabase:', error);
@@ -64,4 +63,4 @@ async function getActiveProductsFromSupabase(): Promise<Product[]> {
   });
 }
 
-export default getActiveProductsFromSupabase;
+export default getProduct;
