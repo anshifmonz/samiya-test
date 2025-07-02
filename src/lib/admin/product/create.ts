@@ -39,9 +39,9 @@ export default async function createProduct(newProduct: NewProductInput): Promis
 
   const productId = productData.id;
   const imageRows = [];
-  const colorKeys = Object.keys(newProduct.images);
   
-  for (const [colorIndex, color] of colorKeys.entries()) {
+  for (let colorIndex = 0; colorIndex < colorKeys.length; colorIndex++) {
+    const color = colorKeys[colorIndex];
     const urls = newProduct.images[color];
     urls.forEach((url, idx) => {
       // Primary image is the first image of the first color
@@ -66,7 +66,8 @@ export default async function createProduct(newProduct: NewProductInput): Promis
 
   // 2.5. Insert product colors
   const colorRows = [];
-  for (const [colorIndex, color] of colorKeys.entries()) {
+  for (let colorIndex = 0; colorIndex < colorKeys.length; colorIndex++) {
+    const color = colorKeys[colorIndex];
     colorRows.push({
       product_id: productId,
       color_name: color,

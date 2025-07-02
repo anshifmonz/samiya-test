@@ -47,9 +47,9 @@ export default async function updateProduct(product: Product): Promise<Product |
 
   // 4. Insert new images
   const imageRows = [];
-  const colorKeys = Object.keys(product.images);
   
-  for (const [colorIndex, color] of colorKeys.entries()) {
+  for (let colorIndex = 0; colorIndex < colorKeys.length; colorIndex++) {
+    const color = colorKeys[colorIndex];
     const urls = product.images[color];
     urls.forEach((url, idx) => {
       // Primary image is the first image of the first color
@@ -83,7 +83,8 @@ export default async function updateProduct(product: Product): Promise<Product |
 
   // Insert new colors
   const colorRows = [];
-  for (const [colorIndex, color] of colorKeys.entries()) {
+  for (let colorIndex = 0; colorIndex < colorKeys.length; colorIndex++) {
+    const color = colorKeys[colorIndex];
     colorRows.push({
       product_id: product.id,
       color_name: color,
