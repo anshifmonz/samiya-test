@@ -1,4 +1,4 @@
-import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { supabaseAdmin } from '@/lib/supabase';
 import { type Category } from '@/types/category';
 
 export default async function updateCategory(category: Category): Promise<Category | null> {

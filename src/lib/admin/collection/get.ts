@@ -1,8 +1,8 @@
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase';
 import { type Collection } from '@/types/collection';
 
 export default async function getCollections(): Promise<Collection[]> {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('collections')
     .select('id, title, description, image_url')
     .eq('is_active', true)

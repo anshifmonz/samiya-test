@@ -1,4 +1,4 @@
-import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { supabaseAdmin } from '@/lib/supabase';
 
 export default async function deleteCollection(collectionId: string): Promise<boolean> {
   const { error } = await supabaseAdmin

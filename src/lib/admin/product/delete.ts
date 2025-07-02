@@ -1,4 +1,4 @@
-import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { supabaseAdmin } from '@/lib/supabase';
 
 export default async function deleteProduct(productId: string): Promise<boolean> {
   // 1. Delete product_images (should cascade, but explicit for safety)

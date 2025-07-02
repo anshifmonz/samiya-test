@@ -1,8 +1,8 @@
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase';
 import { type Product } from '@/types/product';
 
 async function getActiveProductsFromSupabase(): Promise<Product[]> {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('products')
     .select(`
       id,
@@ -36,13 +36,13 @@ async function getActiveProductsFromSupabase(): Promise<Product[]> {
         }
         return a.sort_order - b.sort_order;
       });
-      
+
       sortedImages.forEach((img: any) => {
         if (!images[img.color_name]) images[img.color_name] = [];
         images[img.color_name].push(img.image_url);
       });
     }
-    
+
     const tags: string[] = [];
     if (row.product_tags) {
       row.product_tags.forEach((pt: any) => {
@@ -51,7 +51,7 @@ async function getActiveProductsFromSupabase(): Promise<Product[]> {
         }
       });
     }
-    
+
     return {
       id: row.id,
       title: row.title,

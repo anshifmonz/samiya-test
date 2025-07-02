@@ -1,4 +1,4 @@
-import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { supabaseAdmin } from '@/lib/supabase';
 import { type Product } from '@/types/product';
 
 export default async function updateProduct(product: Product): Promise<Product | null> {
@@ -47,7 +47,7 @@ export default async function updateProduct(product: Product): Promise<Product |
 
   // 4. Insert new images
   const imageRows = [];
-  
+
   for (let colorIndex = 0; colorIndex < colorKeys.length; colorIndex++) {
     const color = colorKeys[colorIndex];
     const urls = product.images[color];
@@ -110,7 +110,7 @@ export default async function updateProduct(product: Product): Promise<Product |
   if (delTagError) {
     console.error('Error deleting old product tags:', delTagError);
   }
-  
+
   // Then add new tag relationships
   if (product.tags && product.tags.length > 0) {
     for (const tagName of product.tags) {
@@ -120,7 +120,7 @@ export default async function updateProduct(product: Product): Promise<Product |
         .select('id')
         .eq('name', tagName)
         .limit(1);
-      
+
       let tagId;
       if (tagFindError || !tagData || tagData.length === 0) {
         // Create new tag
@@ -137,7 +137,7 @@ export default async function updateProduct(product: Product): Promise<Product |
       } else {
         tagId = tagData[0].id;
       }
-      
+
       // Link product to tag
       const { error: linkError } = await supabaseAdmin
         .from('product_tags')

@@ -1,4 +1,4 @@
-import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { supabaseAdmin } from '@/lib/supabase';
 import type { Product, NewProductInput } from '@/types';
 
 export default async function createProduct(newProduct: NewProductInput): Promise<Product | null> {
@@ -39,7 +39,7 @@ export default async function createProduct(newProduct: NewProductInput): Promis
 
   const productId = productData.id;
   const imageRows = [];
-  
+
   for (let colorIndex = 0; colorIndex < colorKeys.length; colorIndex++) {
     const color = colorKeys[colorIndex];
     const urls = newProduct.images[color];
@@ -93,7 +93,7 @@ export default async function createProduct(newProduct: NewProductInput): Promis
         .select('id')
         .eq('name', tagName)
         .limit(1);
-      
+
       let tagId;
       if (tagFindError || !tagData || tagData.length === 0) {
         // Create new tag
@@ -110,7 +110,7 @@ export default async function createProduct(newProduct: NewProductInput): Promis
       } else {
         tagId = tagData[0].id;
       }
-      
+
       // Link product to tag
       const { error: linkError } = await supabaseAdmin
         .from('product_tags')

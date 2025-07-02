@@ -1,4 +1,4 @@
-import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { supabaseAdmin } from '@/lib/supabase';
 import type { Collection, NewCollectionInput } from '@/types';
 
 export default async function createCollection(newCollection: NewCollectionInput): Promise<Collection | null> {
