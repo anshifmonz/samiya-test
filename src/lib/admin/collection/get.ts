@@ -5,7 +5,6 @@ export default async function getCollections(): Promise<Collection[]> {
   const { data, error } = await supabaseAdmin
     .from('collections')
     .select('id, title, description, image_url')
-    .eq('is_active', true)
     .order('sort_order', { ascending: true });
 
   if (error) {
