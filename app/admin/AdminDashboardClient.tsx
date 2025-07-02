@@ -218,6 +218,7 @@ export default function AdminDashboardClient({
       <TabsContent value="products" className="mt-0">
         <AdminProductsTab
           products={productList}
+          categories={categoryList}
           onAddProduct={handleAddProduct}
           onEditProduct={handleEditProduct}
           onDeleteProduct={handleDeleteProduct}

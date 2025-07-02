@@ -1,19 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { categories, buildCategoryTree } from '@/data/categories';
 import { type Category } from '@/types/category';
 import { ChevronDown, Check, ChevronRight } from 'lucide-react';
 
 interface CategorySelectProps {
   value: string;
   onChange: (value: string) => void;
+  categories: Category[];
 }
 
-const CategorySelect: React.FC<CategorySelectProps> = ({ value, onChange }) => {
+const CategorySelect: React.FC<CategorySelectProps> = ({ value, onChange, categories }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // get the hierarchical tree structure
-  const categoryTree = buildCategoryTree();
 
   // get the display name for the selected value
   const getSelectedDisplayName = () => {
@@ -138,7 +135,7 @@ const CategorySelect: React.FC<CategorySelectProps> = ({ value, onChange }) => {
       {/* custom dropdown */}
       {isOpen && (
         <div className="absolute z-50 w-full mt-1 bg-white border border-luxury-gray/20 rounded-xl shadow-lg max-h-60 overflow-y-auto">
-          {renderCategoryTree(categoryTree)}
+          {renderCategoryTree(categories)}
         </div>
       )}
     </div>

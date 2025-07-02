@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { type Product } from '@/types/product';
+import { type Category } from '@/types/category';
 import { X } from 'lucide-react';
 import {
   ProductTitleInput,
@@ -14,11 +15,12 @@ import {
 
 interface AdminProductFormProps {
   product?: Product | null;
+  categories: Category[];
   onSave: (product: Product | Omit<Product, 'id'>) => void;
   onCancel: () => void;
 }
 
-const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, onSave, onCancel }) => {
+const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories, onSave, onCancel }) => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -102,6 +104,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, onSave, on
             <CategorySelect
               value={formData.category}
               onChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
+              categories={categories}
             />
           </div>
 

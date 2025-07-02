@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { type Product } from '@/types/product';
-import AdminSearchBar from '../AdminSearchBar';
-import AdminProductGrid from './AdminProductGrid';
-import AdminProductForm from './AdminProductForm';
+import { type Category } from '@/types/category';
 import { Plus } from 'lucide-react';
+import AdminProductForm from './AdminProductForm';
+import AdminProductGrid from './AdminProductGrid';
+import AdminSearchBar from '../AdminSearchBar';
 
 interface AdminProductsTabProps {
   products: Product[];
+  categories: Category[];
   onAddProduct: (product: Omit<Product, 'id'>) => void;
   onEditProduct: (product: Product) => void;
   onDeleteProduct: (productId: string) => void;
@@ -14,6 +16,7 @@ interface AdminProductsTabProps {
 
 const AdminProductsTab: React.FC<AdminProductsTabProps> = ({
   products,
+  categories,
   onAddProduct,
   onEditProduct,
   onDeleteProduct
@@ -74,6 +77,7 @@ const AdminProductsTab: React.FC<AdminProductsTabProps> = ({
       {(showAddForm || editingProduct) && (
         <AdminProductForm
           product={editingProduct}
+          categories={categories}
           onSave={editingProduct ? handleEditProduct : handleAddProduct}
           onCancel={() => {
             setShowAddForm(false);
