@@ -5,21 +5,21 @@ import { type Product } from '@/types/product';
 import { type Collection } from '@/types/collection';
 import { type Category } from '@/types/category';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from 'ui/tabs';
-import AdminProductsTab from 'components/admin/product/AdminProductsTab';
-import AdminCollectionsTab from 'components/admin/collection/AdminCollectionsTab';
-import AdminCategoriesTab from 'components/admin/category/AdminCategoriesTab';
+import AdminProductsTab from './product/AdminProductsTab';
+import AdminCollectionsTab from './collection/AdminCollectionsTab';
+import AdminCategoriesTab from './category/AdminCategoriesTab';
 
-interface Props {
+interface AdminDashboardProps {
   initialProducts: Product[];
   initialCollections: Collection[];
   initialCategories: Category[];
 }
 
-export default function AdminDashboardClient({
+const AdminDashboard: React.FC<AdminDashboardProps> = ({
   initialProducts,
   initialCollections,
   initialCategories
-}: Props) {
+}) => {
   const [productList, setProductList] = useState<Product[]>(initialProducts);
   const [collectionList, setCollectionList] = useState<Collection[]>(initialCollections);
   const [categoryList, setCategoryList] = useState<Category[]>(initialCategories);
@@ -244,4 +244,6 @@ export default function AdminDashboardClient({
       </TabsContent>
     </Tabs>
   );
-}
+};
+
+export default AdminDashboard;

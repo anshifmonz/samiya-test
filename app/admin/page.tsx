@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react';
 import LoadingSpinner from 'components/shared/LoadingSpinner';
-import AdminDashboardClient from './AdminDashboardClient';
+import AdminDashboard from 'components/admin/AdminDashboard';
 import getActiveProductsFromSupabase from '@/lib/admin/product/get';
 import getCollections from '@/lib/admin/collection/get';
 import getCategories from '@/lib/admin/category/get';
@@ -17,7 +17,7 @@ async function getAdminData() {
   };
 }
 
-export default async function AdminDashboard() {
+export default async function Admin() {
   const { products: productList, collections: collectionList, categories: categoryList } = await getAdminData();
 
   return (
@@ -36,7 +36,7 @@ export default async function AdminDashboard() {
 
         <div className="bg-white/80 backdrop-blur-sm border border-luxury-gray/20 rounded-xl p-6">
           <Suspense fallback={<LoadingSpinner text="Loading admin dashboard..." />}>
-            <AdminDashboardClient
+            <AdminDashboard
               initialProducts={productList}
               initialCollections={collectionList}
               initialCategories={categoryList}
