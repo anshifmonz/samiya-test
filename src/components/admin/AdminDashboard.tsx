@@ -1,10 +1,13 @@
 "use client";
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { type Product } from '@/types/product';
 import { type Collection } from '@/types/collection';
 import { type Category } from '@/types/category';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from 'ui/tabs';
+import { Button } from '@/components/ui/button';
+import { LogOut } from 'lucide-react';
 import AdminProductsTab from './product/AdminProductsTab';
 import AdminCollectionsTab from './collection/AdminCollectionsTab';
 import AdminCategoriesTab from './category/AdminCategoriesTab';
@@ -23,6 +26,22 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [productList, setProductList] = useState<Product[]>(initialProducts);
   const [collectionList, setCollectionList] = useState<Collection[]>(initialCollections);
   const [categoryList, setCategoryList] = useState<Category[]>(initialCategories);
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('/api/admin/logout', {
+        method: 'POST',
+      });
+      if (response.ok) {
+        router.push('/admin/login');
+      } else {
+        console.error('Failed to logout');
+      }
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
+  };
 
   // product handlers with API calls
   const handleAddProduct = async (newProduct: Omit<Product, 'id'>) => {
@@ -193,56 +212,58 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
   };
 
   return (
-    <Tabs defaultValue="products" className="w-full">
-      <TabsList className="grid w-full grid-cols-3 mb-8 bg-transparent border-none p-1">
-        <TabsTrigger
-          value="products"
-          className="rounded-lg px-6 py-3 text-sm font-medium tracking-wide transition-all duration-300 data-[state=active]:bg-luxury-gold data-[state=active]:text-luxury-black data-[state=active]:shadow-md"
-        >
-          Products
-        </TabsTrigger>
-        <TabsTrigger
-          value="collections"
-          className="rounded-lg px-6 py-3 text-sm font-medium tracking-wide transition-all duration-300 data-[state=active]:bg-luxury-gold data-[state=active]:text-luxury-black data-[state=active]:shadow-md"
-        >
-          Collections
-        </TabsTrigger>
-        <TabsTrigger
-          value="categories"
-          className="rounded-lg px-6 py-3 text-sm font-medium tracking-wide transition-all duration-300 data-[state=active]:bg-luxury-gold data-[state=active]:text-luxury-black data-[state=active]:shadow-md"
-        >
-          Categories
-        </TabsTrigger>
-      </TabsList>
+    <div className="w-full">
+      <Tabs defaultValue="products" className="w-full">
+        <TabsList className="grid w-full grid-cols-3 bg-transparent border-none p-1 mb-8">
+          <TabsTrigger
+            value="products"
+            className="rounded-lg px-6 py-3 text-sm font-medium tracking-wide transition-all duration-300 data-[state=active]:bg-luxury-gold data-[state=active]:text-luxury-black data-[state=active]:shadow-md"
+          >
+            Products
+          </TabsTrigger>
+          <TabsTrigger
+            value="collections"
+            className="rounded-lg px-6 py-3 text-sm font-medium tracking-wide transition-all duration-300 data-[state=active]:bg-luxury-gold data-[state=active]:text-luxury-black data-[state=active]:shadow-md"
+          >
+            Collections
+          </TabsTrigger>
+          <TabsTrigger
+            value="categories"
+            className="rounded-lg px-6 py-3 text-sm font-medium tracking-wide transition-all duration-300 data-[state=active]:bg-luxury-gold data-[state=active]:text-luxury-black data-[state=active]:shadow-md"
+          >
+            Categories
+          </TabsTrigger>
+        </TabsList>
 
-      <TabsContent value="products" className="mt-0">
-        <AdminProductsTab
-          products={productList}
-          categories={categoryList}
-          onAddProduct={handleAddProduct}
-          onEditProduct={handleEditProduct}
-          onDeleteProduct={handleDeleteProduct}
-        />
-      </TabsContent>
+        <TabsContent value="products" className="mt-0">
+          <AdminProductsTab
+            products={productList}
+            categories={categoryList}
+            onAddProduct={handleAddProduct}
+            onEditProduct={handleEditProduct}
+            onDeleteProduct={handleDeleteProduct}
+          />
+        </TabsContent>
 
-      <TabsContent value="collections" className="mt-0">
-        <AdminCollectionsTab
-          collections={collectionList}
-          onAddCollection={handleAddCollection}
-          onEditCollection={handleEditCollection}
-          onDeleteCollection={handleDeleteCollection}
-        />
-      </TabsContent>
+        <TabsContent value="collections" className="mt-0">
+          <AdminCollectionsTab
+            collections={collectionList}
+            onAddCollection={handleAddCollection}
+            onEditCollection={handleEditCollection}
+            onDeleteCollection={handleDeleteCollection}
+          />
+        </TabsContent>
 
-      <TabsContent value="categories" className="mt-0">
-        <AdminCategoriesTab
-          categories={categoryList}
-          onAddCategory={handleAddCategory}
-          onEditCategory={handleEditCategory}
-          onDeleteCategory={handleDeleteCategory}
-        />
-      </TabsContent>
-    </Tabs>
+        <TabsContent value="categories" className="mt-0">
+          <AdminCategoriesTab
+            categories={categoryList}
+            onAddCategory={handleAddCategory}
+            onEditCategory={handleEditCategory}
+            onDeleteCategory={handleDeleteCategory}
+          />
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 };
 

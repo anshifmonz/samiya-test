@@ -4,6 +4,7 @@ import AdminDashboard from 'components/admin/AdminDashboard';
 import getActiveProductsFromSupabase from '@/lib/admin/product/get';
 import getCollections from '@/lib/admin/collection/get';
 import getCategories from '@/lib/admin/category/get';
+import LogoutButton from 'components/admin/LogoutButton';
 
 async function getAdminData() {
   const products = await getActiveProductsFromSupabase();
@@ -24,13 +25,16 @@ export default async function Admin() {
     <div className="min-h-screen bg-luxury-cream">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24">
         <div className="mb-8">
-          <div className="animate-fade-in-up">
-            <h1 className="luxury-heading text-4xl text-luxury-black mb-4">
-              Admin Dashboard
-            </h1>
-            <p className="luxury-body text-luxury-gray text-lg mb-8">
-              Manage your products, collections, and categories with ease
-            </p>
+          <div className="flex justify-between items-center animate-fade-in-up">
+            <div>
+              <h1 className="luxury-heading text-4xl text-luxury-black mb-4">
+                Admin Dashboard
+              </h1>
+              <p className="luxury-body text-luxury-gray text-lg mb-8">
+                Manage your products, collections, and categories with ease
+              </p>
+            </div>
+            <LogoutButton />
           </div>
         </div>
 
