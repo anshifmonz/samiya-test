@@ -23,7 +23,6 @@ export async function GET(request: NextRequest) {
     colors: colorsArray,
     tags: tagsArray
   });
-  console.log(products);
 
   return NextResponse.json(products);
 }
