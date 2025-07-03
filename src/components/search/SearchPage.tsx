@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import searchProducts from '@/lib/public/product';
-import SearchContent from 'components/search/SearchContent';
+import SearchContent from './SearchContent';
 import { type Product, type ProductFilters } from '@/types/product';
 import { type Category } from '@/types/category';
 
@@ -14,7 +14,7 @@ interface Props {
   initialCategories: Category[];
 }
 
-export default function SearchClient({ initialProducts, initialQuery, initialFilters, initialCategories }: Props) {
+export default function SearchPage({ initialProducts, initialQuery, initialFilters, initialCategories }: Props) {
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [filters, setFilters] = useState<ProductFilters>(initialFilters);
   const router = useRouter();

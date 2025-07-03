@@ -1,10 +1,8 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 import { redirect } from 'next/navigation';
 import searchProducts from '@/lib/public/product';
 import getCategories from '@/lib/public/category';
-import SearchResultsHeader from 'components/search/SearchResultsHeader';
-import LoadingSpinner from 'components/shared/LoadingSpinner';
-import SearchClient from './SearchClient';
+import Search from '@/components/search';
 import { type ProductFilters } from '@/types/product';
 
 interface Props {
@@ -53,18 +51,11 @@ export default async function SearchPage({ searchParams }: Props) {
   const categories = await getCategories();
 
   return (
-    <div className="min-h-screen bg-luxury-cream">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24">
-        <SearchResultsHeader query={query} productCount={products.length} />
-        <Suspense fallback={<LoadingSpinner text="Loading search results..." />}>
-          <SearchClient
-            initialProducts={products}
-            initialQuery={query}
-            initialFilters={filters}
-            initialCategories={categories}
-          />
-        </Suspense>
-      </div>
-    </div>
+    <Search
+      initialProducts={products}
+      initialQuery={query}
+      initialFilters={filters}
+      initialCategories={categories}
+    />
   );
 }
