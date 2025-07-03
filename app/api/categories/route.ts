@@ -1,49 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { type Category } from '@/types/category';
-import { categories } from '@/data/categories';
-
-// In a real application, you would use a database
-// For this example, we'll use in-memory storage
-let categoriesData = [...categories];
+import { NextResponse } from 'next/server';
+import getCategories from '@/lib/public/category';
 
 export async function GET() {
   try {
-    return NextResponse.json({
-      categories: categoriesData,
-      total: categoriesData.length
-    });
+    const categories = await getCategories();
+    return NextResponse.json({ categories });
   } catch (error) {
     console.error('Error fetching categories:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
-}
-
-export async function POST(request: NextRequest) {
-  try {
-    const categoryData: Omit<Category, 'id' | 'createdAt' | 'updatedAt'> = await request.json();
-
-    // Generate new ID
-    const id = `category-${Date.now()}`;
-    const now = new Date().toISOString();
-
-    const newCategory: Category = {
-      ...categoryData,
-      id,
-      createdAt: now,
-      updatedAt: now
-    };
-
-    categoriesData.push(newCategory);
-
-    return NextResponse.json({
-      category: newCategory,
-      message: 'Category created successfully'
-    }, { status: 201 });
-  } catch (error) {
-    console.error('Error creating category:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
