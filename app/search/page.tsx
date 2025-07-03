@@ -1,10 +1,10 @@
 import React, { Suspense } from 'react';
 import { redirect } from 'next/navigation';
-import { searchProducts } from '@/data/products';
+import searchProducts from '@/lib/public/product';
 import SearchResultsHeader from 'components/search/SearchResultsHeader';
 import LoadingSpinner from 'components/shared/LoadingSpinner';
 import SearchClient from './SearchClient';
-import { type Product, type ProductFilters } from '@/types/product';
+import { type ProductFilters } from '@/types/product';
 
 interface Props {
   searchParams: {
@@ -17,15 +17,7 @@ interface Props {
   };
 }
 
-// Server function to fetch search results
-async function getSearchResults(query: string, filters: ProductFilters): Promise<Product[]> {
-  // Simulate API call delay (remove this in real implementation)
-  await new Promise(resolve => setTimeout(resolve, 100));
-
-  return searchProducts(query, filters);
-}
-
-// Parse search filters from URL parameters
+// parse search filters from url parameters
 function parseFilters(searchParams: Props['searchParams']): ProductFilters {
   const filters: ProductFilters = {};
 
@@ -61,13 +53,10 @@ function parseFilters(searchParams: Props['searchParams']): ProductFilters {
 export default async function SearchPage({ searchParams }: Props) {
   const query = searchParams.q || '';
 
-  // Redirect to home if no search query
-  if (query.trim() === '') {
-    redirect('/');
-  }
+  if (query.trim() === '') redirect('/');
 
   const filters = parseFilters(searchParams);
-  const products = await getSearchResults(query, filters);
+  const products = await searchProducts(query, filters);
 
   return (
     <div className="min-h-screen bg-luxury-cream">
