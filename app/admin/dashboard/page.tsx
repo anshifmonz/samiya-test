@@ -6,6 +6,8 @@ import getCollections from '@/lib/admin/collection/get';
 import getCategories from '@/lib/admin/category/get';
 import LogoutButton from 'components/admin/LogoutButton';
 
+export const revalidate = 0;
+
 async function getAdminData() {
   const products = await getActiveProductsFromSupabase();
   const collections = await getCollections();
