@@ -1,18 +1,25 @@
 import React from 'react';
 import Image from 'next/image';
 import { type SpecialProduct } from '@/types/special';
+import ImageFallback from 'components/shared/ImageFallback';
 
 const Productcard = ({ product }: { product: SpecialProduct }) => {
+  const image = product.images[0];
+
   return (
     <div className="relative bg-card rounded-sm overflow-hidden shadow-sm group cursor-pointer">
       <div className="relative h-[350px] overflow-hidden">
-        <Image
-          src={product.images[0]}
-          alt={product.title}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-          width={270}
-          height={320}
-        />
+        {image ? (
+          <Image
+            src={image}
+            alt={product.title}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            width={270}
+            height={320}
+          />
+        ) : (
+          <ImageFallback />
+        )}
         <div className="absolute bottom-2 right-2 bg-red-500 text-white px-2 py-1 text-xs font-medium rounded-sm">
           10% OFF
         </div>

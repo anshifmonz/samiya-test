@@ -2,36 +2,43 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { type Product } from '@/types/product';
+import ImageFallback from './ImageFallback';
 
 interface ProductCardProps {
   product: Product;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-  const firstImage = Object.values(product.images)[0]?.[0]; // Get first image from first color
+  const firstImage = Object.values(product.images)[0]?.[0]; // get first image from first color
 
   return (
     <Link href={`/product/${product.id}`}>
       <div className="luxury-card rounded-xl md:rounded-2xl overflow-hidden cursor-pointer group shadow-lg hover:shadow-2xl transition-all duration-500 border border-luxury-gray/10 hover:border-luxury-gold/30 bg-white/95 backdrop-blur-md">
       <div className="relative overflow-hidden">
-        <Image
-          src={firstImage}
-          alt={product.title}
-          className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-700"
-          width={400}
-          height={320}
-          priority
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-luxury-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        {firstImage ? (
+          <>
+            <Image
+              src={firstImage}
+              alt={product.title}
+              className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-700"
+              width={400}
+              height={320}
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-luxury-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          </>
+        ) : (
+          <ImageFallback />
+        )}
 
-        {/* Category Badge */}
+        {/* category badge */}
         <div className="absolute top-6 left-6 glass rounded-full px-4 py-2">
           <span className="luxury-subheading text-xs text-white font-light tracking-wider">
             {product.category}
           </span>
         </div>
 
-        {/* Hover Overlay */}
+        {/* hover overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-luxury-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
           <div className="absolute bottom-6 left-6 right-6">
             <div className="flex items-center justify-between">
@@ -58,7 +65,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             ₹{product.price.toLocaleString()}
           </span>
 
-          {/* Color Swatches */}
+          {/* color swatches */}
           <div className="flex gap-2">
             {Object.keys(product.images).slice(0, 4).map(color => (
               <div
