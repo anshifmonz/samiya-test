@@ -6,15 +6,17 @@ import ColorFilter from './filter/ColorFilter';
 import TagsFilter from './filter/TagsFilter';
 import { useProductFilters } from 'hooks/useProductFilters';
 import { type ProductFilters } from '@/types/product';
+import { type Category } from '@/types/category';
 
 interface FilterPanelProps {
   onFiltersChange: (filters: ProductFilters) => void;
   availableColors?: string[];
   availableCategories?: string[];
   availableTags?: string[];
+  categories: Category[];
 }
 
-const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange, availableColors, availableCategories, availableTags }) => {
+const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange, availableColors, availableCategories, availableTags, categories }) => {
   const {
     selectedCategory,
     priceRange,
@@ -47,6 +49,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange, availableCol
             selectedCategory={selectedCategory}
             onCategoryChange={handleCategoryChange}
             availableCategories={availableCategories}
+            categories={categories}
           />
 
           <PriceFilter

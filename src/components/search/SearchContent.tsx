@@ -1,5 +1,6 @@
 import React from 'react';
 import { type Product, type ProductFilters } from '@/types/product';
+import { type Category } from '@/types/category';
 import FilterPanel from './FilterPanel';
 import ProductsGrid from './ProductsGrid';
 import MobileFilterPanel from './MobileFilterPanel';
@@ -7,10 +8,11 @@ import MobileFilterPanel from './MobileFilterPanel';
 interface SearchContentProps {
   products: Product[];
   onFiltersChange: (filters: ProductFilters) => void;
+  categories: Category[];
 }
 
-const SearchContent: React.FC<SearchContentProps> = ({ products, onFiltersChange }) => {
-  // Collect all unique colors from the current products
+const SearchContent: React.FC<SearchContentProps> = ({ products, onFiltersChange, categories }) => {
+  // collect all unique colors from the current products
   const colorSet = new Set<string>();
   products.forEach(product => {
     if (product.images) {
@@ -19,7 +21,7 @@ const SearchContent: React.FC<SearchContentProps> = ({ products, onFiltersChange
   });
   const availableColors = Array.from(colorSet);
 
-  // Collect all unique categories from the current products
+  // collect all unique categories from the current products
   const categorySet = new Set<string>();
   products.forEach(product => {
     if (product.category) {
@@ -28,7 +30,7 @@ const SearchContent: React.FC<SearchContentProps> = ({ products, onFiltersChange
   });
   const availableCategories = Array.from(categorySet);
 
-  // Collect all unique tags from the current products
+  // collect all unique tags from the current products
   const tagSet = new Set<string>();
   products.forEach(product => {
     if (product.tags) {
@@ -39,23 +41,23 @@ const SearchContent: React.FC<SearchContentProps> = ({ products, onFiltersChange
 
   return (
     <div className="flex flex-col lg:flex-row gap-8">
-      {/* Desktop Filter Panel */}
       <div className="hidden lg:block">
         <FilterPanel
           onFiltersChange={onFiltersChange}
           availableColors={availableColors}
           availableCategories={availableCategories}
           availableTags={availableTags}
+          categories={categories}
         />
       </div>
 
-      {/* Mobile Filter Panel */}
       <div className="lg:hidden">
         <MobileFilterPanel
           onFiltersChange={onFiltersChange}
           availableColors={availableColors}
           availableCategories={availableCategories}
           availableTags={availableTags}
+          categories={categories}
         />
       </div>
 

@@ -15,15 +15,17 @@ import ColorFilter from './filter/ColorFilter';
 import TagsFilter from './filter/TagsFilter';
 import { useProductFilters } from '@/hooks/useProductFilters';
 import { type ProductFilters } from '@/types/product';
+import { type Category } from '@/types/category';
 
 interface MobileFilterPanelProps {
   onFiltersChange: (filters: ProductFilters) => void;
   availableColors?: string[];
   availableCategories?: string[];
   availableTags?: string[];
+  categories: Category[];
 }
 
-const MobileFilterPanel: React.FC<MobileFilterPanelProps> = ({ onFiltersChange, availableColors, availableCategories, availableTags }) => {
+const MobileFilterPanel: React.FC<MobileFilterPanelProps> = ({ onFiltersChange, availableColors, availableCategories, availableTags, categories }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const {
@@ -72,6 +74,7 @@ const MobileFilterPanel: React.FC<MobileFilterPanelProps> = ({ onFiltersChange, 
                 selectedCategory={selectedCategory}
                 onCategoryChange={handleCategoryChange}
                 availableCategories={availableCategories}
+                categories={categories}
               />
 
               <PriceFilter

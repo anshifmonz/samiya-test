@@ -1,6 +1,7 @@
 import React, { Suspense } from 'react';
 import { redirect } from 'next/navigation';
 import searchProducts from '@/lib/public/product';
+import getCategories from '@/lib/public/category';
 import SearchResultsHeader from 'components/search/SearchResultsHeader';
 import LoadingSpinner from 'components/shared/LoadingSpinner';
 import SearchClient from './SearchClient';
@@ -21,42 +22,35 @@ interface Props {
 function parseFilters(searchParams: Props['searchParams']): ProductFilters {
   const filters: ProductFilters = {};
 
-  if (searchParams.category) {
+  if (searchParams.category)
     filters.category = searchParams.category;
-  }
 
   if (searchParams.minPrice) {
     const minPrice = parseFloat(searchParams.minPrice);
-    if (!isNaN(minPrice)) {
-      filters.minPrice = minPrice;
-    }
+    if (!isNaN(minPrice)) filters.minPrice = minPrice;
   }
 
   if (searchParams.maxPrice) {
     const maxPrice = parseFloat(searchParams.maxPrice);
-    if (!isNaN(maxPrice)) {
-      filters.maxPrice = maxPrice;
-    }
+    if (!isNaN(maxPrice)) filters.maxPrice = maxPrice;
   }
 
-  if (searchParams.colors) {
+  if (searchParams.colors)
     filters.colors = searchParams.colors.split(',').filter(Boolean);
-  }
 
-  if (searchParams.tags) {
+  if (searchParams.tags)
     filters.tags = searchParams.tags.split(',').filter(Boolean);
-  }
 
   return filters;
 }
 
 export default async function SearchPage({ searchParams }: Props) {
   const query = searchParams.q || '';
-
   if (query.trim() === '') redirect('/');
 
   const filters = parseFilters(searchParams);
   const products = await searchProducts(query, filters);
+  const categories = await getCategories();
 
   return (
     <div className="min-h-screen bg-luxury-cream">
@@ -67,6 +61,7 @@ export default async function SearchPage({ searchParams }: Props) {
             initialProducts={products}
             initialQuery={query}
             initialFilters={filters}
+            initialCategories={categories}
           />
         </Suspense>
       </div>

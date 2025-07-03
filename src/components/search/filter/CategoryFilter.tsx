@@ -1,19 +1,25 @@
 import React, { useState } from 'react';
-import { buildCategoryTree } from '@/data/categories';
 import { type Category } from '@/types/category';
 import { ChevronRight, ChevronDown } from 'lucide-react';
+import { buildCategoryTree } from '@/lib/utils/buildCategoryTree';
 
 interface CategoryFilterProps {
   selectedCategory: string;
   onCategoryChange: (category: string) => void;
   availableCategories?: string[];
+  categories: Category[];
 }
 
-const CategoryFilter: React.FC<CategoryFilterProps> = ({ selectedCategory, onCategoryChange, availableCategories }) => {
+const CategoryFilter: React.FC<CategoryFilterProps> = ({ selectedCategory, onCategoryChange, availableCategories, categories }) => {
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
 
-  // get the hierarchical tree structure
-  const categoryTree = buildCategoryTree();
+  // filter categories to only include those that are available in search results
+  const filteredCategories = availableCategories && availableCategories.length > 0
+    ? categories.filter(category => availableCategories.includes(category.name))
+    : categories;
+
+  // build hierarchical tree
+  const categoryTree = buildCategoryTree(filteredCategories);
 
   const toggleExpanded = (categoryId: string) => {
     const newExpanded = new Set(expandedCategories);
@@ -28,32 +34,6 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ selectedCategory, onCat
   const handleCategoryClick = (categoryName: string) => {
     onCategoryChange(categoryName);
   };
-
-  // filter categories to show only those that have products in current results
-  const filterCategoryTree = (categories: Category[]): Category[] => {
-    return categories
-      .map(category => {
-        const hasChildren = category.children && category.children.length > 0;
-        const filteredChildren = hasChildren ? filterCategoryTree(category.children) : [];
-
-        // include category if it's available in search results or has available children
-        const isAvailable = availableCategories?.includes(category.name) || filteredChildren.length > 0;
-
-        if (isAvailable) {
-          return {
-            ...category,
-            children: filteredChildren
-          };
-        }
-        return null;
-      })
-      .filter((category): category is NonNullable<typeof category> => category !== null);
-  };
-
-  // get filtered category tree
-  const filteredCategoryTree = availableCategories && availableCategories.length > 0
-    ? filterCategoryTree(categoryTree)
-    : categoryTree;
 
   // recursive function to render category tree
   const renderCategoryTree = (categoryList: Category[], level: number = 0) => {
@@ -137,8 +117,8 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ selectedCategory, onCat
           </span>
         </label>
 
-        {/* dynamic categories from data with expandable hierarchy */}
-        {renderCategoryTree(filteredCategoryTree)}
+        {/* dynamic categories with expandable hierarchy */}
+        {renderCategoryTree(categoryTree)}
       </div>
     </div>
   );
