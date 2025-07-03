@@ -2,7 +2,6 @@ import { supabasePublic } from '@/lib/supabasePublic';
 import { type Product, type ProductFilters } from '@/types/product';
 
 async function searchProducts(query: string, filters?: ProductFilters): Promise<Product[]> {
-  console.log('searchProducts', query, filters);
   let supabaseQuery = supabasePublic
     .from('products')
     .select(`
@@ -109,8 +108,6 @@ async function searchProducts(query: string, filters?: ProductFilters): Promise<
       filters.tags!.some(tag => product.tags.includes(tag))
     );
   }
-
-  console.log('products', products);
 
   return products;
 }
