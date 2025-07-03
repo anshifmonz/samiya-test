@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { searchProducts } from '@/data/products';
+import React, { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
+import searchProducts from '@/lib/public/product';
 import SearchContent from 'components/search/SearchContent';
 import { type Product, type ProductFilters } from '@/types/product';
 
@@ -16,54 +16,48 @@ export default function SearchClient({ initialProducts, initialQuery, initialFil
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [filters, setFilters] = useState<ProductFilters>(initialFilters);
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const isFirstRun = useRef(true);
 
-  // Update products when filters change
+  // fetch products when filters or query change and not on first run
   useEffect(() => {
-    const results = searchProducts(initialQuery, filters);
-    setProducts(results);
+    if (isFirstRun.current) {
+      isFirstRun.current = false;
+      return;
+    }
 
-    // Update URL with new filters
-    const params = new URLSearchParams(searchParams);
+    const fetchProducts = async () => {
+      const results = await searchProducts(initialQuery, filters);
+      setProducts(results);
+    };
+    fetchProducts();
+  }, [filters, initialQuery]);
 
-    // Set query
+  // sync url with current filters and query
+  useEffect(() => {
+    const params = new URLSearchParams();
+
     params.set('q', initialQuery);
 
-    // Update filter parameters
-    if (filters.category && filters.category !== 'all') {
+    if (filters.category && filters.category !== 'all')
       params.set('category', filters.category);
-    } else {
-      params.delete('category');
-    }
 
-    if (filters.minPrice !== undefined) {
+    if (filters.minPrice !== undefined)
       params.set('minPrice', filters.minPrice.toString());
-    } else {
-      params.delete('minPrice');
-    }
 
-    if (filters.maxPrice !== undefined) {
+    if (filters.maxPrice !== undefined)
       params.set('maxPrice', filters.maxPrice.toString());
-    } else {
-      params.delete('maxPrice');
-    }
 
-    if (filters.colors && filters.colors.length > 0) {
+    if (filters.colors && filters.colors.length > 0)
       params.set('colors', filters.colors.join(','));
-    } else {
-      params.delete('colors');
-    }
 
-    if (filters.tags && filters.tags.length > 0) {
+    if (filters.tags && filters.tags.length > 0)
       params.set('tags', filters.tags.join(','));
-    } else {
-      params.delete('tags');
-    }
 
-    // Update URL without causing a page reload
     const newUrl = `${window.location.pathname}?${params.toString()}`;
-    router.replace(newUrl, { scroll: false });
-  }, [filters, initialQuery, router, searchParams]);
+
+    if (newUrl !== window.location.href)
+      router.replace(newUrl, { scroll: false });
+  }, [filters, initialQuery, router]);
 
   const handleFiltersChange = (newFilters: ProductFilters) => {
     setFilters(newFilters);
