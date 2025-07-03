@@ -10,17 +10,9 @@ const FeaturedProducts: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-24">
           <div className="animate-fade-in-up">
-            <h2 className="luxury-heading text-6xl sm:text-7xl text-luxury-black mb-8">
-              <span className="luxury-subheading block text-luxury-gold-dark text-2xl sm:text-3xl mb-8 tracking-[0.3em]">
-                Handpicked Favorites
-              </span>
+            <h2 className="luxury-heading text-2xl sm:text-3xl text-luxury-black mb-8">
               Featured Collection
             </h2>
-          </div>
-          <div className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            <p className="luxury-body text-xl text-luxury-gray max-w-3xl mx-auto">
-              Discover our latest arrivals, showcasing the finest in traditional and contemporary fashion
-            </p>
           </div>
         </div>
 

@@ -15,14 +15,9 @@ const SpecialSections = ({ specials }: SpecialSectionsProps) => {
           <div className="relative ml-10 mr-10 mx-auto px-4">
             <div className="text-center mb-10">
               <div className="animate-fade-in-up">
-                <h2 className="luxury-heading text-4xl sm:text-6xl text-luxury-black mb-6">
+                <h2 className="luxury-heading text-2xl sm:text-3xl text-luxury-black mb-6">
                   {special.name.toUpperCase()}
                 </h2>
-              </div>
-              <div className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-                <p className="luxury-body text-xl text-luxury-gray max-w-3xl mx-auto">
-                  {special.description}
-                </p>
               </div>
             </div>
 
