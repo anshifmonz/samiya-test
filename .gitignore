@@ -26,6 +26,6 @@ dist-ssr
 data.txt
 /.next/
 .env
-db.sql
+*.sql
 *.md
 scripts
