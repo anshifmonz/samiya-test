@@ -3,7 +3,6 @@ import { type Collection } from '@/types/collection';
 
 import LandingSection from './LandingSection';
 import Collections from './Collections';
-import FeaturedProducts from './FeaturedProducts';
 import NewArrivals from './NewArrivals';
 import BudgetSection from './BudgetSelection';
 import SelectionSections from './SpecialSections';
@@ -13,7 +12,6 @@ const Home = ({ collections, newArrivals, specials }: { collections: Collection[
     <div className="min-h-screen bg-luxury-cream">
       <LandingSection />
       <Collections collections={collections} />
-      <FeaturedProducts />
       <NewArrivals newArrivals={newArrivals} />
       <BudgetSection />
       <SelectionSections specials={specials} />
