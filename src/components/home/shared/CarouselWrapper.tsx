@@ -22,7 +22,7 @@ export default function CarouselWrapper({
   const wrappedItems = Children.map(children, (child) => {
     if (isValidElement(child) && child.type !== CarouselItem) {
       return (
-        <CarouselItem className={`${itemClassName} pl-4`}>
+        <CarouselItem className={`${itemClassName} pl-2`}>
           {child}
         </CarouselItem>
       );
