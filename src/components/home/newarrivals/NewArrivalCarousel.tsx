@@ -1,21 +1,15 @@
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "ui/carousel";
-import ProductCard from '../shared/ProductCard';
 import { type SpecialProduct } from '@/types/special';
-  
+import CarouselWrapper from '../shared/CarouselWrapper';
+import ProductCard from '../shared/ProductCard';
+
 const NewArrivalCarousel = ({ newArrivals }: { newArrivals: SpecialProduct[] }) => {
   return (
-    <div className="relative ml-10 mr-10 mx-auto px-4">
-      <Carousel className="w-full" opts={{ align: "start", loop: false }}>
-        <CarouselContent className="-ml-2 md:-ml-4">
-          {newArrivals.map((product) => (
-            <CarouselItem key={product.id} className="pl-2 md:pl-4 basis-4/5 md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
-              <ProductCard product={product} />
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        <CarouselPrevious className="left-4" />
-        <CarouselNext className="right-4" />
-      </Carousel>
+    <div className="relative mx-auto pl-4">
+      <CarouselWrapper>
+        {newArrivals.map((product) => (
+          <ProductCard key={product.id} product={product} />
+        ))}
+      </CarouselWrapper>
     </div>
   );
 };
