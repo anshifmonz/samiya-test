@@ -1,4 +1,3 @@
-import React from 'react';
 import Image from 'next/image';
 import { type SpecialProduct } from '@/types/special';
 import ImageFallback from 'components/shared/ImageFallback';
@@ -7,15 +6,15 @@ const Productcard = ({ product }: { product: SpecialProduct }) => {
   const image = product.images[0];
 
   return (
-    <div className="relative bg-card rounded-sm overflow-hidden shadow-sm group cursor-pointer">
-      <div className="relative h-[350px] overflow-hidden">
+    <div className="relative bg-card rounded-sm overflow-hidden shadow-sm group cursor-pointer w-[clamp(164px,calc(50vw-30px),458px)] lg:w-[clamp(200px,calc(20vw-16px),243px)]">
+      <div className="relative w-full aspect-[4/5] overflow-hidden">
         {image ? (
           <Image
             src={image}
             alt={product.title}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-            width={270}
-            height={320}
+            width={458}
+            height={573}
           />
         ) : (
           <ImageFallback />
