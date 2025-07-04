@@ -7,7 +7,7 @@ const NewArrivals = ({ newArrivals }: { newArrivals: SpecialProduct[] }) => {
   return (
     <section className="bg-luxury-cream py-20 relative overflow-hidden">
       <NewArrivalsHeader />
-      <div className="relative mx-auto pl-4">
+      <div className="relative mx-auto pl-1">
         <CarouselWrapper>
           {newArrivals.map((product) => (
             <ProductCard key={product.id} product={product} />

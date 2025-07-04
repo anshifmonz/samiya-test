@@ -33,7 +33,7 @@ export default function CarouselWrapper({
   return (
     <div className={className}>
       <Carousel opts={opts}>
-        <CarouselContent className="flex -ml-4">
+        <CarouselContent className="flex -ml-0">
           {wrappedItems}
         </CarouselContent>
         <CarouselPrevious className="left-4" />

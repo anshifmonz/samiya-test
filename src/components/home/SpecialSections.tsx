@@ -11,7 +11,7 @@ const SpecialSections = ({ specials }: SpecialSectionsProps) => {
     <section>
       {specials.map((special, index) => (
         <section key={special.id} className={`${index % 2 === 0 ? 'bg-luxury-beige' : 'bg-luxury-cream'} py-20 relative overflow-hidden`}>
-          <div className="relative ml-0 mr-0 mx-auto pl-4">
+          <div className="relative ml-0 mr-0 mx-auto pl-1">
             <div className="text-center mb-10">
               <div className="animate-fade-in-up">
                 <h2 className="luxury-heading text-2xl sm:text-3xl text-luxury-black mb-6">
