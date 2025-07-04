@@ -1,4 +1,4 @@
-import React, { ReactNode, Children, isValidElement, cloneElement } from 'react';
+import React, { ReactNode, Children, isValidElement } from 'react';
 import {
   Carousel,
   CarouselContent,
@@ -11,13 +11,13 @@ interface CarouselWrapperProps {
   children: ReactNode;
   itemClassName?: string;
   className?: string;
-  opts?: { align?: 'start' | 'center' | 'end'; loop?: boolean };
+  opts?: { align?: 'start' | 'center' | 'end'; loop?: boolean; dragFree?: boolean; containScroll?: "trimSnaps" | "keepSnaps" };
 }
 export default function CarouselWrapper({
   children,
   itemClassName = 'flex-none',
   className = 'w-full',
-  opts = { align: 'start', loop: false },
+  opts = { align: 'start', loop: false, dragFree: true, containScroll: "trimSnaps" },
 }: CarouselWrapperProps) {
   const wrappedItems = Children.map(children, (child) => {
     if (isValidElement(child) && child.type !== CarouselItem) {
