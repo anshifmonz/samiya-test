@@ -10,9 +10,11 @@ const BudgetSection = () => {
   ];
 
   return (
-    <section className="py-20 px-4 bg-luxury-beige">
-      <BudgetHeader />
-      <BudgetColumns budgetRanges={budgetRanges} />
+    <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 lg:px-8 bg-luxury-beige">
+      <div className="max-w-7xl mx-auto">
+        <BudgetHeader />
+        <BudgetColumns budgetRanges={budgetRanges} />
+      </div>
     </section>
   );
 };
