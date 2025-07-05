@@ -1,52 +1,22 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import SearchBar from '../search/SearchBar';
 
 const Navigation: React.FC = () => {
-  const router = useRouter();
   const pathname = usePathname();
-  const [isScrolled, setIsScrolled] = useState(false);
-  const isHomePage = pathname === '/';
   const isSearchPage = pathname === '/search';
   const isAdminPage = pathname === '/admin';
 
-  useEffect(() => {
-    const heroSection = document.getElementById('hero');
-    if (!heroSection) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsScrolled(!entry.isIntersecting);
-      },
-      { threshold: 0.1 }
-    );
-
-    observer.observe(heroSection);
-
-    return () => observer.disconnect();
-  }, []);
-
-  // Determine navbar background and styling based on page
   const getNavbarStyling = () => {
     const DEFAULT_STYLE = 'bg-[#5c5b5b]/60 backdrop-blur-md border-b border-[#d6c6ae]/30 shadow-[0_4px_24px_rgba(214,198,174,0.2)] drop-shadow-[0_0_12px_rgba(214,198,174,0.1)]';
-    if (isScrolled) return DEFAULT_STYLE;
-    if (isHomePage)
-      return 'bg-luxury-black/95 backdrop-blur-lg border-b border-white/30 shadow-[0_4px_24px_rgba(214,198,174,0.2)] drop-shadow-[0_0_12px_rgba(214,198,174,0.1)]';
+    // const BANNER_STYLE = 'bg-luxury-black/95 backdrop-blur-lg border-b border-white/30 shadow-[0_4px_24px_rgba(214,198,174,0.2)] drop-shadow-[0_0_12px_rgba(214,198,174,0.1)]';
+
     return DEFAULT_STYLE;
   };
 
-  // Determine text styling based on page
   const getTextStyling = () => {
-    if (isHomePage) {
-      return {
-        logo: 'text-white hover:text-luxury-gold',
-        logoSubtext: 'text-luxury-gold',
-        navLinks: 'text-white hover:text-luxury-gold'
-      };
-    }
     return {
       logo: 'text-white hover:text-luxury-gold',
       logoSubtext: 'text-luxury-gold',
@@ -106,7 +76,6 @@ const Navigation: React.FC = () => {
             </div>
           )}
 
-          {/* Mobile menu button */}
           <div className="md:hidden">
             <button className={`transition-colors duration-300 ${textStyles.navLinks}`}>
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
