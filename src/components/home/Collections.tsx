@@ -15,7 +15,7 @@ const Collections = ({ collections }: { collections: Collection[] }) => {
   };
 
   return (
-    <div className="bg-luxury-beige py-20 relative overflow-hidden">
+    <div className="py-20 relative overflow-hidden">
       <div className="relative mx-auto pl-4">
         <div className="text-center mb-10">
           <div className="animate-fade-in-up">

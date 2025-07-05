@@ -5,7 +5,7 @@ import CarouselWrapper from "./shared/CarouselWrapper";
 
 const NewArrivals = ({ newArrivals }: { newArrivals: SpecialProduct[] }) => {
   return (
-    <section className="bg-luxury-cream py-20 relative overflow-hidden">
+    <section className="py-20 relative overflow-hidden">
       <NewArrivalsHeader />
       <div className="relative mx-auto pl-1">
         <CarouselWrapper>

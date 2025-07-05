@@ -9,8 +9,8 @@ interface SpecialSectionsProps {
 const SpecialSections = ({ specials }: SpecialSectionsProps) => {
   return (
     <section>
-      {specials.map((special, index) => (
-        <section key={special.id} className={`${index % 2 === 0 ? 'bg-luxury-beige' : 'bg-luxury-cream'} py-20 relative overflow-hidden`}>
+      {specials.map((special) => (
+        <section key={special.id} className="py-20 relative overflow-hidden">
           <div className="relative ml-0 mr-0 mx-auto pl-1">
             <div className="text-center mb-10">
               <div className="animate-fade-in-up">

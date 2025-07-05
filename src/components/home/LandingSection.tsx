@@ -15,7 +15,7 @@ const LandingSection: React.FC = () => {
   }, []);
 
   return (
-    <div id="hero" className="relative overflow-hidden mt-[80px] bg-transparent">
+    <div id="hero" className="relative overflow-hidden mt-[80px]">
       <div id="hero-banner" className="relative mx-auto w-[clamp(166px,calc(100vw-34px),1366px)] h-[clamp(67px,calc((100vw-34px)*0.4),534px)]">
         <Image
           src="/assets/images/home/landing-hero.jpg"
