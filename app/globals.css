@@ -50,7 +50,7 @@
     --luxury-light-gray: 0 0% 45%;
     --luxury-cream: 45 30% 95%;
     --luxury-beige: 45 25% 90%;
-    --luxury-white: 0 0% 99%;
+    --luxury-white: 0 0% 100%;
     --luxury-gold: 45 100% 60%;
     --luxury-gold-light: 45 80% 70%;
     --luxury-gold-dark: 45 60% 40%;
@@ -94,6 +94,18 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    --luxury-black: 0 0% 98%;
+    --luxury-dark-gray: 0 0% 90%;
+    --luxury-gray: 0 0% 80%;
+    --luxury-light-gray: 0 0% 65%;
+    --luxury-cream: 45 15% 12%;
+    --luxury-beige: 45 10% 18%;
+    --luxury-white: 0 0% 8%;
+    --luxury-gold: 45 90% 50%;
+    --luxury-gold-light: 45 80% 60%;
+    --luxury-gold-dark: 45 60% 35%;
+    --luxury-accent: 0 0% 95%;
   }
 
   * {

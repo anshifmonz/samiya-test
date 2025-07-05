@@ -10,17 +10,18 @@ const Navigation: React.FC = () => {
   const isAdminPage = pathname === '/admin';
 
   const getNavbarStyling = () => {
-    const DEFAULT_STYLE = 'bg-[#5c5b5b]/60 backdrop-blur-md border-b border-[#d6c6ae]/30 shadow-[0_4px_24px_rgba(214,198,174,0.2)] drop-shadow-[0_0_12px_rgba(214,198,174,0.1)]';
+    const DEFAULT_STYLE = 'bg-luxury-white backdrop-blur-sm border-b border-[#d6c6ae]/30 shadow-[0_4px_24px_rgba(214,198,174,0.2)] drop-shadow-[0_0_12px_rgba(214,198,174,0.1)]';
     // const BANNER_STYLE = 'bg-luxury-black/95 backdrop-blur-lg border-b border-white/30 shadow-[0_4px_24px_rgba(214,198,174,0.2)] drop-shadow-[0_0_12px_rgba(214,198,174,0.1)]';
 
     return DEFAULT_STYLE;
   };
 
   const getTextStyling = () => {
+    const default_link_style = "luxury-body font-light transition-colors duration-300 tracking-wide relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-luxury-gold after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left";
     return {
-      logo: 'text-white hover:text-luxury-gold',
-      logoSubtext: 'text-luxury-gold',
-      navLinks: 'text-white hover:text-luxury-gold'
+      logo: 'text-luxury-black hover:text-luxury-gold font-[450]',
+      logoSubtext: 'text-luxury-gold font-[500]',
+      navLinks: `${default_link_style} text-luxury-black hover:text-luxury-gold font-[350] text-sm`
     };
   };
 
@@ -40,25 +41,25 @@ const Navigation: React.FC = () => {
           <div className="hidden md:flex space-x-12">
             <Link
               href="/"
-              className={`luxury-body font-light transition-colors duration-300 tracking-wide relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-luxury-gold after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left ${textStyles.navLinks}`}
+              className={`${textStyles.navLinks}`}
             >
               Home
             </Link>
             <Link
               href="/about"
-              className={`luxury-body font-light transition-colors duration-300 tracking-wide relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-luxury-gold after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left ${textStyles.navLinks}`}
+              className={`${textStyles.navLinks}`}
             >
               About
             </Link>
             <Link
               href="/collections"
-              className={`luxury-body font-light transition-colors duration-300 tracking-wide relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-luxury-gold after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left ${textStyles.navLinks}`}
+              className={`${textStyles.navLinks}`}
             >
               Collections
             </Link>
             <Link
               href="/contact"
-              className={`luxury-body font-light transition-colors duration-300 tracking-wide relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-luxury-gold after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left ${textStyles.navLinks}`}
+              className={`${textStyles.navLinks}`}
             >
               Contact
             </Link>
