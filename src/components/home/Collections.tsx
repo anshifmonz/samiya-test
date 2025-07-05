@@ -15,7 +15,7 @@ const Collections = ({ collections }: { collections: Collection[] }) => {
   };
 
   return (
-    <div className="py-20 relative overflow-hidden">
+    <section className="relative overflow-hidden">
       <div className="relative mx-auto pl-4">
         <div className="text-center mb-10">
           <div className="animate-fade-in-up">
@@ -35,11 +35,8 @@ const Collections = ({ collections }: { collections: Collection[] }) => {
             />
           ))}
         </CarouselWrapper>
-
-        <div className="absolute top-0 left-0 w-8 h-full bg-gradient-to-r from-luxury-beige to-transparent pointer-events-none z-5"></div>
-        <div className="absolute top-0 right-0 w-8 h-full bg-gradient-to-l from-luxury-beige to-transparent pointer-events-none z-5"></div>
       </div>
-    </div>
+    </section>
   );
 };
 

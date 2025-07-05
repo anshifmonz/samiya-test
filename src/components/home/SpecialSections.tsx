@@ -8,9 +8,9 @@ interface SpecialSectionsProps {
 
 const SpecialSections = ({ specials }: SpecialSectionsProps) => {
   return (
-    <section>
+    <section className="flex flex-col gap-[70px]">
       {specials.map((special) => (
-        <section key={special.id} className="py-20 relative overflow-hidden">
+        <section key={special.id} className="relative overflow-hidden">
           <div className="relative ml-0 mr-0 mx-auto pl-1">
             <div className="text-center mb-10">
               <div className="animate-fade-in-up">
