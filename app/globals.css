@@ -50,6 +50,7 @@
     --luxury-light-gray: 0 0% 45%;
     --luxury-cream: 45 30% 95%;
     --luxury-beige: 45 25% 90%;
+    --luxury-white: 0 0% 99%;
     --luxury-gold: 45 100% 60%;
     --luxury-gold-light: 45 80% 70%;
     --luxury-gold-dark: 45 60% 40%;
@@ -239,6 +240,10 @@
 
   .bg-luxury-beige {
     background-color: hsl(var(--luxury-beige));
+  }
+
+  .bg-luxury-white {
+    background-color: hsl(var(--luxury-white));
   }
 
   .bg-luxury-gold {
