@@ -1,6 +1,13 @@
 import type { Special, SpecialProduct } from '@/types/special';
+import newArrivals from './newarrivals';
 
 export const specials: Special[] = [
+  {
+    id: "0",
+    name: "New Arrivals",
+    description: "New Arrivals",
+    products: newArrivals,
+  },
   {
     id: "1",
     name: "saree",
@@ -10,8 +17,7 @@ export const specials: Special[] = [
         id: "1",
         title: "Elegant Silk Saree",
         images: [
-          "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=400&h=600&fit=crop",
-          "https://images.unsplash.com/photo-1583391733981-4679ba36b40a?w=400&h=600&fit=crop",
+          "/assets/images/specials/1.jpg"
         ],
         price: 1499,
       },
@@ -19,8 +25,7 @@ export const specials: Special[] = [
         id: "2",
         title: "Elegant Silk Saree",
         images: [
-          "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=400&h=600&fit=crop",
-          "https://images.unsplash.com/photo-1583391733981-4679ba36b40a?w=400&h=600&fit=crop",
+          "/assets/images/specials/2.jpg"
         ],
         price: 1499,
       },
@@ -28,8 +33,7 @@ export const specials: Special[] = [
         id: "3",
         title: "Elegant Silk Saree",
         images: [
-          "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=400&h=600&fit=crop",
-          "https://images.unsplash.com/photo-1583391733981-4679ba36b40a?w=400&h=600&fit=crop",
+          "/assets/images/specials/3.jpg"
         ],
         price: 1499,
       },
@@ -37,8 +41,7 @@ export const specials: Special[] = [
         id: "4",
         title: "Elegant Silk Saree",
         images: [
-          "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=400&h=600&fit=crop",
-          "https://images.unsplash.com/photo-1583391733981-4679ba36b40a?w=400&h=600&fit=crop",
+          "/assets/images/specials/4.jpg"
         ],
         price: 1499,
       },
@@ -46,8 +49,7 @@ export const specials: Special[] = [
         id: "5",
         title: "Elegant Silk Saree",
         images: [
-          "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=400&h=600&fit=crop",
-          "https://images.unsplash.com/photo-1583391733981-4679ba36b40a?w=400&h=600&fit=crop",
+          "/assets/images/specials/5.jpg"
         ],
         price: 1499,
       },
@@ -55,11 +57,58 @@ export const specials: Special[] = [
         id: "6",
         title: "Elegant Silk Saree",
         images: [
-          "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=400&h=600&fit=crop",
-          "https://images.unsplash.com/photo-1583391733981-4679ba36b40a?w=400&h=600&fit=crop",
+          "/assets/images/specials/6.jpg"
         ],
         price: 1499,
       },
+      {
+        id: "7",
+        title: "Designer Kurta Set",
+        images: [
+          "/assets/images/specials/7.jpg"
+        ],
+        price: 1499,
+      },
+      {
+        id: "8",
+        title: "Designer Kurta Set",
+        images: [
+          "/assets/images/specials/8.jpg"
+        ],
+        price: 1499,
+      },
+      {
+        id: "9",
+        title: "Designer Kurta Set",
+        images: [
+          "/assets/images/specials/9.jpg"
+        ],
+        price: 1499,
+      },
+      {
+        id: "10",
+        title: "Designer Kurta Set",
+        images: [
+          "/assets/images/specials/10.jpg"
+        ],
+        price: 1499,
+      },
+      {
+        id: "11",
+        title: "Designer Kurta Set",
+        images: [
+          "/assets/images/specials/11.jpg"
+        ],
+        price: 1499,
+      },
+      {
+        id: "12",
+        title: "Designer Kurta Set",
+        images: [
+          "/assets/images/specials/12.jpg"
+        ],
+        price: 1499,
+      }
     ],
   },
   {
@@ -71,8 +120,7 @@ export const specials: Special[] = [
         id: "1",
         title: "Designer Kurta Set",
         images: [
-          "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=400&h=600&fit=crop",
-          "https://images.unsplash.com/photo-1598970434795-0c54fe7c0642?w=400&h=600&fit=crop",
+          "/assets/images/newarrivals/1.jpg"
         ],
         price: 1499,
       },
@@ -80,8 +128,7 @@ export const specials: Special[] = [
         id: "2",
         title: "Designer Kurta Set",
         images: [
-          "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=400&h=600&fit=crop",
-          "https://images.unsplash.com/photo-1598970434795-0c54fe7c0642?w=400&h=600&fit=crop",
+          "/assets/images/newarrivals/2.jpg"
         ],
         price: 1499,
       },
@@ -89,8 +136,7 @@ export const specials: Special[] = [
         id: "3",
         title: "Designer Kurta Set",
         images: [
-          "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=400&h=600&fit=crop",
-          "https://images.unsplash.com/photo-1598970434795-0c54fe7c0642?w=400&h=600&fit=crop",
+          "/assets/images/newarrivals/3.jpg"
         ],
         price: 1499,
       },
@@ -98,8 +144,7 @@ export const specials: Special[] = [
         id: "4",
         title: "Designer Kurta Set",
         images: [
-          "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=400&h=600&fit=crop",
-          "https://images.unsplash.com/photo-1598970434795-0c54fe7c0642?w=400&h=600&fit=crop",
+          "/assets/images/newarrivals/4.jpg"
         ],
         price: 1499,
       },
@@ -107,8 +152,7 @@ export const specials: Special[] = [
         id: "5",
         title: "Designer Kurta Set",
         images: [
-          "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=400&h=600&fit=crop",
-          "https://images.unsplash.com/photo-1598970434795-0c54fe7c0642?w=400&h=600&fit=crop",
+          "/assets/images/newarrivals/5.jpg"
         ],
         price: 1499,
       },
@@ -116,11 +160,50 @@ export const specials: Special[] = [
         id: "6",
         title: "Designer Kurta Set",
         images: [
-          "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=400&h=600&fit=crop",
-          "https://images.unsplash.com/photo-1598970434795-0c54fe7c0642?w=400&h=600&fit=crop",
+          "/assets/images/newarrivals/6.jpg"
         ],
         price: 1499,
       },
+      {
+        id: "8",
+        title: "Designer Kurta Set",
+        images: [
+          "/assets/images/specials/8.jpg"
+        ],
+        price: 1499,
+      },
+      {
+        id: "9",
+        title: "Designer Kurta Set",
+        images: [
+          "/assets/images/specials/9.jpg"
+        ],
+        price: 1499,
+      },
+      {
+        id: "10",
+        title: "Designer Kurta Set",
+        images: [
+          "/assets/images/specials/10.jpg"
+        ],
+        price: 1499,
+      },
+      {
+        id: "11",
+        title: "Designer Kurta Set",
+        images: [
+          "/assets/images/specials/11.jpg"
+        ],
+        price: 1499,
+      },
+      {
+        id: "12",
+        title: "Designer Kurta Set",
+        images: [
+          "/assets/images/specials/12.jpg"
+        ],
+        price: 1499,
+      }
     ],
   },
 ];

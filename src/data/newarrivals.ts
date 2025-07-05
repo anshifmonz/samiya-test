@@ -3,91 +3,85 @@ import type { SpecialProduct } from '@/types/special';
 const newArrivals: SpecialProduct[] = [
   {
     id: "1",
-    images: ["https://images.unsplash.com/photo-1649972904349-6e44c42644a7?auto=format&fit=crop&w=600&q=80"],
+    images: ["/assets/images/newarrivals/1.jpg"],
     title: "Elegant Dress",
     price: 2999
   },
   {
     id: "2",
-    images: ["https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&w=600&q=80"],
+    images: ["/assets/images/newarrivals/2.jpg"],
     title: "Premium Laptop",
     price: 45999
   },
   {
     id: "3",
-    images: ["https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=600&q=80"],
+    images: ["/assets/images/newarrivals/3.jpg"],
     title: "Work Essentials",
     price: 1899
   },
   {
     id: "4",
-    images: ["https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=600&q=80"],
+    images: ["/assets/images/newarrivals/4.jpg"],
     title: "Tech Accessories",
     price: 899
   },
   {
     id: "5",
-    images: ["https://images.unsplash.com/photo-1721322800607-8c38375eef04?auto=format&fit=crop&w=600&q=80"],
+    images: ["/assets/images/newarrivals/5.jpg"],
     title: "Home Decor",
     price: 3499
   },
   {
     id: "6",
-    images: ["https://images.unsplash.com/photo-1649972904349-6e44c42644a7?auto=format&fit=crop&w=600&q=80"],
+    images: ["/assets/images/newarrivals/6.jpg"],
     title: "Elegant Dress",
     price: 2999
   },
   {
     id: "7",
-    images: ["https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&w=600&q=80"],
+    images: ["/assets/images/newarrivals/7.jpg"],
     title: "Premium Laptop",
     price: 45999
   },
   {
     id: "8",
-    images: ["https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=600&q=80"],
+    images: ["/assets/images/newarrivals/8.jpg"],
     title: "Work Essentials",
     price: 1899
   },
   {
     id: "9",
-    images: ["https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=600&q=80"],
+    images: ["/assets/images/newarrivals/9.jpg"],
     title: "Tech Accessories",
     price: 899
   },
   {
     id: "10",
-    images: ["https://images.unsplash.com/photo-1721322800607-8c38375eef04?auto=format&fit=crop&w=600&q=80"],
+    images: ["/assets/images/newarrivals/10.jpg"],
     title: "Home Decor",
     price: 3499
   },
   {
     id: "11",
-    images: ["https://images.unsplash.com/photo-1649972904349-6e44c42644a7?auto=format&fit=crop&w=600&q=80"],
-    title: "Elegant Dress",
-    price: 2999
+    images: ["/assets/images/newarrivals/11.jpg"],
+    title: "Home Decor",
+    price: 3499
   },
   {
     id: "12",
-    images: ["https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&w=600&q=80"],
-    title: "Premium Laptop",
-    price: 45999
+    images: ["/assets/images/newarrivals/12.jpg"],
+    title: "Home Decor",
+    price: 3499
   },
   {
     id: "13",
-    images: ["https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=600&q=80"],
-    title: "Work Essentials",
-    price: 1899
+    images: ["/assets/images/newarrivals/13.jpg"],
+    title: "Home Decor",
+    price: 3499
   },
   {
     id: "14",
-    images: ["https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=600&q=80"],
-    title: "Tech Accessories",
-    price: 899
-  },
-  {
-    id: "15",
-    images: ["https://images.unsplash.com/photo-1721322800607-8c38375eef04?auto=format&fit=crop&w=600&q=80"],
+    images: ["/assets/images/newarrivals/14.jpg"],
     title: "Home Decor",
     price: 3499
   }
