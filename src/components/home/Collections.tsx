@@ -18,18 +18,16 @@ const Collections = ({ collections }: { collections: Collection[] }) => {
   return (
     <section className="relative overflow-hidden -mt-8">
       <SectionHeading title="Collections" />
-      <div className="relative mx-auto pl-1">
-        <CarouselWrapper>
-          {collections.map((collection) => (
-            <CollectionsCard
-              collection={collection}
-              hoveredCard={hoveredCard}
-              setHoveredCard={setHoveredCard}
-              onClick={() => handleCategoryClick(collection.title)}
-            />
-          ))}
-        </CarouselWrapper>
-      </div>
+      <CarouselWrapper>
+        {collections.map((collection) => (
+          <CollectionsCard
+            collection={collection}
+            hoveredCard={hoveredCard}
+            setHoveredCard={setHoveredCard}
+            onClick={() => handleCategoryClick(collection.title)}
+          />
+        ))}
+      </CarouselWrapper>
     </section>
   );
 };

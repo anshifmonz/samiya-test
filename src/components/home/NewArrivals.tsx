@@ -7,13 +7,11 @@ const NewArrivals = ({ newArrivals }: { newArrivals: SpecialProduct[] }) => {
   return (
     <section className="relative overflow-hidden">
       <SectionHeading title="Just Dropped" />
-      <div className="relative mx-auto pl-1">
-        <CarouselWrapper>
-          {newArrivals.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </CarouselWrapper>
-      </div>
+      <CarouselWrapper>
+        {newArrivals.map((product) => (
+          <ProductCard key={product.id} product={product} />
+        ))}
+      </CarouselWrapper>
     </section>
   );
 };

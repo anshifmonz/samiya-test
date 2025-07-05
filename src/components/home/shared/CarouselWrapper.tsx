@@ -31,14 +31,16 @@ export default function CarouselWrapper({
   });
 
   return (
-    <div className={className}>
-      <Carousel opts={opts}>
-        <CarouselContent className="flex -ml-0">
-          {wrappedItems}
-        </CarouselContent>
-        <CarouselPrevious className="left-4" />
-        <CarouselNext className="right-4" />
-      </Carousel>
+    <div className="relative mx-auto pl-1">
+      <div className={className}>
+        <Carousel opts={opts}>
+          <CarouselContent className="flex -ml-0">
+            {wrappedItems}
+          </CarouselContent>
+          <CarouselPrevious className="left-4" />
+          <CarouselNext className="right-4" />
+        </Carousel>
+      </div>
     </div>
   );
 }
