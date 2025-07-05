@@ -6,7 +6,7 @@ const Productcard = ({ product }: { product: SpecialProduct }) => {
   const image = product.images[0];
 
   return (
-    <div className="relative flex flex-col gap-1 rounded-sm overflow-hidden shadow-sm group cursor-pointer w-[clamp(164px,calc(50vw-30px),458px)] lg:w-[clamp(200px,calc(20vw-16px),243px)]">
+    <div className="relative flex flex-col gap-1 rounded-sm overflow-hidden shadow-sm group cursor-pointer w-[clamp(164px,calc(50vw-30px),458px)] lg:w-[clamp(200px,calc(17.5vw-16px),277px)]">
       <div className="relative flex-grow w-full aspect-[4/5] overflow-hidden">
         {image ? (
           <Image
