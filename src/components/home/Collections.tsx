@@ -16,7 +16,7 @@ const Collections = ({ collections }: { collections: Collection[] }) => {
   };
 
   return (
-    <section className="relative overflow-hidden">
+    <section className="relative overflow-hidden -mt-8">
       <SectionHeading title="Collections" />
       <div className="relative mx-auto pl-1">
         <CarouselWrapper>
