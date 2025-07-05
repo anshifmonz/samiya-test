@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import CollectionsCard from './collections/CollectionsCard';
 import { type Collection } from '@/types/collection';
 import CarouselWrapper from './shared/CarouselWrapper';
+import SectionHeading from './shared/SectionHeading';
 
 const Collections = ({ collections }: { collections: Collection[] }) => {
   const router = useRouter();
@@ -16,15 +17,8 @@ const Collections = ({ collections }: { collections: Collection[] }) => {
 
   return (
     <section className="relative overflow-hidden">
-      <div className="relative mx-auto pl-4">
-        <div className="text-center mb-10">
-          <div className="animate-fade-in-up">
-            <h2 className="luxury-heading text-2xl sm:text-3xl text-luxury-black mb-6">
-              Collections
-            </h2>
-          </div>
-        </div>
-
+      <SectionHeading title="Collections" />
+      <div className="relative mx-auto pl-1">
         <CarouselWrapper>
           {collections.map((collection) => (
             <CollectionsCard

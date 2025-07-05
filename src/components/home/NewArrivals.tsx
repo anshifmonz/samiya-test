@@ -1,12 +1,12 @@
 import { type SpecialProduct } from "@/types/special";
-import NewArrivalsHeader from './newarrivals/NewArrivalsHeader';
 import ProductCard from "./shared/ProductCard";
 import CarouselWrapper from "./shared/CarouselWrapper";
+import SectionHeading from "./shared/SectionHeading";
 
 const NewArrivals = ({ newArrivals }: { newArrivals: SpecialProduct[] }) => {
   return (
     <section className="relative overflow-hidden">
-      <NewArrivalsHeader />
+      <SectionHeading title="Just Dropped" />
       <div className="relative mx-auto pl-1">
         <CarouselWrapper>
           {newArrivals.map((product) => (

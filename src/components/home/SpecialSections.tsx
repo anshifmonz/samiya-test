@@ -1,6 +1,7 @@
 import { type Special } from '@/types/special';
 import CarouselWrapper from './shared/CarouselWrapper';
 import ProductCard from './shared/ProductCard';
+import SectionHeading from './shared/SectionHeading';
 
 interface SpecialSectionsProps {
   specials: Special[];
@@ -11,15 +12,8 @@ const SpecialSections = ({ specials }: SpecialSectionsProps) => {
     <section className="flex flex-col gap-[70px]">
       {specials.map((special) => (
         <section key={special.id} className="relative overflow-hidden">
-          <div className="relative ml-0 mr-0 mx-auto pl-1">
-            <div className="text-center mb-10">
-              <div className="animate-fade-in-up">
-                <h2 className="luxury-heading text-2xl sm:text-3xl text-luxury-black mb-6">
-                  {special.name.toUpperCase()}
-                </h2>
-              </div>
-            </div>
-
+          <SectionHeading title={special.name.toUpperCase()} />
+          <div className="relative mx-auto pl-1">
             <CarouselWrapper>
               {special.products.map(p => (
                 <ProductCard key={p.id} product={p} />

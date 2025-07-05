@@ -1,4 +1,5 @@
-import { BudgetHeader, BudgetColumns } from "./budget";
+import BudgetColumns from "./budget/BudgetColumns";
+import SectionHeading from "./shared/SectionHeading";
 
 const BudgetSection = () => {
   const budgetRanges = [
@@ -12,7 +13,10 @@ const BudgetSection = () => {
   return (
     <section className="px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <BudgetHeader />
+        <SectionHeading
+          title="Look Good Spend Smart"
+          className="text-xl sm:text-2xl md:text-3xl lg:text-4xl"
+        />
         <BudgetColumns budgetRanges={budgetRanges} />
       </div>
     </section>
