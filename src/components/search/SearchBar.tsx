@@ -16,9 +16,7 @@ const SearchBar: React.FC = () => {
       router.push(`/search?q=${encodeURIComponent(query.trim())}`);
     }
   };
-
-  // different styling for search page vs landing page
-  const isInNavbar = isSearchPage;
+  const isInNavbar = !isSearchPage;
 
   return (
     <form onSubmit={handleSubmit} className="relative max-w-2xl mx-auto">
@@ -30,13 +28,13 @@ const SearchBar: React.FC = () => {
           placeholder="Search for products"
           className={`w-full px-4 py-2 pr-16 luxury-body text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-luxury-gold/50 transition-all duration-300 ${
             isInNavbar
-              ? 'bg-white/95 text-luxury-black placeholder-luxury-gray/60 border border-white/20 focus:border-luxury-gold/30'
+              ? 'bg-white text-black placeholder-gray-500 border border-gray-200 focus:border-luxury-gold/50'
               : 'bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-white/60 group-hover:bg-white/15 group-hover:border-white/30'
           }`}
         />
         <button
           type="submit"
-          className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-luxury-gold text-luxury-black p-1.5 rounded-lg hover:bg-luxury-gold-light transition-all duration-300 hover:scale-105 shadow-md"
+          className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-red-500 text-white p-1.5 rounded-lg hover:bg-red-600 transition-all duration-300 hover:scale-105 shadow-md"
         >
           <Search size={16} />
         </button>
