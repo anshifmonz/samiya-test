@@ -1,5 +1,5 @@
 import React from 'react';
-import Navigation from 'components/shared/Navigation';
+import NavBar from 'components/shared/NavBar';
 
 interface ProductNotFoundProps {
   onGoHome: () => void;
@@ -7,7 +7,7 @@ interface ProductNotFoundProps {
 
 const ProductNotFound: React.FC<ProductNotFoundProps> = ({ onGoHome }) => (
   <div className="min-h-screen bg-luxury-cream flex flex-col">
-    <Navigation />
+    <NavBar />
     <div className="flex flex-1 items-center justify-center">
       <div className="text-center">
         <h2 className="luxury-heading text-3xl text-luxury-black mb-6">Product Not Found</h2>

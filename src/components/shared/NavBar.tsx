@@ -7,7 +7,7 @@ import {
   SearchSection,
   MobileMenu,
   MobileSearch
-} from './navigation';
+} from './navbar';
 
 const Navigation: React.FC = () => {
   const {

@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { TooltipProvider } from "components/ui/tooltip";
 import { QueryProvider } from "./providers/QueryProvider";
 import { ToasterProvider } from "./providers/ToasterProvider";
 import "./globals.css";
-import Footer from "@/components/shared/Footer";
-import Navigation from "@/components/shared/Navigation";
+import Footer from "components/shared/Footer";
+import NavBar from "components/shared/NavBar";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -48,7 +48,7 @@ export default function RootLayout({
         <QueryProvider>
           <TooltipProvider>
             <ToasterProvider />
-            <Navigation />
+            <NavBar />
             {children}
             <Footer />
           </TooltipProvider>
