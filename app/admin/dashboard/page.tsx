@@ -4,6 +4,7 @@ import AdminDashboard from 'components/admin/AdminDashboard';
 import getActiveProductsFromSupabase from '@/lib/admin/product/get';
 import getCollections from '@/lib/admin/collection/get';
 import getCategories from '@/lib/admin/category/get';
+import { getSectionsWithProducts } from '@/lib/admin/section/get';
 import LogoutButton from 'components/admin/LogoutButton';
 
 export const revalidate = 0;
@@ -12,16 +13,18 @@ async function getAdminData() {
   const products = await getActiveProductsFromSupabase();
   const collections = await getCollections();
   const categories = await getCategories();
+  const sections = await getSectionsWithProducts();
 
   return {
     products,
     collections,
-    categories
+    categories,
+    sections
   };
 }
 
 export default async function Admin() {
-  const { products: productList, collections: collectionList, categories: categoryList } = await getAdminData();
+  const { products: productList, collections: collectionList, categories: categoryList, sections: sectionList } = await getAdminData();
 
   return (
     <div className="min-h-screen bg-luxury-cream">
@@ -46,6 +49,7 @@ export default async function Admin() {
               initialProducts={productList}
               initialCollections={collectionList}
               initialCategories={categoryList}
+              initialSections={sectionList}
             />
           </Suspense>
         </div>

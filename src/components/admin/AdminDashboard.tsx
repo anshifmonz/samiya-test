@@ -1,47 +1,33 @@
 "use client";
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { type Product } from '@/types/product';
 import { type Collection } from '@/types/collection';
 import { type Category } from '@/types/category';
+import { type Section, type SectionWithProducts } from '@/types/section';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from 'ui/tabs';
-import { Button } from '@/components/ui/button';
-import { LogOut } from 'lucide-react';
 import AdminProductsTab from './product/AdminProductsTab';
 import AdminCollectionsTab from './collection/AdminCollectionsTab';
 import AdminCategoriesTab from './category/AdminCategoriesTab';
+import { AdminSectionsTab } from './section';
 
 interface AdminDashboardProps {
   initialProducts: Product[];
   initialCollections: Collection[];
   initialCategories: Category[];
+  initialSections: SectionWithProducts[];
 }
 
 const AdminDashboard: React.FC<AdminDashboardProps> = ({
   initialProducts,
   initialCollections,
-  initialCategories
+  initialCategories,
+  initialSections
 }) => {
   const [productList, setProductList] = useState<Product[]>(initialProducts);
   const [collectionList, setCollectionList] = useState<Collection[]>(initialCollections);
   const [categoryList, setCategoryList] = useState<Category[]>(initialCategories);
-  const router = useRouter();
-
-  const handleLogout = async () => {
-    try {
-      const response = await fetch('/api/admin/logout', {
-        method: 'POST',
-      });
-      if (response.ok) {
-        router.push('/admin/login');
-      } else {
-        console.error('Failed to logout');
-      }
-    } catch (error) {
-      console.error('Error during logout:', error);
-    }
-  };
+  const [sectionList, setSectionList] = useState<SectionWithProducts[]>(initialSections);
 
   // product handlers with API calls
   const handleAddProduct = async (newProduct: Omit<Product, 'id'>) => {
@@ -211,10 +197,100 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
     }
   };
 
+  // Section handlers with API calls
+  const fetchSections = async () => {
+    const response = await fetch('/api/admin/section?withProducts=true');
+    if (response.ok) {
+      const { sections } = await response.json();
+      setSectionList(sections);
+    }
+  };
+
+  const handleAddSection = async (newSection: Omit<Section, 'id' | 'createdAt' | 'updatedAt'>) => {
+    try {
+      const response = await fetch('/api/admin/section', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newSection),
+      });
+      if (response.ok) {
+        await fetchSections();
+      } else {
+        console.error('Failed to add section');
+      }
+    } catch (error) {
+      console.error('Error adding section:', error);
+    }
+  };
+
+  const handleEditSection = async (updatedSection: Section) => {
+    try {
+      const response = await fetch('/api/admin/section', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedSection),
+      });
+      if (response.ok) {
+        await fetchSections();
+      } else {
+        console.error('Failed to update section:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error updating section:', error);
+    }
+  };
+
+  const handleDeleteSection = async (sectionId: string) => {
+    try {
+      const response = await fetch(`/api/admin/section?id=${encodeURIComponent(sectionId)}`, {
+        method: 'DELETE',
+      });
+      if (response.ok) {
+        await fetchSections();
+      } else {
+        console.error('Failed to delete section');
+      }
+    } catch (error) {
+      console.error('Error deleting section:', error);
+    }
+  };
+
+  const handleAddProductToSection = async (sectionId: string, productId: string) => {
+    try {
+      const response = await fetch('/api/admin/section/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sectionId, productId }),
+      });
+      if (response.ok) {
+        await fetchSections();
+      } else {
+        console.error('Failed to add product to section:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error adding product to section:', error);
+    }
+  };
+
+  const handleRemoveProductFromSection = async (sectionId: string, productId: string) => {
+    try {
+      const response = await fetch(`/api/admin/section/products?sectionId=${encodeURIComponent(sectionId)}&productId=${encodeURIComponent(productId)}`, {
+        method: 'DELETE',
+      });
+      if (response.ok) {
+        await fetchSections();
+      } else {
+        console.error('Failed to remove product from section:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error removing product from section:', error);
+    }
+  };
+
   return (
     <div className="w-full">
       <Tabs defaultValue="products" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 bg-transparent border-none p-1 mb-8">
+        <TabsList className="grid w-full grid-cols-4 bg-transparent border-none p-1 mb-8">
           <TabsTrigger
             value="products"
             className="rounded-lg px-6 py-3 text-sm font-medium tracking-wide transition-all duration-300 data-[state=active]:bg-luxury-gold data-[state=active]:text-luxury-black data-[state=active]:shadow-md"
@@ -232,6 +308,12 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
             className="rounded-lg px-6 py-3 text-sm font-medium tracking-wide transition-all duration-300 data-[state=active]:bg-luxury-gold data-[state=active]:text-luxury-black data-[state=active]:shadow-md"
           >
             Categories
+          </TabsTrigger>
+          <TabsTrigger
+            value="sections"
+            className="rounded-lg px-6 py-3 text-sm font-medium tracking-wide transition-all duration-300 data-[state=active]:bg-luxury-gold data-[state=active]:text-luxury-black data-[state=active]:shadow-md"
+          >
+            Sections
           </TabsTrigger>
         </TabsList>
 
@@ -260,6 +342,18 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
             onAddCategory={handleAddCategory}
             onEditCategory={handleEditCategory}
             onDeleteCategory={handleDeleteCategory}
+          />
+        </TabsContent>
+
+        <TabsContent value="sections" className="mt-0">
+          <AdminSectionsTab
+            sections={sectionList}
+            products={productList}
+            onAddSection={handleAddSection}
+            onEditSection={handleEditSection}
+            onDeleteSection={handleDeleteSection}
+            onAddProductToSection={handleAddProductToSection}
+            onRemoveProductFromSection={handleRemoveProductFromSection}
           />
         </TabsContent>
       </Tabs>
