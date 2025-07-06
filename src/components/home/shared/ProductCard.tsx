@@ -1,8 +1,9 @@
 import Image from 'next/image';
 import { type SpecialProduct } from '@/types/special';
 import ImageFallback from 'components/shared/ImageFallback';
+import { SectionProductItem } from '@/types/section';
 
-const Productcard = ({ product }: { product: SpecialProduct }) => {
+const Productcard = ({ product, className }: { product: SpecialProduct | SectionProductItem, className?: string }) => {
   const image = product.images[0];
 
   return (
@@ -23,7 +24,7 @@ const Productcard = ({ product }: { product: SpecialProduct }) => {
           10% OFF
         </div>
       </div>
-      <div className="bg-transparent">
+      <div className={`bg-transparent ${className}`}>
         <h4 className="font-cormorant text-sm md:text-xs text-gray-900 pt-2 leading-tight">{product.title}</h4>
         <p className="text-sm font-inter font-semibold text-gray-900">
           <span className="text-[11px] font-light line-through text-gray-500 mr-2">Rs {product.price}</span> Rs {product.price}
