@@ -20,6 +20,7 @@ const nextConfig = {
       utils:      path.resolve(__dirname, "src/lib/utils"),
       lib:        path.resolve(__dirname, "src/lib"),
       hooks:      path.resolve(__dirname, "src/hooks"),
+      types:      path.resolve(__dirname, "src/types"),
     };
     return config;
   },
