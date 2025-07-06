@@ -3,8 +3,20 @@ import { type SpecialProduct } from '@/types/special';
 import ImageFallback from 'components/shared/ImageFallback';
 import { SectionProductItem } from '@/types/section';
 
-const Productcard = ({ product, className }: { product: SpecialProduct | SectionProductItem, className?: string }) => {
-  const image = product.images[0];
+interface ProductcardProps {
+  product: SpecialProduct | SectionProductItem;
+  className?: string;
+  showDiscountBadge?: boolean;
+}
+
+const Productcard = ({ product, className, showDiscountBadge = true }: ProductcardProps) => {
+  let image: string | undefined;
+
+  if (Array.isArray(product.images)) {
+    image = product.images[0];
+  } else if (typeof product.images === 'string') {
+    image = product.images.trim() || undefined;
+  }
 
   return (
     <div className="relative flex flex-col gap-1 rounded-sm overflow-hidden shadow-sm group cursor-pointer w-[clamp(164px,calc(50vw-30px),458px)] lg:w-[clamp(200px,calc(17.5vw-16px),277px)]">
@@ -20,9 +32,11 @@ const Productcard = ({ product, className }: { product: SpecialProduct | Section
         ) : (
           <ImageFallback />
         )}
-        <div className="absolute bottom-4 right-2 bg-red-500 text-white px-2 py-1 text-xs font-medium rounded-sm">
-          10% OFF
-        </div>
+        {showDiscountBadge && (
+          <div className="absolute bottom-4 right-2 bg-red-500 text-white px-2 py-1 text-xs font-medium rounded-sm">
+            10% OFF
+          </div>
+        )}
       </div>
       <div className={`bg-transparent ${className}`}>
         <h4 className="font-cormorant text-sm md:text-xs text-gray-900 pt-2 leading-tight">{product.title}</h4>
