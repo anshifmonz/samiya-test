@@ -2,10 +2,10 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import CollectionsCard from './collections/CollectionsCard';
+import CollectionsCard from 'components/home/collections/CollectionsCard';
 import { type Collection } from '@/types/collection';
-import CarouselWrapper from './shared/CarouselWrapper';
-import SectionHeading from './shared/SectionHeading';
+import CarouselWrapper from 'components/home/shared/CarouselWrapper';
+import SectionHeading from 'components/home/shared/SectionHeading';
 
 const Collections = ({ collections }: { collections: Collection[] }) => {
   const router = useRouter();
