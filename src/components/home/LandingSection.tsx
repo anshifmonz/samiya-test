@@ -1,13 +1,10 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import SearchBar from '../search/SearchBar';
 import ScrollIndicator from './ScrollIndicator';
 
 const LandingSection: React.FC = () => {
-  const router = useRouter();
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
@@ -35,16 +32,16 @@ const LandingSection: React.FC = () => {
 
         <div className={`absolute inset-0 flex flex-col items-center justify-center text-center z-10 transition-all duration-1000 pointer-events-none ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <div className="animate-fade-in-up">
-            <h1 className="luxury-heading text-2xl sm:text-4xl md:text-6xl lg:text-8xl text-white mb-2 sm:mb-4 lg:mb-8 leading-none">
+            <h1 className="luxury-heading text-4xl sm:text-6xl md:text-8xl lg:text-10xl xl:text-12xl text-white mb-1 sm:mb-2 md:mb-4 lg:mb-6 leading-tight">
               Samiya
-              <span className="block text-sm sm:text-lg md:text-xl lg:text-3xl luxury-subheading tracking-[0.2em] mt-1 sm:mt-2 lg:mt-4 text-luxury-gold">
+              <span className="block text-sm sm:text-md md:text-2xl lg:text-2xl xl:text-3xl luxury-subheading tracking-[0.15em] sm:tracking-[0.2em] mt-0.5 sm:mt-1 md:mt-2 lg:mt-3 xl:mt-4 text-luxury-gold">
                 Wedding Center
               </span>
             </h1>
           </div>
 
           <div className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            <p className="luxury-body text-xs sm:text-sm md:text-base lg:text-lg text-white/90 mb-4 sm:mb-8 lg:mb-16 max-w-xs sm:max-w-sm md:max-w-2xl lg:max-w-4xl mx-auto leading-relaxed px-4">
+            <p className="luxury-body text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl text-white/90 mb-2 sm:mb-4 md:mb-6 lg:mb-8 xl:mb-12 max-w-[380px] sm:max-w-md md:max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto leading-relaxed px-3 sm:px-4 md:px-6">
               Where timeless elegance meets contemporary sophistication.
               Discover our curated collection of premium wedding attire,
               crafted for life's most precious moments.
