@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
@@ -16,16 +16,51 @@ const categoryImages = [
 
 const CategoryTabs: React.FC = () => {
   const router = useRouter();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [visibleItems, setVisibleItems] = useState(categoryImages.length);
 
   const handleImageClick = (name: string) => {
     router.push(`/search?q=${name}`);
   };
 
+  useEffect(() => {
+    const calculateVisibleItems = () => {
+      if (!containerRef.current) return;
+
+      const container = containerRef.current;
+      const containerWidth = container.offsetWidth;
+
+      let itemWidth = 80;
+      if (window.innerWidth >= 640) itemWidth = 96;
+      if (window.innerWidth >= 1024) itemWidth = 112;
+
+      const spacing = window.innerWidth >= 640 ? 24 : 8;
+      const totalItemWidth = itemWidth + spacing;
+
+      const maxItems = Math.floor(containerWidth / totalItemWidth);
+      const newVisibleItems = Math.max(3, Math.min(maxItems, categoryImages.length));
+
+      setVisibleItems(newVisibleItems);
+    };
+
+    calculateVisibleItems();
+
+    const handleResize = () => {
+      calculateVisibleItems();
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
     <div className="py-6 px-2 -ml-2 sm:ml-0 sm:px-4 lg:px-6 mt-[70px] -mb-16">
       <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-start custom-910:justify-center space-x-2 sm:space-x-6 md:space-x-8 lg:space-x-10 overflow-x-auto scrollbar-hide">
-          {categoryImages.map((image, index) => (
+        <div
+          ref={containerRef}
+          className="flex items-center justify-center space-x-2 sm:space-x-6 md:space-x-8 lg:space-x-10 overflow-hidden"
+        >
+          {categoryImages.slice(0, visibleItems).map((image, index) => (
             <div
               key={index}
               className="flex-shrink-0 cursor-pointer group transition-transform duration-300 hover:scale-100"
