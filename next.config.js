@@ -12,18 +12,7 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
-  webpack(config) {
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      components: path.resolve(__dirname, "src/components"),
-      ui:         path.resolve(__dirname, "src/components/ui"),
-      utils:      path.resolve(__dirname, "src/lib/utils"),
-      lib:        path.resolve(__dirname, "src/lib"),
-      hooks:      path.resolve(__dirname, "src/hooks"),
-      types:      path.resolve(__dirname, "src/types"),
-    };
-    return config;
-  },
+
   async rewrites() {
     return [
       // support for dynamic product routes

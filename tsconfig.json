@@ -24,7 +24,8 @@
       "ui/*":         ["src/components/ui/*"],
       "utils/*":      ["src/lib/utils/*"],
       "lib/*":        ["src/lib/*"],
-      "hooks/*":      ["src/hooks/*"]
+      "hooks/*":      ["src/hooks/*"],
+      "types/*":      ["src/types/*"]
     },
     "noImplicitAny": false,
     "noUnusedParameters": false,
