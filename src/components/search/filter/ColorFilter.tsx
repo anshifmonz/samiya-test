@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface ColorFilterProps {
   selectedColors: string[];
   onColorChange: (color: string, checked: boolean) => void;
@@ -32,27 +30,21 @@ const ColorFilter: React.FC<ColorFilterProps> = ({ selectedColors, onColorChange
   const colorOptions = availableColors && availableColors.length > 0 ? availableColors : defaultColors;
 
   return (
-    <div>
-      <h3 className="luxury-subheading text-luxury-black mb-4 tracking-wider">Colors</h3>
-      <div className="grid grid-cols-5 gap-3">
+    <div className="space-y-3">
+      <h3 className="font-medium text-foreground">Colors</h3>
+      <div className="grid grid-cols-4 gap-2">
         {colorOptions.map(color => (
-          <label key={color} className="flex items-center justify-center cursor-pointer group">
-            <input
-              type="checkbox"
-              checked={selectedColors.includes(color)}
-              onChange={(e) => onColorChange(color, e.target.checked)}
-              className="sr-only"
-            />
-            <div
-              className={`w-8 h-8 rounded-full border-2 transition-all duration-300 group-hover:scale-110 ${
-                selectedColors.includes(color)
-                  ? 'border-luxury-gold ring-2 ring-luxury-gold/20 shadow-lg'
-                  : 'border-luxury-gray/30 hover:border-luxury-gold/50 shadow-sm hover:shadow-md'
-              }`}
-              style={{ backgroundColor: getColorStyle(color) }}
-              title={color}
-            />
-          </label>
+          <button
+            key={color}
+            onClick={() => onColorChange(color, !selectedColors.includes(color))}
+            className={`w-8 h-8 rounded-full border-2 transition-all duration-200 ${
+              selectedColors.includes(color)
+                ? "border-primary scale-110 shadow-md"
+                : "border-border hover:border-primary/50"
+            } ${color === "white" ? "border-gray-300" : ""}`}
+            style={{ backgroundColor: getColorStyle(color) }}
+            title={color.charAt(0).toUpperCase() + color.slice(1)}
+          />
         ))}
       </div>
     </div>

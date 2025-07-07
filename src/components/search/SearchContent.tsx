@@ -1,6 +1,6 @@
 import React from 'react';
-import { type Product, type ProductFilters } from '@/types/product';
-import { type Category } from '@/types/category';
+import { type Product, type ProductFilters } from 'types/product';
+import { type Category } from 'types/category';
 import FilterPanel from './FilterPanel';
 import ProductsGrid from './ProductsGrid';
 import MobileFilterPanel from './MobileFilterPanel';
@@ -40,7 +40,7 @@ const SearchContent: React.FC<SearchContentProps> = ({ products, onFiltersChange
   const availableTags = Array.from(tagSet);
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8">
+    <div className="flex">
       <div className="hidden lg:block">
         <FilterPanel
           onFiltersChange={onFiltersChange}
@@ -51,17 +51,20 @@ const SearchContent: React.FC<SearchContentProps> = ({ products, onFiltersChange
         />
       </div>
 
-      <div className="lg:hidden">
-        <MobileFilterPanel
-          onFiltersChange={onFiltersChange}
-          availableColors={availableColors}
-          availableCategories={availableCategories}
-          availableTags={availableTags}
-          categories={categories}
-        />
-      </div>
+      <div className="flex-1">
+        {/* Mobile filter panel integrated in main content */}
+        <div className="lg:hidden px-6 pt-6">
+          <MobileFilterPanel
+            onFiltersChange={onFiltersChange}
+            availableColors={availableColors}
+            availableCategories={availableCategories}
+            availableTags={availableTags}
+            categories={categories}
+          />
+        </div>
 
-      <ProductsGrid products={products} />
+        <ProductsGrid products={products} />
+      </div>
     </div>
   );
 };

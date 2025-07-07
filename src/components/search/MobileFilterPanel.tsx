@@ -8,14 +8,14 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from '@/components/ui/sheet';
+} from 'ui/sheet';
 import CategoryFilter from './filter/CategoryFilter';
 import PriceFilter from './filter/PriceFilter';
 import ColorFilter from './filter/ColorFilter';
 import TagsFilter from './filter/TagsFilter';
-import { useProductFilters } from '@/hooks/useProductFilters';
-import { type ProductFilters } from '@/types/product';
-import { type Category } from '@/types/category';
+import { useProductFilters } from 'hooks/useProductFilters';
+import { type ProductFilters } from 'types/product';
+import { type Category } from 'types/category';
 
 interface MobileFilterPanelProps {
   onFiltersChange: (filters: ProductFilters) => void;
@@ -47,29 +47,29 @@ const MobileFilterPanel: React.FC<MobileFilterPanelProps> = ({ onFiltersChange, 
         <SheetTrigger asChild>
           <Button
             variant="outline"
-            className="w-full justify-between border-luxury-gray/30 text-luxury-black hover:bg-luxury-cream hover:border-luxury-gold/50 transition-all duration-300 luxury-body font-medium py-3 px-4 rounded-xl"
+            className="w-full justify-between border-border text-foreground hover:bg-muted hover:border-primary/50 transition-all duration-300 font-medium py-3 px-4 rounded-xl"
           >
             <div className="flex items-center gap-3">
-              <Filter size={18} className="text-luxury-gold" />
+              <Filter size={18} className="text-primary" />
               <span>Filters</span>
               {getActiveFiltersCount() > 0 && (
-                <span className="bg-luxury-gold text-white text-xs px-2 py-1 rounded-full font-medium">
+                <span className="bg-primary text-primary-foreground text-xs px-2 py-1 rounded-full font-medium">
                   {getActiveFiltersCount()}
                 </span>
               )}
             </div>
           </Button>
         </SheetTrigger>
-        <SheetContent side="left" className="w-full sm:w-80 bg-luxury-cream border-luxury-gray/20">
-          <SheetHeader className="text-left pb-6 border-b border-luxury-gray/20">
-            <SheetTitle className="luxury-heading text-2xl text-luxury-black">Filters</SheetTitle>
-            <SheetDescription className="luxury-body text-luxury-gray">
+        <SheetContent side="left" className="w-full sm:w-80 bg-background border-border">
+          <SheetHeader className="text-left pb-6 border-b border-border">
+            <SheetTitle className="text-lg font-semibold text-foreground">Filters</SheetTitle>
+            <SheetDescription className="text-muted-foreground">
               Refine your search results
             </SheetDescription>
           </SheetHeader>
 
           <div className="flex flex-col h-full">
-            <div className="flex-1 overflow-y-auto py-6 space-y-8">
+            <div className="flex-1 overflow-y-auto py-6 space-y-6">
               <CategoryFilter
                 selectedCategory={selectedCategory}
                 onCategoryChange={handleCategoryChange}
@@ -77,35 +77,41 @@ const MobileFilterPanel: React.FC<MobileFilterPanelProps> = ({ onFiltersChange, 
                 categories={categories}
               />
 
-              <PriceFilter
-                priceRange={priceRange}
-                onPriceChange={handlePriceChange}
-              />
+              <div className="border-t border-border pt-6">
+                <PriceFilter
+                  priceRange={priceRange}
+                  onPriceChange={handlePriceChange}
+                />
+              </div>
 
-              <ColorFilter
-                selectedColors={selectedColors}
-                onColorChange={handleColorChange}
-                availableColors={availableColors}
-              />
+              <div className="border-t border-border pt-6">
+                <ColorFilter
+                  selectedColors={selectedColors}
+                  onColorChange={handleColorChange}
+                  availableColors={availableColors}
+                />
+              </div>
 
-              <TagsFilter
-                selectedTags={selectedTags}
-                onTagToggle={handleTagToggle}
-                availableTags={availableTags}
-              />
+              <div className="border-t border-border pt-6">
+                <TagsFilter
+                  selectedTags={selectedTags}
+                  onTagToggle={handleTagToggle}
+                  availableTags={availableTags}
+                />
+              </div>
             </div>
 
-            <div className="border-t border-luxury-gray/20 pt-6 pb-4 space-y-3">
+            <div className="border-t border-border pt-6 pb-4 space-y-3">
               <Button
                 onClick={clearFilters}
                 variant="outline"
-                className="w-full border-luxury-gray/30 text-luxury-gray hover:bg-luxury-cream hover:border-luxury-gold/50 transition-all duration-300 luxury-body font-medium"
+                className="w-full text-muted-foreground hover:text-foreground"
               >
                 Clear All Filters
               </Button>
               <Button
                 onClick={() => setIsOpen(false)}
-                className="w-full luxury-btn-primary luxury-body font-medium"
+                className="w-full bg-primary text-primary-foreground hover:bg-primary-hover"
               >
                 Apply Filters
               </Button>

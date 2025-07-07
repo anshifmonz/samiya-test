@@ -5,8 +5,8 @@ import PriceFilter from './filter/PriceFilter';
 import ColorFilter from './filter/ColorFilter';
 import TagsFilter from './filter/TagsFilter';
 import { useProductFilters } from 'hooks/useProductFilters';
-import { type ProductFilters } from '@/types/product';
-import { type Category } from '@/types/category';
+import { type ProductFilters } from 'types/product';
+import { type Category } from 'types/category';
 
 interface FilterPanelProps {
   onFiltersChange: (filters: ProductFilters) => void;
@@ -30,39 +30,43 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange, availableCol
   } = useProductFilters({ onFiltersChange });
 
   return (
-    <div className="w-80">
-      <div className="sticky top-28">
-        <div className="luxury-card rounded-xl border border-luxury-gray/10 shadow-lg bg-white/95 backdrop-blur-md p-6 space-y-6">
-          <div className="flex justify-between items-center">
-            <h2 className="luxury-heading text-xl text-luxury-black">Filters</h2>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={clearFilters}
-              className="border-luxury-gray/30 text-luxury-gray hover:bg-luxury-cream hover:border-luxury-gold/50 transition-all duration-300 luxury-body text-sm"
-            >
-              Clear All
-            </Button>
-          </div>
+    <div className="w-80 bg-filter-bg border-r border-border p-6 space-y-6 h-fit sticky top-4 pt-8">
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-foreground">Filters</h2>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={clearFilters}
+          className="text-muted-foreground hover:text-foreground"
+        >
+          Clear All
+        </Button>
+      </div>
 
-          <CategoryFilter
-            selectedCategory={selectedCategory}
-            onCategoryChange={handleCategoryChange}
-            availableCategories={availableCategories}
-            categories={categories}
-          />
+      <div className="space-y-6">
+        <CategoryFilter
+          selectedCategory={selectedCategory}
+          onCategoryChange={handleCategoryChange}
+          availableCategories={availableCategories}
+          categories={categories}
+        />
 
+        <div className="border-t border-border pt-6">
           <PriceFilter
             priceRange={priceRange}
             onPriceChange={handlePriceChange}
           />
+        </div>
 
+        <div className="border-t border-border pt-6">
           <ColorFilter
             selectedColors={selectedColors}
             onColorChange={handleColorChange}
             availableColors={availableColors}
           />
+        </div>
 
+        <div className="border-t border-border pt-6">
           <TagsFilter
             selectedTags={selectedTags}
             onTagToggle={handleTagToggle}

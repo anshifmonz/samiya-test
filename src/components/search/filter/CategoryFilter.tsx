@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { type Category } from '@/types/category';
+import { type Category } from 'types/category';
 import { ChevronRight, ChevronDown } from 'lucide-react';
-import { buildCategoryTree } from '@/lib/utils/buildCategoryTree';
+import { Checkbox } from 'ui/checkbox';
+import { buildCategoryTree } from 'lib/utils/buildCategoryTree';
 
 interface CategoryFilterProps {
   selectedCategory: string;
@@ -45,43 +46,41 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ selectedCategory, onCat
       return (
         <div key={category.id}>
           <div
-            className="flex items-center space-x-3 cursor-pointer group"
+            className="flex items-center space-x-2"
             style={{ paddingLeft: `${indent}px` }}
-            onClick={() => handleCategoryClick(category.name)}
           >
             {/* expand/collapse button for categories with children */}
             {hasChildren ? (
               <button
                 onClick={(e) => {
-                  e.stopPropagation(); // prevent category selection when clicking expand button
+                  e.stopPropagation();
                   toggleExpanded(category.id);
                 }}
-                className="p-1 hover:bg-luxury-gray/10 rounded transition-colors w-6 h-6 flex items-center justify-center"
+                className="p-1 hover:bg-muted rounded transition-colors w-6 h-6 flex items-center justify-center"
               >
                 {isExpanded ? (
-                  <ChevronDown size={14} className="text-luxury-gold" />
+                  <ChevronDown size={14} className="text-primary" />
                 ) : (
-                  <ChevronRight size={14} className="text-luxury-gold" />
+                  <ChevronRight size={14} className="text-primary" />
                 )}
               </button>
             ) : (
-              // placeholder div to maintain consistent spacing
               <div className="w-6 h-6" />
             )}
 
-            <input
-              type="radio"
-              name="category"
-              value={category.name}
+            <Checkbox
+              id={category.id}
               checked={selectedCategory === category.name}
-              onChange={() => handleCategoryClick(category.name)}
-              onClick={(e) => e.stopPropagation()} // prevent double triggering
-              className="w-4 h-4 text-luxury-gold border-2 border-luxury-gray/30 focus:ring-luxury-gold/50 focus:ring-2 transition-all duration-200"
+              onCheckedChange={() => handleCategoryClick(category.name)}
             />
 
-            <span className="luxury-body text-luxury-gray font-medium capitalize group-hover:text-luxury-gold transition-colors duration-200">
-              {category.name}
-            </span>
+            <label
+              htmlFor={category.id}
+              className="text-sm font-normal cursor-pointer flex-1 flex justify-between"
+            >
+              <span>{category.name}</span>
+              <span className="text-muted-foreground">({category.children?.length || 0})</span>
+            </label>
           </div>
 
           {/* render children recursively when expanded */}
@@ -96,26 +95,23 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ selectedCategory, onCat
   };
 
   return (
-    <div>
-      <h3 className="luxury-subheading text-luxury-black mb-4 tracking-wider">Category</h3>
-      <div className="space-y-3">
-        <label
-          className="flex items-center space-x-3 cursor-pointer group"
-          onClick={() => handleCategoryClick('all')}
-        >
-          <input
-            type="radio"
-            name="category"
-            value="all"
+    <div className="space-y-3">
+      <h3 className="font-medium text-foreground">Categories</h3>
+      <div className="space-y-2">
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="all-categories"
             checked={selectedCategory === 'all'}
-            onChange={() => handleCategoryClick('all')}
-            onClick={(e) => e.stopPropagation()} // prevent double triggering
-            className="w-4 h-4 text-luxury-gold border-2 border-luxury-gray/30 focus:ring-luxury-gold/50 focus:ring-2 transition-all duration-200"
+            onCheckedChange={() => handleCategoryClick('all')}
           />
-          <span className="luxury-body text-luxury-gray font-medium capitalize group-hover:text-luxury-gold transition-colors duration-200">
-            All Categories
-          </span>
-        </label>
+          <label
+            htmlFor="all-categories"
+            className="text-sm font-normal cursor-pointer flex-1 flex justify-between"
+          >
+            <span>All Categories</span>
+            <span className="text-muted-foreground">({categories.length})</span>
+          </label>
+        </div>
 
         {/* dynamic categories with expandable hierarchy */}
         {renderCategoryTree(categoryTree)}

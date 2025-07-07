@@ -3,7 +3,7 @@ import type { ProductFilters, UseProductFiltersProps } from '@/types';
 
 export const useProductFilters = ({ onFiltersChange }: UseProductFiltersProps) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [priceRange, setPriceRange] = useState<[number]>([2000]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([200, 3000]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
@@ -12,9 +12,9 @@ export const useProductFilters = ({ onFiltersChange }: UseProductFiltersProps) =
     updateFilters({ category: category === 'all' ? undefined : category });
   };
 
-  const handlePriceChange = (value: [number]) => {
+  const handlePriceChange = (value: [number, number]) => {
     setPriceRange(value);
-    updateFilters({ maxPrice: value[0] });
+    updateFilters({ minPrice: value[0], maxPrice: value[1] });
   };
 
   const handleColorChange = (color: string, checked: boolean) => {
@@ -40,8 +40,8 @@ export const useProductFilters = ({ onFiltersChange }: UseProductFiltersProps) =
   const updateFilters = (partialFilters: Partial<ProductFilters>) => {
     const newFilters = {
       category: selectedCategory === 'all' ? undefined : selectedCategory,
-      minPrice: 0,
-      maxPrice: priceRange[0],
+      minPrice: priceRange[0],
+      maxPrice: priceRange[1],
       colors: selectedColors.length > 0 ? selectedColors : undefined,
       tags: selectedTags.length > 0 ? selectedTags : undefined,
       ...partialFilters
@@ -57,7 +57,7 @@ export const useProductFilters = ({ onFiltersChange }: UseProductFiltersProps) =
 
   const clearFilters = () => {
     setSelectedCategory('all');
-    setPriceRange([2000]);
+    setPriceRange([20, 500]);
     setSelectedColors([]);
     setSelectedTags([]);
     onFiltersChange({});
@@ -66,7 +66,7 @@ export const useProductFilters = ({ onFiltersChange }: UseProductFiltersProps) =
   const getActiveFiltersCount = () => {
     let count = 0;
     if (selectedCategory !== 'all') count++;
-    if (priceRange[0] < 2000) count++;
+    if (priceRange[0] > 20 || priceRange[1] < 500) count++;
     if (selectedColors.length > 0) count++;
     if (selectedTags.length > 0) count++;
     return count;

@@ -1,4 +1,4 @@
-import React from 'react';
+import { Badge } from 'ui/badge';
 
 interface TagsFilterProps {
   selectedTags: string[];
@@ -13,27 +13,21 @@ const TagsFilter: React.FC<TagsFilterProps> = ({ selectedTags, onTagToggle, avai
   const tags = availableTags && availableTags.length > 0 ? availableTags : defaultTags;
 
   return (
-    <div>
-      <h3 className="luxury-subheading text-luxury-black mb-4 tracking-wider">Tags</h3>
-      <div className="space-y-3">
+    <div className="space-y-3">
+      <h3 className="font-medium text-foreground">Tags</h3>
+      <div className="space-y-2">
         {tags.map(tag => {
           const isSelected = selectedTags.includes(tag);
           return (
-            <label key={tag} className="flex items-center space-x-3 cursor-pointer group">
-              <input
-                type="checkbox"
-                checked={isSelected}
-                onChange={() => onTagToggle(tag)}
-                className="w-4 h-4 text-luxury-gold border-2 border-luxury-gray/30 focus:ring-luxury-gold/50 focus:ring-2 transition-all duration-200 rounded-sm cursor-pointer"
-              />
-              <span className={`luxury-body font-medium capitalize transition-colors duration-200 ${
-                isSelected
-                  ? 'text-luxury-gold'
-                  : 'text-luxury-gray group-hover:text-luxury-gold'
-              }`}>
-                {tag}
-              </span>
-            </label>
+            <Badge
+              key={tag}
+              variant={isSelected ? "default" : "secondary"}
+              className="cursor-pointer justify-between w-full py-2 px-3 text-sm hover:bg-primary hover:text-primary-foreground transition-colors"
+              onClick={() => onTagToggle(tag)}
+            >
+              <span>{tag}</span>
+              <span className="ml-2">(0)</span>
+            </Badge>
           );
         })}
       </div>
