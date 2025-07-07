@@ -1,6 +1,15 @@
+'use client';
+
 import Link from "next/link";
+import { useState, useEffect } from "react";
 
 const Footer = () => {
+  const [currentYear, setCurrentYear] = useState<string>("");
+
+  useEffect(() => {
+    setCurrentYear(new Date().getFullYear().toString());
+  }, []);
+
   return (
     <footer className="bg-luxury-beige text-luxury-black py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 mt-12">
       <div className="max-w-7xl mx-auto">
@@ -36,7 +45,7 @@ const Footer = () => {
 
         <div className="border-t border-luxury-black/20 mt-8 sm:mt-12 pt-8 text-center">
           <p className="text-luxury-black/60 text-sm sm:text-base">
-            © {new Date().getFullYear()} Fashion Store. All rights reserved.
+            © {currentYear} Fashion Store. All rights reserved.
           </p>
         </div>
       </div>
