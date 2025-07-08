@@ -11,7 +11,7 @@ interface AddColorDialogProps {
 const AddColorDialog: React.FC<AddColorDialogProps> = ({ show, onClose, newImageColor, setNewImageColor, onAddColor }) => {
   if (!show) return null;
   return (
-    <div className="fixed inset-0 bg-luxury-black/60 backdrop-blur-sm z-60 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-luxury-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
       <div className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full">
         <h3 className="luxury-heading text-xl text-luxury-black mb-4">Add New Color</h3>
         <input

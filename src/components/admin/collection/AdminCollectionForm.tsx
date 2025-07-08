@@ -56,7 +56,7 @@ const AdminCollectionForm: React.FC<AdminCollectionFormProps> = ({ collection, o
   const modalContent = (
     <div className="fixed inset-0 bg-luxury-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white rounded-t-2xl border-b border-luxury-gray/20 p-6 flex items-center justify-between">
+        <div className="sticky top-0 bg-white rounded-t-2xl border-b border-luxury-gray/20 p-6 flex items-center justify-between z-[9999]">
           <h2 className="luxury-heading text-2xl text-luxury-black">
             {collection ? 'Edit Collection' : 'Add New Collection'}
           </h2>

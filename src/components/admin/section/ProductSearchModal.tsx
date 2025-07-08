@@ -83,7 +83,7 @@ const ProductSearchModal: React.FC<ProductSearchModalProps> = ({
     <div className="fixed inset-0 bg-luxury-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
         {/* Header */}
-        <div className="sticky top-0 bg-white rounded-t-2xl border-b border-luxury-gray/20 p-6 flex items-center justify-between">
+        <div className="sticky top-0 bg-white rounded-t-2xl border-b border-luxury-gray/20 p-6 flex items-center justify-between z-[9999]">
           <h2 className="luxury-heading text-2xl text-luxury-black">
             Add Products to Section
           </h2>

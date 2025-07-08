@@ -27,7 +27,7 @@ export default async function Admin() {
   const { products: productList, collections: collectionList, categories: categoryList, sections: sectionList } = await getAdminData();
 
   return (
-    <div className="min-h-screen bg-luxury-cream">
+    <div className="min-h-screen bg-luxury-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24">
         <div className="mb-8">
           <div className="flex justify-between items-center animate-fade-in-up">

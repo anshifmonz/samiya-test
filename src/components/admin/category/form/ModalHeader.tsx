@@ -8,7 +8,7 @@ interface ModalHeaderProps {
 
 const ModalHeader: React.FC<ModalHeaderProps> = ({ isEditMode, onClose }) => {
   return (
-    <div className="sticky top-0 bg-white rounded-t-2xl border-b border-luxury-gray/20 p-6 flex items-center justify-between">
+    <div className="sticky top-0 bg-white rounded-t-2xl border-b border-luxury-gray/20 p-6 flex items-center justify-between z-[9999]">
       <h2 className="luxury-heading text-2xl text-luxury-black">
         {isEditMode ? 'Edit Category' : 'Add New Category'}
       </h2>

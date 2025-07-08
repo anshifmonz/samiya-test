@@ -81,7 +81,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
   const modalContent = (
     <div className="fixed inset-0 bg-luxury-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white rounded-t-2xl border-b border-luxury-gray/20 p-6 flex items-center justify-between">
+        <div className="sticky top-0 bg-white rounded-t-2xl border-b border-luxury-gray/20 p-6 flex items-center justify-between z-[9999]">
           <h2 className="luxury-heading text-2xl text-luxury-black">
             {product ? 'Edit Product' : 'Add New Product'}
           </h2>

@@ -56,12 +56,12 @@ const DraggableImageItem: React.FC<DraggableImageItemProps> = ({
     <div
       ref={setNodeRef}
       style={style}
-      className={`flex items-start gap-3 p-3 border rounded-lg bg-white relative ${
+      className={`relative flex items-start gap-3 p-3 border rounded-lg bg-white relative ${
         isDragging ? 'shadow-lg' : 'border-luxury-gray/20'
-      } ${isPrimary ? 'ring-2 ring-luxury-gold/50 bg-luxury-gold/5' : ''}`}
+      } ${isPrimary ? 'ring-luxury-gold/50 bg-luxury-gold/5' : ''}`}
     >
       {isPrimary && (
-        <div className="absolute -top-2 -right-2 bg-luxury-gold text-luxury-black rounded-full p-1">
+        <div className="absolute top-0 right-0 bg-luxury-gold text-luxury-black rounded-full p-1">
           <Crown size={12} />
         </div>
       )}
@@ -84,8 +84,8 @@ const DraggableImageItem: React.FC<DraggableImageItemProps> = ({
         height={64}
       />
 
-      <div className="flex-1 min-w-0">
-        <p className="luxury-body text-xs text-luxury-gray break-all leading-relaxed">
+      <div className="flex-1 max-w-[60%] overflow-hidden">
+        <p className="luxury-body text-xs text-luxury-gray leading-relaxed truncate overflow-hidden whitespace-nowrap">
           {isPrimary && <span className="text-luxury-gold font-medium">Primary • </span>}
           {url}
         </p>
@@ -94,7 +94,7 @@ const DraggableImageItem: React.FC<DraggableImageItemProps> = ({
       <button
         type="button"
         onClick={onRemove}
-        className="text-red-600 hover:text-red-800 transition-colors flex-shrink-0 p-1 rounded hover:bg-red-50"
+        className="absolute top-3 right-3 text-red-600 hover:text-red-800 transition-colors flex-shrink-0 p-1 rounded hover:bg-red-50"
         title="Remove image"
       >
         <Trash size={14} />
