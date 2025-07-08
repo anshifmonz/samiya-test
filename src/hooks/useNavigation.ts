@@ -76,7 +76,7 @@ export const useNavigation = () => {
   }, [isMobileMenuOpen]);
 
   const getNavbarStyling = () => {
-    const DEFAULT_STYLE = 'bg-luxury-white backdrop-blur-sm border-b border-[#d6c6ae]/30 shadow-[0_4px_24px_rgba(214,198,174,0.2)] drop-shadow-[0_0_12px_rgba(214,198,174,0.1)]';
+    const DEFAULT_STYLE = 'bg-luxury-white backdrop-blur-sm border-b border-[#d6c6ae]/50';
     // const BANNER_STYLE = 'bg-luxury-black/95 backdrop-blur-lg border-b border-white/30 shadow-[0_4px_24px_rgba(214,198,174,0.2)] drop-shadow-[0_0_12px_rgba(214,198,174,0.1)]';
 
     return DEFAULT_STYLE;
