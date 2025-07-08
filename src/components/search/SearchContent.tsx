@@ -6,7 +6,7 @@ import ProductsGrid from './ProductsGrid';
 import MobileFilterPanel from './MobileFilterPanel';
 
 interface SearchContentProps {
-  products: Product[];
+  products: Omit<Product, 'description'>[];
   onFiltersChange: (filters: ProductFilters) => void;
   categories: Category[];
 }

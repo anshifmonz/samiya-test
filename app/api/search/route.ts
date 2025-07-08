@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import searchProducts from '@/lib/public/product';
-import { type Product } from '@/types/product';
+import searchProducts from 'lib/public/product';
+import { type Product } from 'types/product';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
   const colorsArray = colors ? colors.split(',') : [];
   const tagsArray = tags ? tags.split(',') : [];
 
-  const products: Product[] = await searchProducts(query, {
+  const products: Omit<Product, 'description'>[] = await searchProducts(query, {
     category,
     minPrice: minPriceNumber,
     maxPrice: maxPriceNumber,

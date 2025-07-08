@@ -5,7 +5,7 @@ import { Product, type ProductFilters } from 'types/product';
 import { type Category } from 'types/category';
 
 interface Props {
-  initialProducts: Product[];
+  initialProducts: Omit<Product, 'description'>[];
   initialQuery: string;
   initialFilters: ProductFilters;
   initialCategories: Category[];

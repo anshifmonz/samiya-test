@@ -8,7 +8,7 @@ import { Heart } from 'lucide-react';
 import ImageFallback from './ImageFallback';
 
 interface ProductCardProps {
-  product: Product;
+  product: Omit<Product, 'description'>;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {

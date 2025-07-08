@@ -7,7 +7,7 @@ import ProductCard from '../shared/ProductCard';
 import SearchResultsHeader from './SearchResultsHeader';
 
 interface ProductsGridProps {
-  products: Product[];
+  products: Omit<Product, 'description'>[];
   query?: string;
 }
 

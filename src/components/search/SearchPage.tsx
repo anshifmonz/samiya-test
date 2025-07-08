@@ -8,14 +8,14 @@ import { type Product, type ProductFilters } from 'types/product';
 import { type Category } from 'types/category';
 
 interface Props {
-  initialProducts: Product[];
+  initialProducts: Omit<Product, 'description'>[];
   initialQuery: string;
   initialFilters: ProductFilters;
   initialCategories: Category[];
 }
 
 export default function SearchPage({ initialProducts, initialQuery, initialFilters, initialCategories }: Props) {
-  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [products, setProducts] = useState<Omit<Product, 'description'>[]>(initialProducts);
   const [filters, setFilters] = useState<ProductFilters>(initialFilters);
   const router = useRouter();
   const isFirstRun = useRef(true);

@@ -1,9 +1,10 @@
 import React from 'react';
 import { redirect } from 'next/navigation';
-import searchProducts from '@/lib/public/product';
-import getCategories from '@/lib/public/category';
-import Search from '@/components/search';
-import { type ProductFilters } from '@/types/product';
+import searchProducts from 'lib/public/product';
+import getCategories from 'lib/public/category';
+import Search from 'components/search';
+import { type Product, type ProductFilters } from 'types/product';
+import { type Category } from 'types/category';
 
 interface Props {
   searchParams: {
@@ -47,8 +48,8 @@ export default async function SearchPage({ searchParams }: Props) {
   if (query.trim() === '') redirect('/');
 
   const filters = parseFilters(searchParams);
-  const products = await searchProducts(query, filters);
-  const categories = await getCategories();
+  const products: Omit<Product, 'description'>[] = await searchProducts(query, filters);
+  const categories: Category[] = await getCategories();
 
   return (
     <Search
