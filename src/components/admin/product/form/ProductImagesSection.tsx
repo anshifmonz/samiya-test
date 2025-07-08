@@ -75,7 +75,7 @@ const DraggableColorTab: React.FC<DraggableColorTabProps> = ({
         {...attributes}
         {...listeners}
       >
-        {/* Primary Color Indicator - Only show for first tab (index 0) */}
+        {/* primary color indicator - only show for first tab (index 0) */}
         {index === 0 && (
           <div className="absolute -top-1 -right-1 bg-luxury-gold text-luxury-black rounded-full p-0.5">
             <Crown size={10} />
@@ -118,6 +118,10 @@ const ProductImagesSection: React.FC<ProductImagesSectionProps> = ({
   const [newImageColor, setNewImageColor] = useState('');
   const [newImageUrl, setNewImageUrl] = useState('');
   const [selectedColorForImage, setSelectedColorForImage] = useState('');
+  const [addImageTab, setAddImageTab] = useState<'url' | 'device'>('url');
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -213,7 +217,7 @@ const ProductImagesSection: React.FC<ProductImagesSectionProps> = ({
         Product Images
       </label>
 
-      {/* Color Tabs for Images */}
+      {/* color tabs for images */}
       <Tabs value={activeColorTab} onValueChange={onActiveColorTabChange} className="w-full">
         <DndContext
           sensors={sensors}
@@ -237,7 +241,7 @@ const ProductImagesSection: React.FC<ProductImagesSectionProps> = ({
               ))}
             </SortableContext>
 
-            {/* Add Color Button */}
+            {/* add color button */}
             <button
               type="button"
               onClick={() => setShowAddColorDialog(true)}
@@ -277,11 +281,12 @@ const ProductImagesSection: React.FC<ProductImagesSectionProps> = ({
                 onRemove={(index) => removeImage(color, index)}
               />
 
-              {/* Add Image Button for this color */}
+              {/* add image button for this color */}
               <button
                 type="button"
                 onClick={() => {
                   setSelectedColorForImage(color);
+                  setAddImageTab('device');
                   setShowAddImageDialog(true);
                 }}
                 className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-3 bg-luxury-cream/30 text-luxury-black rounded-lg hover:bg-luxury-cream/50 transition-colors duration-200 border-2 border-dashed border-luxury-gray/30"
@@ -293,7 +298,7 @@ const ProductImagesSection: React.FC<ProductImagesSectionProps> = ({
           </TabsContent>
         ))}
 
-        {/* Show message when no colors exist */}
+        {/* show message when no colors exist */}
         {colorVariants.length === 0 && (
           <TabsContent value="" className="mt-4">
             <div className="border border-luxury-gray/20 rounded-xl p-8 text-center">
@@ -303,7 +308,7 @@ const ProductImagesSection: React.FC<ProductImagesSectionProps> = ({
         )}
       </Tabs>
 
-      {/* Add Color Dialog */}
+      {/* color add dialog */}
       {showAddColorDialog && (
         <div className="fixed inset-0 bg-luxury-black/60 backdrop-blur-sm z-60 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full">
@@ -339,39 +344,137 @@ const ProductImagesSection: React.FC<ProductImagesSectionProps> = ({
         </div>
       )}
 
-      {/* Add Image Dialog */}
+      {/* image upload dialog */}
       {showAddImageDialog && (
         <div className="fixed inset-0 bg-luxury-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full">
             <h3 className="luxury-heading text-xl text-luxury-black mb-4">
               Add Image to {selectedColorForImage}
             </h3>
-            <input
-              type="url"
-              placeholder="Image URL"
-              value={newImageUrl}
-              onChange={(e) => setNewImageUrl(e.target.value)}
-              className="w-full px-4 py-3 luxury-body text-sm rounded-xl bg-luxury-cream/50 text-luxury-black border border-luxury-gray/20 focus:outline-none focus:ring-2 focus:ring-luxury-gold/50 focus:border-luxury-gold/30 transition-all duration-300 mb-4"
-              autoFocus
-            />
-            <div className="flex gap-3">
+            <div className="flex mb-4 gap-2">
+              <button
+                type="button"
+                className={`flex-1 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${addImageTab === 'device' ? 'bg-luxury-gold text-luxury-black' : 'bg-luxury-cream/50 text-luxury-gray hover:bg-luxury-cream'}`}
+                onClick={() => setAddImageTab('device')}
+              >
+                From Device
+              </button>
+              <button
+                type="button"
+                className={`flex-1 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${addImageTab === 'url' ? 'bg-luxury-gold text-luxury-black' : 'bg-luxury-cream/50 text-luxury-gray hover:bg-luxury-cream'}`}
+                onClick={() => setAddImageTab('url')}
+              >
+                From URL
+              </button>
+            </div>
+            {addImageTab === 'url' && (
+              <input
+                type="url"
+                placeholder="Image URL"
+                value={newImageUrl}
+                onChange={(e) => setNewImageUrl(e.target.value)}
+                className="w-full px-4 py-3 luxury-body text-sm rounded-xl bg-luxury-cream/50 text-luxury-black border border-luxury-gray/20 focus:outline-none focus:ring-2 focus:ring-luxury-gold/50 focus:border-luxury-gold/30 transition-all duration-300 mb-4"
+                autoFocus
+              />
+            )}
+            {addImageTab === 'device' && (
+              <div>
+                <div
+                  className="w-full flex flex-col items-center justify-center border-2 border-dashed border-luxury-gray/30 rounded-xl bg-luxury-cream/50 p-4 mb-4 cursor-pointer hover:bg-luxury-cream/80 transition-all duration-200"
+                  onDragOver={e => { e.preventDefault(); e.stopPropagation(); }}
+                  onDrop={e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+                    setSelectedFiles(files);
+                  }}
+                  onClick={() => {
+                    document.getElementById('product-image-file-input')?.click();
+                  }}
+                  style={{ minHeight: 100 }}
+                >
+                  <input
+                    id="product-image-file-input"
+                    type="file"
+                    accept="image/*"
+                    multiple={false}
+                    className="hidden"
+                    onChange={e => {
+                      if (e.target.files) {
+                        setSelectedFiles(Array.from(e.target.files));
+                      }
+                    }}
+                  />
+                  <span className="text-luxury-gray text-sm">Click or drag & drop to select an image</span>
+                </div>
+                {selectedFiles.length > 0 && (
+                  <div className="mb-4 flex flex-col items-center gap-2">
+                    {selectedFiles.map((file, idx) => (
+                      <div key={idx} className="flex flex-col items-center w-full">
+                        <img
+                          src={URL.createObjectURL(file)}
+                          alt={file.name}
+                          className="w-32 h-32 object-cover rounded-xl border border-luxury-gray/20 mb-2"
+                        />
+                        <span className="text-xs text-luxury-gray break-all">{file.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {uploadError && <div className="text-red-600 text-xs mb-2">{uploadError}</div>}
+              </div>
+            )}
+            <div className="flex gap-3 mt-2">
               <button
                 type="button"
                 onClick={() => {
                   setShowAddImageDialog(false);
                   setNewImageUrl('');
+                  setSelectedFiles([]);
                   setSelectedColorForImage('');
+                  setUploadError(null);
                 }}
                 className="flex-1 px-4 py-2 luxury-body text-sm font-medium text-luxury-gray bg-luxury-cream/50 rounded-xl hover:bg-luxury-cream transition-all duration-300 border border-luxury-gray/20"
+                disabled={uploading}
               >
                 Cancel
               </button>
               <button
                 type="button"
-                onClick={addImage}
-                className="flex-1 bg-luxury-gold text-luxury-black px-4 py-2 rounded-xl hover:bg-luxury-gold-light transition-colors duration-200"
+                onClick={async () => {
+                  setUploadError(null);
+                  if (addImageTab === 'url') {
+                    addImage();
+                  } else if (addImageTab === 'device') {
+                    if (!selectedFiles.length) {
+                      setUploadError('Please select an image file.');
+                      return;
+                    }
+                    setUploading(true);
+                    try {
+                      const file = selectedFiles[0];
+                      await new Promise(res => setTimeout(res, 1000));
+                      const mockUrl = URL.createObjectURL(file);
+                      onImagesChange({
+                        ...images,
+                        [selectedColorForImage]: images[selectedColorForImage]
+                          ? [...images[selectedColorForImage], mockUrl]
+                          : [mockUrl]
+                      });
+                      setShowAddImageDialog(false);
+                      setSelectedFiles([]);
+                      setSelectedColorForImage('');
+                    } catch (err) {
+                      setUploadError('Failed to upload image.');
+                    } finally {
+                      setUploading(false);
+                    }
+                  }
+                }}
+                className="flex-1 bg-luxury-gold text-luxury-black px-4 py-2 rounded-xl hover:bg-luxury-gold-light transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+                disabled={uploading || (addImageTab === 'device' && !selectedFiles.length)}
               >
-                Add Image
+                {uploading ? 'Uploading...' : 'Add Image'}
               </button>
             </div>
           </div>
