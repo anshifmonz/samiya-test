@@ -1,7 +1,7 @@
 import { supabasePublic } from 'lib/supabasePublic';
 import { type Product, type ProductFilters } from 'types/product';
 
-async function searchProducts(query: string, filters?: ProductFilters): Promise<Omit<Product, 'description'>[]> {
+async function searchProducts(query: string, filters?: ProductFilters): Promise<Omit<Product, 'description' | 'active'>[]> {
   let supabaseQuery = supabasePublic
     .from('products')
     .select(`

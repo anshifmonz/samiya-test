@@ -6,6 +6,7 @@ export interface Product {
   price: number;
   tags: string[];
   category: string;
+  active?: boolean;
 }
 
 export type ProductFilters = {

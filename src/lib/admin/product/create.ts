@@ -1,8 +1,7 @@
-import { supabaseAdmin } from '@/lib/supabase';
-import type { Product, NewProductInput } from '@/types';
+import { supabaseAdmin } from 'lib/supabase';
+import type { Product } from 'types/product';
 
-export default async function createProduct(newProduct: NewProductInput): Promise<Product | null> {
-  // 1. Find category_id by name
+export default async function createProduct(newProduct: Product): Promise<Product | null> {
   const { data: categories, error: catError } = await supabaseAdmin
     .from('categories')
     .select('id')
@@ -14,7 +13,6 @@ export default async function createProduct(newProduct: NewProductInput): Promis
   }
   const category_id = categories[0].id;
 
-  // Determine primary color and image (first color, first image of that color)
   const colorKeys = Object.keys(newProduct.images);
   const primaryColor = colorKeys[0] || null;
   const primaryImageUrl = primaryColor ? newProduct.images[primaryColor]?.[0] || null : null;
@@ -26,9 +24,9 @@ export default async function createProduct(newProduct: NewProductInput): Promis
       description: newProduct.description,
       price: newProduct.price,
       category_id,
-      is_active: true,
       primary_color: primaryColor,
       primary_image_url: primaryImageUrl,
+      is_active: newProduct.active,
     })
     .select()
     .single();
@@ -44,7 +42,6 @@ export default async function createProduct(newProduct: NewProductInput): Promis
     const color = colorKeys[colorIndex];
     const urls = newProduct.images[color];
     urls.forEach((url, idx) => {
-      // Primary image is the first image of the first color
       const isPrimary = colorIndex === 0 && idx === 0;
       imageRows.push({
         product_id: productId,
@@ -64,7 +61,6 @@ export default async function createProduct(newProduct: NewProductInput): Promis
     }
   }
 
-  // 2.5. Insert product colors
   const colorRows = [];
   for (let colorIndex = 0; colorIndex < colorKeys.length; colorIndex++) {
     const color = colorKeys[colorIndex];
@@ -84,19 +80,16 @@ export default async function createProduct(newProduct: NewProductInput): Promis
     }
   }
 
-  // 3. Handle tags
   if (newProduct.tags && newProduct.tags.length > 0) {
     for (const tagName of newProduct.tags) {
-      // Find or create tag
       let { data: tagData, error: tagFindError } = await supabaseAdmin
         .from('tags')
         .select('id')
         .eq('name', tagName)
         .limit(1);
 
-      let tagId;
+      let tagId: string | null = null;
       if (tagFindError || !tagData || tagData.length === 0) {
-        // Create new tag
         const { data: newTagData, error: tagCreateError } = await supabaseAdmin
           .from('tags')
           .insert({ name: tagName })
@@ -111,7 +104,6 @@ export default async function createProduct(newProduct: NewProductInput): Promis
         tagId = tagData[0].id;
       }
 
-      // Link product to tag
       const { error: linkError } = await supabaseAdmin
         .from('product_tags')
         .insert({
@@ -132,5 +124,6 @@ export default async function createProduct(newProduct: NewProductInput): Promis
     price: productData.price,
     tags: newProduct.tags,
     category: newProduct.category,
+    active: newProduct.active,
   };
 }

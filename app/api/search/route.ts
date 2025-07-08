@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
   const colorsArray = colors ? colors.split(',') : [];
   const tagsArray = tags ? tags.split(',') : [];
 
-  const products: Omit<Product, 'description'>[] = await searchProducts(query, {
+  const products: Omit<Product, 'description' | 'active'>[] = await searchProducts(query, {
     category,
     minPrice: minPriceNumber,
     maxPrice: maxPriceNumber,

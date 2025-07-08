@@ -2,11 +2,12 @@ import React from 'react';
 import { Switch } from 'ui/switch';
 
 interface ActiveStatusSwitchProps {
+  label: string;
   value: boolean;
   onChange: (value: boolean) => void;
 }
 
-const ActiveStatusSwitch: React.FC<ActiveStatusSwitchProps> = ({ value, onChange }) => {
+const ActiveStatusSwitch: React.FC<ActiveStatusSwitchProps> = ({ label, value, onChange }) => {
   return (
     <div>
       <div className="flex items-center space-x-3">
@@ -16,11 +17,11 @@ const ActiveStatusSwitch: React.FC<ActiveStatusSwitchProps> = ({ value, onChange
           onCheckedChange={onChange}
         />
         <label htmlFor="isActive" className="luxury-subheading text-sm text-luxury-black">
-          Active Category
+          Active {label}
         </label>
       </div>
       <p className="luxury-body text-luxury-gray/70 text-sm mt-4">
-        Inactive categories won't be visible to customers
+        Inactive {label} won't be visible to customers
       </p>
     </div>
   );

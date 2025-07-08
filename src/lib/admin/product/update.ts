@@ -1,8 +1,7 @@
-import { supabaseAdmin } from '@/lib/supabase';
-import { type Product } from '@/types/product';
+import { supabaseAdmin } from 'lib/supabase';
+import { type Product } from 'types/product';
 
 export default async function updateProduct(product: Product): Promise<Product | null> {
-  // 1. Find category_id by name
   const { data: categories, error: catError } = await supabaseAdmin
     .from('categories')
     .select('id')
@@ -14,12 +13,10 @@ export default async function updateProduct(product: Product): Promise<Product |
   }
   const category_id = categories[0].id;
 
-  // 2. Determine primary color and image (first color, first image of that color)
   const colorKeys = Object.keys(product.images);
   const primaryColor = colorKeys[0] || null;
   const primaryImageUrl = primaryColor ? product.images[primaryColor]?.[0] || null : null;
 
-  // Update product
   const { error: prodError } = await supabaseAdmin
     .from('products')
     .update({
@@ -29,6 +26,7 @@ export default async function updateProduct(product: Product): Promise<Product |
       category_id,
       primary_color: primaryColor,
       primary_image_url: primaryImageUrl,
+      is_active: product.active,
     })
     .eq('id', product.id);
   if (prodError) {
@@ -36,7 +34,6 @@ export default async function updateProduct(product: Product): Promise<Product |
     return null;
   }
 
-  // 3. Delete old images
   const { error: delImgError } = await supabaseAdmin
     .from('product_images')
     .delete()
@@ -45,14 +42,12 @@ export default async function updateProduct(product: Product): Promise<Product |
     console.error('Error deleting old product images:', delImgError);
   }
 
-  // 4. Insert new images
   const imageRows = [];
 
   for (let colorIndex = 0; colorIndex < colorKeys.length; colorIndex++) {
     const color = colorKeys[colorIndex];
     const urls = product.images[color];
     urls.forEach((url, idx) => {
-      // Primary image is the first image of the first color
       const isPrimary = colorIndex === 0 && idx === 0;
       imageRows.push({
         product_id: product.id,
@@ -72,7 +67,6 @@ export default async function updateProduct(product: Product): Promise<Product |
     }
   }
 
-  // 4.5. Delete old colors and insert new ones
   const { error: delColorError } = await supabaseAdmin
     .from('product_colors')
     .delete()
@@ -81,7 +75,6 @@ export default async function updateProduct(product: Product): Promise<Product |
     console.error('Error deleting old product colors:', delColorError);
   }
 
-  // Insert new colors
   const colorRows = [];
   for (let colorIndex = 0; colorIndex < colorKeys.length; colorIndex++) {
     const color = colorKeys[colorIndex];
@@ -101,8 +94,6 @@ export default async function updateProduct(product: Product): Promise<Product |
     }
   }
 
-  // 5. Handle tags
-  // First, delete all existing tag relationships
   const { error: delTagError } = await supabaseAdmin
     .from('product_tags')
     .delete()
@@ -111,19 +102,16 @@ export default async function updateProduct(product: Product): Promise<Product |
     console.error('Error deleting old product tags:', delTagError);
   }
 
-  // Then add new tag relationships
   if (product.tags && product.tags.length > 0) {
     for (const tagName of product.tags) {
-      // Find or create tag
       let { data: tagData, error: tagFindError } = await supabaseAdmin
         .from('tags')
         .select('id')
         .eq('name', tagName)
         .limit(1);
 
-      let tagId;
+      let tagId: string | null = null;
       if (tagFindError || !tagData || tagData.length === 0) {
-        // Create new tag
         const { data: newTagData, error: tagCreateError } = await supabaseAdmin
           .from('tags')
           .insert({ name: tagName })
@@ -138,7 +126,6 @@ export default async function updateProduct(product: Product): Promise<Product |
         tagId = tagData[0].id;
       }
 
-      // Link product to tag
       const { error: linkError } = await supabaseAdmin
         .from('product_tags')
         .insert({
@@ -151,6 +138,5 @@ export default async function updateProduct(product: Product): Promise<Product |
     }
   }
 
-  // 6. Return the updated product
   return product;
 }

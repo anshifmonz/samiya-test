@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { type Product } from '@/types/product';
-import { type Category } from '@/types/category';
+import { type Product } from 'types/product';
+import { type Category } from 'types/category';
 import { X } from 'lucide-react';
 import {
   ProductTitleInput,
@@ -12,6 +12,7 @@ import {
   TagsSection,
   ActionButtons
 } from './form';
+import ActiveStatusSwitch from '../category/form/ActiveStatusSwitch';
 
 interface AdminProductFormProps {
   product?: Product | null;
@@ -27,7 +28,8 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
     price: 0,
     category: '',
     images: {} as Record<string, string[]>,
-    tags: [] as string[]
+    tags: [] as string[],
+    active: true
   });
 
   const [activeColorTab, setActiveColorTab] = useState<string>('');
@@ -51,8 +53,10 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
         price: product.price,
         category: product.category,
         images: { ...product.images },
-        tags: [...product.tags]
+        tags: [...product.tags],
+        active: product.active !== undefined ? product.active : true
       });
+      console.log('product', product);
       // set the first color as active tab
       const colors = Object.keys(product.images);
       if (colors.length > 0) {
@@ -128,6 +132,12 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
           <TagsSection
             tags={formData.tags}
             onTagsChange={(tags) => setFormData(prev => ({ ...prev, tags }))}
+          />
+
+          <ActiveStatusSwitch
+            label="Product"
+            value={formData.active}
+            onChange={(active) => setFormData(prev => ({ ...prev, active }))}
           />
 
           <ActionButtons

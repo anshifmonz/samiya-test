@@ -1,5 +1,5 @@
-import { supabaseAdmin } from '@/lib/supabase';
-import { type Product } from '@/types/product';
+import { supabaseAdmin } from 'lib/supabase';
+import { type Product } from 'types/product';
 
 async function getProduct(): Promise<Product[]> {
   const { data, error } = await supabaseAdmin
@@ -12,6 +12,7 @@ async function getProduct(): Promise<Product[]> {
       primary_color,
       primary_image_url,
       category_id,
+      is_active,
       category:categories(name),
       product_images:product_images(color_name,image_url,sort_order,is_primary),
       product_tags:product_tags(tag:tags(name))
@@ -25,10 +26,10 @@ async function getProduct(): Promise<Product[]> {
   return (data || []).map((row: any) => {
     const images: Record<string, string[]> = {};
     if (row.product_images) {
-      // Sort images by color and then by sort_order to maintain proper ordering
+      // sort images by color and then by sort_order
       const sortedImages = row.product_images.sort((a: any, b: any) => {
         if (a.color_name !== b.color_name) {
-          // Prioritize primary color first, then alphabetical
+          // prioritize primary color first
           if (a.color_name === row.primary_color) return -1;
           if (b.color_name === row.primary_color) return 1;
           return a.color_name.localeCompare(b.color_name);
@@ -59,6 +60,7 @@ async function getProduct(): Promise<Product[]> {
       price: Number(row.price),
       tags,
       category: row.category?.name || '',
+      active: row.is_active,
     };
   });
 }

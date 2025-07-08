@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { type Category } from '@/types/category';
+import { type Category } from 'types/category';
 import {
   CategoryNameInput,
   DescriptionTextarea,
@@ -115,6 +115,7 @@ const AdminCategoryForm: React.FC<AdminCategoryFormProps> = ({
           />
 
           <ActiveStatusSwitch
+            label="Category"
             value={formData.isActive}
             onChange={(value) => setFormData({ ...formData, isActive: value })}
           />
