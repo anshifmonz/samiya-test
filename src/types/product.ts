@@ -15,4 +15,6 @@ export type ProductFilters = {
   maxPrice?: number;
   colors?: string[];
   tags?: string[];
+  limit?: number;
+  offset?: number;
 };
