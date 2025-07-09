@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Filter } from 'lucide-react';
 import { Button } from 'ui/button';
 import {
@@ -27,6 +27,22 @@ interface MobileFilterPanelProps {
 
 const MobileFilterPanel: React.FC<MobileFilterPanelProps> = ({ onFiltersChange, availableColors, availableCategories, availableTags, categories }) => {
   const [isOpen, setIsOpen] = useState(false);
+
+  // handle browser back button to close sidebar if open
+  useEffect(() => {
+    if (!isOpen) return;
+    window.history.pushState({ mobileFilterOpen: true }, '');
+    const handlePopState = () => {
+      setIsOpen(false);
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      if (window.history.state && window.history.state.mobileFilterOpen) {
+        window.history.back();
+      }
+    };
+  }, [isOpen]);
 
   const {
     selectedCategory,
