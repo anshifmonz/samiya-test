@@ -1,12 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { uploadFileToCloudinary } from '@/lib/upload/cloudinary-server';
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
