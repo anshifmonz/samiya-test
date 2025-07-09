@@ -70,6 +70,8 @@ export default function SearchPage({ initialProducts, initialQuery, initialFilte
       products={products}
       onFiltersChange={handleFiltersChange}
       categories={initialCategories}
+      query={initialQuery}
+      filters={filters}
     />
   );
 }

@@ -9,9 +9,11 @@ interface SearchContentProps {
   products: Omit<Product, 'description'>[];
   onFiltersChange: (filters: ProductFilters) => void;
   categories: Category[];
+  query?: string;
+  filters: ProductFilters;
 }
 
-const SearchContent: React.FC<SearchContentProps> = ({ products, onFiltersChange, categories }) => {
+const SearchContent: React.FC<SearchContentProps> = ({ products, onFiltersChange, categories, query, filters }) => {
   // collect all unique colors from the current products
   const colorSet = new Set<string>();
   products.forEach(product => {
@@ -63,7 +65,7 @@ const SearchContent: React.FC<SearchContentProps> = ({ products, onFiltersChange
           />
         </div>
 
-        <ProductsGrid products={products} />
+        <ProductsGrid products={products} query={query} filters={filters} />
       </div>
     </div>
   );

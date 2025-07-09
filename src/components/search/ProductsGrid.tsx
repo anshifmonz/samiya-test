@@ -1,18 +1,20 @@
-"use client";
+'use client';
 
-import React from 'react';
 import { useRouter } from 'next/navigation';
-import { type Product } from 'types/product';
+import { type Product, type ProductFilters } from 'types/product';
 import ProductCard from '../shared/ProductCard';
 import SearchResultsHeader from './SearchResultsHeader';
+import { useInfiniteProductScroll } from 'hooks/useInfiniteProductScroll';
 
 interface ProductsGridProps {
   products: Omit<Product, 'description'>[];
   query?: string;
+  filters: ProductFilters;
 }
 
-const ProductsGrid: React.FC<ProductsGridProps> = ({ products }) => {
+const ProductsGrid: React.FC<ProductsGridProps> = ({ products: initialProducts, query, filters }) => {
   const router = useRouter();
+  const { products, loading, hasMore, loaderRef } = useInfiniteProductScroll(initialProducts, query, filters);
 
   return (
     <div className="flex-1 px-4 sm:px-6 py-6 lg:p-6">
@@ -24,20 +26,13 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({ products }) => {
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
-
-          <div className="flex justify-center mt-8 space-x-2">
-            {[1, 2, 3, 4, 5].map((page) => (
-              <button
-                key={page}
-                className={`px-3 py-2 rounded-md text-sm transition-colors ${
-                  page === 1
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-background text-foreground hover:bg-muted"
-                }`}
-              >
-                {page}
-              </button>
-            ))}
+          <div ref={loaderRef} className="flex justify-center mt-8 min-h-[40px]">
+            {loading && (
+              <span className="text-muted-foreground text-lg">Loading...</span>
+            )}
+            {!hasMore && (
+              <span className="text-muted-foreground text-lg">No more products</span>
+            )}
           </div>
         </>
       ) : (
