@@ -1,16 +1,16 @@
 import React, { Suspense } from 'react';
 import LoadingSpinner from 'components/shared/LoadingSpinner';
 import AdminDashboard from 'components/admin/AdminDashboard';
-import getActiveProductsFromSupabase from '@/lib/admin/product/get';
-import getCollections from '@/lib/admin/collection/get';
-import getCategories from '@/lib/admin/category/get';
-import { getSectionsWithProducts } from '@/lib/admin/section/get';
+import getProducts from 'lib/admin/product/get';
+import getCollections from 'lib/admin/collection/get';
+import getCategories from 'lib/admin/category/get';
+import { getSectionsWithProducts } from 'lib/admin/section/get';
 import LogoutButton from 'components/admin/LogoutButton';
 
 export const revalidate = 0;
 
 async function getAdminData() {
-  const products = await getActiveProductsFromSupabase();
+  const products = await getProducts(16, 0);
   const collections = await getCollections();
   const categories = await getCategories();
   const sections = await getSectionsWithProducts();
