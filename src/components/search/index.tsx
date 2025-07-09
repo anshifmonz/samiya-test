@@ -13,8 +13,8 @@ interface Props {
 
 export default async function Search({ initialProducts, initialQuery, initialFilters, initialCategories }: Props) {
   return (
-    <div className="min-h-screen bg-background">
-      <div className="pt-16 pl-6">
+    <div className="min-h-screen max-w-7xl mx-auto bg-background">
+      <div className="pt-16">
         <Suspense fallback={<LoadingSpinner text="Loading search results..." />}>
           <SearchPage
             initialProducts={initialProducts}

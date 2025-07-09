@@ -53,7 +53,7 @@ const SearchContent: React.FC<SearchContentProps> = ({ products, onFiltersChange
 
       <div className="flex-1">
         {/* Mobile filter panel integrated in main content */}
-        <div className="lg:hidden px-6 pt-6">
+        <div className="lg:hidden px-3 sm:px-5 pt-6">
           <MobileFilterPanel
             onFiltersChange={onFiltersChange}
             availableColors={availableColors}
