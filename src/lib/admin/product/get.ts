@@ -1,22 +1,11 @@
 import { supabaseAdmin } from 'lib/supabase';
 import { type Product } from 'types/product';
 
-async function getProduct(): Promise<Product[]> {
-  const { data, error } = await supabaseAdmin
-    .from('products')
-    .select(`
-      id,
-      title,
-      description,
-      price,
-      primary_color,
-      primary_image_url,
-      category_id,
-      is_active,
-      category:categories(name),
-      product_images:product_images(color_name,image_url,sort_order,is_primary),
-      product_tags:product_tags(tag:tags(name))
-    `);
+async function getProduct(limit: number, offset: number): Promise<Product[]> {
+  const { data, error } = await supabaseAdmin.rpc('get_products_rpc', {
+    limit_count: limit,
+    offset_count: offset
+  });
 
   if (error) {
     console.error('Error fetching products from Supabase:', error);

@@ -4,8 +4,8 @@ import { POST as handlePOST } from './create'
 import { PUT as handlePUT } from './update'
 import { DELETE as handleDELETE } from './delete'
 
-export async function GET() {
-  return handleGET()
+export async function GET(request: NextRequest) {
+  return handleGET(request)
 }
 
 export async function POST(request: NextRequest) {
