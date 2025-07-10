@@ -104,6 +104,7 @@ export default {
 			},
       screens: {
         'custom-910': '910px',
+        'xs': {'max': '359px'},
       },
 		}
 	},

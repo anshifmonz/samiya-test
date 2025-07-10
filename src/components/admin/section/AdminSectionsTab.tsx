@@ -8,6 +8,7 @@ import { Switch } from 'components/ui/switch';
 import CarouselWrapper from 'components/home/shared/CarouselWrapper';
 import ProductSearchModal from './ProductSearchModal';
 import SectionProductCard from './SectionProductCard';
+import AdminTabHeaderButton from '../shared/AdminTabHeaderButton';
 
 interface AdminSectionsTabProps {
   sections: SectionWithProducts[];
@@ -107,13 +108,12 @@ const AdminSectionsTab: React.FC<AdminSectionsTabProps> = ({
       {/* Add Section Button */}
       <div className="flex justify-between items-center">
         <h3 className="luxury-heading text-xl text-luxury-black">Manage Sections</h3>
-        <Button
+        <AdminTabHeaderButton
           onClick={() => setShowAddSection(true)}
-          className="bg-luxury-gold hover:bg-luxury-gold/90 text-luxury-black px-4 py-2 rounded-lg flex items-center gap-2 transition-all duration-200"
+          label="Add Section"
         >
           <Plus size={16} />
-          Add Section
-        </Button>
+        </AdminTabHeaderButton>
       </div>
 
       {showAddSection && (
@@ -165,49 +165,54 @@ const AdminSectionsTab: React.FC<AdminSectionsTabProps> = ({
                 key={section.id}
                 className="bg-white border border-luxury-gray/20 rounded-lg overflow-hidden shadow-sm"
               >
-                {/* Section Header */}
-                <div className="flex items-center justify-between p-4 bg-luxury-cream/30">
-                  <div className="flex items-center gap-3 flex-1">
-                    <button
-                      onClick={() => toggleSection(section.id)}
-                      className="text-luxury-gray hover:text-luxury-black transition-colors duration-200"
-                    >
-                      {isExpanded ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
-                    </button>
+                <div className="p-2 sm:p-4 bg-luxury-cream/30">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center xs:gap-1 gap-3 flex-1">
+                      <button
+                        onClick={() => toggleSection(section.id)}
+                        className="text-luxury-gray hover:text-luxury-black transition-colors duration-200 flex-shrink-0"
+                      >
+                        {isExpanded ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
+                      </button>
 
-                    {isEditing ? (
-                      <div className="flex items-center gap-2 flex-1">
-                        <Input
-                          value={editingTitle}
-                          onChange={(e) => setEditingTitle(e.target.value)}
-                          className="border-luxury-gray/30 focus:border-luxury-gold flex-1"
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') saveEdit();
-                            if (e.key === 'Escape') cancelEdit();
-                          }}
-                          autoFocus
-                        />
-                        <Button
-                          onClick={saveEdit}
-                          size="sm"
-                          className="bg-luxury-gold hover:bg-luxury-gold/90 text-luxury-black"
-                        >
-                          Save
-                        </Button>
-                        <Button
-                          onClick={cancelEdit}
-                          size="sm"
-                          variant="outline"
-                          className="border-luxury-gray/30"
-                        >
-                          Cancel
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-3 flex-1">
-                        <h4 className="luxury-heading text-lg text-luxury-black flex-1">
+                      {isEditing ? (
+                        <div className="flex items-center gap-2 flex-1">
+                          <Input
+                            value={editingTitle}
+                            onChange={(e) => setEditingTitle(e.target.value)}
+                            className="border-luxury-gray/30 focus:border-luxury-gold flex-1"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') saveEdit();
+                              if (e.key === 'Escape') cancelEdit();
+                            }}
+                            autoFocus
+                          />
+                          <Button
+                            onClick={saveEdit}
+                            size="sm"
+                            className="bg-luxury-gold hover:bg-luxury-gold/90 text-luxury-black"
+                          >
+                            Save
+                          </Button>
+                          <Button
+                            onClick={cancelEdit}
+                            size="sm"
+                            variant="outline"
+                            className="border-luxury-gray/30"
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      ) : (
+                        <h4 className="luxury-heading xs:text-base text-lg text-luxury-black flex-1">
                           {section.title}
                         </h4>
+                      )}
+                    </div>
+
+                    {/* Action Buttons */}
+                    {!isEditing && (
+                      <div className="flex items-center gap-4 flex-shrink-0">
                         <div className="flex items-center gap-2">
                           <Switch
                             checked={section.isActive ?? true}
@@ -218,48 +223,45 @@ const AdminSectionsTab: React.FC<AdminSectionsTabProps> = ({
                             {section.isActive ?? true ? 'Active' : 'Inactive'}
                           </span>
                         </div>
+
+                        <div className="flex items-center gap-2 sm:gap-0">
+                          <Button
+                            onClick={() => startEditing(section)}
+                            size="sm"
+                            variant="ghost"
+                            className="text-luxury-gray hover:text-luxury-black xs:w-4 w-6 sm:w-10"
+                          >
+                            <Edit2 size={16} />
+                          </Button>
+                          <Button
+                            onClick={() => onDeleteSection(section.id)}
+                            size="sm"
+                            variant="ghost"
+                            className="text-red-500 hover:text-red-700 xs:w-4 w-6 sm:w-10"
+                          >
+                            <Trash2 size={16} />
+                          </Button>
+                        </div>
                       </div>
                     )}
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    {!isEditing && (
-                      <Button
-                        onClick={() => startEditing(section)}
-                        size="sm"
-                        variant="ghost"
-                        className="text-luxury-gray hover:text-luxury-black"
-                      >
-                        <Edit2 size={16} />
-                      </Button>
-                    )}
-                    <Button
-                      onClick={() => onDeleteSection(section.id)}
-                      size="sm"
-                      variant="ghost"
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      <Trash2 size={16} />
-                    </Button>
                   </div>
                 </div>
 
                 {/* Section Content */}
                 {isExpanded && (
-                  <div className="p-4 space-y-4">
+                  <div className="p-0 pr-2 sm:p-4 space-y-4">
                     {/* Add Product Button */}
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-between items-center pl-4">
                       <span className="luxury-body text-sm text-luxury-gray">
                         {sectionProducts.length} product{sectionProducts.length !== 1 ? 's' : ''}
                       </span>
-                      <Button
+                      <AdminTabHeaderButton
                         onClick={() => setSearchModalOpen(section.id)}
-                        size="sm"
-                        className="bg-luxury-gold hover:bg-luxury-gold/90 text-luxury-black px-3 py-1 rounded-lg flex items-center gap-2"
+                        label="Add Product"
+                        className="px-3 py-1 text-xs"
                       >
                         <Plus size={14} />
-                        Add Product
-                      </Button>
+                      </AdminTabHeaderButton>
                     </div>
 
                     {/* Products Carousel */}

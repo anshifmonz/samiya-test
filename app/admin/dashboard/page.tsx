@@ -28,14 +28,14 @@ export default async function Admin() {
 
   return (
     <div className="min-h-screen bg-luxury-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-8 pt-24">
         <div className="mb-8">
           <div className="flex justify-between items-center animate-fade-in-up">
-            <div>
-              <h1 className="luxury-heading text-4xl text-luxury-black mb-4">
+            <div className="mb-6">
+              <h1 className="luxury-heading xs:text-2xl text-3xl sm:text-4xl text-luxury-black mb-2 sm:mb-4">
                 Admin Dashboard
               </h1>
-              <p className="luxury-body text-luxury-gray text-lg mb-8">
+              <p className="luxury-body text-luxury-gray xs:text-sm text-base sm:text-lg">
                 Manage your products, collections, and categories with ease
               </p>
             </div>
@@ -43,7 +43,7 @@ export default async function Admin() {
           </div>
         </div>
 
-        <div className="bg-white/80 backdrop-blur-sm border border-luxury-gray/20 rounded-xl p-6">
+        <div className="bg-white/80 backdrop-blur-sm border border-luxury-gray/20 rounded-xl p-3 sm:p-6">
           <Suspense fallback={<LoadingSpinner text="Loading admin dashboard..." />}>
             <AdminDashboard
               initialProducts={productList}

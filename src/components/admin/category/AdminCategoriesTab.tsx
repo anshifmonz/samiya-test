@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import AdminSearchBar from '../AdminSearchBar';
 import AdminCategoryGrid from './AdminCategoryGrid';
 import AdminCategoryForm from './AdminCategoryForm';
+import AdminTabHeader from '../shared/AdminTabHeader';
 import { Plus } from 'lucide-react';
 import { type Category } from '@/types/category';
 
@@ -49,22 +50,14 @@ const AdminCategoriesTab: React.FC<AdminCategoriesTabProps> = ({
 
   return (
     <div>
-      <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between mb-8">
-        <div className="flex-1 max-w-2xl">
-          <AdminSearchBar
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-          />
-        </div>
-
-        <button
-          onClick={() => setShowAddForm(true)}
-          className="luxury-btn-primary px-6 py-3 rounded-xl font-medium text-sm tracking-wider uppercase shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2"
-        >
-          <Plus size={20} />
-          Add Category
-        </button>
-      </div>
+      <AdminTabHeader
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        onAddClick={() => setShowAddForm(true)}
+        addLabel="Add Category"
+      >
+        <Plus size={20} />
+      </AdminTabHeader>
 
       <div className="mb-6">
         <p className="luxury-subheading text-luxury-gold text-sm tracking-wider">

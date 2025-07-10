@@ -96,7 +96,7 @@ const AdminCategoryForm: React.FC<AdminCategoryFormProps> = ({
           onClose={onCancel}
         />
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="p-3 sm:p-6 space-y-6">
           <CategoryNameInput
             value={formData.name}
             onChange={(value) => setFormData({ ...formData, name: value })}

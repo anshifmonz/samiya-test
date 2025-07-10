@@ -10,13 +10,15 @@ interface DraggableColorTabProps {
   isActive: boolean;
   onValueChange: (value: string) => void;
   index: number;
+  className?: string;
 }
 
 const DraggableColorTab: React.FC<DraggableColorTabProps> = ({
   color,
   imageCount,
   onValueChange,
-  index
+  index,
+  className
 }) => {
   const {
     attributes,
@@ -38,7 +40,7 @@ const DraggableColorTab: React.FC<DraggableColorTabProps> = ({
     <div
       ref={setNodeRef}
       style={style}
-      className={`relative ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+      className={`relative ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}${className ? ` ${className}` : ''}`}
     >
       <TabsTrigger
         value={color}

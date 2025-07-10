@@ -23,7 +23,7 @@ const AdminProductGrid: React.FC<AdminProductGridProps> = ({ products, onEdit, o
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+    <div className="grid xs:grid-cols-1 grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4">
       {products.map((product) => (
         <AdminProductCard
           key={product.id}

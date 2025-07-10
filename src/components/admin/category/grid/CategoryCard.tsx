@@ -26,10 +26,10 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
 }) => {
   return (
     <Card className={`transition-all duration-200 hover:shadow-md ${indentationClass}`}>
-      <CardContent className="p-4">
+      <CardContent className="p-4 px-2 sm:p-4 ">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 flex-1">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 -ml-6">
               {hasChildren ? (
                 <button
                   onClick={onToggleExpanded}
@@ -54,7 +54,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
 
             <div className="flex-1">
               <div className="flex items-center gap-3">
-                <h3 className="luxury-subheading text-luxury-black font-medium">
+                <h3 className="luxury-subheading text-luxury-black font-medium text-sm sm:text-base">
                   {category.name}
                 </h3>
                 <Badge
@@ -82,12 +82,12 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center xs:gap-0 gap-2">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => onEdit(category)}
-              className="text-luxury-gold hover:text-luxury-black hover:bg-luxury-gold/10"
+              className="text-luxury-gold hover:text-luxury-black hover:bg-luxury-gold/10 xs:-mr-2"
             >
               <Edit size={16} />
             </Button>

@@ -69,7 +69,7 @@ const AdminCollectionForm: React.FC<AdminCollectionFormProps> = ({ collection, o
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="p-3 sm:p-6 space-y-6">
           <CollectionTitleInput
             value={formData.title}
             onChange={(value) => setFormData(prev => ({ ...prev, title: value }))}

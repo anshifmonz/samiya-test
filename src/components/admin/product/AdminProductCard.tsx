@@ -30,7 +30,7 @@ const AdminProductCard: React.FC<AdminProductCardProps> = ({ product, onEdit, on
         />
 
         {/* Admin Actions Overlay */}
-        <div className="absolute inset-0 bg-luxury-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
+        <div className="absolute inset-0 bg-luxury-black/60 opcaity-100 lg:opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
           <button
             onClick={() => onEdit(product)}
             className="bg-white text-luxury-black p-2 rounded-lg hover:bg-luxury-gold-light transition-colors duration-200 shadow-lg"
