@@ -1,6 +1,6 @@
 import React from 'react';
 import { redirect } from 'next/navigation';
-import searchProducts from 'lib/public/product';
+import searchProducts from 'lib/public/search';
 import getCategories from 'lib/public/category';
 import Search from 'components/search';
 import { type Product, type ProductFilters } from 'types/product';

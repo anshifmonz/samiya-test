@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import searchProducts from 'lib/public/product';
+import searchProducts from 'lib/public/search';
 import SearchContent from './SearchContent';
 import { type Product, type ProductFilters } from 'types/product';
 import { type Category } from 'types/category';

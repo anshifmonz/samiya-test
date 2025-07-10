@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import searchProducts from 'lib/public/product';
+import searchProducts from 'lib/public/search';
 import { type Product } from 'types/product';
 
 export async function GET(request: NextRequest) {
