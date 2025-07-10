@@ -50,13 +50,17 @@ const DraggableImageItem: React.FC<DraggableImageItemProps> = ({
     transition,
     opacity: isDragging ? 0.5 : 1,
     zIndex: isDragging ? 1000 : 1,
+    userSelect: 'none' as const,
+    WebkitUserSelect: 'none' as const,
+    MozUserSelect: 'none' as const,
+    msUserSelect: 'none' as const,
   };
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className={`relative flex items-start gap-3 p-3 border rounded-lg bg-white relative ${
+      className={`relative flex items-start gap-3 p-3 border rounded-lg bg-white relative touch-manipulation ${
         isDragging ? 'shadow-lg' : 'border-luxury-gray/20'
       } ${isPrimary ? 'ring-luxury-gold/50 bg-luxury-gold/5' : ''}`}
     >
@@ -69,7 +73,7 @@ const DraggableImageItem: React.FC<DraggableImageItemProps> = ({
       <button
         {...attributes}
         {...listeners}
-        className="text-luxury-gray hover:text-luxury-black transition-colors cursor-grab active:cursor-grabbing flex-shrink-0"
+        className="text-luxury-gray hover:text-luxury-black transition-colors cursor-grab active:cursor-grabbing flex-shrink-0 touch-manipulation p-3 -m-3 min-w-[44px] min-h-[44px] flex items-center justify-center"
         title="Drag to reorder"
         type="button"
       >
@@ -117,7 +121,8 @@ const DraggableImageList: React.FC<DraggableImageListProps> = ({
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8,
+        distance: 3,
+        tolerance: 5,
       },
     }),
     useSensor(KeyboardSensor, {
@@ -148,11 +153,16 @@ const DraggableImageList: React.FC<DraggableImageListProps> = ({
   }
 
   return (
-    <div className="relative">
+    <div className="relative" style={{ touchAction: 'none' }}>
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
+        onDragStart={(event) => {
+          if (event.active.data.current?.type === 'pointer') {
+            event.active.data.current.point = event.active.data.current.point;
+          }
+        }}
       >
         <SortableContext
           items={images.map((_, index) => `image-${index}`)}

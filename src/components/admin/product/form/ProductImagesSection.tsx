@@ -46,7 +46,8 @@ const ProductImagesSection: React.FC<ProductImagesSectionProps> = (props) => {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8,
+        distance: 3,
+        tolerance: 5,
       },
     }),
     useSensor(KeyboardSensor, {
@@ -62,14 +63,10 @@ const ProductImagesSection: React.FC<ProductImagesSectionProps> = (props) => {
         Product Images
       </label>
 
-      {/* Always render Tabs for tab state and content */}
       <Tabs value={activeColorTab} onValueChange={onActiveColorTabChange} className="w-full">
-        {/* Responsive color tab selection UI */}
-        {/* xs and below: show dropdown, above xs: show flex tabs */}
         <div>
           {colorVariants.length > 0 && (
             <>
-              {/* Dropdown for xs and below */}
               <div className="hidden xs:block mb-2">
                 <label htmlFor="product-color-tab-select" className="sr-only">
                   Select color
@@ -120,12 +117,16 @@ const ProductImagesSection: React.FC<ProductImagesSectionProps> = (props) => {
                 </Select>
               </div>
 
-              {/* Flex tabs for above xs */}
-              <div className="block xs:hidden">
+              <div className="block xs:hidden" style={{ touchAction: 'none' }}>
                 <DndContext
                   sensors={sensors}
                   collisionDetection={closestCenter}
                   onDragEnd={handleColorDragEnd}
+                  onDragStart={(event) => {
+                    if (event.active.data.current?.type === 'pointer') {
+                      event.active.data.current.point = event.active.data.current.point;
+                    }
+                  }}
                 >
                   <TabsList
                     className={`flex ${colorVariants.length >= 3 ? 'justify-center sm:justify-start' : 'justify-start'} flex-wrap w-full gap-2 h-auto p-1 bg-luxury-gray/10`}
@@ -151,7 +152,6 @@ const ProductImagesSection: React.FC<ProductImagesSectionProps> = (props) => {
               </div>
             </>
           )}
-          {/* Add Color button always visible */}
           <button
             type="button"
             onClick={() => setShowAddColorDialog(true)}
@@ -180,11 +180,9 @@ const ProductImagesSection: React.FC<ProductImagesSectionProps> = (props) => {
             />
           </TabsContent>
         ))}
-        {/* show message when no colors exist */}
         {colorVariants.length === 0 && <NoColorsState />}
       </Tabs>
 
-      {/* color add dialog */}
       <AddColorDialog
         show={showAddColorDialog}
         onClose={() => {
@@ -196,7 +194,6 @@ const ProductImagesSection: React.FC<ProductImagesSectionProps> = (props) => {
         onAddColor={addColor}
       />
 
-      {/* image upload dialog */}
       <AddImageDialog
         show={showAddImageDialog}
         onClose={() => {

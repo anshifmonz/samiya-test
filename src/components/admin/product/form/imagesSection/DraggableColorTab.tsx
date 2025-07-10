@@ -34,24 +34,27 @@ const DraggableColorTab: React.FC<DraggableColorTabProps> = ({
     transition,
     opacity: isDragging ? 0.5 : 1,
     zIndex: isDragging ? 1000 : 1,
+    userSelect: 'none' as const,
+    WebkitUserSelect: 'none' as const,
+    MozUserSelect: 'none' as const,
+    msUserSelect: 'none' as const,
   };
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className={`relative ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}${className ? ` ${className}` : ''}`}
+      className={`relative ${isDragging ? 'cursor-grabbing' : 'cursor-grab'} touch-manipulation${className ? ` ${className}` : ''}`}
     >
       <TabsTrigger
         value={color}
-        className={`flex items-center gap-2 px-3 py-2 text-sm capitalize data-[state=active]:bg-luxury-gold data-[state=active]:text-luxury-black relative ${
+        className={`flex items-center gap-2 px-4 py-3 text-sm capitalize data-[state=active]:bg-luxury-gold data-[state=active]:text-luxury-black relative touch-manipulation min-h-[44px] ${
           isDragging ? 'shadow-lg' : ''
         }`}
         onClick={() => onValueChange(color)}
         {...attributes}
         {...listeners}
       >
-        {/* primary color indicator - only show for first tab (index 0) */}
         {index === 0 && (
           <div className="absolute -top-1 -right-1 bg-luxury-gold text-luxury-black rounded-full p-0.5">
             <Crown size={10} />
