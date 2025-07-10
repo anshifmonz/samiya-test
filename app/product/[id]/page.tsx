@@ -1,31 +1,19 @@
 import React, { Suspense } from 'react';
 import { notFound } from 'next/navigation';
-import { products } from '@/data/products';
 import SimilarProducts from 'components/product/SimilarProducts';
 import LoadingSpinner from 'components/shared/LoadingSpinner';
 import ProductClient from './ProductClient';
-import { getProductById } from '@/lib/api';
+import getProduct from 'lib/public/product';
+import { type Product } from 'types/product';
 
 interface Props {
-  params: {
-    id: string;
-  };
-}
-
-// Generate static params for all products (if using static generation)
-export async function generateStaticParams() {
-  return products.map((product) => ({
-    id: product.id,
-  }));
+  params: { id: string };
 }
 
 export default async function ProductDetailPage({ params }: Props) {
-  const { product, similarProducts } = await getProductById(params.id);
-
-  if (!product) {
-    notFound();
-  }
-
+  const { id } = params;
+  const product: Product | null = await getProduct(id);
+  if (!product) notFound();
   const firstColor = Object.keys(product.images)[0];
 
   return (
@@ -38,7 +26,7 @@ export default async function ProductDetailPage({ params }: Props) {
               initialColor={firstColor}
             />
           </div>
-          <SimilarProducts similarProducts={similarProducts} />
+          {/* <SimilarProducts similarProducts={similarProducts} /> */}
         </Suspense>
       </div>
     </div>
