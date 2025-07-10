@@ -1,9 +1,9 @@
 "use client";
 
-import { type Product } from '@/types/product';
-import { type Collection } from '@/types/collection';
-import { type Category } from '@/types/category';
-import { type SectionWithProducts } from '@/types/section';
+import { type Product } from 'types/product';
+import { type Collection } from 'types/collection';
+import { type Category } from 'types/category';
+import { type SectionWithProducts } from 'types/section';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from 'ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui/select';
 import AdminProductsTab from './product/AdminProductsTab';
@@ -27,7 +27,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
   initialSections
 }) => {
   const {
-    productList,
     collectionList,
     categoryList,
     sectionList,
@@ -124,7 +123,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
         <TabsContent value="products" className="mt-0">
           <AdminProductsTab
-            products={productList}
+            initialProducts={initialProducts}
             categories={categoryList}
             onAddProduct={handleAddProduct}
             onEditProduct={handleEditProduct}
@@ -153,7 +152,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
         <TabsContent value="sections" className="mt-0">
           <AdminSectionsTab
             sections={sectionList}
-            products={productList}
+            products={initialProducts}
             onAddSection={handleAddSection}
             onEditSection={handleEditSection}
             onDeleteSection={handleDeleteSection}

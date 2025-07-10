@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { type Product } from '@/types/product';
-import { type Collection } from '@/types/collection';
-import { type Category } from '@/types/category';
-import { type Section, type SectionWithProducts } from '@/types/section';
+import { type Product } from 'types/product';
+import { type Collection } from 'types/collection';
+import { type Category } from 'types/category';
+import { type Section, type SectionWithProducts } from 'types/section';
 
 interface UseAdminDashboardProps {
   initialProducts: Product[];
@@ -17,7 +17,6 @@ export const useAdminDashboard = ({
   initialCategories,
   initialSections
 }: UseAdminDashboardProps) => {
-  const [productList, setProductList] = useState<Product[]>(initialProducts);
   const [collectionList, setCollectionList] = useState<Collection[]>(initialCollections);
   const [categoryList, setCategoryList] = useState<Category[]>(initialCategories);
   const [sectionList, setSectionList] = useState<SectionWithProducts[]>(initialSections);
@@ -30,14 +29,15 @@ export const useAdminDashboard = ({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newProduct),
       });
-      if (response.ok) {
-        const { product } = await response.json();
-        setProductList([...productList, product]);
-      } else {
+      if (!response.ok) {
         console.error('Failed to add product');
+        throw new Error('Failed to add product');
       }
+      const { product } = await response.json();
+      return product;
     } catch (error) {
       console.error('Error adding product:', error);
+      throw error;
     }
   };
 
@@ -48,14 +48,15 @@ export const useAdminDashboard = ({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedProduct),
       });
-      if (response.ok) {
-        const { product } = await response.json();
-        setProductList(productList.map(p => p.id === updatedProduct.id ? product : p));
-      } else {
+      if (!response.ok) {
         console.error('Failed to update product');
+        throw new Error('Failed to update product');
       }
+      const { product } = await response.json();
+      return product;
     } catch (error) {
       console.error('Error updating product:', error);
+      throw error;
     }
   };
 
@@ -64,13 +65,13 @@ export const useAdminDashboard = ({
       const response = await fetch(`/api/admin/product?id=${encodeURIComponent(productId)}`, {
         method: 'DELETE',
       });
-      if (response.ok) {
-        setProductList(productList.filter(p => p.id !== productId));
-      } else {
+      if (!response.ok) {
         console.error('Failed to delete product');
+        throw new Error('Failed to delete product');
       }
     } catch (error) {
       console.error('Error deleting product:', error);
+      throw error;
     }
   };
 
@@ -281,7 +282,6 @@ export const useAdminDashboard = ({
   };
 
   return {
-    productList,
     collectionList,
     categoryList,
     sectionList,

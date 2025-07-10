@@ -1,10 +1,11 @@
 import { supabaseAdmin } from 'lib/supabase';
 import { type Product } from 'types/product';
 
-async function getProduct(limit: number, offset: number): Promise<Product[]> {
+async function getProduct(limit: number, offset: number, query: string): Promise<Product[]> {
   const { data, error } = await supabaseAdmin.rpc('get_products_rpc', {
     limit_count: limit,
-    offset_count: offset
+    offset_count: offset,
+    query_text: query
   });
 
   if (error) {
