@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server'
 import { GET as handleGET } from './get'
 import { POST as handlePOST } from './create'
 import { PUT as handlePUT } from './update'
+import { PATCH as handlePATCH } from './update'
 import { DELETE as handleDELETE } from './delete'
 
 export async function GET(request: NextRequest) {
@@ -14,6 +15,10 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   return handlePUT(request)
+}
+
+export async function PATCH(request: NextRequest) {
+  return handlePATCH(request)
 }
 
 export async function DELETE(request: NextRequest) {

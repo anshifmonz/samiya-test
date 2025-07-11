@@ -281,6 +281,23 @@ export const useAdminDashboard = ({
     }
   };
 
+  const handleReorderSections = async (sectionIds: string[]) => {
+    try {
+      const response = await fetch('/api/admin/section', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sectionIds }),
+      });
+      if (response.ok) {
+        await fetchSections();
+      } else {
+        console.error('Failed to reorder sections:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error reordering sections:', error);
+    }
+  };
+
   return {
     collectionList,
     categoryList,
@@ -299,5 +316,6 @@ export const useAdminDashboard = ({
     handleDeleteSection,
     handleAddProductToSection,
     handleRemoveProductFromSection,
+    handleReorderSections,
   };
 };

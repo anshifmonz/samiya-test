@@ -1,5 +1,5 @@
-import { supabaseAdmin } from '@/lib/supabase';
-import { type Section } from '@/types/section';
+import { supabaseAdmin } from 'lib/supabase';
+import { type Section } from 'types/section';
 
 export default async function updateSection(section: Section) {
   try {
@@ -20,7 +20,6 @@ export default async function updateSection(section: Section) {
       throw error;
     }
 
-    // Transform the response to match our TypeScript interface
     return {
       id: data.id,
       title: data.title,
@@ -31,6 +30,22 @@ export default async function updateSection(section: Section) {
     };
   } catch (error) {
     console.error('Error updating section:', error);
+    throw error;
+  }
+}
+
+export async function reorderSections(sectionIds: string[]): Promise<void> {
+  try {
+    const { error } = await supabaseAdmin.rpc('reorder_sections', {
+      section_ids: sectionIds
+    });
+
+    if (error) {
+      console.error('Error reordering sections:', error);
+      throw error;
+    }
+  } catch (error) {
+    console.error('Error reordering sections:', error);
     throw error;
   }
 }

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Plus, ChevronDown, ChevronRight, Edit2, Trash2 } from 'lucide-react';
-import { type Section, type SectionWithProducts, type SectionProductItem } from '@/types/section';
-import { type Product } from '@/types/product';
+import { Plus, ChevronDown, ChevronRight, Edit2, Trash2, GripVertical } from 'lucide-react';
+import { type Section, type SectionWithProducts, type SectionProductItem } from 'types/section';
+import { type Product } from 'types/product';
 import { Button } from 'components/ui/button';
 import { Input } from 'components/ui/input';
 import { Switch } from 'components/ui/switch';
@@ -9,6 +9,25 @@ import CarouselWrapper from 'components/home/shared/CarouselWrapper';
 import ProductSearchModal from './ProductSearchModal';
 import SectionProductCard from './SectionProductCard';
 import AdminTabHeaderButton from '../shared/AdminTabHeaderButton';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import {
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface AdminSectionsTabProps {
   sections: SectionWithProducts[];
@@ -18,7 +37,203 @@ interface AdminSectionsTabProps {
   onDeleteSection: (sectionId: string) => void;
   onAddProductToSection: (sectionId: string, productId: string) => void;
   onRemoveProductFromSection: (sectionId: string, productId: string) => void;
+  onReorderSections: (sectionIds: string[]) => void;
 }
+
+interface DraggableSectionItemProps {
+  section: SectionWithProducts;
+  isExpanded: boolean;
+  isEditing: boolean;
+  editingTitle: string;
+  onToggleSection: (sectionId: string) => void;
+  onStartEditing: (section: Section) => void;
+  onSaveEdit: () => void;
+  onCancelEdit: () => void;
+  onEditTitleChange: (title: string) => void;
+  onToggleActive: (section: Section) => void;
+  onDeleteSection: (sectionId: string) => void;
+  onAddProduct: (sectionId: string) => void;
+  onRemoveProduct: (sectionId: string, productId: string) => void;
+  getSectionProducts: (section: SectionWithProducts) => SectionProductItem[];
+}
+
+const DraggableSectionItem: React.FC<DraggableSectionItemProps> = ({
+  section,
+  isExpanded,
+  isEditing,
+  editingTitle,
+  onToggleSection,
+  onStartEditing,
+  onSaveEdit,
+  onCancelEdit,
+  onEditTitleChange,
+  onToggleActive,
+  onDeleteSection,
+  onAddProduct,
+  onRemoveProduct,
+  getSectionProducts
+}) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: section.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 1000 : 1,
+    userSelect: 'none' as const,
+    WebkitUserSelect: 'none' as const,
+    MozUserSelect: 'none' as const,
+    msUserSelect: 'none' as const,
+  };
+
+  const sectionProducts = getSectionProducts(section);
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`bg-white border border-luxury-gray/20 rounded-lg overflow-hidden shadow-sm ${
+        isDragging ? 'shadow-lg' : ''
+      }`}
+    >
+      <div className="p-2 sm:p-4 bg-luxury-cream/30">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center xs:gap-1 gap-3 flex-1">
+            <button
+              onClick={() => onToggleSection(section.id)}
+              className="text-luxury-gray hover:text-luxury-black transition-colors duration-200 flex-shrink-0"
+            >
+              {isExpanded ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
+            </button>
+
+            <button
+              {...attributes}
+              {...listeners}
+              className="text-luxury-gray hover:text-luxury-black transition-colors cursor-grab active:cursor-grabbing flex-shrink-0 touch-manipulation p-1 -m-1 min-w-[32px] min-h-[32px] flex items-center justify-center"
+              title="Drag to reorder"
+              type="button"
+            >
+              <GripVertical size={16} />
+            </button>
+
+            {isEditing ? (
+              <div className="flex items-center gap-2 flex-1">
+                <Input
+                  value={editingTitle}
+                  onChange={(e) => onEditTitleChange(e.target.value)}
+                  className="border-luxury-gray/30 focus:border-luxury-gold flex-1"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') onSaveEdit();
+                    if (e.key === 'Escape') onCancelEdit();
+                  }}
+                  autoFocus
+                />
+                <Button
+                  onClick={onSaveEdit}
+                  size="sm"
+                  className="bg-luxury-gold hover:bg-luxury-gold/90 text-luxury-black"
+                >
+                  Save
+                </Button>
+                <Button
+                  onClick={onCancelEdit}
+                  size="sm"
+                  variant="outline"
+                  className="border-luxury-gray/30"
+                >
+                  Cancel
+                </Button>
+              </div>
+            ) : (
+              <h4 className="luxury-heading xs:text-base text-lg text-luxury-black flex-1">
+                {section.title}
+              </h4>
+            )}
+          </div>
+
+          {/* Action Buttons */}
+          {!isEditing && (
+            <div className="flex items-center gap-4 flex-shrink-0">
+              <div className="flex items-center gap-2">
+                <Switch
+                  checked={section.isActive ?? true}
+                  onCheckedChange={() => onToggleActive(section)}
+                  className="data-[state=checked]:bg-luxury-gold"
+                />
+                <span className="luxury-body text-sm text-luxury-gray">
+                  {section.isActive ?? true ? 'Active' : 'Inactive'}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2 sm:gap-0">
+                <Button
+                  onClick={() => onStartEditing(section)}
+                  size="sm"
+                  variant="ghost"
+                  className="text-luxury-gray hover:text-luxury-black xs:w-4 w-6 sm:w-10"
+                >
+                  <Edit2 size={16} />
+                </Button>
+                <Button
+                  onClick={() => onDeleteSection(section.id)}
+                  size="sm"
+                  variant="ghost"
+                  className="text-red-500 hover:text-red-700 xs:w-4 w-6 sm:w-10"
+                >
+                  <Trash2 size={16} />
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Section Content */}
+      {isExpanded && (
+        <div className="p-0 pr-2 sm:p-4 space-y-4">
+          {/* Add Product Button */}
+          <div className="flex justify-between items-center pl-4">
+            <span className="luxury-body text-sm text-luxury-gray">
+              {sectionProducts.length} product{sectionProducts.length !== 1 ? 's' : ''}
+            </span>
+            <AdminTabHeaderButton
+              onClick={() => onAddProduct(section.id)}
+              label="Add Product"
+              className="px-3 py-1 text-xs"
+            >
+              <Plus size={14} />
+            </AdminTabHeaderButton>
+          </div>
+
+          {/* Products Carousel */}
+          {sectionProducts.length > 0 ? (
+            <CarouselWrapper className="w-full">
+              {sectionProducts.map((product) => (
+                <SectionProductCard
+                  key={product.id}
+                  product={product}
+                  onRemove={() => onRemoveProduct(section.id, product.id)}
+                />
+              ))}
+            </CarouselWrapper>
+          ) : (
+            <div className="text-center py-8 text-luxury-gray">
+              <p className="luxury-body text-sm">No products in this section yet.</p>
+              <p className="luxury-body text-xs mt-1">Click "Add Product" to get started.</p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const AdminSectionsTab: React.FC<AdminSectionsTabProps> = ({
   sections,
@@ -27,7 +242,8 @@ const AdminSectionsTab: React.FC<AdminSectionsTabProps> = ({
   onEditSection,
   onDeleteSection,
   onAddProductToSection,
-  onRemoveProductFromSection
+  onRemoveProductFromSection,
+  onReorderSections
 }) => {
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
   const [editingSection, setEditingSection] = useState<string | null>(null);
@@ -35,6 +251,18 @@ const AdminSectionsTab: React.FC<AdminSectionsTabProps> = ({
   const [showAddSection, setShowAddSection] = useState(false);
   const [newSectionTitle, setNewSectionTitle] = useState('');
   const [searchModalOpen, setSearchModalOpen] = useState<string | null>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 3,
+        tolerance: 5,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const toggleSection = (sectionId: string) => {
     const newExpanded = new Set(expandedSections);
@@ -103,6 +331,21 @@ const AdminSectionsTab: React.FC<AdminSectionsTabProps> = ({
     onRemoveProductFromSection(sectionId, productId);
   };
 
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (active.id !== over?.id) {
+      const oldIndex = sections.findIndex(section => section.id === active.id);
+      const newIndex = sections.findIndex(section => section.id === over?.id);
+
+      if (oldIndex !== -1 && newIndex !== -1) {
+        const newSections = arrayMove(sections, oldIndex, newIndex);
+        const sectionIds = newSections.map((section: SectionWithProducts) => section.id);
+        onReorderSections(sectionIds);
+      }
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Add Section Button */}
@@ -155,137 +398,43 @@ const AdminSectionsTab: React.FC<AdminSectionsTabProps> = ({
             <p className="luxury-body text-sm mt-2">Click "Add Section" to get started.</p>
           </div>
         ) : (
-          sections.map((section) => {
-            const isExpanded = expandedSections.has(section.id);
-            const sectionProducts = getSectionProducts(section);
-            const isEditing = editingSection === section.id;
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={sections.map(section => section.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="space-y-4">
+                {sections.map((section) => {
+                  const isExpanded = expandedSections.has(section.id);
+                  const isEditing = editingSection === section.id;
 
-            return (
-              <div
-                key={section.id}
-                className="bg-white border border-luxury-gray/20 rounded-lg overflow-hidden shadow-sm"
-              >
-                <div className="p-2 sm:p-4 bg-luxury-cream/30">
-                  <div className="flex items-center justify-between gap-4">
-                    <div className="flex items-center xs:gap-1 gap-3 flex-1">
-                      <button
-                        onClick={() => toggleSection(section.id)}
-                        className="text-luxury-gray hover:text-luxury-black transition-colors duration-200 flex-shrink-0"
-                      >
-                        {isExpanded ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
-                      </button>
-
-                      {isEditing ? (
-                        <div className="flex items-center gap-2 flex-1">
-                          <Input
-                            value={editingTitle}
-                            onChange={(e) => setEditingTitle(e.target.value)}
-                            className="border-luxury-gray/30 focus:border-luxury-gold flex-1"
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') saveEdit();
-                              if (e.key === 'Escape') cancelEdit();
-                            }}
-                            autoFocus
-                          />
-                          <Button
-                            onClick={saveEdit}
-                            size="sm"
-                            className="bg-luxury-gold hover:bg-luxury-gold/90 text-luxury-black"
-                          >
-                            Save
-                          </Button>
-                          <Button
-                            onClick={cancelEdit}
-                            size="sm"
-                            variant="outline"
-                            className="border-luxury-gray/30"
-                          >
-                            Cancel
-                          </Button>
-                        </div>
-                      ) : (
-                        <h4 className="luxury-heading xs:text-base text-lg text-luxury-black flex-1">
-                          {section.title}
-                        </h4>
-                      )}
-                    </div>
-
-                    {/* Action Buttons */}
-                    {!isEditing && (
-                      <div className="flex items-center gap-4 flex-shrink-0">
-                        <div className="flex items-center gap-2">
-                          <Switch
-                            checked={section.isActive ?? true}
-                            onCheckedChange={() => handleToggleActive(section)}
-                            className="data-[state=checked]:bg-luxury-gold"
-                          />
-                          <span className="luxury-body text-sm text-luxury-gray">
-                            {section.isActive ?? true ? 'Active' : 'Inactive'}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center gap-2 sm:gap-0">
-                          <Button
-                            onClick={() => startEditing(section)}
-                            size="sm"
-                            variant="ghost"
-                            className="text-luxury-gray hover:text-luxury-black xs:w-4 w-6 sm:w-10"
-                          >
-                            <Edit2 size={16} />
-                          </Button>
-                          <Button
-                            onClick={() => onDeleteSection(section.id)}
-                            size="sm"
-                            variant="ghost"
-                            className="text-red-500 hover:text-red-700 xs:w-4 w-6 sm:w-10"
-                          >
-                            <Trash2 size={16} />
-                          </Button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Section Content */}
-                {isExpanded && (
-                  <div className="p-0 pr-2 sm:p-4 space-y-4">
-                    {/* Add Product Button */}
-                    <div className="flex justify-between items-center pl-4">
-                      <span className="luxury-body text-sm text-luxury-gray">
-                        {sectionProducts.length} product{sectionProducts.length !== 1 ? 's' : ''}
-                      </span>
-                      <AdminTabHeaderButton
-                        onClick={() => setSearchModalOpen(section.id)}
-                        label="Add Product"
-                        className="px-3 py-1 text-xs"
-                      >
-                        <Plus size={14} />
-                      </AdminTabHeaderButton>
-                    </div>
-
-                    {/* Products Carousel */}
-                    {sectionProducts.length > 0 ? (
-                      <CarouselWrapper className="w-full">
-                        {sectionProducts.map((product) => (
-                          <SectionProductCard
-                            key={product.id}
-                            product={product}
-                            onRemove={() => handleRemoveProduct(section.id, product.id)}
-                          />
-                        ))}
-                      </CarouselWrapper>
-                    ) : (
-                      <div className="text-center py-8 text-luxury-gray">
-                        <p className="luxury-body text-sm">No products in this section yet.</p>
-                        <p className="luxury-body text-xs mt-1">Click "Add Product" to get started.</p>
-                      </div>
-                    )}
-                  </div>
-                )}
+                  return (
+                    <DraggableSectionItem
+                      key={section.id}
+                      section={section}
+                      isExpanded={isExpanded}
+                      isEditing={isEditing}
+                      editingTitle={editingTitle}
+                      onToggleSection={toggleSection}
+                      onStartEditing={startEditing}
+                      onSaveEdit={saveEdit}
+                      onCancelEdit={cancelEdit}
+                      onEditTitleChange={setEditingTitle}
+                      onToggleActive={handleToggleActive}
+                      onDeleteSection={onDeleteSection}
+                      onAddProduct={(sectionId) => setSearchModalOpen(sectionId)}
+                      onRemoveProduct={handleRemoveProduct}
+                      getSectionProducts={getSectionProducts}
+                    />
+                  );
+                })}
               </div>
-            );
-          })
+            </SortableContext>
+          </DndContext>
         )}
       </div>
 

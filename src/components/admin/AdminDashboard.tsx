@@ -43,7 +43,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
     handleEditSection,
     handleDeleteSection,
     handleAddProductToSection,
-    handleRemoveProductFromSection
+    handleRemoveProductFromSection,
+    handleReorderSections
   } = useAdminDashboard({
     initialProducts,
     initialCollections,
@@ -158,6 +159,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
             onDeleteSection={handleDeleteSection}
             onAddProductToSection={handleAddProductToSection}
             onRemoveProductFromSection={handleRemoveProductFromSection}
+            onReorderSections={handleReorderSections}
           />
         </TabsContent>
       </Tabs>
