@@ -10,6 +10,18 @@ interface ProductDetailsProps {
 }
 
 const ProductDetails: React.FC<ProductDetailsProps> = ({ product, selectedColor, handleColorChange, getColorStyle }) => {
+  const handleWhatsApp = () => {
+    const url = typeof window !== 'undefined' ? window.location.href : '';
+    const message =
+      `Hello, I'm interested in this product!%0A` +
+      `*Title:* ${product.title}%0A` +
+      `*Description:* ${product.description}%0A` +
+      `*Price:* ₹${product.price.toLocaleString()}%0A` +
+      (url ? `*Link:* ${url}` : '');
+    const whatsappUrl = `https://wa.me/+919562700999?text=${message}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
   return (
     <div className="space-y-6 w-full">
       <div>
@@ -37,12 +49,13 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product, selectedColor,
         />
       </div>
       <div className="pt-4">
-        <button className="w-full luxury-btn-primary py-3 px-6 rounded-xl luxury-body text-base font-medium transition-all duration-300">
+        <button
+          className="w-full luxury-btn-primary py-3 px-6 rounded-xl luxury-body text-base font-medium transition-all duration-300"
+          onClick={handleWhatsApp}
+          type="button"
+        >
           Contact for Purchase
         </button>
-        <p className="luxury-body text-sm text-luxury-gray mt-3 text-center">
-          Call us at +91 9876543210 or visit our store
-        </p>
       </div>
     </div>
   );
