@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { type Product } from '@/types/product';
@@ -10,6 +10,11 @@ interface ProductImageGalleryProps {
 
 const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({ product, selectedColor }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStartX, setDragStartX] = useState(0);
+  const [dragStartY, setDragStartY] = useState(0);
+  const [dragOffsetX, setDragOffsetX] = useState(0);
+  const mainImageRef = useRef<HTMLDivElement>(null);
   const currentImages = product.images[selectedColor] || [];
 
   // Reset to first image when color changes
@@ -33,11 +38,102 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({ product, sele
     setCurrentImageIndex(index);
   };
 
+  // Mouse drag handlers
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (currentImages.length <= 1) return;
+
+    setIsDragging(true);
+    setDragStartX(e.clientX);
+    setDragStartY(e.clientY);
+    setDragOffsetX(0);
+
+    if (mainImageRef.current) {
+      mainImageRef.current.style.cursor = 'grabbing';
+    }
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || currentImages.length <= 1) return;
+
+    const deltaX = e.clientX - dragStartX;
+    const deltaY = e.clientY - dragStartY;
+
+    // Only trigger horizontal scroll if horizontal movement is greater than vertical
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+      setDragOffsetX(deltaX);
+    }
+  };
+
+  const handleMouseUp = () => {
+    if (!isDragging || currentImages.length <= 1) return;
+
+    setIsDragging(false);
+
+    if (mainImageRef.current) {
+      mainImageRef.current.style.cursor = 'grab';
+    }
+
+    // Determine swipe direction based on drag distance
+    const threshold = 30; // reduced threshold for more responsive feel
+    if (Math.abs(dragOffsetX) > threshold) {
+      if (dragOffsetX > 0) {
+        goToPrevious();
+      } else {
+        goToNext();
+      }
+    }
+
+    setDragOffsetX(0);
+  };
+
+  // Touch handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (currentImages.length <= 1) return;
+
+    const touch = e.touches[0];
+    setIsDragging(true);
+    setDragStartX(touch.clientX);
+    setDragStartY(touch.clientY);
+    setDragOffsetX(0);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging || currentImages.length <= 1) return;
+
+    const touch = e.touches[0];
+    const deltaX = touch.clientX - dragStartX;
+    const deltaY = touch.clientY - dragStartY;
+
+    // Only trigger horizontal scroll if horizontal movement is greater than vertical
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+      setDragOffsetX(deltaX);
+      e.preventDefault(); // Prevent default touch behavior
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (!isDragging || currentImages.length <= 1) return;
+
+    setIsDragging(false);
+
+    // Determine swipe direction based on drag distance
+    const threshold = 30; // reduced threshold for more responsive feel
+    if (Math.abs(dragOffsetX) > threshold) {
+      if (dragOffsetX > 0) {
+        goToPrevious();
+      } else {
+        goToNext();
+      }
+    }
+
+    setDragOffsetX(0);
+  };
+
   if (!currentImages.length) {
     return (
       <div className="flex flex-col items-center">
-        <div className="aspect-square w-full overflow-hidden rounded-2xl bg-luxury-beige shadow-lg flex items-center justify-center">
-          <span className="text-luxury-gray">No image available</span>
+        <div className="aspect-[4/5] w-full overflow-hidden rounded-lg bg-muted flex items-center justify-center">
+          <span className="text-muted-foreground">No image available</span>
         </div>
       </div>
     );
@@ -46,7 +142,7 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({ product, sele
   return (
     <div className="flex flex-col lg:flex-row gap-4">
       {/* Thumbnail Gallery - Vertical on desktop, horizontal on mobile */}
-      <div className="order-2 lg:order-1 flex lg:flex-col gap-3 overflow-x-auto lg:overflow-y-auto max-h-96 lg:w-20">
+      <div className="order-2 lg:order-1 flex lg:flex-col gap-3 overflow-x-auto lg:overflow-y-auto lg:max-h-[500px] lg:w-20 scrollbar-hide">
         {currentImages.map((image, index) => (
           <button
             key={index}
@@ -70,14 +166,29 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({ product, sele
 
       {/* Main Image with Navigation */}
       <div className="order-1 lg:order-2 flex-1 relative">
-        <div className="aspect-square w-full overflow-hidden rounded-2xl bg-luxury-beige shadow-lg relative group">
+        <div
+          ref={mainImageRef}
+          className="aspect-[4/5] w-full overflow-hidden rounded-lg bg-muted relative group cursor-grab active:cursor-grabbing select-none"
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          style={{
+            transform: isDragging ? `translateX(${dragOffsetX * 0.15}px)` : 'translateX(0)',
+            transition: isDragging ? 'none' : 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
+          }}
+        >
           <Image
             src={currentImages[currentImageIndex]}
             alt={`${product.title} ${selectedColor}`}
-            className="w-full h-full object-cover transition-all duration-500"
+            className="w-full h-full object-cover transition-all duration-300"
             width={600}
-            height={600}
+            height={750}
             priority={currentImageIndex === 0}
+            draggable={false}
           />
 
           {/* Navigation Arrows - Only show if multiple images */}
@@ -85,7 +196,7 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({ product, sele
             <>
               <button
                 onClick={goToPrevious}
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 hover:bg-white rounded-full shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 hover:bg-white rounded-full shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10"
                 aria-label="Previous image"
               >
                 <ChevronLeft className="w-5 h-5 text-luxury-black" />
@@ -93,7 +204,7 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({ product, sele
 
               <button
                 onClick={goToNext}
-                className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 hover:bg-white rounded-full shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 hover:bg-white rounded-full shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10"
                 aria-label="Next image"
               >
                 <ChevronRight className="w-5 h-5 text-luxury-black" />
@@ -103,7 +214,7 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({ product, sele
 
           {/* Image Counter */}
           {currentImages.length > 1 && (
-            <div className="absolute bottom-4 right-4 bg-black/60 text-white px-3 py-1 rounded-full text-sm">
+            <div className="absolute bottom-4 right-4 bg-black/60 text-white px-3 py-1 rounded-full text-sm z-10">
               {currentImageIndex + 1} / {currentImages.length}
             </div>
           )}

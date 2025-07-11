@@ -17,15 +17,13 @@ export default async function ProductDetailPage({ params }: Props) {
   const firstColor = Object.keys(product.images)[0];
 
   return (
-    <div className="min-h-screen bg-luxury-cream">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-32">
+    <div className="min-h-screen bg-luxury-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24">
         <Suspense fallback={<LoadingSpinner text="Loading product details..." />}>
-          <div className="luxury-card rounded-3xl overflow-hidden border border-luxury-gray/10 p-8 lg:p-12">
-            <ProductClient
-              product={product}
-              initialColor={firstColor}
-            />
-          </div>
+          <ProductClient
+            product={product}
+            initialColor={firstColor}
+          />
           {/* <SimilarProducts similarProducts={similarProducts} /> */}
         </Suspense>
       </div>

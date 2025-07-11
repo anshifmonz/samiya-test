@@ -17,13 +17,14 @@ const ProductColorSwatches: React.FC<ProductColorSwatchesProps> = ({ product, se
             <button
               key={color}
               onClick={() => handleColorChange(color)}
-              className={`w-8 h-8 rounded-full border-2 transition-all duration-300 hover:scale-110 ${
-                selectedColor === color
-                  ? 'border-luxury-gold ring-2 ring-luxury-gold/30 shadow-md scale-110'
-                  : 'border-luxury-gray/30 hover:border-luxury-gold/50 shadow-sm hover:shadow-md'
-              }`}
+              className={`w-8 h-8 rounded-full border-2
+                ${selectedColor === color
+                  ? 'border-white ring-2 ring-black'
+                  : 'border-white hover:ring-black hover:ring-1 hover:ring-black'}
+              `}
               style={{ backgroundColor: getColorStyle(color) }}
               title={color.charAt(0).toUpperCase() + color.slice(1)}
+              type="button"
             />
           ))}
         </div>

@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { type Product } from '@/types/product';
 import ProductImageGallery from 'components/product/ProductImageGallery';
 import ProductDetails from 'components/product/ProductDetails';
-import ProductColorSwatches from 'components/product/ProductColorSwatches';
 
 interface Props {
   product: Product;
@@ -50,16 +49,10 @@ export default function ProductClient({ product, initialColor }: Props) {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:gap-12 items-center">
       <ProductImageGallery product={product} selectedColor={selectedColor} />
-      <div>
-        <ProductDetails product={product} />
-        <ProductColorSwatches
-          product={product}
-          selectedColor={selectedColor}
-          handleColorChange={handleColorChange}
-          getColorStyle={getColorStyle}
-        />
+      <div className="space-y-6 w-full">
+        <ProductDetails product={product} selectedColor={selectedColor} handleColorChange={handleColorChange} getColorStyle={getColorStyle} />
       </div>
     </div>
   );
