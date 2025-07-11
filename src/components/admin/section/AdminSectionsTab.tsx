@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React from 'react';
 import { Plus, ChevronDown, ChevronRight, Edit2, Trash2, GripVertical } from 'lucide-react';
 import { type Section, type SectionWithProducts, type SectionProductItem } from 'types/section';
 import { type Product } from 'types/product';
@@ -17,10 +17,8 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  DragEndEvent,
 } from '@dnd-kit/core';
 import {
-  arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
@@ -30,6 +28,7 @@ import {
   useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { useAdminSectionsTab } from 'hooks/useAdminSectionsTab';
 
 interface AdminSectionsTabProps {
   sections: SectionWithProducts[];
@@ -41,25 +40,6 @@ interface AdminSectionsTabProps {
   onRemoveProductFromSection: (sectionId: string, productId: string) => void;
   onReorderSections: (sectionIds: string[]) => void;
   onReorderSectionProducts: (sectionId: string, productIds: string[]) => void;
-}
-
-interface DraggableSectionItemProps {
-  section: SectionWithProducts;
-  isExpanded: boolean;
-  isEditing: boolean;
-  editingTitle: string;
-  onToggleSection: (sectionId: string) => void;
-  onStartEditing: (section: Section) => void;
-  onSaveEdit: () => void;
-  onCancelEdit: () => void;
-  onEditTitleChange: (title: string) => void;
-  onToggleActive: (section: Section) => void;
-  onDeleteSection: (sectionId: string) => void;
-  onAddProduct: (sectionId: string) => void;
-  onRemoveProduct: (sectionId: string, productId: string) => void;
-  onReorderProducts: (sectionId: string, productIds: string[]) => void;
-  setLocalProductOrders: React.Dispatch<React.SetStateAction<Record<string, SectionProductItem[]>>>;
-  getSectionProducts: (section: SectionWithProducts) => SectionProductItem[];
 }
 
 interface DraggableProductItemProps {
@@ -116,6 +96,26 @@ const DraggableProductItem: React.FC<DraggableProductItemProps> = ({
   );
 };
 
+interface DraggableSectionItemProps {
+  section: SectionWithProducts;
+  isExpanded: boolean;
+  isEditing: boolean;
+  editingTitle: string;
+  onToggleSection: (sectionId: string) => void;
+  onStartEditing: (section: Section) => void;
+  onSaveEdit: () => void;
+  onCancelEdit: () => void;
+  onEditTitleChange: (title: string) => void;
+  onToggleActive: (section: Section) => void;
+  onDeleteSection: (sectionId: string) => void;
+  onAddProduct: (sectionId: string) => void;
+  onRemoveProduct: (sectionId: string, productId: string) => void;
+  onReorderProducts: (sectionId: string, productIds: string[]) => void;
+  setLocalProductOrders: React.Dispatch<React.SetStateAction<Record<string, SectionProductItem[]>>>;
+  getSectionProducts: (section: SectionWithProducts) => SectionProductItem[];
+  handleProductDragEnd: (event: any, section: SectionWithProducts) => void;
+}
+
 const DraggableSectionItem: React.FC<DraggableSectionItemProps> = ({
   section,
   isExpanded,
@@ -132,7 +132,8 @@ const DraggableSectionItem: React.FC<DraggableSectionItemProps> = ({
   onRemoveProduct,
   onReorderProducts,
   setLocalProductOrders,
-  getSectionProducts
+  getSectionProducts,
+  handleProductDragEnd
 }) => {
   const {
     attributes,
@@ -167,27 +168,6 @@ const DraggableSectionItem: React.FC<DraggableSectionItemProps> = ({
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
-
-  const handleProductDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (active.id !== over?.id) {
-      const oldIndex = sectionProducts.findIndex(product => product.id === active.id);
-      const newIndex = sectionProducts.findIndex(product => product.id === over?.id);
-
-      if (oldIndex !== -1 && newIndex !== -1) {
-        const newProducts = arrayMove(sectionProducts, oldIndex, newIndex);
-        const productIds = newProducts.map((product: SectionProductItem) => product.id);
-
-        setLocalProductOrders(prev => ({
-          ...prev,
-          [section.id]: newProducts
-        }));
-
-        onReorderProducts(section.id, productIds);
-      }
-    }
-  };
 
   return (
     <div
@@ -292,6 +272,7 @@ const DraggableSectionItem: React.FC<DraggableSectionItemProps> = ({
       {/* Section Content */}
       {isExpanded && (
         <div className="p-0 pr-2 sm:p-4 space-y-4">
+          {/* Add Product Button */}
           <div className="flex justify-between items-center pl-4">
             <span className="luxury-body text-sm text-luxury-gray">
               {sectionProducts.length} product{sectionProducts.length !== 1 ? 's' : ''}
@@ -305,11 +286,12 @@ const DraggableSectionItem: React.FC<DraggableSectionItemProps> = ({
             </AdminTabHeaderButton>
           </div>
 
+          {/* Products Carousel */}
           {sectionProducts.length > 0 ? (
             <DndContext
               sensors={productSensors}
               collisionDetection={closestCenter}
-              onDragEnd={handleProductDragEnd}
+              onDragEnd={(event) => handleProductDragEnd(event, section)}
             >
               <SortableContext
                 items={sectionProducts.map(product => product.id)}
@@ -340,6 +322,7 @@ const DraggableSectionItem: React.FC<DraggableSectionItemProps> = ({
 
 const AdminSectionsTab: React.FC<AdminSectionsTabProps> = ({
   sections,
+  products,
   onAddSection,
   onEditSection,
   onDeleteSection,
@@ -348,17 +331,44 @@ const AdminSectionsTab: React.FC<AdminSectionsTabProps> = ({
   onReorderSections,
   onReorderSectionProducts
 }) => {
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
-  const [editingSection, setEditingSection] = useState<string | null>(null);
-  const [editingTitle, setEditingTitle] = useState('');
-  const [showAddSection, setShowAddSection] = useState(false);
-  const [newSectionTitle, setNewSectionTitle] = useState('');
-  const [searchModalOpen, setSearchModalOpen] = useState<string | null>(null);
-  const [localProductOrders, setLocalProductOrders] = useState<Record<string, SectionProductItem[]>>({});
-
-  useEffect(() => {
-    setLocalProductOrders({});
-  }, [sections]);
+  // Use the custom hook for all logic
+  const {
+    editingTitle,
+    showAddSection,
+    newSectionTitle,
+    searchModalOpen,
+    setLocalProductOrders,
+    toggleSection,
+    startEditing,
+    saveEdit,
+    cancelEdit,
+    handleAddSection,
+    handleToggleActive,
+    getSectionProducts,
+    handleProductSelect,
+    getExistingProductIds,
+    handleRemoveProduct,
+    handleSectionDragEnd,
+    handleProductDragEnd,
+    openAddSection,
+    closeAddSection,
+    openSearchModal,
+    closeSearchModal,
+    isSectionExpanded,
+    isSectionEditing,
+    setEditingTitle,
+    setNewSectionTitle,
+  } = useAdminSectionsTab({
+    sections,
+    products,
+    onAddSection,
+    onEditSection,
+    onDeleteSection,
+    onAddProductToSection,
+    onRemoveProductFromSection,
+    onReorderSections,
+    onReorderSectionProducts
+  });
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -372,97 +382,13 @@ const AdminSectionsTab: React.FC<AdminSectionsTabProps> = ({
     })
   );
 
-  const toggleSection = (sectionId: string) => {
-    const newExpanded = new Set(expandedSections);
-    if (newExpanded.has(sectionId)) {
-      newExpanded.delete(sectionId);
-    } else {
-      newExpanded.add(sectionId);
-    }
-    setExpandedSections(newExpanded);
-  };
-
-  const startEditing = (section: Section) => {
-    setEditingSection(section.id);
-    setEditingTitle(section.title);
-  };
-
-  const saveEdit = () => {
-    if (editingSection && editingTitle.trim()) {
-      const section = sections.find(s => s.id === editingSection);
-      if (section) {
-        onEditSection({ ...section, title: editingTitle.trim() });
-      }
-    }
-    setEditingSection(null);
-    setEditingTitle('');
-  };
-
-  const cancelEdit = () => {
-    setEditingSection(null);
-    setEditingTitle('');
-  };
-
-  const handleAddSection = () => {
-    if (newSectionTitle.trim()) {
-      onAddSection({
-        title: newSectionTitle.trim(),
-        isActive: true,
-        sortOrder: 0
-      });
-      setNewSectionTitle('');
-      setShowAddSection(false);
-    }
-  };
-
-  const handleToggleActive = (section: Section) => {
-    onEditSection({ ...section, isActive: !section.isActive });
-  };
-
-  const getSectionProducts = (section: SectionWithProducts): SectionProductItem[] => {
-    if (localProductOrders[section.id]) {
-      return localProductOrders[section.id];
-    }
-    return section.products || [];
-  };
-
-  const handleProductSelect = (productId: string) => {
-    if (searchModalOpen) {
-      onAddProductToSection(searchModalOpen, productId);
-      setSearchModalOpen(null);
-    }
-  };
-
-  const getExistingProductIds = (sectionId: string): string[] => {
-    const section = sections.find(s => s.id === sectionId);
-    return section ? section.products.map(p => p.id) : [];
-  };
-
-  const handleRemoveProduct = (sectionId: string, productId: string) => {
-    onRemoveProductFromSection(sectionId, productId);
-  };
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (active.id !== over?.id) {
-      const oldIndex = sections.findIndex(section => section.id === active.id);
-      const newIndex = sections.findIndex(section => section.id === over?.id);
-
-      if (oldIndex !== -1 && newIndex !== -1) {
-        const newSections = arrayMove(sections, oldIndex, newIndex);
-        const sectionIds = newSections.map((section: SectionWithProducts) => section.id);
-        onReorderSections(sectionIds);
-      }
-    }
-  };
-
   return (
     <div className="space-y-6">
+      {/* Add Section Button */}
       <div className="flex justify-between items-center">
         <h3 className="luxury-heading text-xl text-luxury-black">Manage Sections</h3>
         <AdminTabHeaderButton
-          onClick={() => setShowAddSection(true)}
+          onClick={openAddSection}
           label="Add Section"
         >
           <Plus size={16} />
@@ -478,7 +404,7 @@ const AdminSectionsTab: React.FC<AdminSectionsTabProps> = ({
             className="border-luxury-gray/30 focus:border-luxury-gold"
             onKeyDown={(e) => {
               if (e.key === 'Enter') handleAddSection();
-              if (e.key === 'Escape') setShowAddSection(false);
+              if (e.key === 'Escape') closeAddSection();
             }}
           />
           <div className="flex gap-2">
@@ -490,7 +416,7 @@ const AdminSectionsTab: React.FC<AdminSectionsTabProps> = ({
               Add Section
             </Button>
             <Button
-              onClick={() => setShowAddSection(false)}
+              onClick={closeAddSection}
               variant="outline"
               className="border-luxury-gray/30 text-luxury-gray hover:text-luxury-black"
             >
@@ -511,7 +437,7 @@ const AdminSectionsTab: React.FC<AdminSectionsTabProps> = ({
           <DndContext
             sensors={sensors}
             collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
+            onDragEnd={handleSectionDragEnd}
           >
             <SortableContext
               items={sections.map(section => section.id)}
@@ -519,8 +445,8 @@ const AdminSectionsTab: React.FC<AdminSectionsTabProps> = ({
             >
               <div className="space-y-4">
                 {sections.map((section) => {
-                  const isExpanded = expandedSections.has(section.id);
-                  const isEditing = editingSection === section.id;
+                  const isExpanded = isSectionExpanded(section.id);
+                  const isEditing = isSectionEditing(section.id);
 
                   return (
                     <DraggableSectionItem
@@ -536,11 +462,12 @@ const AdminSectionsTab: React.FC<AdminSectionsTabProps> = ({
                       onEditTitleChange={setEditingTitle}
                       onToggleActive={handleToggleActive}
                       onDeleteSection={onDeleteSection}
-                      onAddProduct={(sectionId) => setSearchModalOpen(sectionId)}
+                      onAddProduct={(sectionId) => openSearchModal(sectionId)}
                       onRemoveProduct={handleRemoveProduct}
                       onReorderProducts={onReorderSectionProducts}
                       setLocalProductOrders={setLocalProductOrders}
                       getSectionProducts={getSectionProducts}
+                      handleProductDragEnd={handleProductDragEnd}
                     />
                   );
                 })}
@@ -554,7 +481,7 @@ const AdminSectionsTab: React.FC<AdminSectionsTabProps> = ({
       {searchModalOpen && (
         <ProductSearchModal
           isOpen={!!searchModalOpen}
-          onClose={() => setSearchModalOpen(null)}
+          onClose={closeSearchModal}
           onProductSelect={handleProductSelect}
           existingProductIds={getExistingProductIds(searchModalOpen)}
         />
