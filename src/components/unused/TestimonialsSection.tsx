@@ -24,7 +24,7 @@ const TestimonialsSection: React.FC = () => {
     },
     {
       name: "Meera Patel",
-      text: "Beautiful sarees and excellent customer service. Samiya Wedding Center never disappoints. Highly recommended!",
+      text: "Beautiful sarees and excellent customer service. Samiya Online never disappoints. Highly recommended!",
       rating: 5,
       role: "Mother of the Bride",
       video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",

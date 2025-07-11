@@ -10,7 +10,7 @@ const LandingSection: React.FC = () => {
       <div id="hero-banner" className="relative mx-auto w-[clamp(166px,calc(100vw-34px),1366px)] h-[clamp(67px,calc((100vw-34px)*0.4),534px)]">
         <Image
           src="/assets/images/home/landing-hero.png"
-          alt="Samiya Wedding Center"
+          alt="Samiya Online"
           fill
           className="object-cover rounded-lg"
           priority

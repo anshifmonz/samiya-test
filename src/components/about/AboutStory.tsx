@@ -12,7 +12,7 @@ const AboutStory: React.FC = () => {
             </h2>
             <div className="space-y-6">
               <p className="luxury-body text-xl text-luxury-gray leading-relaxed">
-                Founded in 2000, Samiya Wedding Center began as a small boutique with a simple vision: to make every special occasion truly extraordinary. What started as a passion project has grown into one of the region's most trusted names in luxury wedding attire.
+                Founded in 2000, Samiya Online began as a small boutique with a simple vision: to make every special occasion truly extraordinary. What started as a passion project has grown into one of the region's most trusted names in luxury wedding attire.
               </p>
               <p className="luxury-body text-xl text-luxury-gray leading-relaxed">
                 Our founder, inspired by the rich traditions of South Asian craftsmanship and the evolving needs of modern couples, created a space where heritage meets contemporary elegance. Every piece in our collection tells a story of meticulous attention to detail and unwavering commitment to quality.
@@ -26,7 +26,7 @@ const AboutStory: React.FC = () => {
             <div className="aspect-square rounded-2xl overflow-hidden shadow-2xl">
               <Image
                 src="assets/images/about/about-story.webp"
-                alt="Samiya Wedding Center Heritage"
+                alt="Samiya Online Heritage"
                 className="w-full h-full object-cover"
                 width={600}
                 height={600}

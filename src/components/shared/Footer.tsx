@@ -15,7 +15,7 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 gap-8 sm:flex sm:justify-between sm:flex-wrap sm:items-start">
           <div className="text-center sm:text-left sm:flex-1 sm:min-w-[200px] sm:max-w-[300px]">
-            <h3 className="luxury-heading text-xl sm:text-2xl lg:text-3xl font-light mb-4 tracking-wide text-red-500">Samiya Wedding Center</h3>
+            <h3 className="luxury-heading text-xl sm:text-2xl lg:text-3xl font-light mb-4 tracking-wide text-red-500">Samiya Online</h3>
             <p className="text-white/80 text-sm sm:text-base leading-relaxed">
               Discover the latest trends and timeless pieces that define your unique style.
               Quality fashion for the modern lifestyle.

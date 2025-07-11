@@ -30,7 +30,7 @@ const stores: Store[] = [
   },
   {
     id: '4',
-    name: 'Samiya Wedding Center',
+    name: 'Samiya Online',
     address: 'Pattambi - Cherpulassery Rd, Cherpulassery, Kerala',
     phone: '+91 98765 43213',
     hours: '10:30 AM - 7:30 PM',

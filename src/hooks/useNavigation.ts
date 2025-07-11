@@ -85,9 +85,9 @@ export const useNavigation = () => {
   const getTextStyling = () => {
     const default_link_style = "luxury-body font-light transition-colors duration-300 tracking-wide relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-red-500 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left";
     return {
-      logo: 'text-red-500 font-[450]',
+      logo: 'text-red-500 font-[600]',
       logoSubtext: 'text-red-500 font-[500]',
-      navLinks: `${default_link_style} text-black hover:text-red-500 font-[350] text-sm`
+      navLinks: `${default_link_style} text-black hover:text-red-500 font-[400] text-sm`
     };
   };
 
