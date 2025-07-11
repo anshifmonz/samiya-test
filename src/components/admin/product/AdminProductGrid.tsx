@@ -1,6 +1,6 @@
 import React from 'react';
 import { type Product } from 'types/product';
-import AdminProductCard from './AdminProductCard';
+import ProductCard from '../../shared/ProductCard';
 
 interface AdminProductGridProps {
   products: Product[];
@@ -40,11 +40,13 @@ const AdminProductGrid: React.FC<AdminProductGridProps> = ({
     <div className="space-y-6">
       <div className="grid xs:grid-cols-1 grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4">
         {products.map((product) => (
-          <AdminProductCard
+          <ProductCard
             key={product.id}
             product={product}
+            isAdmin={true}
             onEdit={onEdit}
             onDelete={onDelete}
+            showTags={true}
           />
         ))}
       </div>
