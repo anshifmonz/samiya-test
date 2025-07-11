@@ -1,9 +1,9 @@
-import { type Special } from '@/types/special';
+import { type SectionWithProducts } from 'types/section';
 import LandingSection from './LandingSection';
 import CategoryTabs from './CategoryTabs';
 import SelectionSections from './SpecialSections';
 
-const Home = ({ specials }: { specials: Special[] }) => {
+const Home = ({ specials }: { specials: SectionWithProducts[] }) => {
   return (
     <div className="flex flex-col gap-[70px] min-h-screen bg-luxury-white">
       <CategoryTabs />

@@ -1,11 +1,11 @@
-import { type Special } from '@/types/special';
+import { type SectionWithProducts } from 'types/section';
 import CarouselWrapper from './shared/CarouselWrapper';
 import ProductCard from './shared/ProductCard';
 import SectionHeading from './shared/SectionHeading';
 import BudgetSection from './BudgetSelection';
 
 interface SpecialSectionsProps {
-  specials: Special[];
+  specials: SectionWithProducts[];
 }
 
 const SpecialSections = ({ specials }: SpecialSectionsProps) => {
@@ -19,7 +19,7 @@ const SpecialSections = ({ specials }: SpecialSectionsProps) => {
             </section>
           )}
           <section key={special.id} className={`relative overflow-hidden ${index === 0 ? '-mt-8' : ''}`}>
-            <SectionHeading title={special.name.toUpperCase()} />
+            <SectionHeading title={special.title.toUpperCase()} />
             <CarouselWrapper>
               {special.products.map(p => (
                 <ProductCard key={p.id} product={p} />
