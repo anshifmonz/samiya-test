@@ -6,6 +6,8 @@ import ProductClient from './ProductClient';
 import getProduct from 'lib/public/product';
 import { type Product } from 'types/product';
 
+export const revalidate = 600;
+
 interface Props {
   params: { id: string };
 }

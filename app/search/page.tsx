@@ -6,6 +6,8 @@ import Search from 'components/search';
 import { type Product, type ProductFilters } from 'types/product';
 import { type Category } from 'types/category';
 
+export const revalidate = 180;
+
 interface Props {
   searchParams: {
     q?: string;
