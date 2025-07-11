@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, ChevronDown, ChevronRight, Edit2, Trash2, GripVertical } from 'lucide-react';
 import { type Section, type SectionWithProducts, type SectionProductItem } from 'types/section';
 import { type Product } from 'types/product';
@@ -6,6 +6,7 @@ import { Button } from 'components/ui/button';
 import { Input } from 'components/ui/input';
 import { Switch } from 'components/ui/switch';
 import CarouselWrapper from 'components/home/shared/CarouselWrapper';
+import { CarouselItem } from 'components/ui/carousel';
 import ProductSearchModal from './ProductSearchModal';
 import SectionProductCard from './SectionProductCard';
 import AdminTabHeaderButton from '../shared/AdminTabHeaderButton';
@@ -23,6 +24,7 @@ import {
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
+  horizontalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import {
   useSortable,
@@ -38,6 +40,7 @@ interface AdminSectionsTabProps {
   onAddProductToSection: (sectionId: string, productId: string) => void;
   onRemoveProductFromSection: (sectionId: string, productId: string) => void;
   onReorderSections: (sectionIds: string[]) => void;
+  onReorderSectionProducts: (sectionId: string, productIds: string[]) => void;
 }
 
 interface DraggableSectionItemProps {
@@ -54,8 +57,64 @@ interface DraggableSectionItemProps {
   onDeleteSection: (sectionId: string) => void;
   onAddProduct: (sectionId: string) => void;
   onRemoveProduct: (sectionId: string, productId: string) => void;
+  onReorderProducts: (sectionId: string, productIds: string[]) => void;
+  setLocalProductOrders: React.Dispatch<React.SetStateAction<Record<string, SectionProductItem[]>>>;
   getSectionProducts: (section: SectionWithProducts) => SectionProductItem[];
 }
+
+interface DraggableProductItemProps {
+  product: SectionProductItem;
+  onRemove: () => void;
+}
+
+const DraggableProductItem: React.FC<DraggableProductItemProps> = ({
+  product,
+  onRemove
+}) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: product.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 1000 : 1,
+    userSelect: 'none' as const,
+    WebkitUserSelect: 'none' as const,
+    MozUserSelect: 'none' as const,
+    msUserSelect: 'none' as const,
+  };
+
+  return (
+    <CarouselItem className="flex-none pl-2">
+      <div
+        ref={setNodeRef}
+        style={style}
+        className={`relative ${isDragging ? 'shadow-lg' : ''}`}
+      >
+        <button
+          {...attributes}
+          {...listeners}
+          className="absolute top-2 left-2 z-50 bg-white/95 hover:bg-luxury-gray/10 text-luxury-gray hover:text-luxury-black transition-all duration-200 rounded-full w-8 h-8 p-0 shadow-lg border border-luxury-gray/200 hover:shadow-xl flex items-center justify-center"
+          title="Drag to reorder"
+          type="button"
+        >
+          <GripVertical size={14} />
+        </button>
+        <SectionProductCard
+          product={product}
+          onRemove={onRemove}
+        />
+      </div>
+    </CarouselItem>
+  );
+};
 
 const DraggableSectionItem: React.FC<DraggableSectionItemProps> = ({
   section,
@@ -71,6 +130,8 @@ const DraggableSectionItem: React.FC<DraggableSectionItemProps> = ({
   onDeleteSection,
   onAddProduct,
   onRemoveProduct,
+  onReorderProducts,
+  setLocalProductOrders,
   getSectionProducts
 }) => {
   const {
@@ -94,6 +155,39 @@ const DraggableSectionItem: React.FC<DraggableSectionItemProps> = ({
   };
 
   const sectionProducts = getSectionProducts(section);
+
+  const productSensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 3,
+        tolerance: 5,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleProductDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (active.id !== over?.id) {
+      const oldIndex = sectionProducts.findIndex(product => product.id === active.id);
+      const newIndex = sectionProducts.findIndex(product => product.id === over?.id);
+
+      if (oldIndex !== -1 && newIndex !== -1) {
+        const newProducts = arrayMove(sectionProducts, oldIndex, newIndex);
+        const productIds = newProducts.map((product: SectionProductItem) => product.id);
+
+        setLocalProductOrders(prev => ({
+          ...prev,
+          [section.id]: newProducts
+        }));
+
+        onReorderProducts(section.id, productIds);
+      }
+    }
+  };
 
   return (
     <div
@@ -198,7 +292,6 @@ const DraggableSectionItem: React.FC<DraggableSectionItemProps> = ({
       {/* Section Content */}
       {isExpanded && (
         <div className="p-0 pr-2 sm:p-4 space-y-4">
-          {/* Add Product Button */}
           <div className="flex justify-between items-center pl-4">
             <span className="luxury-body text-sm text-luxury-gray">
               {sectionProducts.length} product{sectionProducts.length !== 1 ? 's' : ''}
@@ -212,17 +305,27 @@ const DraggableSectionItem: React.FC<DraggableSectionItemProps> = ({
             </AdminTabHeaderButton>
           </div>
 
-          {/* Products Carousel */}
           {sectionProducts.length > 0 ? (
-            <CarouselWrapper className="w-full">
-              {sectionProducts.map((product) => (
-                <SectionProductCard
-                  key={product.id}
-                  product={product}
-                  onRemove={() => onRemoveProduct(section.id, product.id)}
-                />
-              ))}
-            </CarouselWrapper>
+            <DndContext
+              sensors={productSensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleProductDragEnd}
+            >
+              <SortableContext
+                items={sectionProducts.map(product => product.id)}
+                strategy={horizontalListSortingStrategy}
+              >
+                <CarouselWrapper className="w-full">
+                  {sectionProducts.map((product) => (
+                    <DraggableProductItem
+                      key={product.id}
+                      product={product}
+                      onRemove={() => onRemoveProduct(section.id, product.id)}
+                    />
+                  ))}
+                </CarouselWrapper>
+              </SortableContext>
+            </DndContext>
           ) : (
             <div className="text-center py-8 text-luxury-gray">
               <p className="luxury-body text-sm">No products in this section yet.</p>
@@ -237,13 +340,13 @@ const DraggableSectionItem: React.FC<DraggableSectionItemProps> = ({
 
 const AdminSectionsTab: React.FC<AdminSectionsTabProps> = ({
   sections,
-  products,
   onAddSection,
   onEditSection,
   onDeleteSection,
   onAddProductToSection,
   onRemoveProductFromSection,
-  onReorderSections
+  onReorderSections,
+  onReorderSectionProducts
 }) => {
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
   const [editingSection, setEditingSection] = useState<string | null>(null);
@@ -251,6 +354,11 @@ const AdminSectionsTab: React.FC<AdminSectionsTabProps> = ({
   const [showAddSection, setShowAddSection] = useState(false);
   const [newSectionTitle, setNewSectionTitle] = useState('');
   const [searchModalOpen, setSearchModalOpen] = useState<string | null>(null);
+  const [localProductOrders, setLocalProductOrders] = useState<Record<string, SectionProductItem[]>>({});
+
+  useEffect(() => {
+    setLocalProductOrders({});
+  }, [sections]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -312,6 +420,9 @@ const AdminSectionsTab: React.FC<AdminSectionsTabProps> = ({
   };
 
   const getSectionProducts = (section: SectionWithProducts): SectionProductItem[] => {
+    if (localProductOrders[section.id]) {
+      return localProductOrders[section.id];
+    }
     return section.products || [];
   };
 
@@ -348,7 +459,6 @@ const AdminSectionsTab: React.FC<AdminSectionsTabProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Add Section Button */}
       <div className="flex justify-between items-center">
         <h3 className="luxury-heading text-xl text-luxury-black">Manage Sections</h3>
         <AdminTabHeaderButton
@@ -428,6 +538,8 @@ const AdminSectionsTab: React.FC<AdminSectionsTabProps> = ({
                       onDeleteSection={onDeleteSection}
                       onAddProduct={(sectionId) => setSearchModalOpen(sectionId)}
                       onRemoveProduct={handleRemoveProduct}
+                      onReorderProducts={onReorderSectionProducts}
+                      setLocalProductOrders={setLocalProductOrders}
                       getSectionProducts={getSectionProducts}
                     />
                   );

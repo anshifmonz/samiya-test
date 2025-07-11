@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { addProductToSection, removeProductFromSection } from '@/lib/admin/section/products';
+import { addProductToSection, removeProductFromSection, reorderSectionProducts } from 'lib/admin/section/products';
 
 export async function POST(request: NextRequest) {
   try {
@@ -42,6 +42,28 @@ export async function DELETE(request: NextRequest) {
     console.error('Error in DELETE /api/admin/section/products:', error);
     return NextResponse.json(
       { error: 'Failed to remove product from section' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PATCH(request: NextRequest) {
+  try {
+    const { sectionId, productIds } = await request.json();
+
+    if (!sectionId || !productIds || !Array.isArray(productIds)) {
+      return NextResponse.json(
+        { error: 'Section ID and productIds array are required' },
+        { status: 400 }
+      );
+    }
+
+    await reorderSectionProducts(sectionId, productIds);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error in PATCH /api/admin/section/products:', error);
+    return NextResponse.json(
+      { error: 'Failed to reorder section products' },
       { status: 500 }
     );
   }

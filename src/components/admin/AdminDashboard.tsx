@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { type Product } from 'types/product';
 import { type Collection } from 'types/collection';
@@ -44,7 +44,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
     handleDeleteSection,
     handleAddProductToSection,
     handleRemoveProductFromSection,
-    handleReorderSections
+    handleReorderSections,
+    handleReorderSectionProducts
   } = useAdminDashboard({
     initialProducts,
     initialCollections,
@@ -160,6 +161,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
             onAddProductToSection={handleAddProductToSection}
             onRemoveProductFromSection={handleRemoveProductFromSection}
             onReorderSections={handleReorderSections}
+            onReorderSectionProducts={handleReorderSectionProducts}
           />
         </TabsContent>
       </Tabs>

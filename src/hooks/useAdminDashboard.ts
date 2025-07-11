@@ -281,6 +281,23 @@ export const useAdminDashboard = ({
     }
   };
 
+  const handleReorderSectionProducts = async (sectionId: string, productIds: string[]) => {
+    try {
+      const response = await fetch('/api/admin/section/products', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sectionId, productIds }),
+      });
+      if (response.ok) {
+        await fetchSections();
+      } else {
+        console.error('Failed to reorder section products:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error reordering section products:', error);
+    }
+  };
+
   const handleReorderSections = async (sectionIds: string[]) => {
     try {
       const response = await fetch('/api/admin/section', {
@@ -316,6 +333,7 @@ export const useAdminDashboard = ({
     handleDeleteSection,
     handleAddProductToSection,
     handleRemoveProductFromSection,
+    handleReorderSectionProducts,
     handleReorderSections,
   };
 };

@@ -1,9 +1,8 @@
-import { supabaseAdmin } from '@/lib/supabase';
-import { type SectionProduct } from '@/types/section';
+import { supabaseAdmin } from 'lib/supabase';
+import { type SectionProduct } from 'types/section';
 
 export async function addProductToSection(sectionId: string, productId: string, sortOrder?: number): Promise<void> {
   try {
-    // Get the next sort order if not provided
     let nextSortOrder = sortOrder;
     if (nextSortOrder === undefined) {
       const { data: existingProducts } = await supabaseAdmin
@@ -100,9 +99,14 @@ export async function getSectionProducts(sectionId: string): Promise<SectionProd
 
 export async function reorderSectionProducts(sectionId: string, productIds: string[]): Promise<void> {
   try {
-    // Update sort order for each product
-    for (let i = 0; i < productIds.length; i++) {
-      await updateProductOrder(sectionId, productIds[i], i);
+    const { error } = await supabaseAdmin.rpc('reorder_section_products', {
+      section_uuid: sectionId,
+      product_ids_array: productIds
+    });
+
+    if (error) {
+      console.error('Error reordering section products:', error);
+      throw error;
     }
   } catch (error) {
     console.error('Error reordering section products:', error);
