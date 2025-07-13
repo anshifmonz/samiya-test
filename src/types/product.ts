@@ -1,4 +1,20 @@
+export interface ProductImage {
+  url: string;
+  publicId: string;
+}
+
 export interface Product {
+  id: string;
+  title: string;
+  description: string;
+  images: Record<string, ProductImage[]>;
+  price: number;
+  tags: string[];
+  category: string;
+  active?: boolean;
+}
+
+export interface LegacyProduct {
   id: string;
   title: string;
   description: string;

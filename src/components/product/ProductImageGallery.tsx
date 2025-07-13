@@ -15,9 +15,11 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({ product, sele
   const [dragStartY, setDragStartY] = useState(0);
   const [dragOffsetX, setDragOffsetX] = useState(0);
   const mainImageRef = useRef<HTMLDivElement>(null);
-  const currentImages = product.images[selectedColor] || [];
 
-  // Reset to first image when color changes
+  const currentImages = (product.images[selectedColor] || []).map(img =>
+    typeof img === 'string' ? img : img.url
+  );
+
   useEffect(() => {
     setCurrentImageIndex(0);
   }, [selectedColor]);
@@ -38,7 +40,6 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({ product, sele
     setCurrentImageIndex(index);
   };
 
-  // Mouse drag handlers
   const handleMouseDown = (e: React.MouseEvent) => {
     if (currentImages.length <= 1) return;
 
@@ -58,7 +59,6 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({ product, sele
     const deltaX = e.clientX - dragStartX;
     const deltaY = e.clientY - dragStartY;
 
-    // Only trigger horizontal scroll if horizontal movement is greater than vertical
     if (Math.abs(deltaX) > Math.abs(deltaY)) {
       setDragOffsetX(deltaX);
     }
@@ -73,8 +73,7 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({ product, sele
       mainImageRef.current.style.cursor = 'grab';
     }
 
-    // Determine swipe direction based on drag distance
-    const threshold = 30; // reduced threshold for more responsive feel
+    const threshold = 30;
     if (Math.abs(dragOffsetX) > threshold) {
       if (dragOffsetX > 0) {
         goToPrevious();
@@ -86,7 +85,6 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({ product, sele
     setDragOffsetX(0);
   };
 
-  // Touch handlers
   const handleTouchStart = (e: React.TouchEvent) => {
     if (currentImages.length <= 1) return;
 
@@ -104,10 +102,9 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({ product, sele
     const deltaX = touch.clientX - dragStartX;
     const deltaY = touch.clientY - dragStartY;
 
-    // Only trigger horizontal scroll if horizontal movement is greater than vertical
     if (Math.abs(deltaX) > Math.abs(deltaY)) {
       setDragOffsetX(deltaX);
-      e.preventDefault(); // Prevent default touch behavior
+      e.preventDefault();
     }
   };
 
@@ -116,8 +113,7 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({ product, sele
 
     setIsDragging(false);
 
-    // Determine swipe direction based on drag distance
-    const threshold = 30; // reduced threshold for more responsive feel
+    const threshold = 30;
     if (Math.abs(dragOffsetX) > threshold) {
       if (dragOffsetX > 0) {
         goToPrevious();
@@ -141,7 +137,6 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({ product, sele
 
   return (
     <div className="flex flex-col lg:flex-row gap-4">
-      {/* Thumbnail Gallery - Vertical on desktop, horizontal on mobile */}
       <div className="order-2 lg:order-1 flex lg:flex-col gap-3 overflow-x-auto lg:overflow-y-auto lg:max-h-[500px] lg:w-20 scrollbar-hide">
         {currentImages.map((image, index) => (
           <button
@@ -164,7 +159,6 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({ product, sele
         ))}
       </div>
 
-      {/* Main Image with Navigation */}
       <div className="order-1 lg:order-2 flex-1 relative">
         <div
           ref={mainImageRef}
@@ -191,7 +185,6 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({ product, sele
             draggable={false}
           />
 
-          {/* Navigation Arrows - Only show if multiple images */}
           {currentImages.length > 1 && (
             <>
               <button
@@ -212,7 +205,6 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({ product, sele
             </>
           )}
 
-          {/* Image Counter */}
           {currentImages.length > 1 && (
             <div className="absolute bottom-4 right-4 bg-black/60 text-white px-3 py-1 rounded-full text-sm z-10">
               {currentImageIndex + 1} / {currentImages.length}
@@ -220,7 +212,6 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({ product, sele
           )}
         </div>
 
-        {/* Mobile Navigation Dots */}
         {currentImages.length > 1 && (
           <div className="flex justify-center mt-4 gap-2 lg:hidden">
             {currentImages.map((_, index) => (

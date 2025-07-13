@@ -40,13 +40,14 @@ export default async function createProduct(newProduct: Product): Promise<Produc
 
   for (let colorIndex = 0; colorIndex < colorKeys.length; colorIndex++) {
     const color = colorKeys[colorIndex];
-    const urls = newProduct.images[color];
-    urls.forEach((url, idx) => {
+    const images = newProduct.images[color];
+    images.forEach((img, idx) => {
       const isPrimary = colorIndex === 0 && idx === 0;
       imageRows.push({
         product_id: productId,
         color_name: color,
-        image_url: url,
+        image_url: typeof img === 'string' ? img : img.url,
+        public_id: typeof img === 'string' ? null : img.publicId,
         is_primary: isPrimary,
         sort_order: idx,
       });

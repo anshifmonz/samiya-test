@@ -1,11 +1,6 @@
 import { supabasePublic } from 'lib/supabasePublic';
 import { type Product, type ProductFilters } from 'types/product';
 
-/**
- * Search products with flexible filters and pagination.
- * @param query - Search string for title/description
- * @param filters - ProductFilters object
- */
 async function searchProducts(
   query: string,
   filters?: ProductFilters,
@@ -30,7 +25,7 @@ async function searchProducts(
   }
 
   return (data || []).map((row: any) => {
-    const images: Record<string, string[]> = {};
+    const images: Record<string, any[]> = {};
     if (row.product_images) {
       const sortedImages = [...row.product_images].sort((a: any, b: any) => {
         if (a.color_name !== b.color_name) {
@@ -42,7 +37,7 @@ async function searchProducts(
       });
       sortedImages.forEach((img: any) => {
         if (!images[img.color_name]) images[img.color_name] = [];
-        images[img.color_name].push(img.image_url);
+        images[img.color_name].push({ url: img.image_url, publicId: img.public_id });
       });
     }
     const tags: string[] = [];

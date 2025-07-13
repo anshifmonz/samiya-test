@@ -9,9 +9,10 @@ import {
   sortableKeyboardCoordinates,
 } from '@dnd-kit/sortable';
 import { uploadImagesToCloudinary } from 'lib/upload/cloudinary';
+import { type ProductImage } from 'types/product';
 
 interface UseProductImagesSectionUIProps {
-  images: { [color: string]: string[] };
+  images: { [color: string]: ProductImage[] };
   showAddColorDialog: boolean;
   setShowAddColorDialog: (show: boolean) => void;
   showAddImageDialog: boolean;
@@ -33,7 +34,7 @@ interface UseProductImagesSectionUIProps {
   setUploadErrors: React.Dispatch<React.SetStateAction<{ [filename: string]: string }>>;
   addColor: () => void;
   addImage: () => void;
-  onImagesChange: (images: { [color: string]: string[] }) => void;
+  onImagesChange: (images: { [color: string]: ProductImage[] }) => void;
 }
 
 export const useProductImagesSectionUI = (props: UseProductImagesSectionUIProps) => {
@@ -76,10 +77,8 @@ export const useProductImagesSectionUI = (props: UseProductImagesSectionUIProps)
     })
   );
 
-  // Color variants derived from images
   const colorVariants = useMemo(() => Object.keys(images), [images]);
 
-  // Color mapping for visual representation
   const getColorBackground = useCallback((color: string): string => {
     const colorMap: { [key: string]: string } = {
       cream: '#F5F5DC',
@@ -99,13 +98,11 @@ export const useProductImagesSectionUI = (props: UseProductImagesSectionUIProps)
     return colorMap[color] || color;
   }, []);
 
-  // Handle add color dialog close
   const handleAddColorDialogClose = useCallback(() => {
     setShowAddColorDialog(false);
     setNewImageColor('');
   }, [setShowAddColorDialog, setNewImageColor]);
 
-  // Handle add image dialog close
   const handleAddImageDialogClose = useCallback(() => {
     setShowAddImageDialog(false);
     setNewImageUrl('');
@@ -126,26 +123,22 @@ export const useProductImagesSectionUI = (props: UseProductImagesSectionUIProps)
     setUploadErrors
   ]);
 
-  // Handle add image button click
   const handleAddImageClick = useCallback((color: string) => {
     setSelectedColorForImage(color);
     setAddImageTab('device');
     setShowAddImageDialog(true);
   }, [setSelectedColorForImage, setAddImageTab, setShowAddImageDialog]);
 
-  // Handle add color button click
   const handleAddColorClick = useCallback(() => {
     setShowAddColorDialog(true);
   }, [setShowAddColorDialog]);
 
-  // Handle drag start for mobile
   const handleDragStart = useCallback((event: any) => {
     if (event.active.data.current?.type === 'pointer') {
       event.active.data.current.point = event.active.data.current.point;
     }
   }, []);
 
-  // File validation
   const validateFiles = useCallback((files: File[]): string | null => {
     for (const file of files) {
       if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
@@ -158,7 +151,6 @@ export const useProductImagesSectionUI = (props: UseProductImagesSectionUIProps)
     return null;
   }, []);
 
-  // Handle image upload
   const handleImageUpload = useCallback(async () => {
     setUploadError(null);
 
@@ -189,8 +181,8 @@ export const useProductImagesSectionUI = (props: UseProductImagesSectionUIProps)
           setUploadProgress(prev => ({ ...prev, [file.name]: percent }));
         });
 
-        results.forEach(({ file, url, error }) => {
-          if (url) {
+        results.forEach(({ file, url, publicId, error }) => {
+          if (url && publicId) {
             setUploadStatus(prev => ({ ...prev, [file.name]: 'success' }));
           } else {
             setUploadStatus(prev => ({ ...prev, [file.name]: 'error' }));
@@ -198,14 +190,16 @@ export const useProductImagesSectionUI = (props: UseProductImagesSectionUIProps)
           }
         });
 
-        const uploadedUrls = results.filter(r => r.url).map(r => r.url as string);
+        const uploadedImages = results
+          .filter(r => r.url && r.publicId)
+          .map(r => ({ url: r.url!, publicId: r.publicId! }));
 
-        if (uploadedUrls.length > 0) {
+        if (uploadedImages.length > 0) {
           onImagesChange({
             ...images,
             [selectedColorForImage]: images[selectedColorForImage]
-              ? [...images[selectedColorForImage], ...uploadedUrls]
-              : [...uploadedUrls]
+              ? [...images[selectedColorForImage], ...uploadedImages]
+              : [...uploadedImages]
           });
           handleAddImageDialogClose();
         } else {
@@ -231,12 +225,10 @@ export const useProductImagesSectionUI = (props: UseProductImagesSectionUIProps)
     handleAddImageDialogClose
   ]);
 
-  // Get image count for a color
   const getImageCount = useCallback((color: string): number => {
     return images[color]?.length || 0;
   }, [images]);
 
-  // Check if color is primary (first in the list)
   const isPrimaryColor = useCallback((index: number): boolean => {
     return index === 0;
   }, []);

@@ -20,21 +20,24 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, Trash, Crown } from 'lucide-react';
+import { type ProductImage } from 'types/product';
 
 interface DraggableImageItemProps {
   id: string;
-  url: string;
+  image: ProductImage;
   index: number;
   onRemove: () => void;
   isPrimary?: boolean;
+  isDeleting?: boolean;
 }
 
 const DraggableImageItem: React.FC<DraggableImageItemProps> = ({
   id,
-  url,
+  image,
   index,
   onRemove,
-  isPrimary
+  isPrimary,
+  isDeleting = false
 }) => {
   const {
     attributes,
@@ -62,7 +65,7 @@ const DraggableImageItem: React.FC<DraggableImageItemProps> = ({
       style={style}
       className={`relative flex items-start gap-3 p-3 border rounded-lg bg-white relative touch-manipulation ${
         isDragging ? 'shadow-lg' : 'border-luxury-gray/20'
-      } ${isPrimary ? 'ring-luxury-gold/50 bg-luxury-gold/5' : ''}`}
+      } ${isPrimary ? 'ring-luxury-gold/50 bg-luxury-gold/5' : ''} ${isDeleting ? 'opacity-50' : ''}`}
     >
       {isPrimary && (
         <div className="absolute top-0 right-0 bg-luxury-gold text-luxury-black rounded-full p-1">
@@ -76,12 +79,13 @@ const DraggableImageItem: React.FC<DraggableImageItemProps> = ({
         className="text-luxury-gray hover:text-luxury-black transition-colors cursor-grab active:cursor-grabbing flex-shrink-0 touch-manipulation p-3 -m-3 min-w-[44px] min-h-[44px] flex items-center justify-center"
         title="Drag to reorder"
         type="button"
+        disabled={isDeleting}
       >
         <GripVertical size={16} />
       </button>
 
       <Image
-        src={url}
+        src={image.url}
         alt={`Image ${index + 1}`}
         className="w-16 h-16 object-cover rounded flex-shrink-0"
         width={64}
@@ -91,15 +95,23 @@ const DraggableImageItem: React.FC<DraggableImageItemProps> = ({
       <div className="flex-1 max-w-[60%] overflow-hidden">
         <p className="luxury-body text-xs text-luxury-gray leading-relaxed truncate overflow-hidden whitespace-nowrap">
           {isPrimary && <span className="text-luxury-gold font-medium">Primary • </span>}
-          {url}
+          {image.url}
+        </p>
+        <p className="luxury-body text-xs text-luxury-gray leading-relaxed truncate overflow-hidden whitespace-nowrap">
+          ID: {image.publicId}
         </p>
       </div>
 
       <button
         type="button"
         onClick={onRemove}
-        className="absolute top-3 right-3 text-red-600 hover:text-red-800 transition-colors flex-shrink-0 p-1 rounded hover:bg-red-50"
-        title="Remove image"
+        disabled={isDeleting}
+        className={`absolute top-3 right-3 transition-colors flex-shrink-0 p-1 rounded hover:bg-red-50 ${
+          isDeleting
+            ? 'text-gray-400 cursor-not-allowed'
+            : 'text-red-600 hover:text-red-800'
+        }`}
+        title={isDeleting ? "Deleting..." : "Remove image"}
       >
         <Trash size={14} />
       </button>
@@ -108,15 +120,17 @@ const DraggableImageItem: React.FC<DraggableImageItemProps> = ({
 };
 
 interface DraggableImageListProps {
-  images: string[];
-  onReorder: (newImages: string[]) => void;
+  images: ProductImage[];
+  onReorder: (newImages: ProductImage[]) => void;
   onRemove: (index: number) => void;
+  deletingImages?: Set<string>;
 }
 
 const DraggableImageList: React.FC<DraggableImageListProps> = ({
   images,
   onReorder,
   onRemove,
+  deletingImages = new Set()
 }) => {
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -169,14 +183,15 @@ const DraggableImageList: React.FC<DraggableImageListProps> = ({
           strategy={verticalListSortingStrategy}
         >
           <div className="space-y-3">
-            {images.map((url, index) => (
+            {images.map((image, index) => (
               <DraggableImageItem
                 key={`image-${index}`}
                 id={`image-${index}`}
-                url={url}
+                image={image}
                 index={index}
                 onRemove={() => onRemove(index)}
                 isPrimary={index === 0}
+                isDeleting={deletingImages.has(image.publicId)}
               />
             ))}
           </div>

@@ -1,16 +1,18 @@
 import React from 'react';
 import DraggableImageList from '../../DraggableImageList';
 import { Trash, Plus } from 'lucide-react';
+import { type ProductImage } from 'types/product';
 
 interface ColorImagePanelProps {
   color: string;
-  images: string[];
-  onReorder: (newImages: string[]) => void;
+  images: ProductImage[];
+  onReorder: (newImages: ProductImage[]) => void;
   onRemove: (index: number) => void;
   onRemoveColor: () => void;
   onAddImage: () => void;
   isPrimary: boolean;
   imageCount: number;
+  deletingImages?: Set<string>;
 }
 
 const ColorImagePanel: React.FC<ColorImagePanelProps> = ({
@@ -21,7 +23,8 @@ const ColorImagePanel: React.FC<ColorImagePanelProps> = ({
   onRemoveColor,
   onAddImage,
   isPrimary,
-  imageCount
+  imageCount,
+  deletingImages = new Set()
 }) => (
   <div className="border border-luxury-gray/20 rounded-xl p-4 flex flex-col gap-4 max-h-[60vh] md:max-h-[70vh]">
     <div className="flex items-center justify-between mb-4">
@@ -45,6 +48,7 @@ const ColorImagePanel: React.FC<ColorImagePanelProps> = ({
         images={images}
         onReorder={onReorder}
         onRemove={onRemove}
+        deletingImages={deletingImages}
       />
     </div>
     <div className="sticky bottom-0 left-0 w-full bg-white pt-2 pb-2 z-20">

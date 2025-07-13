@@ -34,6 +34,7 @@ const ProductImagesSection: React.FC<ProductImagesSectionProps> = (props) => {
     uploadProgress, setUploadProgress,
     uploadStatus, setUploadStatus,
     uploadErrors, setUploadErrors,
+    deletingImages,
     addColor, addImage, reorderImages, removeImage, removeColor, handleColorDragEnd,
     onImagesChange, images, activeColorTab, onActiveColorTabChange
   } = section;
@@ -159,6 +160,7 @@ const ProductImagesSection: React.FC<ProductImagesSectionProps> = (props) => {
               onAddImage={() => handleAddImageClick(color)}
               isPrimary={isPrimaryColor(index)}
               imageCount={getImageCount(color)}
+              deletingImages={deletingImages}
             />
           </TabsContent>
         ))}

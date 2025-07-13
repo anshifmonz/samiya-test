@@ -51,3 +51,44 @@ export async function uploadFileToCloudinary(file: File): Promise<{ secure_url: 
     }
   }
 }
+
+export async function deleteImageFromCloudinary(publicId: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    if (!publicId) {
+      throw new Error('Public ID is required');
+    }
+
+    const result = await cloudinary.uploader.destroy(publicId, {
+      resource_type: 'image',
+    });
+
+    if (result.result === 'ok' || result.result === 'not found') {
+      return { success: true };
+    } else {
+      return { success: false, error: `Failed to delete image: ${result.result}` };
+    }
+  } catch (error: any) {
+    console.error('Error deleting image from Cloudinary:', error);
+    return { success: false, error: error.message || 'Failed to delete image from Cloudinary' };
+  }
+}
+
+export async function deleteMultipleImagesFromCloudinary(publicIds: string[]): Promise<{ success: boolean; errors: string[] }> {
+  const errors: string[] = [];
+  const results = await Promise.allSettled(
+    publicIds.map(publicId => deleteImageFromCloudinary(publicId))
+  );
+
+  results.forEach((result, index) => {
+    if (result.status === 'rejected') {
+      errors.push(`Failed to delete image ${publicIds[index]}: ${result.reason}`);
+    } else if (!result.value.success) {
+      errors.push(`Failed to delete image ${publicIds[index]}: ${result.value.error}`);
+    }
+  });
+
+  return {
+    success: errors.length === 0,
+    errors
+  };
+}

@@ -21,7 +21,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
   onDelete,
   showTags = false
 }) => {
-  const firstImage = Object.values(product.images)[0]?.[0];
+  const firstImageRaw = Object.values(product.images)[0]?.[0];
+  const firstImage = typeof firstImageRaw === 'string' ? firstImageRaw : firstImageRaw?.url;
 
   const getBadgeVariant = (category: string) => {
     switch (category?.toLowerCase()) {

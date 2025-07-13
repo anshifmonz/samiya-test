@@ -1,9 +1,11 @@
 import { useState, useCallback } from 'react';
 import { DragEndEvent } from '@dnd-kit/core';
+import { type ProductImage } from 'types/product';
+import { deleteImageFromCloudinary, deleteMultipleImagesFromCloudinary, extractPublicIdFromUrl } from 'lib/upload/cloudinary';
 
 export interface ProductImagesSectionProps {
-  images: Record<string, string[]>;
-  onImagesChange: (images: Record<string, string[]>) => void;
+  images: Record<string, ProductImage[]>;
+  onImagesChange: (images: Record<string, ProductImage[]>) => void;
   activeColorTab: string;
   onActiveColorTabChange: (color: string) => void;
 }
@@ -21,6 +23,7 @@ export function useProductImagesSection({ images, onImagesChange, activeColorTab
   const [uploadProgress, setUploadProgress] = useState<{ [filename: string]: number }>({});
   const [uploadStatus, setUploadStatus] = useState<{ [filename: string]: 'pending' | 'uploading' | 'success' | 'error' }>({});
   const [uploadErrors, setUploadErrors] = useState<{ [filename: string]: string }>({});
+  const [deletingImages, setDeletingImages] = useState<Set<string>>(new Set());
 
   const addColor = () => {
     if (newImageColor && !images[newImageColor]) {
@@ -36,11 +39,18 @@ export function useProductImagesSection({ images, onImagesChange, activeColorTab
 
   const addImage = () => {
     if (selectedColorForImage && newImageUrl) {
+      const publicId = extractPublicIdFromUrl(newImageUrl) || `url-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+      const newImage: ProductImage = {
+        url: newImageUrl,
+        publicId: publicId
+      };
+
       onImagesChange({
         ...images,
         [selectedColorForImage]: images[selectedColorForImage]
-          ? [...images[selectedColorForImage], newImageUrl]
-          : [newImageUrl]
+          ? [...images[selectedColorForImage], newImage]
+          : [newImage]
       });
       setNewImageUrl('');
       setShowAddImageDialog(false);
@@ -49,7 +59,7 @@ export function useProductImagesSection({ images, onImagesChange, activeColorTab
   };
 
   const reorderColors = useCallback((newColors: string[]) => {
-    const newImages: Record<string, string[]> = {};
+    const newImages: Record<string, ProductImage[]> = {};
     newColors.forEach(color => {
       if (images[color]) {
         newImages[color] = images[color];
@@ -58,29 +68,77 @@ export function useProductImagesSection({ images, onImagesChange, activeColorTab
     onImagesChange(newImages);
   }, [images, onImagesChange]);
 
-  const reorderImages = useCallback((color: string, newImages: string[]) => {
+  const reorderImages = useCallback((color: string, newImages: ProductImage[]) => {
     onImagesChange({
       ...images,
       [color]: newImages
     });
   }, [images, onImagesChange]);
 
-  const removeImage = useCallback((color: string, imageIndex: number) => {
-    const updatedImages = { ...images };
-    updatedImages[color] = updatedImages[color].filter((_, index) => index !== imageIndex);
-    if (updatedImages[color].length === 0) {
-      delete updatedImages[color];
+  const removeImage = useCallback(async (color: string, imageIndex: number) => {
+    const imageToRemove = images[color]?.[imageIndex];
+
+    if (!imageToRemove) return;
+
+    setDeletingImages(prev => new Set(prev).add(imageToRemove.publicId));
+
+    try {
+      if (imageToRemove.publicId && !imageToRemove.publicId.startsWith('url-'))
+        await deleteImageFromCloudinary(imageToRemove.publicId);
+
+      const updatedImages = { ...images };
+      updatedImages[color] = updatedImages[color].filter((_, index) => index !== imageIndex);
+      if (updatedImages[color].length === 0)
+        delete updatedImages[color];
+      onImagesChange(updatedImages);
+    } catch (error) {
+      const updatedImages = { ...images };
+      updatedImages[color] = updatedImages[color].filter((_, index) => index !== imageIndex);
+      if (updatedImages[color].length === 0)
+        delete updatedImages[color];
+      onImagesChange(updatedImages);
+    } finally {
+      setDeletingImages(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(imageToRemove.publicId);
+        return newSet;
+      });
     }
-    onImagesChange(updatedImages);
   }, [images, onImagesChange]);
 
-  const removeColor = (colorToRemove: string) => {
+  const removeColor = useCallback(async (colorToRemove: string) => {
     if (window.confirm(`Remove all images for ${colorToRemove}?`)) {
-      const updatedImages = { ...images };
-      delete updatedImages[colorToRemove];
-      onImagesChange(updatedImages);
+      const imagesToRemove = images[colorToRemove] || [];
+
+      const publicIds = imagesToRemove.map(img => img.publicId);
+      setDeletingImages(prev => new Set([...Array.from(prev), ...publicIds]));
+
+      try {
+        const cloudinaryImages = imagesToRemove.filter(img =>
+          img.publicId && !img.publicId.startsWith('url-')
+        );
+
+        if (cloudinaryImages.length > 0) {
+          const publicIdsToDelete = cloudinaryImages.map(img => img.publicId);
+          await deleteMultipleImagesFromCloudinary(publicIdsToDelete);
+        }
+
+        const updatedImages = { ...images };
+        delete updatedImages[colorToRemove];
+        onImagesChange(updatedImages);
+      } catch (error) {
+        const updatedImages = { ...images };
+        delete updatedImages[colorToRemove];
+        onImagesChange(updatedImages);
+      } finally {
+        setDeletingImages(prev => {
+          const newSet = new Set(prev);
+          publicIds.forEach(id => newSet.delete(id));
+          return newSet;
+        });
+      }
     }
-  };
+  }, [images, onImagesChange]);
 
   const handleColorDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -108,6 +166,7 @@ export function useProductImagesSection({ images, onImagesChange, activeColorTab
     uploadProgress, setUploadProgress,
     uploadStatus, setUploadStatus,
     uploadErrors, setUploadErrors,
+    deletingImages,
     addColor, addImage, reorderColors, reorderImages, removeImage, removeColor, handleColorDragEnd,
     onImagesChange, images, activeColorTab, onActiveColorTabChange
   };

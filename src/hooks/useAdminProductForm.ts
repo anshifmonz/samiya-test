@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { type Product } from 'types/product';
+import { type Product, type ProductImage } from 'types/product';
 import { type Category } from 'types/category';
+import { ensureProductImageFormat } from 'lib/utils/migrateProductImages';
 
 interface UseAdminProductFormProps {
   product?: Product | null;
@@ -14,7 +15,7 @@ interface FormData {
   description: string;
   price: number;
   category: string;
-  images: Record<string, string[]>;
+  images: Record<string, ProductImage[]>;
   tags: string[];
   active: boolean;
 }
@@ -33,7 +34,6 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
   const [activeColorTab, setActiveColorTab] = useState<string>('');
   const [mounted, setMounted] = useState(false);
 
-  // Initialize component mount state and body scroll management
   useEffect(() => {
     setMounted(true);
     document.body.style.overflow = 'hidden';
@@ -43,20 +43,21 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
     };
   }, []);
 
-  // Initialize form data when product changes
   useEffect(() => {
     if (product) {
+      const migratedProduct = ensureProductImageFormat(product);
+
       setFormData({
-        title: product.title,
-        description: product.description,
-        price: product.price,
-        category: product.category,
-        images: { ...product.images },
-        tags: [...product.tags],
-        active: product.active !== undefined ? product.active : true
+        title: migratedProduct.title,
+        description: migratedProduct.description,
+        price: migratedProduct.price,
+        category: migratedProduct.category,
+        images: { ...migratedProduct.images },
+        tags: [...migratedProduct.tags],
+        active: migratedProduct.active !== undefined ? migratedProduct.active : true
       });
 
-      const colors = Object.keys(product.images);
+      const colors = Object.keys(migratedProduct.images);
       if (colors.length > 0) {
         setActiveColorTab(colors[0]);
       }
@@ -78,7 +79,7 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
   const handleDescriptionChange = (value: string) => updateFormField('description', value);
   const handlePriceChange = (value: number) => updateFormField('price', value);
   const handleCategoryChange = (value: string) => updateFormField('category', value);
-  const handleImagesChange = (images: Record<string, string[]>) => updateFormField('images', images);
+  const handleImagesChange = (images: Record<string, ProductImage[]>) => updateFormField('images', images);
   const handleTagsChange = (tags: string[]) => updateFormField('tags', tags);
   const handleActiveChange = (active: boolean) => updateFormField('active', active);
 

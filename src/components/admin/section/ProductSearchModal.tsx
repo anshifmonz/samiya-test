@@ -73,10 +73,14 @@ const ProductSearchModal: React.FC<ProductSearchModalProps> = ({
     onClose();
   };
 
-  const getFirstImage = (images: Record<string, string[]>) => {
+  const getFirstImage = (images: Record<string, any[]>) => {
     if (!images || typeof images !== 'object') return '';
     const firstColor = Object.keys(images)[0];
-    return firstColor && images[firstColor] && images[firstColor][0] ? images[firstColor][0] : '';
+    if (!firstColor || !images[firstColor] || !images[firstColor][0]) return '';
+
+    const firstImage = images[firstColor][0];
+    // Handle both old string format and new ProductImage format
+    return typeof firstImage === 'string' ? firstImage : firstImage.url || '';
   };
 
   const modalContent = (
