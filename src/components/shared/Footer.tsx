@@ -23,7 +23,7 @@ const Footer = () => {
           </div>
 
           <div className="text-center sm:text-left sm:flex-1 sm:min-w-[150px] sm:max-w-[200px] sm:pl-14">
-            <h4 className="luxury-body font-medium mb-4 text-sm sm:text-base tracking-wide text-luxury-black uppercase">Quick Links</h4>
+            <h4 className="luxury-body font-medium mb-4 text-sm sm:text-base tracking-wide text-red-500 uppercase">Quick Links</h4>
             <ul className="space-y-2 sm:space-y-3 text-sm sm:text-base text-luxury-black/70">
               <li><Link href="/about" className="hover:text-red-400 transition-colors">About Us</Link></li>
               <li><Link href="/collections" className="hover:text-red-400 transition-colors">Collections</Link></li>
@@ -33,7 +33,7 @@ const Footer = () => {
           </div>
 
           <div className="text-center sm:text-left sm:flex-1 sm:min-w-[150px] sm:max-w-[200px] sm:pl-16">
-            <h4 className="luxury-body font-medium mb-4 text-sm sm:text-base tracking-wide text-luxury-black uppercase">Support</h4>
+            <h4 className="luxury-body font-medium mb-4 text-sm sm:text-base tracking-wide text-red-500 uppercase">Support</h4>
             <ul className="space-y-2 sm:space-y-3 text-sm sm:text-base text-luxury-black/70">
               <li><Link href="#" className="hover:text-red-400 transition-colors">Size Guide</Link></li>
               <li><Link href="#" className="hover:text-red-400 transition-colors">Returns</Link></li>
@@ -45,7 +45,7 @@ const Footer = () => {
 
         <div className="border-t border-luxury-black/20 mt-8 sm:mt-12 pt-8 text-center">
           <p className="text-luxury-black/60 text-sm sm:text-base">
-            © {currentYear} Fashion Store. All rights reserved.
+            © {currentYear} Samiya Online. All rights reserved.
           </p>
         </div>
       </div>
