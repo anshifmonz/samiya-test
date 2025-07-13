@@ -23,9 +23,10 @@ interface MobileFilterPanelProps {
   availableCategories?: string[];
   availableTags?: string[];
   categories: Category[];
+  categoryCountMap?: Map<string, number>;
 }
 
-const MobileFilterPanel: React.FC<MobileFilterPanelProps> = ({ onFiltersChange, availableColors, availableCategories, availableTags, categories }) => {
+const MobileFilterPanel: React.FC<MobileFilterPanelProps> = ({ onFiltersChange, availableColors, availableCategories, availableTags, categories, categoryCountMap }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   // handle browser back button to close sidebar if open
@@ -91,6 +92,7 @@ const MobileFilterPanel: React.FC<MobileFilterPanelProps> = ({ onFiltersChange, 
                 onCategoryChange={handleCategoryChange}
                 availableCategories={availableCategories}
                 categories={categories}
+                categoryCountMap={categoryCountMap}
               />
 
               <div className="border-t border-border pt-6">

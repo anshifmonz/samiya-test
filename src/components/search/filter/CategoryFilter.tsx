@@ -9,9 +9,10 @@ interface CategoryFilterProps {
   onCategoryChange: (category: string) => void;
   availableCategories?: string[];
   categories: Category[];
+  categoryCountMap?: Map<string, number>;
 }
 
-const CategoryFilter: React.FC<CategoryFilterProps> = ({ selectedCategory, onCategoryChange, availableCategories, categories }) => {
+const CategoryFilter: React.FC<CategoryFilterProps> = ({ selectedCategory, onCategoryChange, availableCategories, categories, categoryCountMap }) => {
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
 
   // filter categories to only include those that are available in search results
@@ -36,12 +37,32 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ selectedCategory, onCat
     onCategoryChange(categoryName);
   };
 
+    // Helper function to count available products in a category and its subcategories
+  const countAvailableProductsInCategory = (category: Category): number => {
+    let count = 0;
+
+    // Count products in this category
+    if (categoryCountMap && categoryCountMap.has(category.name)) {
+      count += categoryCountMap.get(category.name) || 0;
+    }
+
+    // Recursively count children
+    if (category.children) {
+      category.children.forEach(child => {
+        count += countAvailableProductsInCategory(child);
+      });
+    }
+
+    return count;
+  };
+
   // recursive function to render category tree
   const renderCategoryTree = (categoryList: Category[], level: number = 0) => {
     return categoryList.map((category) => {
       const hasChildren = category.children && category.children.length > 0;
       const isExpanded = expandedCategories.has(category.id);
-      const indent = level * 16;
+      const indent = level > 0 ? level * 16 : 0;
+      const productCount = countAvailableProductsInCategory(category);
 
       return (
         <div key={category.id}>
@@ -65,7 +86,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ selectedCategory, onCat
                 )}
               </button>
             ) : (
-              <div className="w-6 h-6" />
+              level > 0 && <div className="w-6 h-6" />
             )}
 
             <Checkbox
@@ -79,7 +100,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ selectedCategory, onCat
               className="text-sm font-normal cursor-pointer flex-1 flex justify-between"
             >
               <span>{category.name}</span>
-              <span className="text-muted-foreground">({category.children?.length || 0})</span>
+              <span className="text-muted-foreground">({productCount})</span>
             </label>
           </div>
 

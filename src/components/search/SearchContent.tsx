@@ -23,14 +23,14 @@ const SearchContent: React.FC<SearchContentProps> = ({ products, onFiltersChange
   });
   const availableColors = Array.from(colorSet);
 
-  // collect all unique categories from the current products
-  const categorySet = new Set<string>();
+  // collect all unique categories from the current products and count products per category
+  const categoryCountMap = new Map<string, number>();
   products.forEach(product => {
     if (product.category) {
-      categorySet.add(product.category);
+      categoryCountMap.set(product.category, (categoryCountMap.get(product.category) || 0) + 1);
     }
   });
-  const availableCategories = Array.from(categorySet);
+  const availableCategories = Array.from(categoryCountMap.keys());
 
   // collect all unique tags from the current products
   const tagSet = new Set<string>();
@@ -50,6 +50,7 @@ const SearchContent: React.FC<SearchContentProps> = ({ products, onFiltersChange
           availableCategories={availableCategories}
           availableTags={availableTags}
           categories={categories}
+          categoryCountMap={categoryCountMap}
         />
       </div>
 
@@ -62,6 +63,7 @@ const SearchContent: React.FC<SearchContentProps> = ({ products, onFiltersChange
             availableCategories={availableCategories}
             availableTags={availableTags}
             categories={categories}
+            categoryCountMap={categoryCountMap}
           />
         </div>
 

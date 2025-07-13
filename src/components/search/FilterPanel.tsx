@@ -14,9 +14,10 @@ interface FilterPanelProps {
   availableCategories?: string[];
   availableTags?: string[];
   categories: Category[];
+  categoryCountMap?: Map<string, number>;
 }
 
-const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange, availableColors, availableCategories, availableTags, categories }) => {
+const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange, availableColors, availableCategories, availableTags, categories, categoryCountMap }) => {
   const {
     selectedCategory,
     priceRange,
@@ -49,6 +50,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange, availableCol
           onCategoryChange={handleCategoryChange}
           availableCategories={availableCategories}
           categories={categories}
+          categoryCountMap={categoryCountMap}
         />
 
         <div className="border-t border-border pt-6">
