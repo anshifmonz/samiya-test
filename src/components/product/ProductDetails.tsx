@@ -1,5 +1,5 @@
 import React from 'react';
-import { type Product } from '@/types/product';
+import { type Product } from 'types/product';
 import ProductColorSwatches from './ProductColorSwatches';
 
 interface ProductDetailsProps {
@@ -14,8 +14,9 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product, selectedColor,
     const url = typeof window !== 'undefined' ? window.location.href : '';
     const message =
       `Hello, I'm interested in this product!%0A` +
+      `*Product ID:* ${product.short_code}%0A` +
       `*Title:* ${product.title}%0A` +
-      `*Description:* ${product.description}%0A` +
+      `*Color:* ${selectedColor.charAt(0).toUpperCase() + selectedColor.slice(1)}%0A` +
       `*Price:* ₹${product.price.toLocaleString()}%0A` +
       (url ? `*Link:* ${url}` : '');
     const whatsappUrl = `https://wa.me/+919562700999?text=${message}`;
