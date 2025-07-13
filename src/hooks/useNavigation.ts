@@ -85,8 +85,10 @@ export const useNavigation = () => {
   const getTextStyling = () => {
     const default_link_style = "luxury-body font-light transition-colors duration-300 tracking-wide relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-red-500 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left";
     return {
-      logo: 'text-red-500 font-[600]',
-      logoSubtext: 'text-red-500 font-[500]',
+      logo: 'flex flex-col items-center justify-center luxury-heading text-2xl \
+      cursor-pointer transition-colors duration-300 tracking-wide uppercase\
+      text-red-500 font-[1000]',
+      logoSubtext: 'block text-red-500 text-xs luxury-subheading font-[600] text-[0.7rem] -mt-1 tracking-[0em]',
       navLinks: `${default_link_style} text-black hover:text-red-500 font-[400] text-sm`
     };
   };
