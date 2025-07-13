@@ -23,7 +23,7 @@ const NavigationLinks: React.FC<NavigationLinksProps> = ({ textStyles, isAdminPa
         About
       </Link>
       <Link
-        href="/collections"
+        href="/#navbar"
         className={`${textStyles.navLinks}`}
       >
         Collections
