@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { createPortal } from 'react-dom';
 import { type Category } from 'types/category';
 import {
@@ -10,6 +10,7 @@ import {
   ActionButtons,
   ModalHeader
 } from './form';
+import { useAdminCategoryForm } from 'hooks/useAdminCategoryForm';
 
 interface AdminCategoryFormProps {
   category?: Category | null;
@@ -24,92 +25,41 @@ const AdminCategoryForm: React.FC<AdminCategoryFormProps> = ({
   onSave,
   onCancel
 }) => {
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    parentId: 'none',
-    isActive: true
-  });
-
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    // prevent body scroll when modal is open
-    document.body.style.overflow = 'hidden';
-
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, []);
-
-  useEffect(() => {
-    if (category) {
-      setFormData({
-        name: category.name,
-        description: category.description || '',
-        parentId: category.parentId || 'none',
-        isActive: category.isActive
-      });
-    } else {
-      setFormData({
-        name: '',
-        description: '',
-        parentId: 'none',
-        isActive: true
-      });
-    }
-  }, [category]);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // build the path based on parent selection
-    let path: string[] = [formData.name];
-    let level = 0;
-
-    if (formData.parentId && formData.parentId !== 'none') {
-      const parent = categories.find(c => c.id === formData.parentId);
-      if (parent) {
-        path = [...parent.path, formData.name];
-        level = parent.level + 1;
-      }
-    }
-
-    const newCategory: Omit<Category, 'id' | 'createdAt' | 'updatedAt'> = {
-      name: formData.name,
-      description: formData.description || undefined,
-      parentId: formData.parentId === 'none' ? undefined : formData.parentId,
-      level,
-      path,
-      isActive: formData.isActive
-    };
-
-    onSave(newCategory);
-  };
+  const {
+    formData,
+    mounted,
+    handleNameChange,
+    handleDescriptionChange,
+    handleParentIdChange,
+    handleIsActiveChange,
+    handleSubmit,
+    handleCancel,
+    isEditMode,
+    isFormValid
+  } = useAdminCategoryForm({ category, categories, onSave, onCancel });
 
   const modalContent = (
     <div className="fixed inset-0 bg-luxury-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <ModalHeader
-          isEditMode={!!category}
-          onClose={onCancel}
+          isEditMode={isEditMode}
+          onClose={handleCancel}
         />
 
         <form onSubmit={handleSubmit} className="p-3 sm:p-6 space-y-6">
           <CategoryNameInput
             value={formData.name}
-            onChange={(value) => setFormData({ ...formData, name: value })}
+            onChange={handleNameChange}
           />
 
           <DescriptionTextarea
             value={formData.description}
-            onChange={(value) => setFormData({ ...formData, description: value })}
+            onChange={handleDescriptionChange}
           />
 
           <ParentCategorySelect
             value={formData.parentId}
-            onChange={(value) => setFormData({ ...formData, parentId: value })}
+            onChange={handleParentIdChange}
             categories={categories}
             currentCategory={category}
           />
@@ -117,7 +67,7 @@ const AdminCategoryForm: React.FC<AdminCategoryFormProps> = ({
           <ActiveStatusSwitch
             label="Category"
             value={formData.isActive}
-            onChange={(value) => setFormData({ ...formData, isActive: value })}
+            onChange={handleIsActiveChange}
           />
 
           <CategoryPathPreview
@@ -127,9 +77,9 @@ const AdminCategoryForm: React.FC<AdminCategoryFormProps> = ({
           />
 
           <ActionButtons
-            onCancel={onCancel}
-            isEditMode={!!category}
-            isDisabled={!formData.name.trim()}
+            onCancel={handleCancel}
+            isEditMode={isEditMode}
+            isDisabled={!isFormValid}
           />
         </form>
       </div>

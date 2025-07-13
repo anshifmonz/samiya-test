@@ -1,4 +1,5 @@
 import React from 'react';
+import { useAddImageDialog } from 'hooks/useAddImageDialog';
 
 interface AddImageDialogProps {
   show: boolean;
@@ -24,7 +25,27 @@ interface AddImageDialogProps {
 const AddImageDialog: React.FC<AddImageDialogProps> = ({
   show, onClose, addImageTab, setAddImageTab, newImageUrl, setNewImageUrl, selectedFiles, setSelectedFiles, uploading, uploadError, uploadProgress, setUploadProgress, uploadStatus, setUploadStatus, uploadErrors, setUploadErrors, onAddImage, selectedColorForImage
 }) => {
+  const {
+    handleDragOver,
+    handleDragEnter,
+    handleDragLeave,
+    handleDrop,
+    handleFileInputClick,
+    handleFileInputChange,
+    handleRemoveFile,
+    handleRetryUpload,
+    isFileUploading
+  } = useAddImageDialog({
+    setSelectedFiles,
+    setUploadStatus,
+    setUploadErrors,
+    setUploadProgress,
+    uploading,
+    uploadStatus
+  });
+
   if (!show) return null;
+
   return (
     <div className="fixed inset-0 bg-luxury-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
       <div className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full">
@@ -61,20 +82,11 @@ const AddImageDialog: React.FC<AddImageDialogProps> = ({
           <div className="flex flex-col gap-2">
             <div
               className="w-full flex flex-col items-center justify-center border-2 border-dashed border-luxury-gray/30 rounded-xl bg-luxury-cream/50 p-4 mb-4 cursor-pointer hover:bg-luxury-cream/80 transition-all duration-200"
-              onDragOver={e => { e.preventDefault(); e.stopPropagation(); }}
-              onDragEnter={e => { e.preventDefault(); e.stopPropagation(); }}
-              onDragLeave={e => { e.preventDefault(); e.stopPropagation(); }}
-              onDrop={e => {
-                e.preventDefault();
-                e.stopPropagation();
-                const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
-                if (files.length > 0) {
-                  setSelectedFiles(prev => [...prev, ...files]);
-                }
-              }}
-              onClick={() => {
-                document.getElementById('product-image-file-input')?.click();
-              }}
+              onDragOver={handleDragOver}
+              onDragEnter={handleDragEnter}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              onClick={handleFileInputClick}
               style={{ minHeight: 100 }}
             >
               <input
@@ -83,11 +95,7 @@ const AddImageDialog: React.FC<AddImageDialogProps> = ({
                 accept="image/jpeg,image/png,image/webp"
                 multiple={true}
                 className="hidden"
-                onChange={e => {
-                  if (e.target.files) {
-                    setSelectedFiles(prev => [...prev, ...Array.from(e.target.files)]);
-                  }
-                }}
+                onChange={handleFileInputChange}
               />
               <span className="text-luxury-gray text-sm">Click or drag & drop to select image(s)</span>
             </div>
@@ -118,49 +126,16 @@ const AddImageDialog: React.FC<AddImageDialogProps> = ({
                         <button
                           type="button"
                           className="block mt-1 text-xs underline text-luxury-gold hover:text-luxury-gold-dark"
-                          onClick={async () => {
-                            // retry upload for this file
-                            setUploadStatus(prev => ({ ...prev, [file.name]: 'uploading' }));
-                            setUploadErrors(prev => ({ ...prev, [file.name]: '' }));
-                            try {
-                              const formData = new FormData();
-                              formData.append('file', file);
-                              const uploadPromise = new Promise<string>((resolve, reject) => {
-                                const xhr = new XMLHttpRequest();
-                                xhr.open('POST', '/api/admin/upload');
-                                xhr.upload.onprogress = (event) => {
-                                  if (event.lengthComputable) {
-                                    setUploadProgress(prev => ({ ...prev, [file.name]: Math.round((event.loaded / event.total) * 100) }));
-                                  }
-                                };
-                                xhr.onload = () => {
-                                  if (xhr.status >= 200 && xhr.status < 300) {
-                                    const data = JSON.parse(xhr.responseText);
-                                    resolve(data.secure_url);
-                                  } else {
-                                    const data = JSON.parse(xhr.responseText);
-                                    reject(new Error(data.error || 'Upload failed'));
-                                  }
-                                };
-                                xhr.onerror = () => reject(new Error('Upload failed'));
-                                xhr.send(formData);
-                              });
-                              await uploadPromise;
-                              setUploadStatus(prev => ({ ...prev, [file.name]: 'success' }));
-                            } catch (err: any) {
-                              setUploadStatus(prev => ({ ...prev, [file.name]: 'error' }));
-                              setUploadErrors(prev => ({ ...prev, [file.name]: err.message || 'Upload failed.' }));
-                            }
-                          }}
-                          disabled={uploading && uploadStatus[file.name] === 'uploading'}
+                          onClick={() => handleRetryUpload(file)}
+                          disabled={isFileUploading(file.name)}
                         >Retry</button>
                       </div>
                     )}
                     <button
                       type="button"
                       className="text-red-500 hover:text-red-700 text-xs mt-1"
-                      onClick={() => setSelectedFiles(prev => prev.filter((_, i) => i !== idx))}
-                      disabled={uploading && uploadStatus[file.name] === 'uploading'}
+                      onClick={() => handleRemoveFile(idx)}
+                      disabled={isFileUploading(file.name)}
                     >Remove</button>
                   </div>
                 ))}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { createPortal } from 'react-dom';
 import { type Product } from 'types/product';
 import { type Category } from 'types/category';
@@ -13,6 +13,7 @@ import {
   ActionButtons
 } from './form';
 import ActiveStatusSwitch from '../category/form/ActiveStatusSwitch';
+import { useAdminProductForm } from 'hooks/useAdminProductForm';
 
 interface AdminProductFormProps {
   product?: Product | null;
@@ -22,75 +23,33 @@ interface AdminProductFormProps {
 }
 
 const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories, onSave, onCancel }) => {
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    price: 0,
-    category: '',
-    images: {} as Record<string, string[]>,
-    tags: [] as string[],
-    active: true
-  });
-
-  const [activeColorTab, setActiveColorTab] = useState<string>('');
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    // Prevent body scroll when modal is open
-    document.body.style.overflow = 'hidden';
-
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, []);
-
-  useEffect(() => {
-    if (product) {
-      setFormData({
-        title: product.title,
-        description: product.description,
-        price: product.price,
-        category: product.category,
-        images: { ...product.images },
-        tags: [...product.tags],
-        active: product.active !== undefined ? product.active : true
-      });
-      console.log('product', product);
-      // set the first color as active tab
-      const colors = Object.keys(product.images);
-      if (colors.length > 0) {
-        setActiveColorTab(colors[0]);
-      }
-    }
-  }, [product]);
-
-  useEffect(() => {
-    // update active tab when colors change
-    const colors = Object.keys(formData.images);
-    if (colors.length > 0 && !colors.includes(activeColorTab)) {
-      setActiveColorTab(colors[0]);
-    }
-  }, [formData.images, activeColorTab]);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (product) {
-      onSave({ ...formData, id: product.id });
-    } else {
-      onSave(formData);
-    }
-  };
+  const {
+    formData,
+    activeColorTab,
+    mounted,
+    handleTitleChange,
+    handleDescriptionChange,
+    handlePriceChange,
+    handleCategoryChange,
+    handleImagesChange,
+    handleTagsChange,
+    handleActiveChange,
+    handleSubmit,
+    handleCancel,
+    setActiveColorTab,
+    isEditing,
+    modalTitle
+  } = useAdminProductForm({ product, categories, onSave, onCancel });
 
   const modalContent = (
     <div className="fixed inset-0 bg-luxury-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-white rounded-t-2xl border-b border-luxury-gray/20 p-6 flex items-center justify-between z-[9999]">
           <h2 className="luxury-heading text-2xl text-luxury-black">
-            {product ? 'Edit Product' : 'Add New Product'}
+            {modalTitle}
           </h2>
           <button
-            onClick={onCancel}
+            onClick={handleCancel}
             className="text-luxury-gray hover:text-luxury-black transition-colors duration-200"
             type="button"
           >
@@ -102,47 +61,47 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <ProductTitleInput
               value={formData.title}
-              onChange={(value) => setFormData(prev => ({ ...prev, title: value }))}
+              onChange={handleTitleChange}
             />
 
             <CategorySelect
               value={formData.category}
-              onChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
+              onChange={handleCategoryChange}
               categories={categories}
             />
           </div>
 
           <DescriptionTextarea
             value={formData.description}
-            onChange={(value) => setFormData(prev => ({ ...prev, description: value }))}
+            onChange={handleDescriptionChange}
           />
 
           <PriceInput
             value={formData.price}
-            onChange={(value) => setFormData(prev => ({ ...prev, price: value }))}
+            onChange={handlePriceChange}
           />
 
           <ProductImagesSection
             images={formData.images}
-            onImagesChange={(images) => setFormData(prev => ({ ...prev, images }))}
+            onImagesChange={handleImagesChange}
             activeColorTab={activeColorTab}
-            onActiveColorTabChange={setActiveColorTab}
+            onActiveColorTabChange={(color) => setActiveColorTab(color)}
           />
 
           <TagsSection
             tags={formData.tags}
-            onTagsChange={(tags) => setFormData(prev => ({ ...prev, tags }))}
+            onTagsChange={handleTagsChange}
           />
 
           <ActiveStatusSwitch
             label="Product"
             value={formData.active}
-            onChange={(active) => setFormData(prev => ({ ...prev, active }))}
+            onChange={handleActiveChange}
           />
 
           <ActionButtons
-            onCancel={onCancel}
-            isEditing={!!product}
+            onCancel={handleCancel}
+            isEditing={isEditing}
           />
         </form>
       </div>

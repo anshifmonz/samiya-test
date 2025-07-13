@@ -1,11 +1,10 @@
-import { useState } from 'react';
+import { Plus, Search } from 'lucide-react';
 import { type Product } from 'types/product';
 import { type Category } from 'types/category';
 import AdminTabHeader from '../shared/AdminTabHeader';
-import { Plus, Search } from 'lucide-react';
 import AdminProductForm from './AdminProductForm';
 import AdminProductGrid from './AdminProductGrid';
-import { useAdminProductInfiniteScroll } from 'hooks/useAdminProductInfiniteScroll';
+import { useAdminProductsTab } from 'hooks/useAdminProductsTab';
 
 interface AdminProductsTabProps {
   initialProducts: Product[];
@@ -22,43 +21,38 @@ const AdminProductsTab: React.FC<AdminProductsTabProps> = ({
   onEditProduct,
   onDeleteProduct
 }) => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-
   const {
+    searchQuery,
     products,
     loading,
     hasMore,
     error,
+    isSearching,
     loaderRef,
-    refreshProducts,
-    isSearching
-  } = useAdminProductInfiniteScroll(initialProducts, searchQuery);
-
-  const handleAddProduct = async (newProduct: Omit<Product, 'id'>) => {
-    onAddProduct(newProduct);
-    setShowAddForm(false);
-    refreshProducts();
-  };
-
-  const handleEditProduct = async (updatedProduct: Product) => {
-    onEditProduct(updatedProduct);
-    setEditingProduct(null);
-    refreshProducts();
-  };
-
-  const handleDeleteProduct = async (productId: string) => {
-    onDeleteProduct(productId);
-    refreshProducts();
-  };
+    handleSearchChange,
+    handleAddProduct,
+    handleEditProduct,
+    handleDeleteProduct,
+    handleShowAddForm,
+    handleStartEditing,
+    handleCancelForm,
+    isFormVisible,
+    currentProduct,
+    productsCountText
+  } = useAdminProductsTab({
+    initialProducts,
+    categories,
+    onAddProduct,
+    onEditProduct,
+    onDeleteProduct
+  });
 
   return (
     <div>
       <AdminTabHeader
         searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        onAddClick={() => setShowAddForm(true)}
+        onSearchChange={handleSearchChange}
+        onAddClick={handleShowAddForm}
         addLabel="Add Product"
       >
         <Plus size={20} />
@@ -67,8 +61,7 @@ const AdminProductsTab: React.FC<AdminProductsTabProps> = ({
       <div className="mb-6">
         <div className="flex items-center justify-between">
           <p className="luxury-subheading text-luxury-gold text-sm tracking-wider">
-            {products.length} product{products.length !== 1 ? 's' : ''} found
-            {searchQuery && ` for "${searchQuery}"`}
+            {productsCountText}
           </p>
           {isSearching && (
             <div className="flex items-center space-x-2 text-luxury-gray">
@@ -81,7 +74,7 @@ const AdminProductsTab: React.FC<AdminProductsTabProps> = ({
 
       <AdminProductGrid
         products={products}
-        onEdit={setEditingProduct}
+        onEdit={handleStartEditing}
         onDelete={handleDeleteProduct}
         loading={loading}
         hasMore={hasMore}
@@ -90,15 +83,12 @@ const AdminProductsTab: React.FC<AdminProductsTabProps> = ({
         isSearching={isSearching}
       />
 
-      {(showAddForm || editingProduct) && (
+      {isFormVisible && (
         <AdminProductForm
-          product={editingProduct}
+          product={currentProduct}
           categories={categories}
-          onSave={editingProduct ? handleEditProduct : handleAddProduct}
-          onCancel={() => {
-            setShowAddForm(false);
-            setEditingProduct(null);
-          }}
+          onSave={currentProduct ? handleEditProduct : handleAddProduct}
+          onCancel={handleCancelForm}
         />
       )}
     </div>

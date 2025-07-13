@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import AdminSearchBar from '../AdminSearchBar';
+import React from 'react';
 import AdminCategoryGrid from './AdminCategoryGrid';
 import AdminCategoryForm from './AdminCategoryForm';
 import AdminTabHeader from '../shared/AdminTabHeader';
 import { Plus } from 'lucide-react';
-import { type Category } from '@/types/category';
+import { type Category } from 'types/category';
+import { useAdminCategoriesTab } from 'hooks/useAdminCategoriesTab';
 
 interface AdminCategoriesTabProps {
   categories: Category[];
@@ -19,41 +19,32 @@ const AdminCategoriesTab: React.FC<AdminCategoriesTabProps> = ({
   onEditCategory,
   onDeleteCategory
 }) => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-
-  const filteredCategories = categories.filter(category =>
-    category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (category.description && category.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
-    category.path.some(pathSegment => pathSegment.toLowerCase().includes(searchQuery.toLowerCase())) ||
-    category.id.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const handleAddCategory = (newCategory: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>) => {
-    onAddCategory(newCategory);
-    setShowAddForm(false);
-  };
-
-  const handleEditCategory = (updatedCategoryData: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>) => {
-    if (editingCategory) {
-      const updatedCategory: Category = {
-        ...updatedCategoryData,
-        id: editingCategory.id,
-        createdAt: editingCategory.createdAt,
-        updatedAt: new Date().toISOString()
-      };
-      onEditCategory(updatedCategory);
-      setEditingCategory(null);
-    }
-  };
+  const {
+    searchQuery,
+    filteredCategories,
+    handleSearchChange,
+    handleAddCategory,
+    handleEditCategory,
+    handleDeleteCategory,
+    handleShowAddForm,
+    handleStartEditing,
+    handleCancelForm,
+    isFormVisible,
+    currentCategory,
+    categoriesCountText
+  } = useAdminCategoriesTab({
+    categories,
+    onAddCategory,
+    onEditCategory,
+    onDeleteCategory
+  });
 
   return (
     <div>
       <AdminTabHeader
         searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        onAddClick={() => setShowAddForm(true)}
+        onSearchChange={handleSearchChange}
+        onAddClick={handleShowAddForm}
         addLabel="Add Category"
       >
         <Plus size={20} />
@@ -61,25 +52,22 @@ const AdminCategoriesTab: React.FC<AdminCategoriesTabProps> = ({
 
       <div className="mb-6">
         <p className="luxury-subheading text-luxury-gold text-sm tracking-wider">
-          {filteredCategories.length} categor{filteredCategories.length !== 1 ? 'ies' : 'y'} found
+          {categoriesCountText}
         </p>
       </div>
 
       <AdminCategoryGrid
         categories={filteredCategories}
-        onEdit={setEditingCategory}
-        onDelete={onDeleteCategory}
+        onEdit={handleStartEditing}
+        onDelete={handleDeleteCategory}
       />
 
-      {(showAddForm || editingCategory) && (
+      {isFormVisible && (
         <AdminCategoryForm
-          category={editingCategory}
+          category={currentCategory}
           categories={categories}
-          onSave={editingCategory ? handleEditCategory : handleAddCategory}
-          onCancel={() => {
-            setShowAddForm(false);
-            setEditingCategory(null);
-          }}
+          onSave={currentCategory ? handleEditCategory : handleAddCategory}
+          onCancel={handleCancelForm}
         />
       )}
     </div>
