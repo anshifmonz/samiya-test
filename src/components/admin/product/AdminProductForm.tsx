@@ -5,6 +5,7 @@ import { type Category } from 'types/category';
 import { X } from 'lucide-react';
 import {
   ProductTitleInput,
+  ProductIdDisplay,
   CategorySelect,
   DescriptionTextarea,
   PriceInput,
@@ -58,6 +59,8 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
         </div>
 
         <form onSubmit={handleSubmit} className="p-3 sm:p-6 space-y-6">
+          <ProductIdDisplay productId={product?.id} />
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <ProductTitleInput
               value={formData.title}

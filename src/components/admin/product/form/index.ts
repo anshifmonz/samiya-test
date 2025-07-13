@@ -1,4 +1,5 @@
 export { default as ProductTitleInput } from './ProductTitleInput';
+export { default as ProductIdDisplay } from './ProductIdDisplay';
 export { default as CategorySelect } from './CategorySelect';
 export { default as DescriptionTextarea } from './DescriptionTextarea';
 export { default as PriceInput } from './PriceInput';
