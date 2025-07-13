@@ -1,14 +1,12 @@
 "use client";
 
 import React, { useState } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Search } from 'lucide-react';
 
 const SearchBar: React.FC = () => {
   const [query, setQuery] = useState('');
   const router = useRouter();
-  const pathname = usePathname();
-  const isSearchPage = pathname === '/search';
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,7 +14,6 @@ const SearchBar: React.FC = () => {
       router.push(`/search?q=${encodeURIComponent(query.trim())}`);
     }
   };
-  const isInNavbar = !isSearchPage;
 
   return (
     <form onSubmit={handleSubmit} className="relative max-w-2xl mx-auto">
@@ -26,11 +23,7 @@ const SearchBar: React.FC = () => {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search for products"
-          className={`w-full px-4 py-2 pr-16 luxury-body text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-luxury-gold/50 transition-all duration-300 ${
-            isInNavbar
-              ? 'bg-white text-black placeholder-gray-500 border border-gray-200 focus:border-luxury-gold/50'
-              : 'bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-white/60 group-hover:bg-white/15 group-hover:border-white/30'
-          }`}
+          className="w-full px-4 py-2 pr-16 luxury-body text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-luxury-gold/50 transition-all duration-300 bg-white text-black placeholder-gray-500 border border-gray-200 focus:border-luxury-gold/50"
         />
         <button
           type="submit"
@@ -38,10 +31,6 @@ const SearchBar: React.FC = () => {
         >
           <Search size={16} />
         </button>
-
-        {!isInNavbar && (
-          <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-luxury-gold/10 via-transparent to-luxury-gold/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-        )}
       </div>
     </form>
   );
