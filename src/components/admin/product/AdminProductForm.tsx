@@ -59,7 +59,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
         </div>
 
         <form onSubmit={handleSubmit} className="p-3 sm:p-6 space-y-6">
-          <ProductIdDisplay productId={product?.id} />
+          <ProductIdDisplay productId={product?.short_code} />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <ProductTitleInput

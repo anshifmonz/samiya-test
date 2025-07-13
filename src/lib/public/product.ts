@@ -37,6 +37,7 @@ const getProduct = async (id: string): Promise<Product | null> => {
 
   return {
     id: data.id,
+    short_code: data.short_code,
     title: data.title,
     description: data.description,
     images,

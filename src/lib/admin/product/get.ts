@@ -45,6 +45,7 @@ async function getProduct(limit: number, offset: number, query: string): Promise
 
     return {
       id: row.id,
+      short_code: row.short_code,
       title: row.title,
       description: row.description,
       images,

@@ -18,6 +18,7 @@ interface FormData {
   images: Record<string, ProductImage[]>;
   tags: string[];
   active: boolean;
+  short_code: string;
 }
 
 export const useAdminProductForm = ({ product, categories, onSave, onCancel }: UseAdminProductFormProps) => {
@@ -28,7 +29,8 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
     category: '',
     images: {},
     tags: [],
-    active: true
+    active: true,
+    short_code: `PROD-${Date.now()}`
   });
 
   const [activeColorTab, setActiveColorTab] = useState<string>('');
@@ -54,7 +56,8 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
         category: migratedProduct.category,
         images: { ...migratedProduct.images },
         tags: [...migratedProduct.tags],
-        active: migratedProduct.active !== undefined ? migratedProduct.active : true
+        active: migratedProduct.active !== undefined ? migratedProduct.active : true,
+        short_code: migratedProduct.short_code
       });
 
       const colors = Object.keys(migratedProduct.images);
@@ -86,7 +89,7 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (product) {
-      onSave({ ...formData, id: product.id });
+      onSave({ ...formData, id: product.id, short_code: product.short_code });
     } else {
       onSave(formData);
     }

@@ -119,6 +119,7 @@ export default async function createProduct(newProduct: Product): Promise<Produc
 
   return {
     id: productId,
+    short_code: productData.short_code,
     title: productData.title,
     description: productData.description,
     images: newProduct.images,

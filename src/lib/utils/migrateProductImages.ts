@@ -13,6 +13,7 @@ export function migrateProductImages(legacyProduct: LegacyProduct): Product {
 
   return {
     ...legacyProduct,
+    short_code: `LEGACY-${Date.now()}`,
     images: migratedImages
   };
 }
@@ -55,6 +56,7 @@ export function ensureProductImageFormat(product: Product | LegacyProduct): Prod
 
       return {
         ...product,
+        short_code: (product as Product).short_code || `LEGACY-${Date.now()}`,
         images: migratedImages
       };
     }

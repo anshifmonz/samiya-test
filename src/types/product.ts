@@ -5,6 +5,7 @@ export interface ProductImage {
 
 export interface Product {
   id: string;
+  short_code: string;
   title: string;
   description: string;
   images: Record<string, ProductImage[]>;
