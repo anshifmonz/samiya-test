@@ -45,11 +45,15 @@ const DraggableProductItem: React.FC<DraggableProductItemProps> = ({
         <button
           {...attributes}
           {...listeners}
-          className="absolute top-2 left-2 z-50 bg-white/95 hover:bg-luxury-gray/10 text-luxury-gray hover:text-luxury-black transition-all duration-200 rounded-full w-8 h-8 p-0 shadow-lg border border-luxury-gray/200 hover:shadow-xl flex items-center justify-center"
+          className="absolute top-2 left-2
+            z-50 bg-white/95 hover:bg-luxury-gray/10 text-luxury-gray hover:text-luxury-black transition-all duration-200 rounded-full
+            shadow-lg border border-luxury-gray/200 hover:shadow-xl flex items-center justify-center
+            w-10 h-10 lg:w-8 lg:h-8 p-0"
           title="Drag to reorder"
           type="button"
         >
-          <GripVertical size={14} />
+         <span className="sr-only">Drag to reorder</span>
+          <GripVertical size={18} className="lg:w-5 lg:h-5" />
         </button>
         <SectionProductCard
           product={product}
