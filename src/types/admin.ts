@@ -1,3 +1,11 @@
+export interface AdminUser {
+  id: string;
+  username: string;
+  is_superuser: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface NewCategoryInput {
   name: string;
   description?: string;

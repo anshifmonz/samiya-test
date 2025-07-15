@@ -12,6 +12,7 @@ import AdminCategoriesTab from './category/AdminCategoriesTab';
 import { AdminSectionsTab } from './section';
 import { useAdminDashboard } from 'hooks/useAdminDashboard';
 import React, { useState } from 'react';
+import AdminAdminsTab from './AdminAdminsTab';
 
 interface AdminDashboardProps {
   initialProducts: Product[];
@@ -63,7 +64,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
     { value: 'products', label: 'Products' },
     { value: 'collections', label: 'Collections' },
     { value: 'categories', label: 'Categories' },
-    { value: 'sections', label: 'Sections' }
+    { value: 'sections', label: 'Sections' },
+    { value: 'admins', label: 'Admins' },
   ];
 
   return (
@@ -94,7 +96,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
       </div>
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
         <TabsList
-          className="hidden sm:grid w-full grid-cols-4 bg-transparent border-none p-1 mb-8"
+          className="hidden sm:grid w-full grid-cols-5 bg-transparent border-none p-1 mb-8"
           aria-label="Admin dashboard sections"
         >
           <TabsTrigger
@@ -120,6 +122,12 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
             className="rounded-lg px-6 py-3 text-sm font-medium tracking-wide transition-all duration-300 data-[state=active]:bg-luxury-gold data-[state=active]:text-luxury-black data-[state=active]:shadow-md"
           >
             Sections
+          </TabsTrigger>
+          <TabsTrigger
+            value="admins"
+            className="rounded-lg px-6 py-3 text-sm font-medium tracking-wide transition-all duration-300 data-[state=active]:bg-luxury-gold data-[state=active]:text-luxury-black data-[state=active]:shadow-md"
+          >
+            Admins
           </TabsTrigger>
         </TabsList>
 
@@ -163,6 +171,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
             onReorderSections={handleReorderSections}
             onReorderSectionProducts={handleReorderSectionProducts}
           />
+        </TabsContent>
+
+        <TabsContent value="admins" className="mt-0">
+          <AdminAdminsTab />
         </TabsContent>
       </Tabs>
     </div>

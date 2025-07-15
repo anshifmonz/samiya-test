@@ -2,13 +2,21 @@ import { supabaseAdmin } from './supabase';
 
 const SESSION_DURATION_MS = 60 * 60 * 1000; // 1h
 
-export async function createSession(): Promise<{ sessionId: string; expiresAt: number }> {
+export async function createSession(adminUser: { id: string; username: string; is_superuser: boolean; created_at: string; updated_at: string }): Promise<{ sessionId: string; expiresAt: number }> {
   const sessionId = crypto.randomUUID();
   const expiresAt = Date.now() + SESSION_DURATION_MS;
   await supabaseAdmin.from('admin_sessions').insert({
     session_id: sessionId,
     expires_at: new Date(expiresAt).toISOString(),
-    metadata: {},
+    metadata: {
+      adminUser: {
+        id: adminUser.id,
+        username: adminUser.username,
+        is_superuser: adminUser.is_superuser,
+        created_at: adminUser.created_at,
+        updated_at: adminUser.updated_at
+      }
+    },
   });
   return { sessionId, expiresAt };
 }
@@ -30,6 +38,16 @@ export async function validateSession(sessionId: string): Promise<boolean> {
 
 export async function removeSession(sessionId: string) {
   await supabaseAdmin.from('admin_sessions').delete().eq('session_id', sessionId);
+}
+
+export async function getAdminUserFromSession(sessionId: string): Promise<null | { id: string; username: string; is_superuser: boolean; created_at: string; updated_at: string }> {
+  const { data, error } = await supabaseAdmin
+    .from('admin_sessions')
+    .select('metadata')
+    .eq('session_id', sessionId)
+    .single();
+  if (error || !data || !data.metadata || !data.metadata.adminUser) return null;
+  return data.metadata.adminUser;
 }
 
 async function getKey(secret: string) {
