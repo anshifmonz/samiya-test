@@ -26,7 +26,8 @@ export async function validateSession(sessionId: string): Promise<boolean> {
     .from('admin_sessions')
     .select('expires_at')
     .eq('session_id', sessionId)
-    .single();
+    .maybeSingle();
+
   if (error || !data) return false;
   const expiresAt = new Date(data.expires_at).getTime();
   if (Date.now() > expiresAt) {
@@ -45,7 +46,8 @@ export async function getAdminUserFromSession(sessionId: string): Promise<null |
     .from('admin_sessions')
     .select('metadata')
     .eq('session_id', sessionId)
-    .single();
+    .maybeSingle();
+
   if (error || !data || !data.metadata || !data.metadata.adminUser) return null;
   return data.metadata.adminUser;
 }

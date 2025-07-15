@@ -10,7 +10,7 @@ export async function registerUser(username: string, password: string) {
     .from('admin_users')
     .select('id')
     .eq('username', username)
-    .single();
+    .maybeSingle();
   if (existing) {
     const err: any = new Error('Username already exists');
     err.status = 409;

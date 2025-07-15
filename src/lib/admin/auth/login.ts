@@ -8,7 +8,7 @@ const login = async (username: string, password: string): Promise<{ adminUser: A
       .from('admin_users')
       .select('id, username, password, is_superuser, created_at, updated_at')
       .eq('username', username)
-      .single();
+      .maybeSingle();
 
     if (error) return { adminUser: null, error: 'Server error' };
     if (!data) return { adminUser: null, error: 'Invalid username or password' };
