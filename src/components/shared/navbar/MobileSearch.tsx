@@ -3,9 +3,10 @@ import SearchBar from '../../search/SearchBar';
 interface MobileSearchProps {
   isMobileSearchOpen: boolean;
   mobileSearchRef: React.RefObject<HTMLDivElement>;
+  onSearch?: () => void;
 }
 
-const MobileSearch: React.FC<MobileSearchProps> = ({ isMobileSearchOpen, mobileSearchRef }) => {
+const MobileSearch: React.FC<MobileSearchProps> = ({ isMobileSearchOpen, mobileSearchRef, onSearch }) => {
   return (
     <div
       ref={mobileSearchRef}
@@ -14,7 +15,7 @@ const MobileSearch: React.FC<MobileSearchProps> = ({ isMobileSearchOpen, mobileS
       }`}
     >
       <div className="py-4 border-t border-[#d6c6ae]/30">
-        <SearchBar />
+        <SearchBar onSearch={onSearch} />
       </div>
     </div>
   );

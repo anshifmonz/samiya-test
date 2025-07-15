@@ -4,7 +4,11 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search } from 'lucide-react';
 
-const SearchBar: React.FC = () => {
+interface SearchBarProps {
+  onSearch?: () => void;
+}
+
+const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   const [query, setQuery] = useState('');
   const router = useRouter();
 
@@ -12,6 +16,7 @@ const SearchBar: React.FC = () => {
     e.preventDefault();
     if (query.trim()) {
       router.push(`/search?q=${encodeURIComponent(query.trim())}`);
+      onSearch?.();
     }
   };
 

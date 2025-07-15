@@ -19,6 +19,7 @@ const Navigation: React.FC = () => {
     toggleMobileMenu,
     toggleMobileSearch,
     closeMobileMenu,
+    closeMobileSearch,
     getNavbarStyling,
     getTextStyling,
   } = useNavigation();
@@ -66,6 +67,7 @@ const Navigation: React.FC = () => {
         <MobileSearch
           isMobileSearchOpen={isMobileSearchOpen}
           mobileSearchRef={mobileSearchRef}
+          onSearch={closeMobileSearch}
         />
 
         {/* Mobile Navigation Menu */}

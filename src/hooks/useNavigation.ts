@@ -23,6 +23,10 @@ export const useNavigation = () => {
     setIsMobileMenuOpen(false);
   };
 
+  const closeMobileSearch = () => {
+    setIsMobileSearchOpen(false);
+  };
+
   // Close mobile search when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -102,6 +106,7 @@ export const useNavigation = () => {
     toggleMobileMenu,
     toggleMobileSearch,
     closeMobileMenu,
+    closeMobileSearch,
     getNavbarStyling,
     getTextStyling,
   };
