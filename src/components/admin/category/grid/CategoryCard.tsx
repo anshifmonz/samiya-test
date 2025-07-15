@@ -29,7 +29,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
       <CardContent className="p-4 px-2 sm:p-4 ">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 flex-1">
-            <div className="flex items-center gap-2 -ml-6">
+            <div className="flex items-center gap-2">
               {hasChildren ? (
                 <button
                   onClick={onToggleExpanded}
@@ -59,7 +59,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                 </h3>
                 <Badge
                   variant={category.isActive ? "default" : "secondary"}
-                  className={category.isActive ? "bg-luxury-gold text-luxury-black" : "bg-luxury-gray/20"}
+                  className={category.isActive ? "bg-luxury-gold hover:bg-luxury-gold text-luxury-black" : "bg-luxury-gray/20 hover:bg-luxury-gray/30"}
                 >
                   {category.isActive ? 'Active' : 'Inactive'}
                 </Badge>
