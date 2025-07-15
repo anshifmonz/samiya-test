@@ -22,7 +22,7 @@ const TagsFilter: React.FC<TagsFilterProps> = ({ selectedTags, onTagToggle, avai
             <Badge
               key={tag}
               variant={isSelected ? "default" : "secondary"}
-              className="cursor-pointer justify-between w-full py-2 px-3 text-sm hover:bg-primary hover:text-primary-foreground transition-colors"
+              className="cursor-pointer justify-between w-full py-2 px-3 text-sm transition-colors"
               onClick={() => onTagToggle(tag)}
             >
               <span>{tag}</span>
