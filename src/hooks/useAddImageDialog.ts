@@ -9,6 +9,15 @@ interface UseAddImageDialogProps {
   uploadStatus: { [filename: string]: 'pending' | 'uploading' | 'success' | 'error' };
 }
 
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
+const validateFile = (file: File): string | null => {
+  if (!ALLOWED_TYPES.includes(file.type)) {
+    return 'Invalid file type. Only JPEG, PNG, and WebP images are allowed.';
+  }
+  return null;
+};
+
 export const useAddImageDialog = ({
   setSelectedFiles,
   setUploadStatus,
@@ -37,8 +46,18 @@ export const useAddImageDialog = ({
     e.preventDefault();
     e.stopPropagation();
     const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
-    if (files.length > 0) {
-      setSelectedFiles(prev => [...prev, ...files]);
+
+    const validFiles = files.filter(file => {
+      const error = validateFile(file);
+      if (error) {
+        console.warn(`File ${file.name} rejected:`, error);
+        return false;
+      }
+      return true;
+    });
+
+    if (validFiles.length > 0) {
+      setSelectedFiles(prev => [...prev, ...validFiles]);
     }
   }, [setSelectedFiles]);
 
@@ -48,12 +67,28 @@ export const useAddImageDialog = ({
 
   const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setSelectedFiles(prev => [...prev, ...Array.from(e.target.files)]);
+      const files = Array.from(e.target.files);
+
+      const validFiles = files.filter(file => {
+        const error = validateFile(file);
+        if (error) {
+          console.warn(`File ${file.name} rejected:`, error);
+          return false;
+        }
+        return true;
+      });
+
+      if (validFiles.length > 0) {
+        setSelectedFiles(prev => [...prev, ...validFiles]);
+      }
     }
   }, [setSelectedFiles]);
 
   const handleRemoveFile = useCallback((index: number) => {
-    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+    setSelectedFiles(prev => {
+      const newFiles = prev.filter((_, i) => i !== index);
+      return newFiles;
+    });
   }, [setSelectedFiles]);
 
   const handleRetryUpload = useCallback(async (file: File) => {

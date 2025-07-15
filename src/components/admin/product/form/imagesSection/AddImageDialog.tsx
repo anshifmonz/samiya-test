@@ -1,4 +1,4 @@
-import React from 'react';
+import { useMemo, useEffect } from 'react';
 import { useAddImageDialog } from 'hooks/useAddImageDialog';
 
 interface AddImageDialogProps {
@@ -43,6 +43,24 @@ const AddImageDialog: React.FC<AddImageDialogProps> = ({
     uploading,
     uploadStatus
   });
+
+  // create object URLs for file previews
+  const fileUrls = useMemo(() => {
+    const urls: { [key: string]: string } = {};
+    selectedFiles.forEach(file => {
+      urls[file.name] = URL.createObjectURL(file);
+    });
+    return urls;
+  }, [selectedFiles]);
+
+  // cleanup object URLs when component unmounts or files change
+  useEffect(() => {
+    return () => {
+      Object.values(fileUrls).forEach(url => {
+        URL.revokeObjectURL(url);
+      });
+    };
+  }, [fileUrls]);
 
   if (!show) return null;
 
@@ -98,23 +116,29 @@ const AddImageDialog: React.FC<AddImageDialogProps> = ({
                 onChange={handleFileInputChange}
               />
               <span className="text-luxury-gray text-sm">Click or drag & drop to select image(s)</span>
+              <span className="text-luxury-gray text-xs mt-1">Images will be optimized automatically</span>
             </div>
             {selectedFiles.length > 0 && (
               <div className="mb-4 w-full max-h-[40vh] overflow-y-auto flex flex-wrap items-center gap-4 justify-center pr-2">
                 {selectedFiles.map((file, idx) => (
                   <div key={idx} className="flex flex-col items-center w-32">
                     <img
-                      src={URL.createObjectURL(file)}
+                      src={fileUrls[file.name]}
                       alt={file.name}
                       className="w-32 h-32 object-cover rounded-xl border border-luxury-gray/20 mb-2"
                     />
                     <span className="text-xs text-luxury-gray break-all text-center">{file.name}</span>
                     {uploading && uploadProgress[file.name] !== undefined && uploadStatus[file.name] === 'uploading' && (
-                      <div className="w-full h-2 bg-luxury-gray/20 rounded mt-2">
-                        <div
-                          className="h-2 bg-luxury-gold rounded transition-all duration-200"
-                          style={{ width: `${uploadProgress[file.name]}%` }}
-                        />
+                      <div className="w-full mt-2">
+                        <div className="w-full h-2 bg-luxury-gray/20 rounded">
+                          <div
+                            className="h-2 bg-luxury-gold rounded transition-all duration-200"
+                            style={{ width: `${uploadProgress[file.name]}%` }}
+                          />
+                        </div>
+                        <div className="text-xs text-luxury-gray mt-1 text-center">
+                          {uploadProgress[file.name] <= 30 ? 'Optimizing...' : 'Uploading...'}
+                        </div>
                       </div>
                     )}
                     {uploadStatus[file.name] === 'success' && (

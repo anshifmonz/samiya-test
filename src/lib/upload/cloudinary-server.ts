@@ -4,13 +4,26 @@ import path from 'path';
 import { tmpdir } from 'os';
 import { randomUUID } from 'crypto';
 
+const requiredEnvVars = {
+  CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
+  CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
+  CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
+};
+
+const missingVars = Object.entries(requiredEnvVars)
+  .filter(([_, value]) => !value)
+  .map(([key]) => key);
+
+if (missingVars.length > 0) {
+  throw new Error(`Missing required Cloudinary environment variables: ${missingVars.join(', ')}`);
+}
+
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+  cloud_name: requiredEnvVars.CLOUDINARY_CLOUD_NAME,
+  api_key: requiredEnvVars.CLOUDINARY_API_KEY,
+  api_secret: requiredEnvVars.CLOUDINARY_API_SECRET,
 });
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 export async function uploadFileToCloudinary(file: File): Promise<{ secure_url: string, public_id: string }> {
@@ -21,11 +34,7 @@ export async function uploadFileToCloudinary(file: File): Promise<{ secure_url: 
   if (!ALLOWED_TYPES.includes(file.type)) {
     throw new Error('Invalid file type.');
   }
-  if (file.size > MAX_FILE_SIZE) {
-    throw new Error('File too large.');
-  }
   try {
-    // write file to temporary directory
     const buffer = Buffer.from(await file.arrayBuffer());
     tempPath = path.join(
       tmpdir(),
@@ -33,14 +42,22 @@ export async function uploadFileToCloudinary(file: File): Promise<{ secure_url: 
     );
     await writeFile(tempPath, buffer);
 
-    // upload to cloudinary
     const result = await cloudinary.uploader.upload(tempPath, {
       folder: 'product-images',
       resource_type: 'image',
       transformation: [
-        { width: 800, height: 800, crop: 'limit' },
-        { quality: 'auto' },
+        { width: 1200, height: 1500, crop: 'fill', gravity: 'auto' }, // 4:5 aspect ratio
+        { quality: 'auto:good' },
+        { fetch_format: 'auto' },
+        { strip: true },
+        { flags: 'progressive' }
       ],
+      eager: [
+        { width: 800, height: 1000, crop: 'fill', gravity: 'auto', quality: 'auto:good' },
+        { width: 400, height: 500, crop: 'fill', gravity: 'auto', quality: 'auto:good' }
+      ],
+      eager_async: true,
+      eager_notification_url: null,
     });
     return { secure_url: result.secure_url, public_id: result.public_id };
   } finally {

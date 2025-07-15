@@ -9,6 +9,7 @@ import {
   sortableKeyboardCoordinates,
 } from '@dnd-kit/sortable';
 import { uploadImagesToCloudinary } from 'lib/upload/cloudinary';
+import optimizeFile from 'lib/utils/optimizeFile';
 import { type ProductImage } from 'types/product';
 
 interface UseProductImagesSectionUIProps {
@@ -139,18 +140,6 @@ export const useProductImagesSectionUI = (props: UseProductImagesSectionUIProps)
     }
   }, []);
 
-  const validateFiles = useCallback((files: File[]): string | null => {
-    for (const file of files) {
-      if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
-        return 'Only JPG, PNG, or WebP images are allowed.';
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        return 'Each file must be 5MB or less.';
-      }
-    }
-    return null;
-  }, []);
-
   const handleImageUpload = useCallback(async () => {
     setUploadError(null);
 
@@ -165,20 +154,30 @@ export const useProductImagesSectionUI = (props: UseProductImagesSectionUIProps)
         return;
       }
 
-      const validationError = validateFiles(selectedFiles);
-      if (validationError) {
-        setUploadError(validationError);
-        return;
-      }
-
       setUploading(true);
       setUploadProgress({});
       setUploadStatus(Object.fromEntries(selectedFiles.map(f => [f.name, 'uploading'])));
       setUploadErrors({});
 
       try {
-        const results = await uploadImagesToCloudinary(selectedFiles, (file, percent) => {
-          setUploadProgress(prev => ({ ...prev, [file.name]: percent }));
+        setUploadStatus(Object.fromEntries(selectedFiles.map(f => [f.name, 'uploading'])));
+        setUploadProgress(Object.fromEntries(selectedFiles.map(f => [f.name, 0])));
+
+        const optimizedFiles = await Promise.all(
+          selectedFiles.map(async (file, index) => {
+            setUploadProgress(prev => ({
+              ...prev,
+              [file.name]: Math.round((index / selectedFiles.length) * 30) // First 30% for optimization
+            }));
+            return await optimizeFile(file);
+          })
+        );
+
+        const results = await uploadImagesToCloudinary(optimizedFiles, (file, percent) => {
+          setUploadProgress(prev => ({
+            ...prev,
+            [file.name]: 30 + Math.round((percent / 100) * 70) // Remaining 70% for upload
+          }));
         });
 
         results.forEach(({ file, url, publicId, error }) => {
@@ -213,7 +212,6 @@ export const useProductImagesSectionUI = (props: UseProductImagesSectionUIProps)
     addImageTab,
     addImage,
     selectedFiles,
-    validateFiles,
     setUploadError,
     setUploading,
     setUploadProgress,
@@ -252,6 +250,5 @@ export const useProductImagesSectionUI = (props: UseProductImagesSectionUIProps)
 
     // Image upload
     handleImageUpload,
-    validateFiles
   };
 };

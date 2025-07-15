@@ -10,48 +10,75 @@ export interface CloudinaryImageInfo {
   publicId: string;
 }
 
+let activeUploads = 0;
+const MAX_CONCURRENT_UPLOADS = 10;
+const uploadQueue: Array<{ fn: () => Promise<CloudinaryUploadResult>; resolve: (value: CloudinaryUploadResult) => void }> = [];
+
+const processUploadQueue = () => {
+  if (uploadQueue.length > 0 && activeUploads < MAX_CONCURRENT_UPLOADS) {
+    const nextUpload = uploadQueue.shift();
+    if (nextUpload) {
+      activeUploads++;
+      nextUpload.fn().then(result => {
+        nextUpload.resolve(result);
+        activeUploads--;
+        processUploadQueue();
+      });
+    }
+  }
+};
+
+const queueUpload = (uploadFn: () => Promise<CloudinaryUploadResult>): Promise<CloudinaryUploadResult> => {
+  return new Promise((resolve) => {
+    uploadQueue.push({ fn: uploadFn, resolve });
+    processUploadQueue();
+  });
+};
+
 export async function uploadImagesToCloudinary(
   files: File[],
   onProgress?: (file: File, percent: number) => void
 ): Promise<CloudinaryUploadResult[]> {
   const uploadPromises = files.map((file) => {
-    return new Promise<CloudinaryUploadResult>((resolve) => {
-      const xhr = new XMLHttpRequest();
-      xhr.open('POST', '/api/admin/upload');
-      xhr.upload.onprogress = (event) => {
-        if (event.lengthComputable && onProgress) {
-          onProgress(file, Math.round((event.loaded / event.total) * 100));
-        }
-      };
-      xhr.onload = () => {
-        if (xhr.status >= 200 && xhr.status < 300) {
-          const data = JSON.parse(xhr.responseText);
-          resolve({
-            url: data.secure_url,
-            publicId: data.public_id,
-            file
-          });
-        } else {
-          const data = JSON.parse(xhr.responseText);
+    return queueUpload(() => {
+      return new Promise<CloudinaryUploadResult>((resolve) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '/api/admin/upload');
+        xhr.upload.onprogress = (event) => {
+          if (event.lengthComputable && onProgress) {
+            onProgress(file, Math.round((event.loaded / event.total) * 100));
+          }
+        };
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            const data = JSON.parse(xhr.responseText);
+            resolve({
+              url: data.secure_url,
+              publicId: data.public_id,
+              file
+            });
+          } else {
+            const data = JSON.parse(xhr.responseText);
+            resolve({
+              url: null,
+              publicId: null,
+              file,
+              error: data.error || 'Upload failed.'
+            });
+          }
+        };
+        xhr.onerror = () => {
           resolve({
             url: null,
             publicId: null,
             file,
-            error: data.error || 'Upload failed.'
+            error: 'Upload failed.'
           });
-        }
-      };
-      xhr.onerror = () => {
-        resolve({
-          url: null,
-          publicId: null,
-          file,
-          error: 'Upload failed.'
-        });
-      };
-      const formData = new FormData();
-      formData.append('file', file);
-      xhr.send(formData);
+        };
+        const formData = new FormData();
+        formData.append('file', file);
+        xhr.send(formData);
+      });
     });
   });
   return Promise.all(uploadPromises);
