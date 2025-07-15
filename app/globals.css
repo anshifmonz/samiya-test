@@ -45,13 +45,13 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
-    
+
     --success: 142 76% 36%;
     --success-foreground: 0 0% 100%;
-    
+
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
-    
+
     --filter-bg: 0 0% 98%;
     --product-card-shadow: 0 1px 3px 0 hsl(0 0% 0% / 0.1);
     --product-card-shadow-hover: 0 4px 12px 0 hsl(0 0% 0% / 0.15);
@@ -159,7 +159,7 @@
   @keyframes fadeInUp {
     from {
       opacity: 0;
-      transform: translateY(30px);
+      transform: translateY(60px);
     }
     to {
       opacity: 1;
@@ -199,7 +199,7 @@
   }
 
   .animate-fade-in-up {
-    animation: fadeInUp 0.8s ease-out forwards;
+    animation: fadeInUp 1s ease-out forwards;
   }
 
   .animate-fade-in-left {
