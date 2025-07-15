@@ -1,5 +1,5 @@
 import { supabaseAdmin } from 'lib/supabase';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { AdminUser } from 'types/admin';
 
 const login = async (username: string, password: string): Promise<{ adminUser: AdminUser, error: string }> => {

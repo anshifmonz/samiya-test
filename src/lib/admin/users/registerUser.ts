@@ -1,5 +1,5 @@
 import { supabaseAdmin } from 'lib/supabase';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 export async function registerUser(username: string, password: string) {
   if (!username || !password) {
