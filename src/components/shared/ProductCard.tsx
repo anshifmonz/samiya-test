@@ -1,6 +1,9 @@
-import React from 'react';
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
+import { CldImage } from 'next-cloudinary';
+import isCloudinaryUrl from 'src/lib/utils/isCloudinaryUrls';
 import { type Product } from 'types/product';
 import { Badge } from 'ui/badge';
 import { Edit, Trash } from 'lucide-react';
@@ -66,14 +69,26 @@ const ProductCard: React.FC<ProductCardProps> = ({
     <div className="group bg-card border border-border rounded-lg overflow-hidden hover:shadow-[var(--product-card-shadow-hover)] transition-all duration-300">
       <div className="relative aspect-[4/5] overflow-hidden bg-muted">
         {firstImage ? (
-          <Image
-            src={firstImage}
-            alt={product.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            width={400}
-            height={500}
-            priority
-          />
+          isCloudinaryUrl(firstImage) ? (
+            <CldImage
+              src={firstImage}
+              alt={product.category ? `${product.title} (${product.category})` : product.title}
+              width={400}
+              height={500}
+              sizes="(max-width: 600px) 100vw, 400px"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              priority
+            />
+          ) : (
+            <Image
+              src={firstImage}
+              alt={product.title}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              width={400}
+              height={500}
+              priority
+            />
+          )
         ) : (
           <ImageFallback />
         )}

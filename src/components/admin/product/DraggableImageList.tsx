@@ -1,5 +1,8 @@
-import React from 'react';
+'use client';
+
 import Image from 'next/image';
+import { CldImage } from 'next-cloudinary';
+import isCloudinaryUrl from 'src/lib/utils/isCloudinaryUrls';
 import {
   DndContext,
   closestCenter,
@@ -84,13 +87,24 @@ const DraggableImageItem: React.FC<DraggableImageItemProps> = ({
         <GripVertical size={16} />
       </button>
 
-      <Image
-        src={image.url}
-        alt={`Image ${index + 1}`}
-        className="w-16 h-16 object-cover rounded flex-shrink-0"
-        width={64}
-        height={64}
-      />
+      {isCloudinaryUrl(image.url) ? (
+        <CldImage
+          src={image.url}
+          alt={`Product image ${index + 1}${isPrimary ? ' (Primary)' : ''}`}
+          width={64}
+          height={64}
+          sizes="(max-width: 600px) 20vw, 64px"
+          className="w-16 h-16 object-cover rounded flex-shrink-0"
+        />
+      ) : (
+        <Image
+          src={image.url}
+          alt={`Image ${index + 1}`}
+          className="w-16 h-16 object-cover rounded flex-shrink-0"
+          width={64}
+          height={64}
+        />
+      )}
 
       <div className="flex-1 max-w-[60%] overflow-hidden">
         <p className="luxury-body text-xs text-luxury-gray leading-relaxed truncate overflow-hidden whitespace-nowrap">

@@ -1,8 +1,12 @@
+'use client';
+
 import Image from 'next/image';
 import { type SpecialProduct } from 'types/special';
 import ImageFallback from 'components/shared/ImageFallback';
 import { SectionProductItem } from 'types/section';
 import Link from 'next/link';
+import { CldImage } from 'next-cloudinary';
+import isCloudinaryUrl from 'src/lib/utils/isCloudinaryUrls';
 
 interface ProductcardProps {
   product: SpecialProduct | SectionProductItem;
@@ -24,13 +28,24 @@ const Productcard = ({ product, className, showDiscountBadge = true }: Productca
       <div className="relative flex flex-col gap-1 rounded-sm overflow-hidden shadow-sm group cursor-pointer w-[clamp(164px,calc(50vw-30px),458px)] lg:w-[clamp(200px,calc(17.5vw-16px),277px)]">
         <div className="relative flex-grow w-full aspect-[4/5] overflow-hidden">
           {image ? (
-            <Image
-              src={image}
-              alt={product.title}
-              className="w-full h-full object-cover"
-              width={458}
-              height={573}
-            />
+            isCloudinaryUrl(image) ? (
+              <CldImage
+                src={image}
+                alt={`Product: ${product.title}${product.price ? `, Price: Rs ${product.price}` : ''}`}
+                width={458}
+                height={573}
+                sizes="(max-width: 600px) 100vw, 458px"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <Image
+                src={image}
+                alt={product.title}
+                className="w-full h-full object-cover"
+                width={458}
+                height={573}
+              />
+            )
           ) : (
             <ImageFallback />
           )}

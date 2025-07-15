@@ -1,7 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+'use client';
+
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
+import { CldImage } from 'next-cloudinary';
+import isCloudinaryUrl from 'src/lib/utils/isCloudinaryUrls';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { type Product } from '@/types/product';
+import { type Product } from 'types/product';
 
 interface ProductImageGalleryProps {
   product: Product;
@@ -148,13 +152,24 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({ product, sele
                 : 'border-luxury-gray/20 hover:border-luxury-gold/50'
             }`}
           >
-            <Image
-              src={image}
-              alt={`${product.title} ${selectedColor} view ${index + 1}`}
-              className="w-full h-full object-cover"
-              width={80}
-              height={80}
-            />
+            {isCloudinaryUrl(image) ? (
+              <CldImage
+                src={image}
+                alt={`${product.title} - ${selectedColor} (Thumbnail ${index + 1})`}
+                width={80}
+                height={80}
+                sizes="(max-width: 600px) 20vw, 80px"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <Image
+                src={image}
+                alt={`${product.title} ${selectedColor} view ${index + 1}`}
+                className="w-full h-full object-cover"
+                width={80}
+                height={80}
+              />
+            )}
           </button>
         ))}
       </div>
@@ -175,15 +190,27 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({ product, sele
             transition: isDragging ? 'none' : 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
           }}
         >
-          <Image
-            src={currentImages[currentImageIndex]}
-            alt={`${product.title} ${selectedColor}`}
-            className="w-full h-full object-cover transition-all duration-300"
-            width={600}
-            height={750}
-            priority={currentImageIndex === 0}
-            draggable={false}
-          />
+          {isCloudinaryUrl(currentImages[currentImageIndex]) ? (
+            <CldImage
+              src={currentImages[currentImageIndex]}
+              alt={`${product.title} - ${selectedColor} (Main view)`}
+              width={600}
+              height={750}
+              sizes="(max-width: 900px) 100vw, 600px"
+              className="w-full h-full object-cover transition-all duration-300"
+              priority={currentImageIndex === 0}
+            />
+          ) : (
+            <Image
+              src={currentImages[currentImageIndex]}
+              alt={`${product.title} ${selectedColor}`}
+              className="w-full h-full object-cover transition-all duration-300"
+              width={600}
+              height={750}
+              priority={currentImageIndex === 0}
+              draggable={false}
+            />
+          )}
 
           {currentImages.length > 1 && (
             <>
