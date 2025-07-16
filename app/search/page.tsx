@@ -16,6 +16,7 @@ interface Props {
     maxPrice?: string;
     colors?: string;
     tags?: string;
+    source?: string;
   };
 }
 
@@ -47,7 +48,16 @@ function parseFilters(searchParams: Props['searchParams']): ProductFilters {
 
 export default async function SearchPage({ searchParams }: Props) {
   const query = searchParams.q || '';
-  if (query.trim() === '') redirect('/');
+  const minPrice = searchParams.minPrice;
+  const maxPrice = searchParams.maxPrice;
+  const source = searchParams.source;
+
+  if (
+    (!query || query.trim() === '') && source !== 'budget' ||
+    (source === 'budget' && minPrice == null && maxPrice == null)
+  ) {
+    redirect('/');
+  }
 
   const filters = parseFilters(searchParams);
   const products: Omit<Product, 'description'>[] = await searchProducts(query, filters);
