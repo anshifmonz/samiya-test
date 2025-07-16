@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from 'ui/button';
+import { Input } from 'ui/input';
+import { Label } from 'ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from 'ui/card';
 import { Lock, Shield, User } from 'lucide-react';
 
 const AdminLogin: React.FC = () => {
@@ -14,6 +14,11 @@ const AdminLogin: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
+
+  useEffect(() => {
+    setUsername('');
+    setPassword('');
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,7 +49,7 @@ const AdminLogin: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-luxury-cream p-4">
+    <div className="min-h-screen flex items-center justify-center bg-luxury-white p-4">
       <Card className="w-full max-w-md bg-white border-luxury-gray/20 shadow-xl">
         <CardHeader className="space-y-2 text-center">
           <div className="mx-auto w-12 h-12 bg-luxury-gold/10 rounded-full flex items-center justify-center mb-4">
@@ -71,7 +76,7 @@ const AdminLogin: React.FC = () => {
                   placeholder="Enter admin username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="pl-10 bg-white border-luxury-gray/30 focus:ring-luxury-gold/50 focus:border-luxury-gold/30 transition-colors"
+                  className="pl-10 bg-luxury-white border-luxury-gray/30 focus:ring-luxury-gold/50 focus:border-luxury-gold/30 transition-colors"
                   required
                   disabled={isLoading}
                 />
@@ -89,7 +94,7 @@ const AdminLogin: React.FC = () => {
                   placeholder="Enter admin password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 bg-white border-luxury-gray/30 focus:ring-luxury-gold/50 focus:border-luxury-gold/30 transition-colors"
+                  className="pl-10 bg-luxury-white border-luxury-gray/30 focus:ring-luxury-gold/50 focus:border-luxury-gold/30 transition-colors"
                   required
                   disabled={isLoading}
                 />
