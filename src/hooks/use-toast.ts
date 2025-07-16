@@ -138,6 +138,25 @@ function toast({ ...props }: Toast) {
   }
 }
 
+export function showToast({
+  type = "success",
+  title,
+  description,
+  duration = 3000,
+}: {
+  type?: "success" | "error";
+  title: string;
+  description: string;
+  duration?: number;
+}) {
+  toast({
+    title,
+    description,
+    variant: type === "error" ? "destructive" : "success",
+    duration,
+  });
+}
+
 function useToast() {
   const [state, setState] = React.useState<ToastState>(memoryState)
 

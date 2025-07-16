@@ -3,6 +3,7 @@ import { type Product } from 'types/product';
 import { type Collection } from 'types/collection';
 import { type Category } from 'types/category';
 import { type Section, type SectionWithProducts } from 'types/section';
+import { showToast } from 'hooks/use-toast';
 
 interface UseAdminDashboardProps {
   initialProducts: Product[];
@@ -30,14 +31,18 @@ export const useAdminDashboard = ({
         body: JSON.stringify(newProduct),
       });
       if (!response.ok) {
-        console.error('Failed to add product');
-        throw new Error('Failed to add product');
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.error || 'Failed to add product';
+        showToast({ type: 'error', title: 'Error', description: errorMessage });
+        return null;
       }
       const { product } = await response.json();
+      showToast({ title: 'Success', description: 'Product added successfully' });
       return product;
     } catch (error) {
       console.error('Error adding product:', error);
-      throw error;
+      showToast({ type: 'error', title: 'Error', description: 'Failed to add product. Please try again.' });
+      return null;
     }
   };
 
@@ -49,14 +54,18 @@ export const useAdminDashboard = ({
         body: JSON.stringify(updatedProduct),
       });
       if (!response.ok) {
-        console.error('Failed to update product');
-        throw new Error('Failed to update product');
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.error || 'Failed to update product';
+        showToast({ type: 'error', title: 'Error', description: errorMessage });
+        return null;
       }
       const { product } = await response.json();
+      showToast({ title: 'Success', description: 'Product updated successfully' });
       return product;
     } catch (error) {
       console.error('Error updating product:', error);
-      throw error;
+      showToast({ type: 'error', title: 'Error', description: 'Failed to update product. Please try again.' });
+      return null;
     }
   };
 
@@ -66,12 +75,17 @@ export const useAdminDashboard = ({
         method: 'DELETE',
       });
       if (!response.ok) {
-        console.error('Failed to delete product');
-        throw new Error('Failed to delete product');
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.error || 'Failed to delete product';
+        showToast({ type: 'error', title: 'Error', description: errorMessage });
+        return false;
       }
+      showToast({ title: 'Success', description: 'Product deleted successfully' });
+      return true;
     } catch (error) {
       console.error('Error deleting product:', error);
-      throw error;
+      showToast({ type: 'error', title: 'Error', description: 'Failed to delete product. Please try again.' });
+      return false;
     }
   };
 
@@ -93,11 +107,15 @@ export const useAdminDashboard = ({
       });
       if (response.ok) {
         await fetchCollections();
+        showToast({ title: 'Success', description: 'Collection added successfully' });
       } else {
-        console.error('Failed to add collection');
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.error || 'Failed to add collection';
+        showToast({ type: 'error', title: 'Error', description: errorMessage });
       }
     } catch (error) {
       console.error('Error adding collection:', error);
+      showToast({ type: 'error', title: 'Error', description: 'Failed to add collection. Please try again.' });
     }
   };
 
@@ -110,11 +128,15 @@ export const useAdminDashboard = ({
       });
       if (response.ok) {
         await fetchCollections();
+        showToast({ title: 'Success', description: 'Collection updated successfully' });
       } else {
-        console.error('Failed to update collection');
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.error || 'Failed to update collection';
+        showToast({ type: 'error', title: 'Error', description: errorMessage });
       }
     } catch (error) {
       console.error('Error updating collection:', error);
+      showToast({ type: 'error', title: 'Error', description: 'Failed to update collection. Please try again.' });
     }
   };
 
@@ -125,11 +147,15 @@ export const useAdminDashboard = ({
       });
       if (response.ok) {
         await fetchCollections();
+        showToast({ title: 'Success', description: 'Collection deleted successfully' });
       } else {
-        console.error('Failed to delete collection');
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.error || 'Failed to delete collection';
+        showToast({ type: 'error', title: 'Error', description: errorMessage });
       }
     } catch (error) {
       console.error('Error deleting collection:', error);
+      showToast({ type: 'error', title: 'Error', description: 'Failed to delete collection. Please try again.' });
     }
   };
 
@@ -151,11 +177,15 @@ export const useAdminDashboard = ({
       });
       if (response.ok) {
         await fetchCategories();
+        showToast({ title: 'Success', description: 'Category added successfully' });
       } else {
-        console.error('Failed to add category');
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.error || 'Failed to add category';
+        showToast({ type: 'error', title: 'Error', description: errorMessage });
       }
     } catch (error) {
       console.error('Error adding category:', error);
+      showToast({ type: 'error', title: 'Error', description: 'Failed to add category. Please try again.' });
     }
   };
 
@@ -168,11 +198,15 @@ export const useAdminDashboard = ({
       });
       if (response.ok) {
         await fetchCategories();
+        showToast({ title: 'Success', description: 'Category updated successfully' });
       } else {
-        console.error('Failed to update category');
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.error || 'Failed to update category';
+        showToast({ type: 'error', title: 'Error', description: errorMessage });
       }
     } catch (error) {
       console.error('Error updating category:', error);
+      showToast({ type: 'error', title: 'Error', description: 'Failed to update category. Please try again.' });
     }
   };
 
@@ -183,11 +217,15 @@ export const useAdminDashboard = ({
       });
       if (response.ok) {
         await fetchCategories();
+        showToast({ title: 'Success', description: 'Category deleted successfully' });
       } else {
-        console.error('Failed to delete category');
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.error || 'Failed to delete category';
+        showToast({ type: 'error', title: 'Error', description: errorMessage });
       }
     } catch (error) {
       console.error('Error deleting category:', error);
+      showToast({ type: 'error', title: 'Error', description: 'Failed to delete category. Please try again.' });
     }
   };
 
@@ -209,11 +247,15 @@ export const useAdminDashboard = ({
       });
       if (response.ok) {
         await fetchSections();
+        showToast({ title: 'Success', description: 'Section added successfully' });
       } else {
-        console.error('Failed to add section');
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.error || 'Failed to add section';
+        showToast({ type: 'error', title: 'Error', description: errorMessage });
       }
     } catch (error) {
       console.error('Error adding section:', error);
+      showToast({ type: 'error', title: 'Error', description: 'Failed to add section. Please try again.' });
     }
   };
 
@@ -226,11 +268,15 @@ export const useAdminDashboard = ({
       });
       if (response.ok) {
         await fetchSections();
+        showToast({ title: 'Success', description: 'Section updated successfully' });
       } else {
-        console.error('Failed to update section:', response.statusText);
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.error || 'Failed to update section';
+        showToast({ type: 'error', title: 'Error', description: errorMessage });
       }
     } catch (error) {
       console.error('Error updating section:', error);
+      showToast({ type: 'error', title: 'Error', description: 'Failed to update section. Please try again.' });
     }
   };
 
@@ -241,11 +287,15 @@ export const useAdminDashboard = ({
       });
       if (response.ok) {
         await fetchSections();
+        showToast({ title: 'Success', description: 'Section deleted successfully' });
       } else {
-        console.error('Failed to delete section');
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.error || 'Failed to delete section';
+        showToast({ type: 'error', title: 'Error', description: errorMessage });
       }
     } catch (error) {
       console.error('Error deleting section:', error);
+      showToast({ type: 'error', title: 'Error', description: 'Failed to delete section. Please try again.' });
     }
   };
 
@@ -258,11 +308,15 @@ export const useAdminDashboard = ({
       });
       if (response.ok) {
         await fetchSections();
+        showToast({ title: 'Success', description: 'Product added to section successfully' });
       } else {
-        console.error('Failed to add product to section:', response.statusText);
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.error || 'Failed to add product to section';
+        showToast({ type: 'error', title: 'Error', description: errorMessage });
       }
     } catch (error) {
       console.error('Error adding product to section:', error);
+      showToast({ type: 'error', title: 'Error', description: 'Failed to add product to section. Please try again.' });
     }
   };
 
@@ -273,11 +327,15 @@ export const useAdminDashboard = ({
       });
       if (response.ok) {
         await fetchSections();
+        showToast({ title: 'Success', description: 'Product removed from section successfully' });
       } else {
-        console.error('Failed to remove product from section:', response.statusText);
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.error || 'Failed to remove product from section';
+        showToast({ type: 'error', title: 'Error', description: errorMessage });
       }
     } catch (error) {
       console.error('Error removing product from section:', error);
+      showToast({ type: 'error', title: 'Error', description: 'Failed to remove product from section. Please try again.' });
     }
   };
 
@@ -290,11 +348,15 @@ export const useAdminDashboard = ({
       });
       if (response.ok) {
         await fetchSections();
+        showToast({ title: 'Success', description: 'Section products reordered successfully' });
       } else {
-        console.error('Failed to reorder section products:', response.statusText);
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.error || 'Failed to reorder section products';
+        showToast({ type: 'error', title: 'Error', description: errorMessage });
       }
     } catch (error) {
       console.error('Error reordering section products:', error);
+      showToast({ type: 'error', title: 'Error', description: 'Failed to reorder section products. Please try again.' });
     }
   };
 
@@ -307,11 +369,15 @@ export const useAdminDashboard = ({
       });
       if (response.ok) {
         await fetchSections();
+        showToast({ title: 'Success', description: 'Sections reordered successfully' });
       } else {
-        console.error('Failed to reorder sections:', response.statusText);
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.error || 'Failed to reorder sections';
+        showToast({ type: 'error', title: 'Error', description: errorMessage });
       }
     } catch (error) {
       console.error('Error reordering sections:', error);
+      showToast({ type: 'error', title: 'Error', description: 'Failed to reorder sections. Please try again.' });
     }
   };
 
