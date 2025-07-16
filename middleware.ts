@@ -10,30 +10,28 @@ export async function middleware(request: NextRequest) {
   if (!pathname.startsWith('/admin') && !pathname.startsWith('/api/admin'))
     return NextResponse.next();
 
+  const redirectToLogin = () => NextResponse.redirect(new URL('/admin/login', request.url));
+
+  const cookieSecret = process.env.COOKIE_SIGNING_SECRET;
+  if (!cookieSecret) return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+  const adminAuthCookie = request.cookies.get('admin_auth');
+  if (!adminAuthCookie) return redirectToLogin();
+  const sessionId = await unsignSessionId(adminAuthCookie.value, cookieSecret);
+  if (!sessionId) return redirectToLogin();
+  const currentAdmin = await getAdminUserFromSession(sessionId);
+  if (!currentAdmin) return redirectToLogin();
+
+  const response = NextResponse.next();
+  response.headers.set('x-admin-id', currentAdmin.id);
+  response.headers.set('x-admin-username', currentAdmin.username);
+  response.headers.set('x-admin-superuser', String(currentAdmin.is_superuser));
+
   if (pathname === '/api/admin') {
-    const adminAuthCookie = request.cookies.get('admin_auth');
-    const cookieSecret = process.env.COOKIE_SIGNING_SECRET;
-    if (!adminAuthCookie || !cookieSecret) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-    const sessionId = await unsignSessionId(adminAuthCookie.value, cookieSecret);
-    if (!sessionId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-    const currentAdmin = await getAdminUserFromSession(sessionId);
-    if (!currentAdmin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-    if (method === 'GET') {
-      const response = NextResponse.next();
-      response.headers.set('x-admin-id', currentAdmin.id);
-      response.headers.set('x-admin-superuser', String(currentAdmin.is_superuser));
-      return response;
-    }
+    if (method === 'GET') return response;
 
     if (method === 'POST') {
       if (!currentAdmin.is_superuser)
         return NextResponse.json({ error: 'Only super admin can add admins' }, { status: 403 });
-      const response = NextResponse.next();
-      response.headers.set('x-admin-id', currentAdmin.id);
-      response.headers.set('x-admin-superuser', String(currentAdmin.is_superuser));
       return response;
     }
 
@@ -45,28 +43,18 @@ export async function middleware(request: NextRequest) {
       if (id === currentAdmin.id) {
         return NextResponse.json({ error: 'You cannot delete your own account' }, { status: 403 });
       }
-      const response = NextResponse.next();
-      response.headers.set('x-admin-id', currentAdmin.id);
-      response.headers.set('x-admin-superuser', String(currentAdmin.is_superuser));
       return response;
     }
 
-    if (method === 'PATCH') {
-      const response = NextResponse.next();
-      response.headers.set('x-admin-id', currentAdmin.id);
-      response.headers.set('x-admin-superuser', String(currentAdmin.is_superuser));
-      return response;
-    }
+    if (method === 'PATCH') return response;
   }
 
-  const adminAuthCookie = request.cookies.get('admin_auth');
-  const cookieSecret = process.env.COOKIE_SIGNING_SECRET;
-  if (!adminAuthCookie || !cookieSecret) return NextResponse.redirect(new URL('/admin/login', request.url));
+  if (method === 'DELETE' && pathname.startsWith('/api/admin/')) {
+    if (!currentAdmin.is_superuser)
+      return NextResponse.json({ error: 'Only super admin can delete entries' }, { status: 403 });
+  }
 
-  const sessionId = await unsignSessionId(adminAuthCookie.value, cookieSecret);
-  if (!sessionId) return NextResponse.redirect(new URL('/admin/login', request.url));
-
-  return NextResponse.next();
+  return response;
 }
 
 export const config = {
