@@ -3,13 +3,14 @@ import React from 'react';
 interface PriceInputProps {
   value: number;
   onChange: (value: number) => void;
+  label: string;
 }
 
-const PriceInput: React.FC<PriceInputProps> = ({ value, onChange }) => {
+const PriceInput: React.FC<PriceInputProps> = ({ value, onChange, label  }) => {
   return (
     <div>
       <label className="block luxury-subheading text-sm text-luxury-black mb-2">
-        Price (₹)
+        {label} (₹)
       </label>
       <input
         type="number"

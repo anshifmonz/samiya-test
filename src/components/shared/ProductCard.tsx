@@ -134,7 +134,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <span className="font-semibold text-foreground">
-              ₹{product.price.toFixed(2)}
+              <span className="mr-2">₹{product.price.toFixed(2)}</span>
+              {product?.originalPrice && <span className="line-through text-xs">₹{product?.originalPrice?.toFixed(2)}</span>}
             </span>
           </div>
 

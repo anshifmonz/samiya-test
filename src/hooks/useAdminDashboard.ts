@@ -35,6 +35,7 @@ export const useAdminDashboard = ({
   };
 
   const handleEditProduct = async (updatedProduct: Product) => {
+    console.log('updatedProduct', updatedProduct);
     const { data, error } = await apiRequest('/api/admin/product', { method: 'PUT', body: updatedProduct });
     if (error) {
       showToast({ type: 'error', title: 'Error', description: error });

@@ -40,7 +40,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product, selectedColor,
       </div>
       <div>
         <p className="text-2xl lg:text-3xl font-bold text-luxury-black mb-2">
-          ₹{product.price.toLocaleString()}
+          ₹{product.price.toLocaleString()} {product.originalPrice && product.originalPrice > product.price && <span className="text-xs line-through">₹{product.originalPrice.toLocaleString()}</span>}
         </p>
         <ProductColorSwatches
           product={product}

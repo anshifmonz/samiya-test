@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { type Product, type ProductImage } from 'types/product';
 import { type Category } from 'types/category';
-import { ensureProductImageFormat } from 'lib/utils/migrateProductImages';
+import { ensureProductImageFormat } from 'utils/migrateProductImages';
 
 interface UseAdminProductFormProps {
   product?: Product | null;
@@ -14,6 +14,7 @@ interface FormData {
   title: string;
   description: string;
   price: number;
+  originalPrice: number;
   category: string;
   images: Record<string, ProductImage[]>;
   tags: string[];
@@ -26,6 +27,7 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
     title: '',
     description: '',
     price: 0,
+    originalPrice: 0,
     category: '',
     images: {},
     tags: [],
@@ -53,6 +55,7 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
         title: migratedProduct.title,
         description: migratedProduct.description,
         price: migratedProduct.price,
+        originalPrice: migratedProduct.originalPrice,
         category: migratedProduct.category,
         images: { ...migratedProduct.images },
         tags: [...migratedProduct.tags],
@@ -81,6 +84,7 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
   const handleTitleChange = (value: string) => updateFormField('title', value);
   const handleDescriptionChange = (value: string) => updateFormField('description', value);
   const handlePriceChange = (value: number) => updateFormField('price', value);
+  const handleOriginalPriceChange = (value: number) => updateFormField('originalPrice', value);
   const handleCategoryChange = (value: string) => updateFormField('category', value);
   const handleImagesChange = (images: Record<string, ProductImage[]>) => updateFormField('images', images);
   const handleTagsChange = (tags: string[]) => updateFormField('tags', tags);
@@ -109,6 +113,7 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
     handleTitleChange,
     handleDescriptionChange,
     handlePriceChange,
+    handleOriginalPriceChange,
     handleCategoryChange,
     handleImagesChange,
     handleTagsChange,

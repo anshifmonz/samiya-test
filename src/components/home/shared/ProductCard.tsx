@@ -1,12 +1,12 @@
 'use client';
 
-import Image from 'next/image';
-import { type SpecialProduct } from 'types/special';
-import ImageFallback from 'components/shared/ImageFallback';
-import { SectionProductItem } from 'types/section';
 import Link from 'next/link';
+import Image from 'next/image';
 import { CldImage } from 'next-cloudinary';
-import isCloudinaryUrl from 'src/lib/utils/isCloudinaryUrls';
+import ImageFallback from 'components/shared/ImageFallback';
+import { type SpecialProduct } from 'types/special';
+import { type SectionProductItem } from 'types/section';
+import isCloudinaryUrl from 'utils/isCloudinaryUrls';
 
 interface ProductcardProps {
   product: SpecialProduct | SectionProductItem;
@@ -22,6 +22,8 @@ const Productcard = ({ product, className, showDiscountBadge = true }: Productca
   } else if (typeof product.images === 'string') {
     image = product.images.trim() || undefined;
   }
+
+  const discountPercentage = product?.originalPrice && product?.price ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) : 0;
 
   return (
     <Link href={`/product/${product.id}`}>
@@ -49,17 +51,18 @@ const Productcard = ({ product, className, showDiscountBadge = true }: Productca
           ) : (
             <ImageFallback />
           )}
-          {showDiscountBadge && (
+          {showDiscountBadge && product?.originalPrice && discountPercentage > 0 && (
             <div className="absolute bottom-4 right-2 bg-red-500 text-white px-2 py-1 text-xs font-medium rounded-sm">
-              10% OFF
+              <span className="text-xs">{discountPercentage}% OFF</span>
             </div>
           )}
         </div>
         <div className={`bg-transparent ${className}`}>
           <h4 className="font-cormorant text-sm md:text-xs text-gray-900 pt-2 leading-tight">{product.title}</h4>
-          <p className="text-sm font-inter font-semibold text-gray-900">
-            <span className="text-[11px] font-light line-through text-gray-500 mr-2">Rs {product.price}</span> Rs {product.price}
-          </p>
+          <span className="font-semibold text-foreground">
+            <span className="mr-2">₹{product.price.toFixed(2)}</span>
+            {product?.originalPrice && <span className="line-through text-xs">₹{product?.originalPrice?.toFixed(2)}</span>}
+          </span>
         </div>
       </div>
     </Link>

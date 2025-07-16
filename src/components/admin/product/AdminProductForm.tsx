@@ -39,7 +39,8 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
     handleCancel,
     setActiveColorTab,
     isEditing,
-    modalTitle
+    modalTitle,
+    handleOriginalPriceChange
   } = useAdminProductForm({ product, categories, onSave, onCancel });
 
   const modalContent = (
@@ -79,10 +80,18 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
             onChange={handleDescriptionChange}
           />
 
-          <PriceInput
-            value={formData.price}
-            onChange={handlePriceChange}
-          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <PriceInput
+              label="Price"
+              value={formData.price}
+              onChange={handlePriceChange}
+            />
+            <PriceInput
+              label="Original Price"
+              value={formData.originalPrice}
+              onChange={handleOriginalPriceChange}
+            />
+          </div>
 
           <ProductImagesSection
             images={formData.images}
