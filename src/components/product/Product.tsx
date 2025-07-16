@@ -1,16 +1,17 @@
 "use client";
 
-import React, { useState } from 'react';
-import { type Product } from '@/types/product';
+import React, { Suspense, useState } from 'react';
+import { type Product } from 'types/product';
 import ProductImageGallery from 'components/product/ProductImageGallery';
 import ProductDetails from 'components/product/ProductDetails';
+import LoadingSpinner from 'components/shared/LoadingSpinner';
 
 interface Props {
   product: Product;
   initialColor: string;
 }
 
-export default function ProductClient({ product, initialColor }: Props) {
+export default function ProductPage({ product, initialColor }: Props) {
   const [selectedColor, setSelectedColor] = useState<string>(initialColor);
 
   const handleColorChange = (color: string) => {
@@ -49,10 +50,16 @@ export default function ProductClient({ product, initialColor }: Props) {
   };
 
   return (
+    <div className="min-h-screen bg-luxury-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24">
+        <Suspense fallback={<LoadingSpinner text="Loading product details..." />}>
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:gap-12 items-center">
       <ProductImageGallery product={product} selectedColor={selectedColor} />
       <div className="space-y-6 w-full">
         <ProductDetails product={product} selectedColor={selectedColor} handleColorChange={handleColorChange} getColorStyle={getColorStyle} />
+      </div>
+    </div>
+    </Suspense>
       </div>
     </div>
   );
