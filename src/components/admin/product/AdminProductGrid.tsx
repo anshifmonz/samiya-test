@@ -11,6 +11,7 @@ interface AdminProductGridProps {
   loaderRef?: React.RefObject<HTMLDivElement>;
   error?: string | null;
   isSearching?: boolean;
+  isSuperAdmin: boolean;
 }
 
 const AdminProductGrid: React.FC<AdminProductGridProps> = ({
@@ -21,7 +22,8 @@ const AdminProductGrid: React.FC<AdminProductGridProps> = ({
   hasMore = false,
   loaderRef,
   error,
-  isSearching = false
+  isSearching = false,
+  isSuperAdmin
 }) => {
   if (products.length === 0 && !loading && !isSearching) {
     return (
@@ -45,7 +47,7 @@ const AdminProductGrid: React.FC<AdminProductGridProps> = ({
             product={product}
             isAdmin={true}
             onEdit={onEdit}
-            onDelete={onDelete}
+            onDelete={isSuperAdmin ? onDelete : undefined}
             showTags={true}
           />
         ))}

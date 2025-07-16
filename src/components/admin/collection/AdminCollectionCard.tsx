@@ -6,7 +6,7 @@ import { type Collection } from '@/types/collection';
 interface AdminCollectionCardProps {
   collection: Collection;
   onEdit: (collection: Collection) => void;
-  onDelete: (collectionId: string) => void;
+  onDelete?: (collectionId: string) => void;
 }
 
 const AdminCollectionCard: React.FC<AdminCollectionCardProps> = ({ collection, onEdit, onDelete }) => {
@@ -35,13 +35,15 @@ const AdminCollectionCard: React.FC<AdminCollectionCardProps> = ({ collection, o
           >
             <Edit size={18} />
           </button>
-          <button
-            onClick={handleDelete}
-            className="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 transition-colors duration-200 shadow-lg"
-            title="Delete Collection"
-          >
-            <Trash size={18} />
-          </button>
+          {onDelete && (
+            <button
+              onClick={handleDelete}
+              className="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 transition-colors duration-200 shadow-lg"
+              title="Delete Collection"
+            >
+              <Trash size={18} />
+            </button>
+          )}
         </div>
 
         <div className="absolute top-3 left-3 bg-luxury-black/80 text-white px-3 py-1 rounded-full">

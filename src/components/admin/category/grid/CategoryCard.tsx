@@ -13,6 +13,7 @@ interface CategoryCardProps {
   onToggleExpanded: () => void;
   onEdit: (category: Category) => void;
   onDelete: (categoryId: string) => void;
+  isSuperAdmin: boolean;
 }
 
 const CategoryCard: React.FC<CategoryCardProps> = ({
@@ -22,7 +23,8 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
   indentationClass,
   onToggleExpanded,
   onEdit,
-  onDelete
+  onDelete,
+  isSuperAdmin
 }) => {
   return (
     <Card className={`transition-all duration-200 hover:shadow-md ${indentationClass}`}>
@@ -91,14 +93,16 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
             >
               <Edit size={16} />
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onDelete(category.id)}
-              className="text-red-500 hover:text-red-700 hover:bg-red-50"
-            >
-              <Trash2 size={16} />
-            </Button>
+            {isSuperAdmin && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onDelete(category.id)}
+                className="text-red-500 hover:text-red-700 hover:bg-red-50"
+              >
+                <Trash2 size={16} />
+              </Button>
+            )}
           </div>
         </div>
       </CardContent>

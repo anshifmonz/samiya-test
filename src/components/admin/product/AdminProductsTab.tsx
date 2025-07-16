@@ -12,6 +12,7 @@ interface AdminProductsTabProps {
   onAddProduct: (product: Omit<Product, 'id'>) => void;
   onEditProduct: (product: Product) => void;
   onDeleteProduct: (productId: string) => void;
+  isSuperAdmin: boolean;
 }
 
 const AdminProductsTab: React.FC<AdminProductsTabProps> = ({
@@ -19,7 +20,8 @@ const AdminProductsTab: React.FC<AdminProductsTabProps> = ({
   categories,
   onAddProduct,
   onEditProduct,
-  onDeleteProduct
+  onDeleteProduct,
+  isSuperAdmin
 }) => {
   const {
     searchQuery,
@@ -81,6 +83,7 @@ const AdminProductsTab: React.FC<AdminProductsTabProps> = ({
         loaderRef={loaderRef}
         error={error}
         isSearching={isSearching}
+        isSuperAdmin={isSuperAdmin}
       />
 
       {isFormVisible && (

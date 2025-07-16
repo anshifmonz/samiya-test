@@ -6,9 +6,10 @@ interface AdminCollectionGridProps {
   collections: Collection[];
   onEdit: (collection: Collection) => void;
   onDelete: (collectionId: string) => void;
+  isSuperAdmin: boolean;
 }
 
-const AdminCollectionGrid: React.FC<AdminCollectionGridProps> = ({ collections, onEdit, onDelete }) => {
+const AdminCollectionGrid: React.FC<AdminCollectionGridProps> = ({ collections, onEdit, onDelete, isSuperAdmin }) => {
   if (collections.length === 0) {
     return (
       <div className="text-center py-16">
@@ -29,7 +30,7 @@ const AdminCollectionGrid: React.FC<AdminCollectionGridProps> = ({ collections, 
           key={collection.id}
           collection={collection}
           onEdit={onEdit}
-          onDelete={onDelete}
+          onDelete={isSuperAdmin ? onDelete : undefined}
         />
       ))}
     </div>

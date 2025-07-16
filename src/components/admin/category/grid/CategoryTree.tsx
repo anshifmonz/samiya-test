@@ -10,6 +10,7 @@ interface CategoryTreeProps {
   onToggleExpanded: (categoryId: string) => void;
   onEdit: (category: Category) => void;
   onDelete: (categoryId: string) => void;
+  isSuperAdmin: boolean;
 }
 
 const CategoryTree: React.FC<CategoryTreeProps> = ({
@@ -19,7 +20,8 @@ const CategoryTree: React.FC<CategoryTreeProps> = ({
   expandedCategories,
   onToggleExpanded,
   onEdit,
-  onDelete
+  onDelete,
+  isSuperAdmin
 }) => {
   return (
     <>
@@ -39,6 +41,7 @@ const CategoryTree: React.FC<CategoryTreeProps> = ({
               onToggleExpanded={() => onToggleExpanded(category.id)}
               onEdit={onEdit}
               onDelete={onDelete}
+              isSuperAdmin={isSuperAdmin}
             />
 
             {hasChildren && isExpanded && (
@@ -51,6 +54,7 @@ const CategoryTree: React.FC<CategoryTreeProps> = ({
                   onToggleExpanded={onToggleExpanded}
                   onEdit={onEdit}
                   onDelete={onDelete}
+                  isSuperAdmin={isSuperAdmin}
                 />
               </div>
             )}

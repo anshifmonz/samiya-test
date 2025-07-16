@@ -9,7 +9,11 @@ import {
   EditAdminModal,
 } from './admins';
 
-const AdminAdminsTab: React.FC = () => {
+interface AdminAdminsTabProps {
+  isSuperAdmin: boolean;
+}
+
+const AdminAdminsTab: React.FC<AdminAdminsTabProps> = ({ isSuperAdmin }) => {
   const {
     admins,
     currentAdmin,
@@ -70,6 +74,7 @@ const AdminAdminsTab: React.FC = () => {
           deleteLoading={deleteLoading}
           onEdit={openEditDialog}
           onDelete={handleDelete}
+          isSuperAdmin={isSuperAdmin}
         />
       </div>
 

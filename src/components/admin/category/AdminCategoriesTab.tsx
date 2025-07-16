@@ -11,13 +11,15 @@ interface AdminCategoriesTabProps {
   onAddCategory: (category: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>) => void;
   onEditCategory: (category: Category) => void;
   onDeleteCategory: (categoryId: string) => void;
+  isSuperAdmin: boolean;
 }
 
 const AdminCategoriesTab: React.FC<AdminCategoriesTabProps> = ({
   categories,
   onAddCategory,
   onEditCategory,
-  onDeleteCategory
+  onDeleteCategory,
+  isSuperAdmin
 }) => {
   const {
     searchQuery,
@@ -60,6 +62,7 @@ const AdminCategoriesTab: React.FC<AdminCategoriesTabProps> = ({
         categories={filteredCategories}
         onEdit={handleStartEditing}
         onDelete={handleDeleteCategory}
+        isSuperAdmin={isSuperAdmin}
       />
 
       {isFormVisible && (

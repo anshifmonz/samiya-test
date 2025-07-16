@@ -30,6 +30,7 @@ interface DraggableSectionItemProps {
   setLocalProductOrders: React.Dispatch<React.SetStateAction<Record<string, SectionProductItem[]>>>;
   getSectionProducts: (section: SectionWithProducts) => SectionProductItem[];
   handleProductDragEnd: (event: any, section: SectionWithProducts) => void;
+  isSuperAdmin: boolean;
 }
 
 const DraggableSectionItem: React.FC<DraggableSectionItemProps> = ({
@@ -49,7 +50,8 @@ const DraggableSectionItem: React.FC<DraggableSectionItemProps> = ({
   onReorderProducts,
   setLocalProductOrders,
   getSectionProducts,
-  handleProductDragEnd
+  handleProductDragEnd,
+  isSuperAdmin
 }) => {
   const isTouch = isTouchDevice();
   const [showTouchHandle, setShowTouchHandle] = useState(false);
@@ -139,6 +141,7 @@ const DraggableSectionItem: React.FC<DraggableSectionItemProps> = ({
         onEditTitleChange={onEditTitleChange}
         onToggleActive={onToggleActive}
         onDeleteSection={onDeleteSection}
+        isSuperAdmin={isSuperAdmin}
       />
 
       {/* Section Content */}

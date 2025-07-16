@@ -11,6 +11,7 @@ interface AdminsTableProps {
   deleteLoading: string | null;
   onEdit: (admin: AdminUser) => void;
   onDelete: (admin: AdminUser) => void;
+  isSuperAdmin: boolean;
 }
 
 const AdminsTable: React.FC<AdminsTableProps> = ({
@@ -21,6 +22,7 @@ const AdminsTable: React.FC<AdminsTableProps> = ({
   deleteLoading,
   onEdit,
   onDelete,
+  isSuperAdmin,
 }) => {
   if (error) {
     return (
@@ -92,8 +94,8 @@ const AdminsTable: React.FC<AdminsTableProps> = ({
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex items-center justify-end gap-2">
-                      {/* show edit button for all admins except other super admins (when current user is super admin) */}
-                      {currentAdmin && (currentAdmin.id === admin.id || !admin.is_superuser || !currentAdmin.is_superuser) && (
+                      {/* show edit button for own account or if super admin */}
+                      {currentAdmin && (currentAdmin.id === admin.id || isSuperAdmin) && (
                         <Button
                           variant="ghost"
                           size="sm"
@@ -103,8 +105,8 @@ const AdminsTable: React.FC<AdminsTableProps> = ({
                           <Edit size={16} />
                         </Button>
                       )}
-                      {/* only show delete if current admin is superuser and target is not a super admin and not current admin */}
-                      {currentAdmin && currentAdmin.is_superuser && !admin.is_superuser && currentAdmin.id !== admin.id && (
+                      {/* only show delete if current admin is super admin and target is not a super admin and not current admin */}
+                      {isSuperAdmin && !admin.is_superuser && currentAdmin?.id !== admin.id && (
                         <Button
                           variant="ghost"
                           size="sm"

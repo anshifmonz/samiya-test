@@ -94,7 +94,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         )}
 
         {/* Admin Actions Overlay */}
-        {isAdmin && onEdit && onDelete && (
+        {isAdmin && onEdit && (
           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
             <button
               onClick={() => onEdit(product as Product)}
@@ -103,13 +103,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
             >
               <Edit size={18} />
             </button>
+            {onDelete && (
             <button
               onClick={handleDelete}
               className="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 transition-colors duration-200 shadow-lg"
               title="Delete Product"
-            >
-              <Trash size={18} />
-            </button>
+              >
+                <Trash size={18} />
+              </button>
+            )}
           </div>
         )}
 

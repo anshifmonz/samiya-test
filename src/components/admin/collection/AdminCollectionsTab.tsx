@@ -11,13 +11,15 @@ interface AdminCollectionsTabProps {
   onAddCollection: (collection: Omit<Collection, 'id'>) => void;
   onEditCollection: (collection: Collection) => void;
   onDeleteCollection: (collectionId: string) => void;
+  isSuperAdmin: boolean;
 }
 
 const AdminCollectionsTab: React.FC<AdminCollectionsTabProps> = ({
   collections,
   onAddCollection,
   onEditCollection,
-  onDeleteCollection
+  onDeleteCollection,
+  isSuperAdmin
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
@@ -60,6 +62,7 @@ const AdminCollectionsTab: React.FC<AdminCollectionsTabProps> = ({
         collections={filteredCollections}
         onEdit={setEditingCollection}
         onDelete={onDeleteCollection}
+        isSuperAdmin={isSuperAdmin}
       />
 
       {(showAddForm || editingCollection) && (

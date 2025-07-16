@@ -20,6 +20,7 @@ interface AdminSectionsTabProps {
   onRemoveProductFromSection: (sectionId: string, productId: string) => void;
   onReorderSections: (sectionIds: string[]) => void;
   onReorderSectionProducts: (sectionId: string, productIds: string[]) => void;
+  isSuperAdmin: boolean;
 }
 
 const AdminSectionsTab: React.FC<AdminSectionsTabProps> = ({
@@ -31,7 +32,8 @@ const AdminSectionsTab: React.FC<AdminSectionsTabProps> = ({
   onAddProductToSection,
   onRemoveProductFromSection,
   onReorderSections,
-  onReorderSectionProducts
+  onReorderSectionProducts,
+  isSuperAdmin
 }) => {
   const {
     editingTitle,
@@ -112,6 +114,7 @@ const AdminSectionsTab: React.FC<AdminSectionsTabProps> = ({
                 setLocalProductOrders={setLocalProductOrders}
                 getSectionProducts={getSectionProducts}
                 handleProductDragEnd={handleProductDragEnd}
+                isSuperAdmin={isSuperAdmin}
               />
             );
           })}

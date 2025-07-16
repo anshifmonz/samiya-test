@@ -6,12 +6,14 @@ interface AdminCategoryGridProps {
   categories: Category[];
   onEdit: (category: Category) => void;
   onDelete: (categoryId: string) => void;
+  isSuperAdmin: boolean;
 }
 
 const AdminCategoryGrid: React.FC<AdminCategoryGridProps> = ({
   categories,
   onEdit,
-  onDelete
+  onDelete,
+  isSuperAdmin
 }) => {
   const [expandedCategories, setExpandedCategories] = React.useState<Set<string>>(new Set());
 
@@ -43,6 +45,7 @@ const AdminCategoryGrid: React.FC<AdminCategoryGridProps> = ({
         onToggleExpanded={toggleExpanded}
         onEdit={onEdit}
         onDelete={onDelete}
+        isSuperAdmin={isSuperAdmin}
       />
     </div>
   );

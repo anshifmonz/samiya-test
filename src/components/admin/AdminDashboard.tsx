@@ -11,6 +11,7 @@ import AdminCollectionsTab from './collection/AdminCollectionsTab';
 import AdminCategoriesTab from './category/AdminCategoriesTab';
 import { AdminSectionsTab } from './section';
 import { useAdminDashboard } from 'hooks/useAdminDashboard';
+import { useCurrentAdmin } from 'hooks/useCurrentAdmin';
 import React, { useState } from 'react';
 import AdminAdminsTab from './AdminAdminsTab';
 
@@ -27,6 +28,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
   initialCategories,
   initialSections
 }) => {
+  const { isSuperAdmin } = useCurrentAdmin();
+
   const {
     collectionList,
     categoryList,
@@ -138,6 +141,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
             onAddProduct={handleAddProduct}
             onEditProduct={handleEditProduct}
             onDeleteProduct={handleDeleteProduct}
+            isSuperAdmin={isSuperAdmin}
           />
         </TabsContent>
 
@@ -147,6 +151,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
             onAddCollection={handleAddCollection}
             onEditCollection={handleEditCollection}
             onDeleteCollection={handleDeleteCollection}
+            isSuperAdmin={isSuperAdmin}
           />
         </TabsContent>
 
@@ -156,6 +161,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
             onAddCategory={handleAddCategory}
             onEditCategory={handleEditCategory}
             onDeleteCategory={handleDeleteCategory}
+            isSuperAdmin={isSuperAdmin}
           />
         </TabsContent>
 
@@ -170,11 +176,12 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
             onRemoveProductFromSection={handleRemoveProductFromSection}
             onReorderSections={handleReorderSections}
             onReorderSectionProducts={handleReorderSectionProducts}
+            isSuperAdmin={isSuperAdmin}
           />
         </TabsContent>
 
         <TabsContent value="admins" className="mt-0">
-          <AdminAdminsTab />
+          <AdminAdminsTab isSuperAdmin={isSuperAdmin} />
         </TabsContent>
       </Tabs>
     </div>
