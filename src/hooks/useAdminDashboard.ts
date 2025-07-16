@@ -4,6 +4,7 @@ import { type Collection } from 'types/collection';
 import { type Category } from 'types/category';
 import { type Section, type SectionWithProducts } from 'types/section';
 import { showToast } from 'hooks/use-toast';
+import { apiRequest } from 'utils/apiRequest';
 
 interface UseAdminDashboardProps {
   initialProducts: Product[];
@@ -24,360 +25,186 @@ export const useAdminDashboard = ({
 
   // Product handlers with API calls
   const handleAddProduct = async (newProduct: Omit<Product, 'id'>) => {
-    try {
-      const response = await fetch('/api/admin/product', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newProduct),
-      });
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        const errorMessage = errorData.error || 'Failed to add product';
-        showToast({ type: 'error', title: 'Error', description: errorMessage });
-        return null;
-      }
-      const { product } = await response.json();
-      showToast({ title: 'Success', description: 'Product added successfully' });
-      return product;
-    } catch (error) {
-      console.error('Error adding product:', error);
-      showToast({ type: 'error', title: 'Error', description: 'Failed to add product. Please try again.' });
+    const { data, error } = await apiRequest('/api/admin/product', { method: 'POST', body: newProduct });
+    if (error) {
+      showToast({ type: 'error', title: 'Error', description: error });
       return null;
     }
+    showToast({ title: 'Success', description: 'Product added successfully' });
+    return data;
   };
 
   const handleEditProduct = async (updatedProduct: Product) => {
-    try {
-      const response = await fetch('/api/admin/product', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedProduct),
-      });
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        const errorMessage = errorData.error || 'Failed to update product';
-        showToast({ type: 'error', title: 'Error', description: errorMessage });
-        return null;
-      }
-      const { product } = await response.json();
-      showToast({ title: 'Success', description: 'Product updated successfully' });
-      return product;
-    } catch (error) {
-      console.error('Error updating product:', error);
-      showToast({ type: 'error', title: 'Error', description: 'Failed to update product. Please try again.' });
+    const { data, error } = await apiRequest('/api/admin/product', { method: 'PUT', body: updatedProduct });
+    if (error) {
+      showToast({ type: 'error', title: 'Error', description: error });
       return null;
     }
+    showToast({ title: 'Success', description: 'Product updated successfully' });
+    return data;
   };
 
   const handleDeleteProduct = async (productId: string) => {
-    try {
-      const response = await fetch(`/api/admin/product?id=${encodeURIComponent(productId)}`, {
-        method: 'DELETE',
-      });
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        const errorMessage = errorData.error || 'Failed to delete product';
-        showToast({ type: 'error', title: 'Error', description: errorMessage });
-        return false;
-      }
-      showToast({ title: 'Success', description: 'Product deleted successfully' });
-      return true;
-    } catch (error) {
-      console.error('Error deleting product:', error);
-      showToast({ type: 'error', title: 'Error', description: 'Failed to delete product. Please try again.' });
+    const { error } = await apiRequest(`/api/admin/product?id=${encodeURIComponent(productId)}`, { method: 'DELETE' });
+    if (error) {
+      showToast({ type: 'error', title: 'Error', description: error });
       return false;
     }
+    showToast({ title: 'Success', description: 'Product deleted successfully' });
+    return true;
   };
 
   // Collection handlers with API calls
   const fetchCollections = async () => {
-    const response = await fetch('/api/admin/collection');
-    if (response.ok) {
-      const { collections } = await response.json();
-      setCollectionList(collections);
+    const { data } = await apiRequest('/api/admin/collection');
+    if (data) {
+      setCollectionList(data.collections);
     }
   };
 
   const handleAddCollection = async (newCollection: Omit<Collection, 'id'>) => {
-    try {
-      const response = await fetch('/api/admin/collection', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newCollection),
-      });
-      if (response.ok) {
-        await fetchCollections();
-        showToast({ title: 'Success', description: 'Collection added successfully' });
-      } else {
-        const errorData = await response.json().catch(() => ({}));
-        const errorMessage = errorData.error || 'Failed to add collection';
-        showToast({ type: 'error', title: 'Error', description: errorMessage });
-      }
-    } catch (error) {
-      console.error('Error adding collection:', error);
-      showToast({ type: 'error', title: 'Error', description: 'Failed to add collection. Please try again.' });
+    const { error } = await apiRequest('/api/admin/collection', { method: 'POST', body: newCollection });
+    if (!error) {
+      await fetchCollections();
+      showToast({ title: 'Success', description: 'Collection added successfully' });
+    } else {
+      showToast({ type: 'error', title: 'Error', description: error });
     }
   };
 
   const handleEditCollection = async (updatedCollection: Collection) => {
-    try {
-      const response = await fetch('/api/admin/collection', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedCollection),
-      });
-      if (response.ok) {
-        await fetchCollections();
-        showToast({ title: 'Success', description: 'Collection updated successfully' });
-      } else {
-        const errorData = await response.json().catch(() => ({}));
-        const errorMessage = errorData.error || 'Failed to update collection';
-        showToast({ type: 'error', title: 'Error', description: errorMessage });
-      }
-    } catch (error) {
-      console.error('Error updating collection:', error);
-      showToast({ type: 'error', title: 'Error', description: 'Failed to update collection. Please try again.' });
+    const { error } = await apiRequest('/api/admin/collection', { method: 'PUT', body: updatedCollection });
+    if (!error) {
+      await fetchCollections();
+      showToast({ title: 'Success', description: 'Collection updated successfully' });
+    } else {
+      showToast({ type: 'error', title: 'Error', description: error });
     }
   };
 
   const handleDeleteCollection = async (collectionId: string) => {
-    try {
-      const response = await fetch(`/api/admin/collection?id=${encodeURIComponent(collectionId)}`, {
-        method: 'DELETE',
-      });
-      if (response.ok) {
-        await fetchCollections();
-        showToast({ title: 'Success', description: 'Collection deleted successfully' });
-      } else {
-        const errorData = await response.json().catch(() => ({}));
-        const errorMessage = errorData.error || 'Failed to delete collection';
-        showToast({ type: 'error', title: 'Error', description: errorMessage });
-      }
-    } catch (error) {
-      console.error('Error deleting collection:', error);
-      showToast({ type: 'error', title: 'Error', description: 'Failed to delete collection. Please try again.' });
+    const { error } = await apiRequest(`/api/admin/collection?id=${encodeURIComponent(collectionId)}`, { method: 'DELETE' });
+    if (!error) {
+      await fetchCollections();
+      showToast({ title: 'Success', description: 'Collection deleted successfully' });
+    } else {
+      showToast({ type: 'error', title: 'Error', description: error });
     }
   };
 
   // Category handlers with API calls
   const fetchCategories = async () => {
-    const response = await fetch('/api/admin/category');
-    if (response.ok) {
-      const { categories } = await response.json();
-      setCategoryList(categories);
+    const { data } = await apiRequest('/api/admin/category');
+    if (data) {
+      setCategoryList(data.categories);
     }
   };
 
   const handleAddCategory = async (newCategory: Omit<Category, 'id' | 'createdAt' | 'updatedAt' | 'children'>) => {
-    try {
-      const response = await fetch('/api/admin/category', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newCategory),
-      });
-      if (response.ok) {
-        await fetchCategories();
-        showToast({ title: 'Success', description: 'Category added successfully' });
-      } else {
-        const errorData = await response.json().catch(() => ({}));
-        const errorMessage = errorData.error || 'Failed to add category';
-        showToast({ type: 'error', title: 'Error', description: errorMessage });
-      }
-    } catch (error) {
-      console.error('Error adding category:', error);
-      showToast({ type: 'error', title: 'Error', description: 'Failed to add category. Please try again.' });
+    const { error } = await apiRequest('/api/admin/category', { method: 'POST', body: newCategory });
+    if (!error) {
+      await fetchCategories();
+      showToast({ title: 'Success', description: 'Category added successfully' });
+    } else {
+      showToast({ type: 'error', title: 'Error', description: error });
     }
   };
 
   const handleEditCategory = async (updatedCategory: Category) => {
-    try {
-      const response = await fetch('/api/admin/category', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedCategory),
-      });
-      if (response.ok) {
-        await fetchCategories();
-        showToast({ title: 'Success', description: 'Category updated successfully' });
-      } else {
-        const errorData = await response.json().catch(() => ({}));
-        const errorMessage = errorData.error || 'Failed to update category';
-        showToast({ type: 'error', title: 'Error', description: errorMessage });
-      }
-    } catch (error) {
-      console.error('Error updating category:', error);
-      showToast({ type: 'error', title: 'Error', description: 'Failed to update category. Please try again.' });
+    const { error } = await apiRequest('/api/admin/category', { method: 'PUT', body: updatedCategory });
+    if (!error) {
+      await fetchCategories();
+      showToast({ title: 'Success', description: 'Category updated successfully' });
+    } else {
+      showToast({ type: 'error', title: 'Error', description: error });
     }
   };
 
   const handleDeleteCategory = async (categoryId: string) => {
-    try {
-      const response = await fetch(`/api/admin/category?id=${encodeURIComponent(categoryId)}`, {
-        method: 'DELETE',
-      });
-      if (response.ok) {
-        await fetchCategories();
-        showToast({ title: 'Success', description: 'Category deleted successfully' });
-      } else {
-        const errorData = await response.json().catch(() => ({}));
-        const errorMessage = errorData.error || 'Failed to delete category';
-        showToast({ type: 'error', title: 'Error', description: errorMessage });
-      }
-    } catch (error) {
-      console.error('Error deleting category:', error);
-      showToast({ type: 'error', title: 'Error', description: 'Failed to delete category. Please try again.' });
+    const { error } = await apiRequest(`/api/admin/category?id=${encodeURIComponent(categoryId)}`, { method: 'DELETE' });
+    if (!error) {
+      await fetchCategories();
+      showToast({ title: 'Success', description: 'Category deleted successfully' });
+    } else {
+      showToast({ type: 'error', title: 'Error', description: error });
     }
   };
 
   // Section handlers with API calls
   const fetchSections = async () => {
-    const response = await fetch('/api/admin/section?withProducts=true');
-    if (response.ok) {
-      const { sections } = await response.json();
-      setSectionList(sections);
+    const { data } = await apiRequest('/api/admin/section?withProducts=true');
+    if (data) {
+      setSectionList(data.sections);
     }
   };
 
   const handleAddSection = async (newSection: Omit<Section, 'id' | 'createdAt' | 'updatedAt'>) => {
-    try {
-      const response = await fetch('/api/admin/section', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newSection),
-      });
-      if (response.ok) {
-        await fetchSections();
-        showToast({ title: 'Success', description: 'Section added successfully' });
-      } else {
-        const errorData = await response.json().catch(() => ({}));
-        const errorMessage = errorData.error || 'Failed to add section';
-        showToast({ type: 'error', title: 'Error', description: errorMessage });
-      }
-    } catch (error) {
-      console.error('Error adding section:', error);
-      showToast({ type: 'error', title: 'Error', description: 'Failed to add section. Please try again.' });
+    const { error } = await apiRequest('/api/admin/section', { method: 'POST', body: newSection });
+    if (!error) {
+      await fetchSections();
+      showToast({ title: 'Success', description: 'Section added successfully' });
+    } else {
+      showToast({ type: 'error', title: 'Error', description: error });
     }
   };
 
   const handleEditSection = async (updatedSection: Section) => {
-    try {
-      const response = await fetch('/api/admin/section', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedSection),
-      });
-      if (response.ok) {
-        await fetchSections();
-        showToast({ title: 'Success', description: 'Section updated successfully' });
-      } else {
-        const errorData = await response.json().catch(() => ({}));
-        const errorMessage = errorData.error || 'Failed to update section';
-        showToast({ type: 'error', title: 'Error', description: errorMessage });
-      }
-    } catch (error) {
-      console.error('Error updating section:', error);
-      showToast({ type: 'error', title: 'Error', description: 'Failed to update section. Please try again.' });
+    const { error } = await apiRequest('/api/admin/section', { method: 'PUT', body: updatedSection });
+    if (!error) {
+      await fetchSections();
+      showToast({ title: 'Success', description: 'Section updated successfully' });
+    } else {
+      showToast({ type: 'error', title: 'Error', description: error });
     }
   };
 
   const handleDeleteSection = async (sectionId: string) => {
-    try {
-      const response = await fetch(`/api/admin/section?id=${encodeURIComponent(sectionId)}`, {
-        method: 'DELETE',
-      });
-      if (response.ok) {
-        await fetchSections();
-        showToast({ title: 'Success', description: 'Section deleted successfully' });
-      } else {
-        const errorData = await response.json().catch(() => ({}));
-        const errorMessage = errorData.error || 'Failed to delete section';
-        showToast({ type: 'error', title: 'Error', description: errorMessage });
-      }
-    } catch (error) {
-      console.error('Error deleting section:', error);
-      showToast({ type: 'error', title: 'Error', description: 'Failed to delete section. Please try again.' });
+    const { error } = await apiRequest(`/api/admin/section?id=${encodeURIComponent(sectionId)}`, { method: 'DELETE' });
+    if (!error) {
+      await fetchSections();
+      showToast({ title: 'Success', description: 'Section deleted successfully' });
+    } else {
+      showToast({ type: 'error', title: 'Error', description: error });
     }
   };
 
   const handleAddProductToSection = async (sectionId: string, productId: string) => {
-    try {
-      const response = await fetch('/api/admin/section/products', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sectionId, productId }),
-      });
-      if (response.ok) {
-        await fetchSections();
-        showToast({ title: 'Success', description: 'Product added to section successfully' });
-      } else {
-        const errorData = await response.json().catch(() => ({}));
-        const errorMessage = errorData.error || 'Failed to add product to section';
-        showToast({ type: 'error', title: 'Error', description: errorMessage });
-      }
-    } catch (error) {
-      console.error('Error adding product to section:', error);
-      showToast({ type: 'error', title: 'Error', description: 'Failed to add product to section. Please try again.' });
+    const { error } = await apiRequest('/api/admin/section/products', { method: 'POST', body: { sectionId, productId } });
+    if (!error) {
+      await fetchSections();
+      showToast({ title: 'Success', description: 'Product added to section successfully' });
+    } else {
+      showToast({ type: 'error', title: 'Error', description: error });
     }
   };
 
   const handleRemoveProductFromSection = async (sectionId: string, productId: string) => {
-    try {
-      const response = await fetch(`/api/admin/section/products?sectionId=${encodeURIComponent(sectionId)}&productId=${encodeURIComponent(productId)}`, {
-        method: 'DELETE',
-      });
-      if (response.ok) {
-        await fetchSections();
-        showToast({ title: 'Success', description: 'Product removed from section successfully' });
-      } else {
-        const errorData = await response.json().catch(() => ({}));
-        const errorMessage = errorData.error || 'Failed to remove product from section';
-        showToast({ type: 'error', title: 'Error', description: errorMessage });
-      }
-    } catch (error) {
-      console.error('Error removing product from section:', error);
-      showToast({ type: 'error', title: 'Error', description: 'Failed to remove product from section. Please try again.' });
+    const { error } = await apiRequest(`/api/admin/section/products?sectionId=${encodeURIComponent(sectionId)}&productId=${encodeURIComponent(productId)}`, { method: 'DELETE' });
+    if (!error) {
+      await fetchSections();
+      showToast({ title: 'Success', description: 'Product removed from section successfully' });
+    } else {
+      showToast({ type: 'error', title: 'Error', description: error });
     }
   };
 
   const handleReorderSectionProducts = async (sectionId: string, productIds: string[]) => {
-    try {
-      const response = await fetch('/api/admin/section/products', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sectionId, productIds }),
-      });
-      if (response.ok) {
-        await fetchSections();
-        showToast({ title: 'Success', description: 'Section products reordered successfully' });
-      } else {
-        const errorData = await response.json().catch(() => ({}));
-        const errorMessage = errorData.error || 'Failed to reorder section products';
-        showToast({ type: 'error', title: 'Error', description: errorMessage });
-      }
-    } catch (error) {
-      console.error('Error reordering section products:', error);
-      showToast({ type: 'error', title: 'Error', description: 'Failed to reorder section products. Please try again.' });
+    const { error } = await apiRequest('/api/admin/section/products', { method: 'PATCH', body: { sectionId, productIds } });
+    if (!error) {
+      await fetchSections();
+      showToast({ title: 'Success', description: 'Section products reordered successfully' });
+    } else {
+      showToast({ type: 'error', title: 'Error', description: error });
     }
   };
 
   const handleReorderSections = async (sectionIds: string[]) => {
-    try {
-      const response = await fetch('/api/admin/section', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sectionIds }),
-      });
-      if (response.ok) {
-        await fetchSections();
-        showToast({ title: 'Success', description: 'Sections reordered successfully' });
-      } else {
-        const errorData = await response.json().catch(() => ({}));
-        const errorMessage = errorData.error || 'Failed to reorder sections';
-        showToast({ type: 'error', title: 'Error', description: errorMessage });
-      }
-    } catch (error) {
-      console.error('Error reordering sections:', error);
-      showToast({ type: 'error', title: 'Error', description: 'Failed to reorder sections. Please try again.' });
+    const { error } = await apiRequest('/api/admin/section', { method: 'PATCH', body: { sectionIds } });
+    if (!error) {
+      await fetchSections();
+      showToast({ title: 'Success', description: 'Sections reordered successfully' });
+    } else {
+      showToast({ type: 'error', title: 'Error', description: error });
     }
   };
 
