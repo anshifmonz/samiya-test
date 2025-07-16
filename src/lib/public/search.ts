@@ -53,6 +53,7 @@ async function searchProducts(
       title: row.title,
       images,
       price: Number(row.price),
+      originalPrice: row.original_price,
       tags,
       category: row.category || ''
     };

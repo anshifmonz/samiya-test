@@ -23,6 +23,7 @@ export default async function updateProduct(product: Product): Promise<Product |
       title: product.title,
       description: product.description,
       price: product.price,
+      original_price: product.originalPrice ?? null,
       category_id,
       primary_color: primaryColor,
       primary_image_url: primaryImageUrl,

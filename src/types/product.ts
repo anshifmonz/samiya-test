@@ -10,6 +10,7 @@ export interface Product {
   description: string;
   images: Record<string, ProductImage[]>;
   price: number;
+  originalPrice?: number;
   tags: string[];
   category: string;
   active?: boolean;
@@ -21,6 +22,7 @@ export interface LegacyProduct {
   description: string;
   images: Record<string, string[]>;
   price: number;
+  originalPrice?: number;
   tags: string[];
   category: string;
   active?: boolean;

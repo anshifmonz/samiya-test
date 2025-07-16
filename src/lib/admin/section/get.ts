@@ -46,6 +46,7 @@ export async function getSectionsWithProducts(): Promise<SectionWithProducts[]> 
     const sectionsWithProducts: SectionWithProducts[] = (data || []).map((section: any) => {
       const products = Array.isArray(section.products) ? section.products.map((product: any) => ({
         ...product,
+        originalPrice: product.original_price,
         images: product.images || ''
       })) : [];
 

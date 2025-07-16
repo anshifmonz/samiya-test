@@ -3,6 +3,7 @@ export interface SpecialProduct {
   title: string;
   images: string[];
   price: number;
+  originalPrice?: number;
 }
 
 export interface Special {

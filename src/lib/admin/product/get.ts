@@ -50,6 +50,7 @@ async function getProduct(limit: number, offset: number, query: string): Promise
       description: row.description,
       images,
       price: Number(row.price),
+      originalPrice: row.original_price,
       tags,
       category: row.category?.name || '',
       active: row.is_active,

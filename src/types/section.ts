@@ -21,6 +21,7 @@ export interface SectionProductItem {
   price: number;
   images: string;
   sort_order: number;
+  originalPrice?: number;
 }
 
 export interface SectionWithProducts extends Section {
