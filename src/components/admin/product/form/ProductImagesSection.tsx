@@ -127,6 +127,7 @@ const ProductImagesSection: React.FC<ProductImagesSectionProps> = (props) => {
                         <DraggableColorTab
                           key={color}
                           color={color}
+                          hexCode={images[color]?.hex}
                           imageCount={getImageCount(color)}
                           isActive={activeColorTab === color}
                           onValueChange={onActiveColorTabChange}
@@ -154,7 +155,7 @@ const ProductImagesSection: React.FC<ProductImagesSectionProps> = (props) => {
           <TabsContent key={color} value={color} className="mt-4">
             <ColorImagePanel
               color={color}
-              images={images[color] || []}
+              images={images[color]?.images || []}
               onReorder={(newImages) => reorderImages(color, newImages)}
               onRemove={(idx) => removeImage(color, idx)}
               onRemoveColor={() => removeColor(color)}

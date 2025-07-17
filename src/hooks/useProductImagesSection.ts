@@ -1,11 +1,11 @@
 import { useState, useCallback } from 'react';
 import { DragEndEvent } from '@dnd-kit/core';
-import { type ProductImage } from 'types/product';
+import { type ProductImage, type ProductColorData } from 'types/product';
 import { deleteImageFromCloudinary, deleteMultipleImagesFromCloudinary, extractPublicIdFromUrl } from 'lib/upload/cloudinary';
 
 export interface ProductImagesSectionProps {
-  images: Record<string, ProductImage[]>;
-  onImagesChange: (images: Record<string, ProductImage[]>) => void;
+  images: Record<string, ProductColorData>;
+  onImagesChange: (images: Record<string, ProductColorData>) => void;
   activeColorTab: string;
   onActiveColorTabChange: (color: string) => void;
 }
@@ -30,7 +30,10 @@ export function useProductImagesSection({ images, onImagesChange, activeColorTab
     if (newImageColor && newImageColorName && !images[newImageColorName]) {
       onImagesChange({
         ...images,
-        [newImageColorName]: []
+        [newImageColorName]: {
+          hex: newImageColor,
+          images: []
+        }
       });
       setNewImageColor('');
       setNewImageColorName('');
@@ -48,11 +51,13 @@ export function useProductImagesSection({ images, onImagesChange, activeColorTab
         publicId: publicId
       };
 
+      const currentColorData = images[selectedColorForImage];
       onImagesChange({
         ...images,
-        [selectedColorForImage]: images[selectedColorForImage]
-          ? [...images[selectedColorForImage], newImage]
-          : [newImage]
+        [selectedColorForImage]: {
+          hex: currentColorData?.hex || '######',
+          images: currentColorData?.images ? [...currentColorData.images, newImage] : [newImage]
+        }
       });
       setNewImageUrl('');
       setShowAddImageDialog(false);
@@ -61,7 +66,7 @@ export function useProductImagesSection({ images, onImagesChange, activeColorTab
   };
 
   const reorderColors = useCallback((newColors: string[]) => {
-    const newImages: Record<string, ProductImage[]> = {};
+    const newImages: Record<string, ProductColorData> = {};
     newColors.forEach(color => {
       if (images[color]) {
         newImages[color] = images[color];
@@ -71,14 +76,19 @@ export function useProductImagesSection({ images, onImagesChange, activeColorTab
   }, [images, onImagesChange]);
 
   const reorderImages = useCallback((color: string, newImages: ProductImage[]) => {
+    const currentColorData = images[color];
     onImagesChange({
       ...images,
-      [color]: newImages
+      [color]: {
+        hex: currentColorData?.hex || '######',
+        images: newImages
+      }
     });
   }, [images, onImagesChange]);
 
   const removeImage = useCallback(async (color: string, imageIndex: number) => {
-    const imageToRemove = images[color]?.[imageIndex];
+    const colorData = images[color];
+    const imageToRemove = colorData?.images[imageIndex];
 
     if (!imageToRemove) return;
 
@@ -89,15 +99,29 @@ export function useProductImagesSection({ images, onImagesChange, activeColorTab
         await deleteImageFromCloudinary(imageToRemove.publicId);
 
       const updatedImages = { ...images };
-      updatedImages[color] = updatedImages[color].filter((_, index) => index !== imageIndex);
-      if (updatedImages[color].length === 0)
+      const updatedColorImages = colorData.images.filter((_, index) => index !== imageIndex);
+
+      if (updatedColorImages.length === 0) {
         delete updatedImages[color];
+      } else {
+        updatedImages[color] = {
+          hex: colorData.hex,
+          images: updatedColorImages
+        };
+      }
       onImagesChange(updatedImages);
     } catch (error) {
       const updatedImages = { ...images };
-      updatedImages[color] = updatedImages[color].filter((_, index) => index !== imageIndex);
-      if (updatedImages[color].length === 0)
+      const updatedColorImages = colorData.images.filter((_, index) => index !== imageIndex);
+
+      if (updatedColorImages.length === 0) {
         delete updatedImages[color];
+      } else {
+        updatedImages[color] = {
+          hex: colorData.hex,
+          images: updatedColorImages
+        };
+      }
       onImagesChange(updatedImages);
     } finally {
       setDeletingImages(prev => {
@@ -110,7 +134,8 @@ export function useProductImagesSection({ images, onImagesChange, activeColorTab
 
   const removeColor = useCallback(async (colorToRemove: string) => {
     if (window.confirm(`Remove all images for ${colorToRemove}?`)) {
-      const imagesToRemove = images[colorToRemove] || [];
+      const colorData = images[colorToRemove];
+      const imagesToRemove = colorData?.images || [];
 
       const publicIds = imagesToRemove.map(img => img.publicId);
       setDeletingImages(prev => new Set([...Array.from(prev), ...publicIds]));

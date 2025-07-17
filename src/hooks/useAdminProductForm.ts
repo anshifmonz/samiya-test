@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { type Product, type ProductImage } from 'types/product';
+import { type Product, type ProductColorData } from 'types/product';
 import { type Category } from 'types/category';
 import { ensureProductImageFormat } from 'utils/migrateProductImages';
 
@@ -16,7 +16,7 @@ interface FormData {
   price: number;
   originalPrice: number;
   category: string;
-  images: Record<string, ProductImage[]>;
+  images: Record<string, ProductColorData>;
   tags: string[];
   active: boolean;
   short_code: string;
@@ -86,7 +86,7 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
   const handlePriceChange = (value: number) => updateFormField('price', value);
   const handleOriginalPriceChange = (value: number) => updateFormField('originalPrice', value);
   const handleCategoryChange = (value: string) => updateFormField('category', value);
-  const handleImagesChange = (images: Record<string, ProductImage[]>) => updateFormField('images', images);
+  const handleImagesChange = (images: Record<string, ProductColorData>) => updateFormField('images', images);
   const handleTagsChange = (tags: string[]) => updateFormField('tags', tags);
   const handleActiveChange = (active: boolean) => updateFormField('active', active);
 

@@ -1,5 +1,4 @@
-import React from 'react';
-import { type Product } from '@/types/product';
+import { type Product } from 'types/product';
 
 interface ProductColorSwatchesProps {
   product: Product;
@@ -22,7 +21,7 @@ const ProductColorSwatches: React.FC<ProductColorSwatchesProps> = ({ product, se
                   ? 'border-white ring-2 ring-black'
                   : 'border-white hover:ring-black hover:ring-1 hover:ring-black'}
               `}
-              style={{ backgroundColor: getColorStyle(color) }}
+              style={{ backgroundColor: product.images[color]?.hex || getColorStyle(color) }}
               title={color.charAt(0).toUpperCase() + color.slice(1)}
               type="button"
             />

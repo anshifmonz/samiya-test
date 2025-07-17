@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useState } from 'react';
+import { Suspense, useState } from 'react';
 import { type Product } from 'types/product';
 import ProductImageGallery from 'components/product/ProductImageGallery';
 import ProductDetails from 'components/product/ProductDetails';
@@ -19,6 +19,12 @@ export default function ProductPage({ product, initialColor }: Props) {
   };
 
   const getColorStyle = (color: string) => {
+    const colorData = product.images[color];
+    if (colorData?.hex && colorData.hex !== '######') {
+      return colorData.hex;
+    }
+
+    // legacy support
     const colorMap: Record<string, string> = {
       red: '#DC2626',
       blue: '#2563EB',

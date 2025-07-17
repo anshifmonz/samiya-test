@@ -157,13 +157,26 @@ const ProductSearchModal: React.FC<ProductSearchModalProps> = ({
     onClose();
   };
 
-  const getFirstImage = (images: Record<string, any[]>) => {
+  const getFirstImage = (images: Record<string, any>) => {
     if (!images || typeof images !== 'object') return '';
     const firstColor = Object.keys(images)[0];
-    if (!firstColor || !images[firstColor] || !images[firstColor][0]) return '';
-
-    const firstImage = images[firstColor][0];
-    return typeof firstImage === 'string' ? firstImage : firstImage.url || '';
+    if (!firstColor || !images[firstColor]) return '';
+    
+    const colorData = images[firstColor];
+    
+    // Check if this is the new format with hex and images
+    if (colorData && colorData.images && Array.isArray(colorData.images) && colorData.images.length > 0) {
+      const firstImage = colorData.images[0];
+      return typeof firstImage === 'string' ? firstImage : firstImage.url || '';
+    }
+    
+    // Legacy format fallback
+    if (Array.isArray(colorData) && colorData.length > 0) {
+      const firstImage = colorData[0];
+      return typeof firstImage === 'string' ? firstImage : firstImage.url || '';
+    }
+    
+    return '';
   };
 
   const modalContent = (

@@ -9,11 +9,11 @@ import {
   sortableKeyboardCoordinates,
 } from '@dnd-kit/sortable';
 import { uploadImagesToCloudinary } from 'lib/upload/cloudinary';
-import optimizeFile from 'lib/utils/optimizeFile';
-import { type ProductImage } from 'types/product';
+import optimizeFile from 'utils/optimizeFile';
+import { type ProductColorData } from 'types/product';
 
 interface UseProductImagesSectionUIProps {
-  images: { [color: string]: ProductImage[] };
+  images: { [color: string]: ProductColorData };
   showAddColorDialog: boolean;
   setShowAddColorDialog: (show: boolean) => void;
   showAddImageDialog: boolean;
@@ -37,7 +37,7 @@ interface UseProductImagesSectionUIProps {
   setUploadErrors: React.Dispatch<React.SetStateAction<{ [filename: string]: string }>>;
   addColor: () => void;
   addImage: () => void;
-  onImagesChange: (images: { [color: string]: ProductImage[] }) => void;
+  onImagesChange: (images: { [color: string]: ProductColorData }) => void;
 }
 
 export const useProductImagesSectionUI = (props: UseProductImagesSectionUIProps) => {
@@ -85,6 +85,11 @@ export const useProductImagesSectionUI = (props: UseProductImagesSectionUIProps)
   const colorVariants = useMemo(() => Object.keys(images), [images]);
 
   const getColorBackground = useCallback((color: string): string => {
+    if (images[color]?.hex && images[color].hex !== '######') {
+      return images[color].hex;
+    }
+
+    // legacy support
     const colorMap: { [key: string]: string } = {
       cream: '#F5F5DC',
       navy: '#000080',
@@ -101,7 +106,7 @@ export const useProductImagesSectionUI = (props: UseProductImagesSectionUIProps)
       white: '#FFFFFF'
     };
     return colorMap[color] || color;
-  }, []);
+  }, [images]);
 
   const handleAddColorDialogClose = useCallback(() => {
     setShowAddColorDialog(false);
@@ -201,11 +206,15 @@ export const useProductImagesSectionUI = (props: UseProductImagesSectionUIProps)
           .map(r => ({ url: r.url!, publicId: r.publicId! }));
 
         if (uploadedImages.length > 0) {
+          const currentColorData = images[selectedColorForImage];
           onImagesChange({
             ...images,
-            [selectedColorForImage]: images[selectedColorForImage]
-              ? [...images[selectedColorForImage], ...uploadedImages]
-              : [...uploadedImages]
+            [selectedColorForImage]: {
+              hex: currentColorData?.hex || '#000000',
+              images: currentColorData?.images
+                ? [...currentColorData.images, ...uploadedImages]
+                : [...uploadedImages]
+            }
           });
           handleAddImageDialogClose();
         } else {
@@ -231,7 +240,7 @@ export const useProductImagesSectionUI = (props: UseProductImagesSectionUIProps)
   ]);
 
   const getImageCount = useCallback((color: string): number => {
-    return images[color]?.length || 0;
+    return images[color]?.images?.length || 0;
   }, [images]);
 
   const isPrimaryColor = useCallback((index: number): boolean => {

@@ -6,6 +6,7 @@ import { CSS } from '@dnd-kit/utilities';
 
 interface DraggableColorTabProps {
   color: string;
+  hexCode?: string;
   imageCount: number;
   isActive: boolean;
   onValueChange: (value: string) => void;
@@ -15,6 +16,7 @@ interface DraggableColorTabProps {
 
 const DraggableColorTab: React.FC<DraggableColorTabProps> = ({
   color,
+  hexCode,
   imageCount,
   onValueChange,
   index,
@@ -64,19 +66,21 @@ const DraggableColorTab: React.FC<DraggableColorTabProps> = ({
         <div
           className="w-3 h-3 rounded-full border border-white shadow-sm"
           style={{
-            backgroundColor: color === 'cream' ? '#F5F5DC' :
-                           color === 'navy' ? '#000080' :
-                           color === 'red' ? '#DC2626' :
-                           color === 'green' ? '#059669' :
-                           color === 'blue' ? '#2563EB' :
-                           color === 'purple' ? '#7C3AED' :
-                           color === 'pink' ? '#EC4899' :
-                           color === 'yellow' ? '#EAB308' :
-                           color === 'orange' ? '#EA580C' :
-                           color === 'brown' ? '#92400E' :
-                           color === 'gray' ? '#6B7280' :
-                           color === 'black' ? '#000000' :
-                           color === 'white' ? '#FFFFFF' : color
+            backgroundColor: hexCode || (
+              color === 'cream' ? '#F5F5DC' :
+              color === 'navy' ? '#000080' :
+              color === 'red' ? '#DC2626' :
+              color === 'green' ? '#059669' :
+              color === 'blue' ? '#2563EB' :
+              color === 'purple' ? '#7C3AED' :
+              color === 'pink' ? '#EC4899' :
+              color === 'yellow' ? '#EAB308' :
+              color === 'orange' ? '#EA580C' :
+              color === 'brown' ? '#92400E' :
+              color === 'gray' ? '#6B7280' :
+              color === 'black' ? '#000000' :
+              color === 'white' ? '#FFFFFF' : color
+            )
           }}
         />
         {color}

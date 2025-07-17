@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { CldImage } from 'next-cloudinary';
-import isCloudinaryUrl from 'src/lib/utils/isCloudinaryUrls';
+import isCloudinaryUrl from 'utils/isCloudinaryUrls';
 import { type Product } from 'types/product';
 import { Badge } from 'ui/badge';
 import { Edit, Trash } from 'lucide-react';
@@ -24,8 +24,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
   onDelete,
   showTags = false
 }) => {
-  const firstImageRaw = Object.values(product.images)[0]?.[0];
-  const firstImage = typeof firstImageRaw === 'string' ? firstImageRaw : firstImageRaw?.url;
+  const firstColorData = Object.values(product.images)[0];
+  const firstImageRaw = firstColorData?.images?.[0];
+  const firstImage = firstImageRaw?.url;
 
   const getBadgeVariant = (category: string) => {
     switch (category?.toLowerCase()) {
@@ -41,6 +42,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
   };
 
   const getColorValue = (color: string) => {
+    const colorData = product.images[color];
+    if (colorData?.hex && colorData.hex !== '######') {
+      return colorData.hex;
+    }
+
+    // legacy support
     switch (color.toLowerCase()) {
       case 'cream': return '#F5F5DC';
       case 'navy': return '#000080';

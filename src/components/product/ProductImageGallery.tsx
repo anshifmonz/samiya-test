@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { CldImage } from 'next-cloudinary';
-import isCloudinaryUrl from 'src/lib/utils/isCloudinaryUrls';
+import isCloudinaryUrl from 'utils/isCloudinaryUrls';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { type Product } from 'types/product';
 
@@ -20,7 +20,7 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({ product, sele
   const [dragOffsetX, setDragOffsetX] = useState(0);
   const mainImageRef = useRef<HTMLDivElement>(null);
 
-  const currentImages = (product.images[selectedColor] || []).map(img =>
+  const currentImages = (product.images[selectedColor]?.images || []).map(img =>
     typeof img === 'string' ? img : img.url
   );
 

@@ -22,21 +22,25 @@ const AddColorDialog: React.FC<AddColorDialogProps> = ({
   onAddColor,
 }) => {
   const [displayColorPicker, setDisplayColorPicker] = useState(false);
+  const [detectedColorName, setDetectedColorName] = useState('');
 
   useEffect(() => {
     if (newImageColor && newImageColor.startsWith('#')) {
       try {
         const names = colorNamer(newImageColor);
-        // Use the first available name from different color spaces
+        // set first available name from different color spaces
         const name = names.ntc?.[0]?.name || names.basic?.[0]?.name || names.html?.[0]?.name || 'Unknown';
+        setDetectedColorName(name);
         setNewImageColorName(name);
       } catch (error) {
+        setDetectedColorName('Unknown');
         setNewImageColorName('Unknown');
       }
     } else {
+      setDetectedColorName('');
       setNewImageColorName(newImageColor || '');
     }
-  }, [newImageColor]);
+  }, [newImageColor, setNewImageColorName]);
 
   const handleColorChange = (color: ColorResult) => {
     setNewImageColor(color.hex);
@@ -50,6 +54,24 @@ const AddColorDialog: React.FC<AddColorDialogProps> = ({
     setDisplayColorPicker(false);
     onClose();
   };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && newImageColor && newImageColorName.trim()) {
+      onAddColor();
+    } else if (e.key === 'Escape') {
+      handleClose();
+    }
+  };
+
+  const handleColorNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewImageColorName(e.target.value);
+  };
+
+  const handleUseDetectedName = () => {
+    setNewImageColorName(detectedColorName);
+  };
+
+  const isValid = newImageColor && newImageColorName.trim();
 
   if (!show) return null;
 
@@ -71,17 +93,43 @@ const AddColorDialog: React.FC<AddColorDialogProps> = ({
                 placeholder="Hex code (e.g., #ff0000)"
                 value={newImageColor}
                 onChange={e => setNewImageColor(e.target.value)}
+                onKeyDown={handleKeyDown}
                 className="w-full px-4 py-3 luxury-body text-sm rounded-xl bg-luxury-cream/50 text-luxury-black border border-luxury-gray/20 focus:outline-none focus:ring-2 focus:ring-luxury-gold/50 focus:border-luxury-gold/30 transition-all duration-300"
                 autoFocus
               />
             </div>
           </div>
-          {/* Color Name Display */}
-            {newImageColorName && (
-            <div className="text-sm text-luxury-gray mb-3">
-              <span className="font-medium">Detected color:</span> {newImageColorName}
+
+          {/* Color Name Input */}
+          <div className="mb-3">
+            <label className="block text-sm font-medium text-luxury-black mb-2">
+              Color Name
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Enter color name (e.g., Ruby Red)"
+                value={newImageColorName}
+                onChange={handleColorNameChange}
+                onKeyDown={handleKeyDown}
+                className="w-full px-4 py-3 luxury-body text-sm rounded-xl bg-luxury-cream/50 text-luxury-black border border-luxury-gray/20 focus:outline-none focus:ring-2 focus:ring-luxury-gold/50 focus:border-luxury-gold/30 transition-all duration-300"
+              />
+              {detectedColorName && detectedColorName !== newImageColorName && (
+                <button
+                  type="button"
+                  onClick={handleUseDetectedName}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs text-luxury-gold hover:text-luxury-gold-light transition-colors duration-200 px-2 py-1 rounded-md hover:bg-luxury-gold/10"
+                >
+                  Use "{detectedColorName}"
+                </button>
+              )}
             </div>
-          )}
+            {detectedColorName && (
+              <div className="text-xs text-luxury-gray mt-1">
+                <span className="font-medium">Detected:</span> {detectedColorName}
+              </div>
+            )}
+          </div>
           {/* Color Picker Popup */}
           {displayColorPicker && (
             <div className="absolute z-10 mt-2 left-0 right-0 flex justify-center">
@@ -110,7 +158,12 @@ const AddColorDialog: React.FC<AddColorDialogProps> = ({
           <button
             type="button"
             onClick={onAddColor}
-            className="flex-1 bg-luxury-gold text-luxury-black px-4 py-2 rounded-xl hover:bg-luxury-gold-light transition-colors duration-200"
+            disabled={!isValid}
+            className={`flex-1 px-4 py-2 rounded-xl transition-all duration-200 luxury-body text-sm font-medium ${
+              !isValid
+                ? 'bg-luxury-gray/20 text-luxury-gray cursor-not-allowed'
+                : 'bg-luxury-gold text-luxury-black hover:bg-luxury-gold-light'
+            }`}
           >
             Add Color
           </button>
