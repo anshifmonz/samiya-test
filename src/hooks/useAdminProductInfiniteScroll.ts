@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { apiRequest } from 'lib/utils/apiRequest';
 import { type Product } from 'types/product';
 import { useDebounce } from './useDebounce';
 
@@ -30,9 +31,9 @@ export function useAdminProductInfiniteScroll(initialProducts: Product[], search
 
     try {
       const params = buildAdminProductSearchParams(debouncedQuery, PAGE_SIZE, offset);
-      const res = await fetch(`/api/admin/product?${params.toString()}`);
-      if (!res.ok) throw new Error('Failed to fetch products');
-      const { products: newProducts } = await res.json();
+      const res = await apiRequest(`/api/admin/product?${params.toString()}`);
+      if (res.error) throw new Error(res.error);
+      const newProducts = res.data?.products || [];
 
       setProducts(prev => [...prev, ...newProducts]);
       setOffset(prev => prev + newProducts.length);
@@ -56,9 +57,9 @@ export function useAdminProductInfiniteScroll(initialProducts: Product[], search
 
       try {
         const params = buildAdminProductSearchParams(debouncedQuery, PAGE_SIZE, 0);
-        const res = await fetch(`/api/admin/product?${params.toString()}`);
-        if (!res.ok) throw new Error('Failed to fetch products');
-        const { products: newProducts } = await res.json();
+        const res = await apiRequest(`/api/admin/product?${params.toString()}`);
+        if (res.error) throw new Error(res.error);
+        const newProducts = res.data?.products || [];
 
         if (!ignore) {
           setProducts(newProducts);
@@ -108,9 +109,9 @@ export function useAdminProductInfiniteScroll(initialProducts: Product[], search
 
     try {
       const params = buildAdminProductSearchParams(debouncedQuery, PAGE_SIZE, 0);
-      const res = await fetch(`/api/admin/product?${params.toString()}`);
-      if (!res.ok) throw new Error('Failed to fetch products');
-      const { products: newProducts } = await res.json();
+      const res = await apiRequest(`/api/admin/product?${params.toString()}`);
+      if (res.error) throw new Error(res.error);
+      const newProducts = res.data?.products || [];
 
       setProducts(newProducts);
       setOffset(newProducts.length);

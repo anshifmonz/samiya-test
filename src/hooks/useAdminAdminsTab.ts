@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { apiRequest } from 'lib/utils/apiRequest';
 
 interface AdminUser {
   id: string;
@@ -36,21 +37,19 @@ export const useAdminAdminsTab = () => {
       setLoading(true);
       setError('');
       try {
-        const meRes = await fetch('/api/admin/me');
-        if (meRes.ok) {
-          const meData = await meRes.json();
-          setCurrentAdmin(meData.admin);
+        const meRes = await apiRequest('/api/admin/me');
+        if (!meRes.error && meRes.data) {
+          setCurrentAdmin(meRes.data.admin);
         } else {
           setCurrentAdmin(null);
         }
 
-        const adminsRes = await fetch('/api/admin');
-        const adminsData = await adminsRes.json();
-        if (adminsData.error) {
-          setError(adminsData.error);
+        const adminsRes = await apiRequest('/api/admin');
+        if (adminsRes.error) {
+          setError(adminsRes.error);
           setAdmins([]);
         } else {
-          setAdmins(adminsData.admins || []);
+          setAdmins(adminsRes.data?.admins || []);
         }
       } catch (e) {
         setError('Failed to fetch data');
@@ -70,21 +69,20 @@ export const useAdminAdminsTab = () => {
     setAddLoading(true);
     setAddError('');
     try {
-      const res = await fetch('/api/admin', {
+      const res = await apiRequest('/api/admin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: addUsername, password: addPassword })
+        body: { username: addUsername, password: addPassword }
       });
-      const data = await res.json();
-      if (data.error) {
-        setAddError(data.error || 'Failed to add admin');
+      if (res.error) {
+        setAddError(res.error || 'Failed to add admin');
         setAddLoading(false);
         return;
       }
       setAddUsername('');
       setAddPassword('');
       setShowAddDialog(false);
-      setAdmins((prev) => [...prev, ...(data.admins || [])]);
+      setAdmins((prev) => [...prev, ...(res.data?.admins || [])]);
     } catch (e) {
       setAddError('Failed to add admin');
     } finally {
@@ -97,12 +95,11 @@ export const useAdminAdminsTab = () => {
     setDeleteLoading(admin.id);
     setError('');
     try {
-      const res = await fetch(`/api/admin?id=${admin.id}`, {
+      const res = await apiRequest(`/api/admin?id=${admin.id}`, {
         method: 'DELETE',
       });
-      const data = await res.json();
-      if (data.error) {
-        setError(data.error || 'Failed to delete admin');
+      if (res.error) {
+        setError(res.error || 'Failed to delete admin');
         setDeleteLoading(null);
         return;
       }
@@ -128,24 +125,23 @@ export const useAdminAdminsTab = () => {
     setEditLoading(true);
     setEditError('');
     try {
-      const res = await fetch('/api/admin', {
+      const res = await apiRequest('/api/admin', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+        body: {
           id: editDialog.id,
           username: editUsername,
           password: editPassword || undefined,
           is_superuser: editSuper
-        })
+        }
       });
-      const data = await res.json();
-      if (data.error) {
-        setEditError(data.error || 'Failed to update admin');
+      if (res.error) {
+        setEditError(res.error || 'Failed to update admin');
         setEditLoading(false);
         return;
       }
       setEditDialog(null);
-      setAdmins((prev) => prev.map((a) => a.id === data.admins[0].id ? data.admins[0] : a));
+      setAdmins((prev) => prev.map((a) => a.id === res.data?.admins[0].id ? res.data.admins[0] : a));
     } catch (e) {
       setEditError('Failed to update admin');
     } finally {

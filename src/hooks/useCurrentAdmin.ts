@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { apiRequest } from 'lib/utils/apiRequest';
 
 interface AdminUser {
   id: string;
@@ -23,13 +24,11 @@ export function useCurrentAdmin(): UseCurrentAdminReturn {
   useEffect(() => {
     const fetchAdmin = async () => {
       try {
-        const response = await fetch('/api/admin/me');
-        const data = await response.json();
-
-        if (response.ok && data.admin) {
-          setAdmin(data.admin);
+        const res = await apiRequest('/api/admin/me');
+        if (!res.error && res.data?.admin) {
+          setAdmin(res.data.admin);
         } else {
-          setError(data.error || 'Failed to fetch admin data');
+          setError(res.error || 'Failed to fetch admin data');
         }
       } catch (err) {
         setError('Network error while fetching admin data');

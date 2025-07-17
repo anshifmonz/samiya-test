@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { apiRequest } from 'lib/utils/apiRequest';
 import { type Product, type ProductFilters } from 'types/product';
 
 const PAGE_SIZE = 16;
@@ -29,8 +30,9 @@ export function useInfiniteProductScroll(initialProducts: Omit<Product, 'descrip
     setLoading(true);
     try {
       const params = buildProductSearchParams(query, filters, PAGE_SIZE, offset);
-      const res = await fetch(`/api/search?${params.toString()}`);
-      const newProducts: Omit<Product, 'description'>[] = await res.json();
+      const res = await apiRequest(`/api/search?${params.toString()}`);
+      if (res.error) throw new Error(res.error);
+      const newProducts: Omit<Product, 'description'>[] = res.data || [];
       setProducts(prev => [...prev, ...newProducts]);
       setOffset(prev => prev + newProducts.length);
       if (newProducts.length < PAGE_SIZE) setHasMore(false);
@@ -50,8 +52,9 @@ export function useInfiniteProductScroll(initialProducts: Omit<Product, 'descrip
       setOffset(0);
       try {
         const params = buildProductSearchParams(query, filters, PAGE_SIZE, 0);
-        const res = await fetch(`/api/search?${params.toString()}`);
-        const newProducts: Omit<Product, 'description'>[] = await res.json();
+        const res = await apiRequest(`/api/search?${params.toString()}`);
+        if (res.error) throw new Error(res.error);
+        const newProducts: Omit<Product, 'description'>[] = res.data || [];
         if (!ignore) {
           setProducts(newProducts);
           setOffset(newProducts.length);
