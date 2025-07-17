@@ -25,15 +25,24 @@ cloudinary.config({
 });
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const FOLDER = 'product-images';
+const TRANSFORMATION = [
+  { width: 1200, height: 1500, crop: 'fill', gravity: 'auto' }, // 4:5
+  { quality: 95 },
+  { flags: 'progressive' },
+  { fetch_format: 'auto' },
+  { strip: true }
+];
+const EAGER = [
+  { width: 800, height: 1000, crop: 'fill', gravity: 'auto', quality: 90, flags: 'progressive' },
+  { width: 400, height: 500, crop: 'fill', gravity: 'auto', quality: 85, flags: 'progressive' }
+];
 
 export async function uploadFileToCloudinary(file: File): Promise<{ secure_url: string, public_id: string }> {
   let tempPath: string | null = null;
-  if (!(file instanceof File)) {
-    throw new Error('No file uploaded.');
-  }
-  if (!ALLOWED_TYPES.includes(file.type)) {
-    throw new Error('Invalid file type.');
-  }
+  if (!(file instanceof File)) throw new Error('No file uploaded.');
+  if (!ALLOWED_TYPES.includes(file.type)) throw new Error('Invalid file type.');
+
   try {
     const buffer = Buffer.from(await file.arrayBuffer());
     tempPath = path.join(
@@ -43,19 +52,10 @@ export async function uploadFileToCloudinary(file: File): Promise<{ secure_url: 
     await writeFile(tempPath, buffer);
 
     const result = await cloudinary.uploader.upload(tempPath, {
-      folder: 'product-images',
+      folder: FOLDER,
       resource_type: 'image',
-      transformation: [
-        { width: 1200, height: 1500, crop: 'fill', gravity: 'auto' }, // 4:5 aspect ratio
-        { quality: 'auto:good' },
-        { fetch_format: 'auto' },
-        { strip: true },
-        { flags: 'progressive' }
-      ],
-      eager: [
-        { width: 800, height: 1000, crop: 'fill', gravity: 'auto', quality: 'auto:good' },
-        { width: 400, height: 500, crop: 'fill', gravity: 'auto', quality: 'auto:good' }
-      ],
+      transformation: TRANSFORMATION,
+      eager: EAGER,
       eager_async: true,
       eager_notification_url: null,
     });
@@ -71,9 +71,7 @@ export async function uploadFileToCloudinary(file: File): Promise<{ secure_url: 
 
 export async function deleteImageFromCloudinary(publicId: string): Promise<{ success: boolean; error?: string }> {
   try {
-    if (!publicId) {
-      throw new Error('Public ID is required');
-    }
+    if (!publicId) throw new Error('Public ID is required');
 
     const result = await cloudinary.uploader.destroy(publicId, {
       resource_type: 'image',
