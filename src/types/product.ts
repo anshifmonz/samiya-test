@@ -3,12 +3,17 @@ export interface ProductImage {
   publicId: string;
 }
 
+export interface ProductColorData {
+  hex: string;
+  images: ProductImage[];
+}
+
 export interface Product {
   id: string;
   short_code: string;
   title: string;
   description: string;
-  images: Record<string, ProductImage[]>;
+  images: Record<string, ProductColorData>;
   price: number;
   originalPrice?: number;
   tags: string[];
@@ -21,6 +26,20 @@ export interface LegacyProduct {
   title: string;
   description: string;
   images: Record<string, string[]>;
+  price: number;
+  originalPrice?: number;
+  tags: string[];
+  category: string;
+  active?: boolean;
+}
+
+// interface for backward compatibility
+export interface LegacyProductWithImages {
+  id: string;
+  short_code: string;
+  title: string;
+  description: string;
+  images: Record<string, ProductImage[]>;
   price: number;
   originalPrice?: number;
   tags: string[];
