@@ -20,11 +20,11 @@ import ColorImagePanel from './imagesSection/ColorImagePanel';
 import NoColorsState from './imagesSection/NoColorsState';
 
 const ProductImagesSection: React.FC<ProductImagesSectionProps> = (props) => {
-  const section = useProductImagesSection(props);
   const {
     showAddColorDialog, setShowAddColorDialog,
     showAddImageDialog, setShowAddImageDialog,
     newImageColor, setNewImageColor,
+    newImageColorName, setNewImageColorName,
     newImageUrl, setNewImageUrl,
     selectedColorForImage, setSelectedColorForImage,
     addImageTab, setAddImageTab,
@@ -37,7 +37,7 @@ const ProductImagesSection: React.FC<ProductImagesSectionProps> = (props) => {
     deletingImages,
     addColor, addImage, reorderImages, removeImage, removeColor, handleColorDragEnd,
     onImagesChange, images, activeColorTab, onActiveColorTabChange
-  } = section;
+  } = useProductImagesSection(props);
 
   const {
     sensors, handleDragStart,
@@ -51,6 +51,7 @@ const ProductImagesSection: React.FC<ProductImagesSectionProps> = (props) => {
     showAddColorDialog, setShowAddColorDialog,
     showAddImageDialog, setShowAddImageDialog,
     newImageColor, setNewImageColor,
+    newImageColorName, setNewImageColorName,
     newImageUrl, setNewImageUrl,
     selectedColorForImage, setSelectedColorForImage,
     addImageTab, setAddImageTab,
@@ -171,6 +172,8 @@ const ProductImagesSection: React.FC<ProductImagesSectionProps> = (props) => {
         show={showAddColorDialog}
         onClose={handleAddColorDialogClose}
         newImageColor={newImageColor}
+        newImageColorName={newImageColorName}
+        setNewImageColorName={setNewImageColorName}
         setNewImageColor={setNewImageColor}
         onAddColor={addColor}
       />

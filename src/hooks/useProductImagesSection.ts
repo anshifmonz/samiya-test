@@ -14,6 +14,7 @@ export function useProductImagesSection({ images, onImagesChange, activeColorTab
   const [showAddColorDialog, setShowAddColorDialog] = useState(false);
   const [showAddImageDialog, setShowAddImageDialog] = useState(false);
   const [newImageColor, setNewImageColor] = useState('');
+  const [newImageColorName, setNewImageColorName] = useState('');
   const [newImageUrl, setNewImageUrl] = useState('');
   const [selectedColorForImage, setSelectedColorForImage] = useState('');
   const [addImageTab, setAddImageTab] = useState<'url' | 'device'>('url');
@@ -26,14 +27,15 @@ export function useProductImagesSection({ images, onImagesChange, activeColorTab
   const [deletingImages, setDeletingImages] = useState<Set<string>>(new Set());
 
   const addColor = () => {
-    if (newImageColor && !images[newImageColor]) {
+    if (newImageColor && newImageColorName && !images[newImageColorName]) {
       onImagesChange({
         ...images,
-        [newImageColor]: []
+        [newImageColorName]: []
       });
       setNewImageColor('');
+      setNewImageColorName('');
       setShowAddColorDialog(false);
-      onActiveColorTabChange(newImageColor);
+      onActiveColorTabChange(newImageColorName);
     }
   };
 
@@ -157,6 +159,7 @@ export function useProductImagesSection({ images, onImagesChange, activeColorTab
     showAddColorDialog, setShowAddColorDialog,
     showAddImageDialog, setShowAddImageDialog,
     newImageColor, setNewImageColor,
+    newImageColorName, setNewImageColorName,
     newImageUrl, setNewImageUrl,
     selectedColorForImage, setSelectedColorForImage,
     addImageTab, setAddImageTab,

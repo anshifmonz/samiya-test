@@ -20,6 +20,8 @@ interface UseProductImagesSectionUIProps {
   setShowAddImageDialog: (show: boolean) => void;
   newImageColor: string;
   setNewImageColor: (color: string) => void;
+  newImageColorName: string;
+  setNewImageColorName: (color: string) => void;
   newImageUrl: string;
   setNewImageUrl: (url: string) => void;
   selectedColorForImage: string;
@@ -47,6 +49,8 @@ export const useProductImagesSectionUI = (props: UseProductImagesSectionUIProps)
     setShowAddImageDialog,
     newImageColor,
     setNewImageColor,
+    newImageColorName,
+    setNewImageColorName,
     newImageUrl,
     setNewImageUrl,
     selectedColorForImage,
@@ -102,10 +106,12 @@ export const useProductImagesSectionUI = (props: UseProductImagesSectionUIProps)
   const handleAddColorDialogClose = useCallback(() => {
     setShowAddColorDialog(false);
     setNewImageColor('');
-  }, [setShowAddColorDialog, setNewImageColor]);
+    setNewImageColorName('');
+  }, [setShowAddColorDialog, setNewImageColor, setNewImageColorName]);
 
   const handleAddImageDialogClose = useCallback(() => {
     setShowAddImageDialog(false);
+    setNewImageColorName('');
     setNewImageUrl('');
     setSelectedFiles([]);
     setSelectedColorForImage('');
@@ -115,6 +121,7 @@ export const useProductImagesSectionUI = (props: UseProductImagesSectionUIProps)
     setUploadErrors({});
   }, [
     setShowAddImageDialog,
+    setNewImageColorName,
     setNewImageUrl,
     setSelectedFiles,
     setSelectedColorForImage,
