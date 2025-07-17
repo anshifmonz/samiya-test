@@ -15,7 +15,7 @@ export default async function updateProduct(product: Product): Promise<Product |
 
   const colorKeys = Object.keys(product.images);
   const primaryColor = colorKeys[0] || null;
-  const primaryImageUrl = primaryColor ? product.images[primaryColor]?.[0] || null : null;
+  const primaryImageUrl = primaryColor ? product.images[primaryColor]?.images[0]?.url || null : null;
 
   const { error: prodError } = await supabaseAdmin
     .from('products')
@@ -47,12 +47,14 @@ export default async function updateProduct(product: Product): Promise<Product |
 
   for (let colorIndex = 0; colorIndex < colorKeys.length; colorIndex++) {
     const color = colorKeys[colorIndex];
-    const images = product.images[color];
+    const colorData = product.images[color];
+    const images = colorData.images;
     images.forEach((img, idx) => {
       const isPrimary = colorIndex === 0 && idx === 0;
       imageRows.push({
         product_id: product.id,
         color_name: color,
+        hex_code: colorData.hex,
         image_url: typeof img === 'string' ? img : img.url,
         public_id: typeof img === 'string' ? null : img.publicId,
         is_primary: isPrimary,
@@ -80,9 +82,11 @@ export default async function updateProduct(product: Product): Promise<Product |
   const colorRows = [];
   for (let colorIndex = 0; colorIndex < colorKeys.length; colorIndex++) {
     const color = colorKeys[colorIndex];
+    const colorData = product.images[color];
     colorRows.push({
       product_id: product.id,
       color_name: color,
+      hex_code: colorData.hex,
       is_primary: colorIndex === 0,
       sort_order: colorIndex,
     });

@@ -25,7 +25,7 @@ async function searchProducts(
   }
 
   return (data || []).map((row: any) => {
-    const images: Record<string, any[]> = {};
+    const images: Record<string, { hex: string; images: any[] }> = {};
     if (row.product_images) {
       const sortedImages = [...row.product_images].sort((a: any, b: any) => {
         if (a.color_name !== b.color_name) {
@@ -36,8 +36,13 @@ async function searchProducts(
         return a.sort_order - b.sort_order;
       });
       sortedImages.forEach((img: any) => {
-        if (!images[img.color_name]) images[img.color_name] = [];
-        images[img.color_name].push({ url: img.image_url, publicId: img.public_id });
+        if (!images[img.color_name]) {
+          images[img.color_name] = {
+            hex: img.hex_code || '######', // fallback to legacy support
+            images: []
+          };
+        }
+        images[img.color_name].images.push({ url: img.image_url, publicId: img.public_id });
       });
     }
     const tags: string[] = [];

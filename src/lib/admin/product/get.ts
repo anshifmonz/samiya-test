@@ -14,7 +14,7 @@ async function getProduct(limit: number, offset: number, query: string): Promise
   }
 
   return (data || []).map((row: any) => {
-    const images: Record<string, any[]> = {};
+    const images: Record<string, { hex: string; images: any[] }> = {};
     if (row.product_images) {
       // sort images by color and then by sort_order
       const sortedImages = row.product_images.sort((a: any, b: any) => {
@@ -28,9 +28,14 @@ async function getProduct(limit: number, offset: number, query: string): Promise
       });
 
       sortedImages.forEach((img: any) => {
-        if (!images[img.color_name]) images[img.color_name] = [];
+        if (!images[img.color_name]) {
+          images[img.color_name] = {
+            hex: img.hex_code || '######', // fallback to legacy support
+            images: []
+          };
+        }
         const imageObj = { url: img.image_url, publicId: img.public_id };
-        images[img.color_name].push(imageObj);
+        images[img.color_name].images.push(imageObj);
       });
     }
 

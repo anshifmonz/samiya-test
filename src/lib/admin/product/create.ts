@@ -15,7 +15,7 @@ export default async function createProduct(newProduct: Product): Promise<Produc
 
   const colorKeys = Object.keys(newProduct.images);
   const primaryColor = colorKeys[0] || null;
-  const primaryImageUrl = primaryColor ? newProduct.images[primaryColor]?.[0] || null : null;
+  const primaryImageUrl = primaryColor ? newProduct.images[primaryColor]?.images[0]?.url || null : null;
 
   const { data: productData, error: prodError } = await supabaseAdmin
     .from('products')
@@ -41,12 +41,14 @@ export default async function createProduct(newProduct: Product): Promise<Produc
 
   for (let colorIndex = 0; colorIndex < colorKeys.length; colorIndex++) {
     const color = colorKeys[colorIndex];
-    const images = newProduct.images[color];
+    const colorData = newProduct.images[color];
+    const images = colorData.images;
     images.forEach((img, idx) => {
       const isPrimary = colorIndex === 0 && idx === 0;
       imageRows.push({
         product_id: productId,
         color_name: color,
+        hex_code: colorData.hex,
         image_url: typeof img === 'string' ? img : img.url,
         public_id: typeof img === 'string' ? null : img.publicId,
         is_primary: isPrimary,
@@ -66,9 +68,11 @@ export default async function createProduct(newProduct: Product): Promise<Produc
   const colorRows = [];
   for (let colorIndex = 0; colorIndex < colorKeys.length; colorIndex++) {
     const color = colorKeys[colorIndex];
+    const colorData = newProduct.images[color];
     colorRows.push({
       product_id: productId,
       color_name: color,
+      hex_code: colorData.hex,
       is_primary: colorIndex === 0,
       sort_order: colorIndex,
     });

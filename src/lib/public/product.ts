@@ -1,5 +1,5 @@
 import { supabasePublic } from 'lib/supabasePublic';
-import { type Product } from 'types/product';
+import { type Product, type ProductColorData } from 'types/product';
 
 const getProduct = async (id: string): Promise<Product | null> => {
   const { data, error } = await supabasePublic.rpc('get_product_details_rpc', { product_id: id });
@@ -9,7 +9,7 @@ const getProduct = async (id: string): Promise<Product | null> => {
     return null;
   }
 
-  const images: Record<string, any[]> = {};
+  const images: Record<string, ProductColorData> = {};
   if (data.product_images) {
     const sortedImages = data.product_images.sort((a: any, b: any) => {
       if (a.color_name !== b.color_name) {
@@ -21,8 +21,13 @@ const getProduct = async (id: string): Promise<Product | null> => {
     });
 
     sortedImages.forEach((img: any) => {
-      if (!images[img.color_name]) images[img.color_name] = [];
-      images[img.color_name].push({ url: img.image_url, publicId: img.public_id });
+      if (!images[img.color_name]) {
+        images[img.color_name] = {
+          hex: img.hex_code || '######',
+          images: []
+        };
+      }
+      images[img.color_name].images.push({ url: img.image_url, publicId: img.public_id });
     });
   }
 
