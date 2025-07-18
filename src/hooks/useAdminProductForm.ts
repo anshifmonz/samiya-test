@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { type Product, type ProductColorData } from 'types/product';
+import { type Product, type ProductColorData, type Size } from 'types/product';
 import { type Category } from 'types/category';
 import { ensureProductImageFormat } from 'utils/migrateProductImages';
 
@@ -18,6 +18,7 @@ interface FormData {
   category: string;
   images: Record<string, ProductColorData>;
   tags: string[];
+  sizes: Size[];
   active: boolean;
   short_code: string;
 }
@@ -31,6 +32,7 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
     category: '',
     images: {},
     tags: [],
+    sizes: [],
     active: true,
     short_code: `PROD-${Date.now()}`
   });
@@ -59,6 +61,7 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
         category: migratedProduct.category,
         images: { ...migratedProduct.images },
         tags: [...migratedProduct.tags],
+        sizes: [...(migratedProduct.sizes || [])],
         active: migratedProduct.active !== undefined ? migratedProduct.active : true,
         short_code: migratedProduct.short_code
       });
@@ -88,6 +91,7 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
   const handleCategoryChange = (value: string) => updateFormField('category', value);
   const handleImagesChange = (images: Record<string, ProductColorData>) => updateFormField('images', images);
   const handleTagsChange = (tags: string[]) => updateFormField('tags', tags);
+  const handleSizesChange = (sizes: Size[]) => updateFormField('sizes', sizes);
   const handleActiveChange = (active: boolean) => updateFormField('active', active);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -117,6 +121,7 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
     handleCategoryChange,
     handleImagesChange,
     handleTagsChange,
+    handleSizesChange,
     handleActiveChange,
     handleSubmit,
     handleCancel,

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { type Product } from 'types/product';
 import ProductColorSwatches from './ProductColorSwatches';
 
@@ -10,6 +10,7 @@ interface ProductDetailsProps {
 }
 
 const ProductDetails: React.FC<ProductDetailsProps> = ({ product, selectedColor, handleColorChange, getColorStyle }) => {
+  const [selectedSize, setSelectedSize] = useState<string>('');
   const handleWhatsApp = () => {
     const url = typeof window !== 'undefined' ? window.location.href : '';
     const message =
@@ -17,7 +18,8 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product, selectedColor,
       `*Product ID:* ${product.short_code}%0A` +
       `*Title:* ${product.title}%0A` +
       `*Color:* ${selectedColor.charAt(0).toUpperCase() + selectedColor.slice(1)}%0A` +
-      `*Price:* ₹${product.price.toLocaleString()}%0A` +
+      `*Size:* ${selectedSize ? selectedSize : 'N/A'}%0A` +
+      `%0A*Price:* ₹${product.price.toLocaleString()}%0A` +
       (url ? `*Link:* ${url}` : '');
     const whatsappUrl = `https://wa.me/+919562700999?text=${message}`;
     window.open(whatsappUrl, '_blank');
@@ -49,6 +51,47 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product, selectedColor,
           getColorStyle={getColorStyle}
         />
       </div>
+
+      {/* Size Selection */}
+      {product.sizes && product.sizes.length > 0 && (
+        <div>
+          <h3 className="luxury-subheading text-sm text-luxury-black mb-3 tracking-wider uppercase">
+            Available Sizes
+          </h3>
+          <div className="flex gap-2 flex-wrap">
+            {product.sizes
+              .sort((a, b) => a.sort_order - b.sort_order)
+              .map(size => {
+                const isSelected = selectedSize === size.name;
+                return (
+                  <button
+                    key={size.id}
+                    onClick={() => setSelectedSize(isSelected ? '' : size.name)}
+                    className={`
+                      px-4 py-2 rounded-lg border-2 font-medium text-sm transition-all duration-200
+                      hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-luxury-gold/50
+                      ${
+                        isSelected
+                          ? 'bg-luxury-gold text-white border-luxury-gold shadow-md'
+                          : 'bg-luxury-cream/50 text-luxury-black border-luxury-gray/20 hover:bg-luxury-cream hover:border-luxury-gray/30'
+                      }
+                    `}
+                    type="button"
+                  >
+                    {size.name}
+                  </button>
+                );
+              })
+            }
+          </div>
+          {selectedSize && (
+            <div className="mt-2 text-xs text-luxury-gray">
+              Selected: {selectedSize}
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="pt-4">
         <button
           className="w-full luxury-btn-primary py-3 px-6 rounded-xl luxury-body text-base font-medium transition-all duration-300"

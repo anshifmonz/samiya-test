@@ -11,6 +11,7 @@ import {
   PriceInput,
   ProductImagesSection,
   TagsSection,
+  SizeSelect,
   ActionButtons
 } from './form';
 import ActiveStatusSwitch from '../category/form/ActiveStatusSwitch';
@@ -34,6 +35,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
     handleCategoryChange,
     handleImagesChange,
     handleTagsChange,
+    handleSizesChange,
     handleActiveChange,
     handleSubmit,
     handleCancel,
@@ -98,6 +100,11 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
             onImagesChange={handleImagesChange}
             activeColorTab={activeColorTab}
             onActiveColorTabChange={(color) => setActiveColorTab(color)}
+          />
+
+          <SizeSelect
+            sizes={formData.sizes}
+            onSizesChange={handleSizesChange}
           />
 
           <TagsSection
