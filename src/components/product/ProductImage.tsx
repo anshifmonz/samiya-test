@@ -11,7 +11,7 @@ interface ProductImageProps {
 const ProductImage: React.FC<ProductImageProps> = ({ product, currentImage }) => {
   return (
     <div className="flex flex-col items-center">
-      <div className="aspect-square w-full overflow-hidden rounded-2xl bg-luxury-beige shadow-lg">
+      <div className="aspect-[4/5] w-full overflow-hidden rounded-2xl bg-luxury-beige shadow-lg">
         <Image
           src={currentImage}
           alt={product.title}
