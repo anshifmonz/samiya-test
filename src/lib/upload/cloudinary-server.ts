@@ -27,15 +27,16 @@ cloudinary.config({
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const FOLDER = 'product-images';
 const TRANSFORMATION = [
-  { width: 1200, height: 1500, crop: 'fill', gravity: 'auto' }, // 4:5
-  { quality: 95 },
+  { width: 1200, height: 1500, crop: 'fill', gravity: 'auto', dpr: 'auto' }, // 4:5
+  { quality: 100 },
+  { effect: 'sharpen' },
   { flags: 'progressive' },
-  { fetch_format: 'auto' },
-  { strip: true }
+  { fetch_format: 'auto' }
 ];
 const EAGER = [
-  { width: 800, height: 1000, crop: 'fill', gravity: 'auto', quality: 90, flags: 'progressive' },
-  { width: 400, height: 500, crop: 'fill', gravity: 'auto', quality: 85, flags: 'progressive' }
+  { width: 64, height: 64, crop: 'fill', gravity: 'auto', quality: 95, dpr: 'auto', effect: 'sharpen', flags: 'progressive' },
+  { width: 400, height: 500, crop: 'fill', gravity: 'auto', quality: 95, dpr: 'auto', effect: 'sharpen', flags: 'progressive' },
+  { width: 800, height: 1000, crop: 'fill', gravity: 'auto', quality: 98, dpr: 'auto', effect: 'sharpen', flags: 'progressive' }
 ];
 
 export async function uploadFileToCloudinary(file: File): Promise<{ secure_url: string, public_id: string }> {
