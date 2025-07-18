@@ -144,5 +144,27 @@ export default async function updateProduct(product: Product): Promise<Product |
     }
   }
 
+  // Handle sizes - delete old ones and insert new ones
+  const { error: delSizeError } = await supabaseAdmin
+    .from('product_sizes')
+    .delete()
+    .eq('product_id', product.id);
+  if (delSizeError) {
+    console.error('Error deleting old product sizes:', delSizeError);
+  }
+
+  if (product.sizes && product.sizes.length > 0) {
+    const sizeRows = product.sizes.map(size => ({
+      product_id: product.id,
+      size_id: size.id,
+    }));
+    const { error: sizeError } = await supabaseAdmin
+      .from('product_sizes')
+      .insert(sizeRows);
+    if (sizeError) {
+      console.error('Error linking product to sizes:', sizeError);
+    }
+  }
+
   return product;
 }

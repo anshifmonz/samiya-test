@@ -1,5 +1,5 @@
 import { supabasePublic } from 'lib/supabasePublic';
-import { type Product, type ProductColorData } from 'types/product';
+import { type Product, type ProductColorData, type Size } from 'types/product';
 
 const getProduct = async (id: string): Promise<Product | null> => {
   const { data, error } = await supabasePublic.rpc('get_product_details_rpc', { product_id: id });
@@ -40,6 +40,18 @@ const getProduct = async (id: string): Promise<Product | null> => {
     });
   }
 
+  const sizes: Size[] = [];
+  if (data.product_sizes) {
+    data.product_sizes.forEach((size: any) => {
+      sizes.push({
+        id: size.id,
+        name: size.name,
+        description: size.description,
+        sort_order: size.sort_order
+      });
+    });
+  }
+
   return {
     id: data.id,
     short_code: data.short_code,
@@ -50,6 +62,7 @@ const getProduct = async (id: string): Promise<Product | null> => {
     originalPrice: data.original_price,
     tags,
     category: data.category?.name || '',
+    sizes,
     active: data.is_active,
   };
 }

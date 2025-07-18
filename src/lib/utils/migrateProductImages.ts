@@ -37,7 +37,8 @@ export function migrateProductImages(legacyProduct: LegacyProduct): Product {
   return {
     ...legacyProduct,
     short_code: `LEGACY-${Date.now()}`,
-    images: migratedImages
+    images: migratedImages,
+    sizes: legacyProduct.sizes || []
   };
 }
 
@@ -84,7 +85,8 @@ export function ensureProductImageFormat(product: Product | LegacyProduct | Lega
       return {
         ...product,
         short_code: (product as Product).short_code || `LEGACY-${Date.now()}`,
-        images: migratedImages
+        images: migratedImages,
+        sizes: (product as Product).sizes || []
       };
     }
   }
@@ -101,6 +103,7 @@ export function convertToLegacyFormat(product: Product): LegacyProduct {
 
   return {
     ...product,
-    images: legacyImages
+    images: legacyImages,
+    sizes: product.sizes || []
   };
 }

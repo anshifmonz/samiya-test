@@ -1,5 +1,5 @@
 import { supabasePublic } from 'lib/supabasePublic';
-import { type Product, type ProductFilters } from 'types/product';
+import { type Product, type ProductFilters, type Size } from 'types/product';
 
 async function searchProducts(
   query: string,
@@ -53,6 +53,18 @@ async function searchProducts(
         }
       });
     }
+
+    const sizes: Size[] = [];
+    if (row.product_sizes) {
+      row.product_sizes.forEach((size: any) => {
+        sizes.push({
+          id: size.id,
+          name: size.name,
+          description: size.description,
+          sort_order: size.sort_order
+        });
+      });
+    }
     return {
       id: row.id,
       title: row.title,
@@ -60,7 +72,8 @@ async function searchProducts(
       price: Number(row.price),
       originalPrice: row.original_price,
       tags,
-      category: row.category || ''
+      category: row.category || '',
+      sizes
     };
   });
 }

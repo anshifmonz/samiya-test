@@ -122,6 +122,20 @@ export default async function createProduct(newProduct: Product): Promise<Produc
     }
   }
 
+  // Handle sizes
+  if (newProduct.sizes && newProduct.sizes.length > 0) {
+    const sizeRows = newProduct.sizes.map(size => ({
+      product_id: productId,
+      size_id: size.id,
+    }));
+    const { error: sizeError } = await supabaseAdmin
+      .from('product_sizes')
+      .insert(sizeRows);
+    if (sizeError) {
+      console.error('Error linking product to sizes:', sizeError);
+    }
+  }
+
   return {
     id: productId,
     short_code: productData.short_code,
@@ -132,6 +146,7 @@ export default async function createProduct(newProduct: Product): Promise<Produc
     originalPrice: productData.original_price,
     tags: newProduct.tags,
     category: newProduct.category,
+    sizes: newProduct.sizes,
     active: newProduct.active,
   };
 }

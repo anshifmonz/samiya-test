@@ -1,5 +1,5 @@
 import { supabaseAdmin } from 'lib/supabase';
-import { type Product } from 'types/product';
+import { type Product, type Size } from 'types/product';
 
 async function getProduct(limit: number, offset: number, query: string): Promise<Product[]> {
   const { data, error } = await supabaseAdmin.rpc('get_products_rpc', {
@@ -48,6 +48,18 @@ async function getProduct(limit: number, offset: number, query: string): Promise
       });
     }
 
+    const sizes: Size[] = [];
+    if (row.product_sizes) {
+      row.product_sizes.forEach((size: any) => {
+        sizes.push({
+          id: size.id,
+          name: size.name,
+          description: size.description,
+          sort_order: size.sort_order
+        });
+      });
+    }
+
     return {
       id: row.id,
       short_code: row.short_code,
@@ -58,6 +70,7 @@ async function getProduct(limit: number, offset: number, query: string): Promise
       originalPrice: row.original_price,
       tags,
       category: row.category?.name || '',
+      sizes,
       active: row.is_active,
     };
   });
