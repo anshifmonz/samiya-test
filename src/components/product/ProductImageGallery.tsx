@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { CldImage } from 'next-cloudinary';
 import isCloudinaryUrl from 'utils/isCloudinaryUrls';
+import CloudinaryWithFallback from 'components/shared/CloudinaryWithFallback';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { type Product } from 'types/product';
 
@@ -153,13 +153,14 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({ product, sele
             }`}
           >
             {isCloudinaryUrl(image) ? (
-              <CldImage
+              <CloudinaryWithFallback
                 src={image}
                 alt={`${product.title} - ${selectedColor} (Thumbnail ${index + 1})`}
                 width={80}
                 height={80}
                 sizes="(max-width: 600px) 20vw, 80px"
                 className="w-full h-full object-cover"
+                priority={index === 0}
               />
             ) : (
               <Image
@@ -191,7 +192,7 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({ product, sele
           }}
         >
           {isCloudinaryUrl(currentImages[currentImageIndex]) ? (
-            <CldImage
+            <CloudinaryWithFallback
               src={currentImages[currentImageIndex]}
               alt={`${product.title} - ${selectedColor} (Main view)`}
               width={600}

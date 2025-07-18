@@ -2,12 +2,13 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { CldImage } from 'next-cloudinary';
+import { useState } from 'react';
 import isCloudinaryUrl from 'utils/isCloudinaryUrls';
 import { type Product } from 'types/product';
 import { Badge } from 'ui/badge';
 import { Edit, Trash } from 'lucide-react';
 import ImageFallback from './ImageFallback';
+import CloudinaryWithFallback from './CloudinaryWithFallback';
 
 interface ProductCardProps {
   product: Omit<Product, 'description'>;
@@ -77,7 +78,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       <div className="relative aspect-[4/5] overflow-hidden bg-muted">
         {firstImage ? (
           isCloudinaryUrl(firstImage) ? (
-            <CldImage
+            <CloudinaryWithFallback
               src={firstImage}
               alt={product.category ? `${product.title} (${product.category})` : product.title}
               width={400}

@@ -2,11 +2,11 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { CldImage } from 'next-cloudinary';
 import ImageFallback from 'components/shared/ImageFallback';
 import { type SpecialProduct } from 'types/special';
 import { type SectionProductItem } from 'types/section';
 import isCloudinaryUrl from 'utils/isCloudinaryUrls';
+import CloudinaryWithFallback from 'components/shared/CloudinaryWithFallback';
 
 interface ProductcardProps {
   product: SpecialProduct | SectionProductItem;
@@ -31,7 +31,7 @@ const Productcard = ({ product, className, showDiscountBadge = true }: Productca
         <div className="relative flex-grow w-full aspect-[4/5] overflow-hidden">
           {image ? (
             isCloudinaryUrl(image) ? (
-              <CldImage
+              <CloudinaryWithFallback
                 src={image}
                 alt={`Product: ${product.title}${product.price ? `, Price: Rs ${product.price}` : ''}`}
                 width={458}

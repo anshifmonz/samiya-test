@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import { CldImage } from 'next-cloudinary';
 import isCloudinaryUrl from 'src/lib/utils/isCloudinaryUrls';
 import {
   DndContext,
@@ -24,6 +23,8 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, Trash, Crown } from 'lucide-react';
 import { type ProductImage } from 'types/product';
+import { useState } from 'react';
+import CloudinaryWithFallback from 'components/shared/CloudinaryWithFallback';
 
 interface DraggableImageItemProps {
   id: string;
@@ -88,13 +89,14 @@ const DraggableImageItem: React.FC<DraggableImageItemProps> = ({
       </button>
 
       {isCloudinaryUrl(image.url) ? (
-        <CldImage
+        <CloudinaryWithFallback
           src={image.url}
           alt={`Product image ${index + 1}${isPrimary ? ' (Primary)' : ''}`}
           width={64}
           height={64}
           sizes="(max-width: 600px) 20vw, 64px"
           className="w-16 h-16 object-cover rounded flex-shrink-0"
+          priority={index === 0}
         />
       ) : (
         <Image
