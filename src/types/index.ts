@@ -1,5 +1,5 @@
 // Product types
-export type { Product, ProductFilters } from './product';
+export type { Product, ProductFilters, Size } from './product';
 
 // Category types
 export type { Category } from './category';

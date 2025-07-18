@@ -22,6 +22,7 @@ export interface NewProductInput {
   category: string;
   images: Record<string, string[]>;
   tags: string[];
+  sizes: string[]; // Array of size IDs
 }
 
 export interface NewCollectionInput {

@@ -8,6 +8,13 @@ export interface ProductColorData {
   images: ProductImage[];
 }
 
+export interface Size {
+  id: string;
+  name: string;
+  description?: string;
+  sort_order: number;
+}
+
 export interface Product {
   id: string;
   short_code: string;
@@ -18,6 +25,7 @@ export interface Product {
   originalPrice?: number;
   tags: string[];
   category: string;
+  sizes: Size[];
   active?: boolean;
 }
 
@@ -30,6 +38,7 @@ export interface LegacyProduct {
   originalPrice?: number;
   tags: string[];
   category: string;
+  sizes?: Size[];
   active?: boolean;
 }
 
@@ -44,6 +53,7 @@ export interface LegacyProductWithImages {
   originalPrice?: number;
   tags: string[];
   category: string;
+  sizes?: Size[];
   active?: boolean;
 }
 
