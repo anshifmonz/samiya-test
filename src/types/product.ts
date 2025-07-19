@@ -66,3 +66,19 @@ export type ProductFilters = {
   limit?: number;
   offset?: number;
 };
+
+export interface SimilarProduct {
+  id: string;
+  title: string;
+  price: number;
+  original_price?: number;
+  primary_color?: string;
+  primary_image_url?: string;
+  category?: string;
+  available_colors: Array<{
+    color_name: string;
+    hex_code?: string;
+    sort_order: number;
+    is_primary: boolean;
+  }>;
+}
