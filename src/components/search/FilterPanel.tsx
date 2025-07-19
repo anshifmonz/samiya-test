@@ -1,4 +1,5 @@
-import React from 'react';
+'use client';
+
 import { Button } from 'ui/button';
 import CategoryFilter from './filter/CategoryFilter';
 import PriceFilter from './filter/PriceFilter';
@@ -10,7 +11,7 @@ import { type Category } from 'types/category';
 
 interface FilterPanelProps {
   onFiltersChange: (filters: ProductFilters) => void;
-  availableColors?: string[];
+  availableColors?: Array<{ name: string; hex: string }>;
   availableCategories?: string[];
   availableTags?: string[];
   categories: Category[];

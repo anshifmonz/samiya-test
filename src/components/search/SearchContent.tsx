@@ -1,4 +1,5 @@
-import React from 'react';
+'use client';
+
 import { type Product, type ProductFilters } from 'types/product';
 import { type Category } from 'types/category';
 import FilterPanel from './FilterPanel';
@@ -14,16 +15,19 @@ interface SearchContentProps {
 }
 
 const SearchContent: React.FC<SearchContentProps> = ({ products, onFiltersChange, categories, query, filters }) => {
-  // collect all unique colors from the current products
-  const colorSet = new Set<string>();
+  // collect all unique colors from the current products with their hex codes
+  const colorMap = new Map<string, string>();
   products.forEach(product => {
     if (product.images) {
-      Object.keys(product.images).forEach((color: string) => colorSet.add(color));
+      Object.entries(product.images).forEach(([colorName, colorData]) => {
+        if (colorData.hex && colorData.hex !== '######') {
+          colorMap.set(colorName, colorData.hex);
+        }
+      });
     }
   });
-  const availableColors = Array.from(colorSet);
+  const availableColors = Array.from(colorMap.entries()).map(([name, hex]) => ({ name, hex }));
 
-  // collect all unique categories from the current products and count products per category
   const categoryCountMap = new Map<string, number>();
   products.forEach(product => {
     if (product.category) {
@@ -32,7 +36,6 @@ const SearchContent: React.FC<SearchContentProps> = ({ products, onFiltersChange
   });
   const availableCategories = Array.from(categoryCountMap.keys());
 
-  // collect all unique tags from the current products
   const tagSet = new Set<string>();
   products.forEach(product => {
     if (product.tags) {
@@ -55,7 +58,6 @@ const SearchContent: React.FC<SearchContentProps> = ({ products, onFiltersChange
       </div>
 
       <div className="flex-1">
-        {/* Mobile filter panel integrated in main content */}
         <div className="lg:hidden px-3 sm:px-5 pt-6">
           <MobileFilterPanel
             onFiltersChange={onFiltersChange}

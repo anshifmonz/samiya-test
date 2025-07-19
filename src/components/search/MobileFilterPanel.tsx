@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+'use client';
+
+import { useState, useEffect } from 'react';
 import { Filter } from 'lucide-react';
 import { Button } from 'ui/button';
 import {
@@ -19,7 +21,7 @@ import { type Category } from 'types/category';
 
 interface MobileFilterPanelProps {
   onFiltersChange: (filters: ProductFilters) => void;
-  availableColors?: string[];
+  availableColors?: Array<{ name: string; hex: string }>;
   availableCategories?: string[];
   availableTags?: string[];
   categories: Category[];
