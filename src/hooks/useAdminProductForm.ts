@@ -15,7 +15,7 @@ interface FormData {
   description: string;
   price: number;
   originalPrice: number;
-  category: string;
+  categoryId: string;
   images: Record<string, ProductColorData>;
   tags: string[];
   sizes: Size[];
@@ -29,7 +29,7 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
     description: '',
     price: 0,
     originalPrice: 0,
-    category: '',
+    categoryId: '',
     images: {},
     tags: [],
     sizes: [],
@@ -52,13 +52,17 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
   useEffect(() => {
     if (product) {
       const migratedProduct = ensureProductImageFormat(product);
+      
+      // Find the category ID from the category name for backward compatibility
+      const category = categories.find(cat => cat.name === migratedProduct.category);
+      const categoryId = category ? category.id : '';
 
       setFormData({
         title: migratedProduct.title,
         description: migratedProduct.description,
         price: migratedProduct.price,
         originalPrice: migratedProduct.originalPrice,
-        category: migratedProduct.category,
+        categoryId: categoryId,
         images: { ...migratedProduct.images },
         tags: [...migratedProduct.tags],
         sizes: [...(migratedProduct.sizes || [])],
@@ -71,7 +75,7 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
         setActiveColorTab(colors[0]);
       }
     }
-  }, [product]);
+    }, [product, categories]);
 
   useEffect(() => {
     const colors = Object.keys(formData.images);
@@ -88,7 +92,7 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
   const handleDescriptionChange = (value: string) => updateFormField('description', value);
   const handlePriceChange = (value: number) => updateFormField('price', value);
   const handleOriginalPriceChange = (value: number) => updateFormField('originalPrice', value);
-  const handleCategoryChange = (value: string) => updateFormField('category', value);
+  const handleCategoryChange = (value: string) => updateFormField('categoryId', value);
   const handleImagesChange = (images: Record<string, ProductColorData>) => updateFormField('images', images);
   const handleTagsChange = (tags: string[]) => updateFormField('tags', tags);
   const handleSizesChange = (sizes: Size[]) => updateFormField('sizes', sizes);
@@ -96,10 +100,20 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Find the category name for backward compatibility
+    const selectedCategory = categories.find(cat => cat.id === formData.categoryId);
+    const categoryName = selectedCategory ? selectedCategory.name : '';
+    
+    const productData = {
+      ...formData,
+      category: categoryName, // Keep for backward compatibility
+    };
+    
     if (product) {
-      onSave({ ...formData, id: product.id, short_code: product.short_code });
+      onSave({ ...productData, id: product.id, short_code: product.short_code });
     } else {
-      onSave(formData);
+      onSave(productData);
     }
   };
 

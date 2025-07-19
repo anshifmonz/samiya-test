@@ -24,7 +24,7 @@ export interface Product {
   price: number;
   originalPrice?: number;
   tags: string[];
-  category: string;
+  categoryId: string;
   sizes: Size[];
   active?: boolean;
 }
@@ -37,7 +37,7 @@ export interface LegacyProduct {
   price: number;
   originalPrice?: number;
   tags: string[];
-  category: string;
+  categoryId: string;
   sizes?: Size[];
   active?: boolean;
 }
@@ -52,7 +52,7 @@ export interface LegacyProductWithImages {
   price: number;
   originalPrice?: number;
   tags: string[];
-  category: string;
+  categoryId: string;
   sizes?: Size[];
   active?: boolean;
 }

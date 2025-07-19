@@ -5,7 +5,7 @@ export default async function createProduct(newProduct: Omit<Product, 'id'>): Pr
   const { data: categories, error: catError } = await supabaseAdmin
     .from('categories')
     .select('id')
-    .eq('id', newProduct.category)
+    .eq('id', newProduct.categoryId)
     .limit(1);
   if (catError || !categories || categories.length === 0) {
     console.error('Category not found:', catError);
@@ -145,7 +145,7 @@ export default async function createProduct(newProduct: Omit<Product, 'id'>): Pr
     price: productData.price,
     originalPrice: productData.original_price,
     tags: newProduct.tags,
-    category: newProduct.category,
+    categoryId: newProduct.categoryId,
     sizes: newProduct.sizes,
     active: newProduct.active,
   };

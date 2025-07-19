@@ -16,8 +16,8 @@ const CategorySelect: React.FC<CategorySelectProps> = ({ value, onChange, catego
   // get the display name for the selected value
   const getSelectedDisplayName = () => {
     if (!value) return "Select a category";
-    const category = categories.find(cat => cat.name === value);
-    return category ? category.name : value;
+    const category = categories.find(cat => cat.id === value);
+    return category ? category.name : "Select a category";
   };
 
   // handle click outside to close dropdown
@@ -54,11 +54,11 @@ const CategorySelect: React.FC<CategorySelectProps> = ({ value, onChange, catego
 
           <div
             className={`px-4 py-2 cursor-pointer hover:bg-luxury-gold/10 transition-colors duration-200 relative ${
-              value === category.name ? 'bg-luxury-gold/20 text-luxury-gold' : 'text-luxury-black'
+              value === category.id ? 'bg-luxury-gold/20 text-luxury-gold' : 'text-luxury-black'
             }`}
             style={{ paddingLeft: `${indent + 16}px` }}
             onClick={() => {
-              onChange(category.name);
+              onChange(category.id);
               setIsOpen(false);
             }}
           >
@@ -97,7 +97,7 @@ const CategorySelect: React.FC<CategorySelectProps> = ({ value, onChange, catego
                 <span className="luxury-body text-sm">{category.name}</span>
               </div>
 
-              {value === category.name && (
+              {value === category.id && (
                 <Check className="w-4 h-4 text-luxury-gold" />
               )}
             </div>

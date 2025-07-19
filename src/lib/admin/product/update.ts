@@ -5,7 +5,7 @@ export default async function updateProduct(product: Product): Promise<Product |
   const { data: categories, error: catError } = await supabaseAdmin
     .from('categories')
     .select('id')
-    .eq('name', product.category)
+    .eq('id', product.categoryId)
     .limit(1);
   if (catError || !categories || categories.length === 0) {
     console.error('Category not found:', catError);

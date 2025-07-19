@@ -22,7 +22,7 @@ interface ParsedProduct {
   description: string;
   price: number;
   originalPrice?: number;
-  category: string;
+  categoryId: string;
   tags: string[];
   sizes: string[];
   active: boolean;
@@ -100,7 +100,7 @@ Kids Party Dress	Adorable dress for special occasions	599	799	Girls	kids,party,f
         description: '',
         price: 0,
         originalPrice: undefined,
-        category: '',
+        categoryId: '',
         tags: [],
         sizes: [],
         active: true,
@@ -140,7 +140,7 @@ Kids Party Dress	Adorable dress for special occasions	599	799	Girls	kids,party,f
             }
             break;
           case 'category':
-            product.category = value;
+            product.categoryId = value;
             if (!value) {
               product.errors.push('Category is required');
             } else if (!categoryMap.has(value.toLowerCase())) {
@@ -198,7 +198,7 @@ Kids Party Dress	Adorable dress for special occasions	599	799	Girls	kids,party,f
       description: product.description,
       price: product.price,
       originalPrice: product.originalPrice,
-      category: categoryMap.get(product.category.toLowerCase()) || product.category,
+      categoryId: categoryMap.get(product.categoryId.toLowerCase()) || product.categoryId,
       tags: product.tags,
       sizes: product.sizes
         .map(sizeName => {
@@ -316,7 +316,7 @@ Kids Party Dress	Adorable dress for special occasions	599	799	Girls	kids,party,f
                           {product.title || `Row ${index + 2}`}
                         </h4>
                         <p className="text-sm text-luxury-gray mt-1">
-                          Price: ₹{product.price} | Category: {product.category}
+                          Price: ₹{product.price} | Category: {product.categoryId}
                         </p>
                       </div>
                       <div className="ml-4">

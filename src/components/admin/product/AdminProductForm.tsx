@@ -71,7 +71,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
             />
 
             <CategorySelect
-              value={formData.category}
+              value={formData.categoryId}
               onChange={handleCategoryChange}
               categories={categories}
             />
