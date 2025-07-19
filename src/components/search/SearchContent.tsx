@@ -30,8 +30,8 @@ const SearchContent: React.FC<SearchContentProps> = ({ products, onFiltersChange
 
   const categoryCountMap = new Map<string, number>();
   products.forEach(product => {
-    if (product.category) {
-      categoryCountMap.set(product.category, (categoryCountMap.get(product.category) || 0) + 1);
+    if (product.categoryId) {
+      categoryCountMap.set(product.categoryId, (categoryCountMap.get(product.categoryId) || 0) + 1);
     }
   });
   const availableCategories = Array.from(categoryCountMap.keys());

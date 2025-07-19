@@ -80,7 +80,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           isCloudinaryUrl(firstImage) ? (
             <CloudinaryWithFallback
               src={firstImage}
-              alt={product.category ? `${product.title} (${product.category})` : product.title}
+              alt={product.categoryId ? `${product.title} (category: ${product.categoryId})` : product.title}
               width={400}
               height={500}
               sizes="(max-width: 600px) 100vw, 400px"
@@ -124,12 +124,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
         )}
 
         {/* Category Badge */}
-        {product.category && (
+        {product.categoryId && (
           <Badge
-            variant={getBadgeVariant(product.category)}
+            variant={getBadgeVariant(product.categoryId)}
             className="absolute top-2 left-2"
           >
-            {product.category}
+            {product.categoryId}
           </Badge>
         )}
       </div>

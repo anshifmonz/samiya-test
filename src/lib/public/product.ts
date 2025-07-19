@@ -61,7 +61,7 @@ const getProduct = async (id: string): Promise<Product | null> => {
     price: Number(data.price),
     originalPrice: data.original_price,
     tags,
-    category: data.category?.name || '',
+    categoryId: data.category_id || '',
     sizes,
     active: data.is_active,
   };

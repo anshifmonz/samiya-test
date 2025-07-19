@@ -52,10 +52,8 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
   useEffect(() => {
     if (product) {
       const migratedProduct = ensureProductImageFormat(product);
-      
-      // Find the category ID from the category name for backward compatibility
-      const category = categories.find(cat => cat.name === migratedProduct.category);
-      const categoryId = category ? category.id : '';
+
+      const categoryId = migratedProduct.categoryId || '';
 
       setFormData({
         title: migratedProduct.title,
@@ -100,16 +98,11 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Find the category name for backward compatibility
-    const selectedCategory = categories.find(cat => cat.id === formData.categoryId);
-    const categoryName = selectedCategory ? selectedCategory.name : '';
-    
+
     const productData = {
       ...formData,
-      category: categoryName, // Keep for backward compatibility
     };
-    
+
     if (product) {
       onSave({ ...productData, id: product.id, short_code: product.short_code });
     } else {
