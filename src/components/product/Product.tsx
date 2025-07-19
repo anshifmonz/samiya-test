@@ -2,8 +2,14 @@
 
 import { Suspense, useState } from 'react';
 import { type Product } from 'types/product';
-import ProductImageGallery from 'components/product/ProductImageGallery';
-import ProductDetails from 'components/product/ProductDetails';
+import ProductImageGallery from './ImageGallery';
+import ProductHeader from './Header';
+import ProductPricing from './Pricing';
+import StockStatus from './StockStatus';
+import ColorSelector from './ColorSelector';
+import SizeSelector from './SizeSelector';
+import QuantitySelector from './QuantitySelector';
+import ProductActions from './Actions';
 import LoadingSpinner from 'components/shared/LoadingSpinner';
 
 interface Props {
@@ -13,6 +19,8 @@ interface Props {
 
 export default function ProductPage({ product, initialColor }: Props) {
   const [selectedColor, setSelectedColor] = useState<string>(initialColor);
+  const [selectedSize, setSelectedSize] = useState<string>('');
+  const [quantity, setQuantity] = useState<number>(1);
 
   const handleColorChange = (color: string) => {
     setSelectedColor(color);
@@ -55,18 +63,60 @@ export default function ProductPage({ product, initialColor }: Props) {
     return colorMap[color] || color;
   };
 
+  const handleWhatsApp = () => {
+    const url = typeof window !== 'undefined' ? window.location.href : '';
+    const message =
+      `Hello, I'm interested in this product!%0A` +
+      `*Product ID:* ${product.short_code}%0A` +
+      `*Title:* ${product.title}%0A` +
+      `*Color:* ${selectedColor.charAt(0).toUpperCase() + selectedColor.slice(1)}%0A` +
+      `*Size:* ${selectedSize ? selectedSize : 'N/A'}%0A` +
+      `*Quantity:* ${quantity}%0A` +
+      `%0A*Price:* ₹${product.price.toLocaleString()}%0A` +
+      (url ? `*Link:* ${url}` : '');
+    const whatsappUrl = `https://wa.me/+919562700999?text=${message}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
   return (
-    <div className="min-h-screen bg-luxury-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24">
+    <div className="min-h-screen bg-background">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24">
         <Suspense fallback={<LoadingSpinner text="Loading product details..." />}>
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:gap-12 items-center">
-      <ProductImageGallery product={product} selectedColor={selectedColor} />
-      <div className="space-y-6 w-full">
-        <ProductDetails product={product} selectedColor={selectedColor} handleColorChange={handleColorChange} getColorStyle={getColorStyle} />
-      </div>
-    </div>
-    </Suspense>
-      </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <ProductImageGallery product={product} selectedColor={selectedColor} />
+
+            <div className="flex flex-col gap-4 justify-center">
+              <ProductHeader product={product} />
+
+              <ProductPricing product={product} />
+
+              <StockStatus />
+
+              <ColorSelector
+                product={product}
+                selectedColor={selectedColor}
+                onColorChange={handleColorChange}
+                getColorStyle={getColorStyle}
+              />
+
+              <SizeSelector
+                sizes={product.sizes}
+                selectedSize={selectedSize}
+                onSizeChange={setSelectedSize}
+              />
+
+              <QuantitySelector
+                quantity={quantity}
+                onQuantityChange={setQuantity}
+              />
+
+              <ProductActions
+                onBuyNow={handleWhatsApp}
+              />
+            </div>
+          </div>
+        </Suspense>
+      </main>
     </div>
   );
 }
