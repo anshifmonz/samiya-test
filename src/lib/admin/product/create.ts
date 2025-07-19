@@ -1,11 +1,11 @@
 import { supabaseAdmin } from 'lib/supabase';
 import type { Product } from 'types/product';
 
-export default async function createProduct(newProduct: Product): Promise<Product | null> {
+export default async function createProduct(newProduct: Omit<Product, 'id'>): Promise<Product | null> {
   const { data: categories, error: catError } = await supabaseAdmin
     .from('categories')
     .select('id')
-    .eq('name', newProduct.category)
+    .eq('id', newProduct.category)
     .limit(1);
   if (catError || !categories || categories.length === 0) {
     console.error('Category not found:', catError);

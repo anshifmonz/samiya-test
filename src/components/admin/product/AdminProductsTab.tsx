@@ -1,10 +1,15 @@
-import { Plus, Search } from 'lucide-react';
+import { useState } from 'react';
+import { Plus, Search, Upload } from 'lucide-react';
 import { type Product } from 'types/product';
 import { type Category } from 'types/category';
 import AdminTabHeader from '../shared/AdminTabHeader';
 import AdminProductForm from './AdminProductForm';
 import AdminProductGrid from './AdminProductGrid';
+import BulkImportModal from './BulkImportModal';
 import { useAdminProductsTab } from 'hooks/useAdminProductsTab';
+import { useSizes } from 'hooks/useSizes';
+import { apiRequest } from 'lib/utils/apiRequest';
+import { showToast } from 'hooks/use-toast';
 
 interface AdminProductsTabProps {
   initialProducts: Product[];
@@ -23,6 +28,10 @@ const AdminProductsTab: React.FC<AdminProductsTabProps> = ({
   onDeleteProduct,
   isSuperAdmin
 }) => {
+  const { sizes, loading: sizesLoading } = useSizes();
+  const [showBulkImport, setShowBulkImport] = useState(false);
+  const [isBulkImporting, setIsBulkImporting] = useState(false);
+
   const {
     searchQuery,
     products,
@@ -40,7 +49,8 @@ const AdminProductsTab: React.FC<AdminProductsTabProps> = ({
     handleCancelForm,
     isFormVisible,
     currentProduct,
-    productsCountText
+    productsCountText,
+    refreshProducts
   } = useAdminProductsTab({
     initialProducts,
     categories,
@@ -49,6 +59,50 @@ const AdminProductsTab: React.FC<AdminProductsTabProps> = ({
     onDeleteProduct
   });
 
+  const handleBulkImport = async (products: Omit<Product, 'id'>[]) => {
+    setIsBulkImporting(true);
+    try {
+      const { data, error } = await apiRequest('/api/admin/product/bulk', {
+        method: 'POST',
+        body: { products }
+      });
+
+      if (error) {
+        throw new Error(error);
+      }
+
+      const summary = data.summary;
+      if (summary.failed > 0) {
+        showToast({
+          type: 'error',
+          title: 'Bulk Import Completed',
+          description: `Successfully imported ${summary.successful} products, ${summary.failed} failed. Check console for details.`
+        });
+      } else {
+        showToast({
+          title: 'Bulk Import Successful',
+          description: `Successfully imported ${summary.successful} products.`
+        });
+      }
+
+      refreshProducts();
+      setShowBulkImport(false);
+    } catch (err) {
+      console.error('Bulk import error:', err);
+      showToast({
+        type: 'error',
+        title: 'Bulk Import Failed',
+        description: err instanceof Error ? err.message : 'An error occurred during bulk import.'
+      });
+    } finally {
+      setIsBulkImporting(false);
+    }
+  };
+
+  const handleCancelBulkImport = () => {
+    setShowBulkImport(false);
+  };
+
   return (
     <div>
       <AdminTabHeader
@@ -56,6 +110,16 @@ const AdminProductsTab: React.FC<AdminProductsTabProps> = ({
         onSearchChange={handleSearchChange}
         onAddClick={handleShowAddForm}
         addLabel="Add Product"
+        additionalActions={
+          <button
+            onClick={() => setShowBulkImport(true)}
+            className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-luxury-gold hover:text-luxury-gold/80 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={sizesLoading || isBulkImporting}
+          >
+            <Upload size={16} className={isBulkImporting ? 'animate-spin' : ''} />
+            <span>{isBulkImporting ? 'Importing...' : 'Bulk Import'}</span>
+          </button>
+        }
       >
         <Plus size={20} />
       </AdminTabHeader>
@@ -92,6 +156,15 @@ const AdminProductsTab: React.FC<AdminProductsTabProps> = ({
           categories={categories}
           onSave={currentProduct ? handleEditProduct : handleAddProduct}
           onCancel={handleCancelForm}
+        />
+      )}
+
+      {showBulkImport && (
+        <BulkImportModal
+          categories={categories}
+          sizes={sizes}
+          onImport={handleBulkImport}
+          onCancel={handleCancelBulkImport}
         />
       )}
     </div>
