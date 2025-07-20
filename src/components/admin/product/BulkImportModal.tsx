@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Info } from 'lucide-react';
 import { type Product } from 'types/product';
@@ -12,7 +12,8 @@ import {
   DynamicColumnHeaders,
   DataPreviewTable,
   ValidationResults,
-  ModalActionButtons
+  ModalActionButtons,
+  TextareaCategorySuggestions
 } from './bulk/components';
 
 interface BulkImportModalProps {
@@ -43,6 +44,7 @@ const BulkImportModal: React.FC<BulkImportModalProps> = ({
 }) => {
   const [isValidating, setIsValidating] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Expected column order for reference
   const expectedHeaders = ['Title', 'Description', 'Price', 'Original Price', 'Category', 'Tags', 'Sizes', 'Active'];
@@ -113,7 +115,23 @@ Traditional Kurti\tBeautiful kurti for special occasions\t599\t799\tLadies Wear 
     }
   };
 
-    const handleImport = () => {
+  // Handle category suggestion selection from textarea
+  const handleSuggestionSelect = (suggestion: string, startPos: number, endPos: number) => {
+    const newValue = pastedData.substring(0, startPos) + suggestion + pastedData.substring(endPos);
+    const processedValue = processAndUpdateData(newValue);
+    setPastedData(processedValue);
+
+    // Update cursor position to end of inserted suggestion
+    setTimeout(() => {
+      if (textareaRef.current) {
+        const newCursorPos = startPos + suggestion.length;
+        textareaRef.current.setSelectionRange(newCursorPos, newCursorPos);
+        setCursorPosition(newCursorPos);
+      }
+    }, 0);
+  };
+
+  const handleImport = () => {
     setIsValidating(true);
 
     // filter out products with errors
@@ -191,16 +209,29 @@ Traditional Kurti\tBeautiful kurti for special occasions\t599\t799\tLadies Wear 
               activeColumnIndex={activeColumnIndex}
             />
 
-            <Textarea
-              value={pastedData}
-              onChange={handleInputChange}
-              onKeyDown={handleKeyDown}
-              onSelect={handleCursorChange}
-              onClick={handleCursorChange}
-              onKeyUp={handleCursorChange}
-              placeholder="Paste tab-separated data here (headers optional). Use Tab key or 4 spaces for columns..."
-              className="min-h-[200px] font-mono text-sm"
-            />
+            <div className="relative">
+              <Textarea
+                ref={textareaRef}
+                value={pastedData}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
+                onSelect={handleCursorChange}
+                onClick={handleCursorChange}
+                onKeyUp={handleCursorChange}
+                placeholder="Paste tab-separated data here (headers optional). Use Tab key or 4 spaces for columns..."
+                className="min-h-[200px] font-mono text-sm"
+              />
+
+              {/* Inline category suggestions */}
+              <TextareaCategorySuggestions
+                value={pastedData}
+                categories={categories}
+                cursorPosition={cursorPosition}
+                textareaRef={textareaRef}
+                onSuggestionSelect={handleSuggestionSelect}
+                expectedHeaders={expectedHeaders}
+              />
+            </div>
 
             <DataPreviewTable
               pastedData={pastedData}

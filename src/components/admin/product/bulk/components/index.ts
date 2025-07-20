@@ -7,3 +7,4 @@ export { DynamicColumnHeaders } from './DynamicColumnHeaders';
 export { DataPreviewTable } from './DataPreviewTable';
 export { ValidationResults } from './ValidationResults';
 export { ModalActionButtons } from './ModalActionButtons';
+export { TextareaCategorySuggestions } from './TextareaCategorySuggestions';
