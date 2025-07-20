@@ -1,14 +1,19 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Upload, Download, AlertCircle, CheckCircle, Info } from 'lucide-react';
+import { X, Info } from 'lucide-react';
 import { type Product } from 'types/product';
 import { type Category } from 'types/category';
 import { type Size } from 'types/product';
-import { Button } from 'ui/button';
 import { Textarea } from 'ui/textarea';
-import { Badge } from 'ui/badge';
 import { Alert, AlertDescription } from 'ui/alert';
-import { Separator } from 'ui/separator';
+import { useCursorTracking, useDataProcessing } from './bulk/hooks';
+import {
+  Instructions,
+  DynamicColumnHeaders,
+  DataPreviewTable,
+  ValidationResults,
+  ModalActionButtons
+} from './bulk/components';
 
 interface BulkImportModalProps {
   categories: Category[];
@@ -36,10 +41,32 @@ const BulkImportModal: React.FC<BulkImportModalProps> = ({
   onImport,
   onCancel
 }) => {
-  const [pastedData, setPastedData] = useState('');
-  const [parsedProducts, setParsedProducts] = useState<ParsedProduct[]>([]);
   const [isValidating, setIsValidating] = useState(false);
   const [mounted, setMounted] = useState(false);
+
+  // Expected column order for reference
+  const expectedHeaders = ['Title', 'Description', 'Price', 'Original Price', 'Category', 'Tags', 'Sizes', 'Active'];
+  const sampleData = `Elegant Silk Saree\tBeautiful traditional silk saree with golden border\t1499\t1999\tLadies Wear > Saree\tsilk,traditional,wedding\tS,M,L\ttrue
+Traditional Kurti\tBeautiful kurti for special occasions\t599\t799\tLadies Wear > Kurtis\tkurti,traditional,festive\tM,L,XL,2XL\ttrue`;
+
+  // Use custom hooks
+  const {
+    pastedData,
+    setPastedData,
+    parsedProducts,
+    rawTableData,
+    categoryMap,
+    sizeMap,
+    processAndUpdateData,
+    updateCellValue
+  } = useDataProcessing(categories, sizes, expectedHeaders);
+
+  const {
+    cursorPosition,
+    setCursorPosition,
+    activeColumnIndex,
+    handleCursorChange
+  } = useCursorTracking(pastedData, expectedHeaders);
 
   React.useEffect(() => {
     setMounted(true);
@@ -50,134 +77,39 @@ const BulkImportModal: React.FC<BulkImportModalProps> = ({
     };
   }, []);
 
-  // category name to ID mapping
-  const categoryMap = useMemo(() => {
-    const map = new Map<string, string>();
-    categories.forEach(category => {
-      // add category name
-      map.set(category.name.toLowerCase(), category.id);
-      map.set(category.name, category.id);
-
-      // add category path (e.g., "Women > Sarees")
-      if (category.path && category.path.length > 0) {
-        const pathString = category.path.join(' > ');
-        map.set(pathString.toLowerCase(), category.id);
-        map.set(pathString, category.id);
-      }
-    });
-    return map;
-  }, [categories]);
-
-  // size name to ID mapping
-  const sizeMap = useMemo(() => {
-    const map = new Map<string, string>();
-    sizes.forEach(size => {
-      map.set(size.name.toLowerCase(), size.id);
-      map.set(size.name, size.id);
-    });
-    return map;
-  }, [sizes]);
-
-  const sampleData = `Title	Description	Price	Original Price	Category	Tags	Sizes	Active
-Elegant Silk Saree	Beautiful traditional silk saree with golden border	1499	1999	Sarees	silk,traditional,wedding	S,M,L	true
-Designer Kurta Set	Premium cotton kurta with matching pajama	899	1299	Kurtas	cotton,formal,office	S,M,L,XL	true
-Kids Party Dress	Adorable dress for special occasions	599	799	Girls	kids,party,festive	2T,3T,4T,5T	true`;
-
-  const parsePastedData = (data: string): ParsedProduct[] => {
-    const lines = data.trim().split('\n');
-    if (lines.length < 2) return [];
-
-    const headers = lines[0].split('\t');
-    const products: ParsedProduct[] = [];
-
-    for (let i = 1; i < lines.length; i++) {
-      const line = lines[i].trim();
-      if (!line) continue;
-
-      const values = line.split('\t');
-      const product: ParsedProduct = {
-        title: '',
-        description: '',
-        price: 0,
-        originalPrice: undefined,
-        categoryId: '',
-        tags: [],
-        sizes: [],
-        active: true,
-        errors: [],
-        warnings: []
-      };
-
-      headers.forEach((header, index) => {
-        const value = values[index]?.trim() || '';
-        const headerLower = header.toLowerCase();
-
-        switch (headerLower) {
-          case 'title':
-            product.title = value;
-            if (!value) product.errors.push('Title is required');
-            break;
-          case 'description':
-            product.description = value;
-            if (!value) product.errors.push('Description is required');
-            break;
-          case 'price':
-            const price = parseFloat(value);
-            if (isNaN(price) || price < 0) {
-              product.errors.push('Price must be a valid positive number');
-            } else {
-              product.price = price;
-            }
-            break;
-          case 'original price':
-            if (value) {
-              const originalPrice = parseFloat(value);
-              if (isNaN(originalPrice) || originalPrice < 0) {
-                product.errors.push('Original price must be a valid positive number');
-              } else {
-                product.originalPrice = originalPrice;
-              }
-            }
-            break;
-          case 'category':
-            product.categoryId = value;
-            if (!value) {
-              product.errors.push('Category is required');
-            } else if (!categoryMap.has(value.toLowerCase())) {
-              product.errors.push(`Category "${value}" not found`);
-            }
-            break;
-          case 'tags':
-            product.tags = value ? value.split(',').map(tag => tag.trim()).filter(Boolean) : [];
-            break;
-          case 'sizes':
-            product.sizes = value ? value.split(',').map(size => size.trim()).filter(Boolean) : [];
-            // validate sizes
-            product.sizes.forEach(size => {
-              if (!sizeMap.has(size.toLowerCase())) {
-                product.warnings.push(`Size "${size}" not found - will be skipped`);
-              }
-            });
-            break;
-          case 'active':
-            product.active = value.toLowerCase() === 'true' || value === '1' || value === '';
-            break;
-        }
-      });
-
-      products.push(product);
-    }
-
-    return products;
+  // Handle input changes with cursor tracking
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const processedValue = processAndUpdateData(e.target.value);
+    setPastedData(processedValue);
+    setCursorPosition(e.target.selectionStart);
   };
 
-  const handlePasteChange = (value: string) => {
-    setPastedData(value);
-    if (value.trim()) {
-      const parsed = parsePastedData(value);
-      setParsedProducts(parsed);
-    } else {
-      setParsedProducts([]);
+  // Handle loading sample data
+  const handleLoadSample = () => {
+    const processedValue = processAndUpdateData(sampleData);
+    setPastedData(processedValue);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Tab') {
+      e.preventDefault(); // Prevent default tab behavior (focus change)
+
+      const textarea = e.target as HTMLTextAreaElement;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+
+      // Insert four spaces at cursor position
+      const newValue = pastedData.substring(0, start) + '    ' + pastedData.substring(end);
+
+      // Process the updated value and update state
+      const processedValue = processAndUpdateData(newValue);
+      setPastedData(processedValue);
+
+      // Set cursor position after the inserted spaces
+      setTimeout(() => {
+        textarea.selectionStart = textarea.selectionEnd = start + 4;
+        setCursorPosition(start + 4);
+      }, 0);
     }
   };
 
@@ -240,134 +172,60 @@ Kids Party Dress	Adorable dress for special occasions	599	799	Girls	kids,party,f
           <Alert>
             <Info className="h-4 w-4" />
             <AlertDescription>
-              Paste tab-separated data from a spreadsheet. The first row should contain headers: Title, Description, Price, Original Price, Category, Tags, Sizes, Active
+              Paste tab-separated data from a spreadsheet. Headers are optional - data will be mapped to columns in the order shown below. Use Tab key or 4 consecutive spaces to separate columns.
+              <br />
+              <strong className="text-luxury-gold">✨ Enhanced:</strong> The active column highlights dynamically as you type, and category cells feature smart suggestions with hierarchical navigation.
             </AlertDescription>
           </Alert>
 
-          {/* sample data */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <h3 className="font-medium text-luxury-black">Sample Format</h3>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPastedData(sampleData)}
-                className="text-xs"
-              >
-                <Download className="h-3 w-3 mr-1" />
-                Load Sample
-              </Button>
-            </div>
-            <div className="bg-luxury-gray/10 p-3 rounded-lg text-xs font-mono overflow-x-auto">
-              <pre className="whitespace-pre-wrap">{sampleData}</pre>
-            </div>
-          </div>
+          <Instructions
+            sampleData={sampleData}
+            onLoadSample={handleLoadSample}
+          />
 
           <div className="space-y-2">
             <label className="font-medium text-luxury-black">Paste your data here:</label>
+
+            <DynamicColumnHeaders
+              expectedHeaders={expectedHeaders}
+              activeColumnIndex={activeColumnIndex}
+            />
+
             <Textarea
               value={pastedData}
-              onChange={(e) => handlePasteChange(e.target.value)}
-              placeholder="Paste tab-separated data here..."
+              onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
+              onSelect={handleCursorChange}
+              onClick={handleCursorChange}
+              onKeyUp={handleCursorChange}
+              placeholder="Paste tab-separated data here (headers optional). Use Tab key or 4 spaces for columns..."
               className="min-h-[200px] font-mono text-sm"
+            />
+
+            <DataPreviewTable
+              pastedData={pastedData}
+              expectedHeaders={expectedHeaders}
+              rawTableData={rawTableData}
+              parsedProducts={parsedProducts}
+              categories={categories}
+              updateCellValue={updateCellValue}
             />
           </div>
 
-          {/* validation results */}
-          {parsedProducts.length > 0 && (
-            <div className="space-y-4">
-              <Separator />
+          <ValidationResults
+            parsedProducts={parsedProducts}
+            validProductsCount={validProductsCount}
+            totalProductsCount={totalProductsCount}
+            hasErrors={hasErrors}
+            hasWarnings={hasWarnings}
+          />
 
-              <div className="flex items-center justify-between">
-                <h3 className="font-medium text-luxury-black">Validation Results</h3>
-                <div className="flex items-center space-x-4 text-sm">
-                  <span className="text-luxury-gray">
-                    {validProductsCount} of {totalProductsCount} products valid
-                  </span>
-                  {hasErrors && (
-                    <Badge variant="destructive" className="text-xs">
-                      {parsedProducts.filter(p => p.errors.length > 0).length} with errors
-                    </Badge>
-                  )}
-                  {hasWarnings && (
-                    <Badge variant="secondary" className="text-xs">
-                      {parsedProducts.filter(p => p.warnings.length > 0).length} with warnings
-                    </Badge>
-                  )}
-                </div>
-              </div>
-
-              {/* product list */}
-              <div className="space-y-3 max-h-[300px] overflow-y-auto">
-                {parsedProducts.map((product, index) => (
-                  <div
-                    key={index}
-                    className={`p-3 rounded-lg border ${
-                      product.errors.length > 0
-                        ? 'border-red-200 bg-red-50'
-                        : product.warnings.length > 0
-                        ? 'border-yellow-200 bg-yellow-50'
-                        : 'border-green-200 bg-green-50'
-                    }`}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <h4 className="font-medium text-luxury-black">
-                          {product.title || `Row ${index + 2}`}
-                        </h4>
-                        <p className="text-sm text-luxury-gray mt-1">
-                          Price: ₹{product.price} | Category: {product.categoryId}
-                        </p>
-                      </div>
-                      <div className="ml-4">
-                        {product.errors.length === 0 && product.warnings.length === 0 ? (
-                          <CheckCircle className="h-5 w-5 text-green-600" />
-                        ) : (
-                          <AlertCircle className="h-5 w-5 text-red-600" />
-                        )}
-                      </div>
-                    </div>
-
-                    {/* errors */}
-                    {product.errors.length > 0 && (
-                      <div className="mt-2">
-                        {product.errors.map((error, errorIndex) => (
-                          <p key={errorIndex} className="text-sm text-red-600">
-                            • {error}
-                          </p>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* warnings */}
-                    {product.warnings.length > 0 && (
-                      <div className="mt-2">
-                        {product.warnings.map((warning, warningIndex) => (
-                          <p key={warningIndex} className="text-sm text-yellow-600">
-                            • {warning}
-                          </p>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <div className="flex items-center justify-end space-x-3 pt-4 border-t">
-            <Button variant="outline" onClick={onCancel}>
-              Cancel
-            </Button>
-            <Button
-              onClick={handleImport}
-              disabled={validProductsCount === 0 || isValidating}
-              className="bg-luxury-gold hover:bg-luxury-gold/90 text-white"
-            >
-              <Upload className="h-4 w-4 mr-2" />
-              {isValidating ? 'Importing...' : `Import ${validProductsCount} Products`}
-            </Button>
-          </div>
+          <ModalActionButtons
+            validProductsCount={validProductsCount}
+            isValidating={isValidating}
+            onImport={handleImport}
+            onCancel={onCancel}
+          />
         </div>
       </div>
     </div>
