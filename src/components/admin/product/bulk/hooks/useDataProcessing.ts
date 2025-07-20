@@ -25,29 +25,101 @@ export const useDataProcessing = (categories: Category[], sizes: Size[], expecte
   const [rawTableData, setRawTableData] = useState<string[][]>([]);
   const [tableHeaders, setTableHeaders] = useState<string[]>([]);
 
-  // category name to ID mapping
+  // Enhanced category mapping with multiple strategies
   const categoryMap = useMemo(() => {
     const map = new Map<string, string>();
-    categories.forEach(category => {
-      // add category name (both cases)
-      map.set(category.name.toLowerCase(), category.id);
-      map.set(category.name, category.id);
 
-      // add category path (e.g., "Women > Sarees")
+    categories.forEach(category => {
+      // Strategy 1: Exact category name (case-insensitive)
+      map.set(category.name.toLowerCase().trim(), category.id);
+      map.set(category.name.trim(), category.id);
+
+      // Strategy 2: Category ID direct match
+      map.set(category.id, category.id);
+
       if (category.path && category.path.length > 0) {
-        const pathString = category.path.join(' > ');
-        map.set(pathString.toLowerCase(), category.id);
-        map.set(pathString, category.id);
-        
-        // Also add normalized path (trim spaces and normalize separators)
-        const normalizedPath = category.path.join('>').toLowerCase().replace(/\s+/g, '');
-        const displayNormalizedPath = category.path.join('>');
-        map.set(normalizedPath, category.id);
-        map.set(displayNormalizedPath, category.id);
+        const trimmedPath = category.path.map(p => p.trim());
+
+        // Strategy 3: Full path with various separators and spacing
+        const pathVariants = [
+          trimmedPath.join(' > '),           // "Ladies Wear > Kurtis"
+          trimmedPath.join(' > ').toLowerCase(), // "ladies wear > kurtis"
+          trimmedPath.join('>'),             // "Ladies Wear>Kurtis"
+          trimmedPath.join('>').toLowerCase(), // "ladies wear>kurtis"
+          trimmedPath.join(' >> '),          // "Ladies Wear >> Kurtis"
+          trimmedPath.join(' >> ').toLowerCase(), // "ladies wear >> kurtis"
+          trimmedPath.join(' → '),           // "Ladies Wear → Kurtis"
+          trimmedPath.join(' → ').toLowerCase(), // "ladies wear → kurtis"
+          trimmedPath.join(' / '),           // "Ladies Wear / Kurtis"
+          trimmedPath.join(' / ').toLowerCase(), // "ladies wear / kurtis"
+        ];
+
+        pathVariants.forEach(variant => {
+          map.set(variant, category.id);
+          // Also normalize whitespace
+          map.set(variant.replace(/\s+/g, ' '), category.id);
+        });
+
+        // Strategy 4: Partial matches for leaf category names
+        const leafCategory = trimmedPath[trimmedPath.length - 1];
+        if (leafCategory && trimmedPath.length > 1) {
+          map.set(leafCategory.toLowerCase().trim(), category.id);
+          map.set(leafCategory.trim(), category.id);
+        }
       }
     });
+
     return map;
   }, [categories]);
+
+  // Helper function to find category ID with multiple fallback strategies
+  const findCategoryId = (categoryInput: string): { id: string | null; matched: boolean } => {
+    if (!categoryInput?.trim()) {
+      return { id: null, matched: false };
+    }
+
+    const input = categoryInput.trim();
+
+    // Strategy 1: Direct lookup (most common case)
+    if (categoryMap.has(input)) {
+      return { id: categoryMap.get(input)!, matched: true };
+    }
+
+    // Strategy 2: Case-insensitive lookup
+    if (categoryMap.has(input.toLowerCase())) {
+      return { id: categoryMap.get(input.toLowerCase())!, matched: true };
+    }
+
+    // Strategy 3: Normalize whitespace around separators
+    const normalizedVariants = [
+      input.replace(/\s*>\s*/g, ' > '),     // "Ladies Wear>Kurtis" -> "Ladies Wear > Kurtis"
+      input.replace(/\s*>\s*/g, '>'),       // "Ladies Wear > Kurtis" -> "Ladies Wear>Kurtis"
+      input.replace(/\s*>>\s*/g, ' >> '),   // Handle double arrows
+      input.replace(/\s*→\s*/g, ' → '),     // Handle arrow characters
+      input.replace(/\s*\/\s*/g, ' / '),     // Handle slash separators
+      input.replace(/\s+/g, ' '),          // Normalize multiple spaces
+    ];
+
+    for (const variant of normalizedVariants) {
+      if (categoryMap.has(variant)) {
+        return { id: categoryMap.get(variant)!, matched: true };
+      }
+      if (categoryMap.has(variant.toLowerCase())) {
+        return { id: categoryMap.get(variant.toLowerCase())!, matched: true };
+      }
+    }
+
+    // Strategy 4: Try to match just the leaf category name (last part after separator)
+    const separatorMatch = input.match(/[>→\/]([^>→\/]+)$/);
+    if (separatorMatch) {
+      const leafName = separatorMatch[1].trim();
+      if (categoryMap.has(leafName.toLowerCase())) {
+        return { id: categoryMap.get(leafName.toLowerCase())!, matched: true };
+      }
+    }
+
+    return { id: null, matched: false };
+  };
 
   // size name to ID mapping
   const sizeMap = useMemo(() => {
@@ -63,52 +135,52 @@ export const useDataProcessing = (categories: Category[], sizes: Size[], expecte
   const parseImageData = (imageString: string): { data: Record<string, { hex: string; images: string[] }>; errors: string[] } => {
     const result: Record<string, { hex: string; images: string[] }> = {};
     const errors: string[] = [];
-    
+
     if (!imageString.trim()) {
       return { data: result, errors };
     }
-    
+
     try {
       // Format: colorName:#hexCode|url1,url2,url3;anotherColor:#anotherHex|url4,url5
       const colorGroups = imageString.split(';');
-      
+
       for (const colorGroup of colorGroups) {
         const trimmedGroup = colorGroup.trim();
         if (!trimmedGroup) continue;
-        
+
         // Split by first '|' to separate color info from URLs
         const pipeIndex = trimmedGroup.indexOf('|');
         if (pipeIndex === -1) {
           errors.push(`Invalid image format: "${trimmedGroup}". Expected format: colorName:#hexCode|url1,url2`);
           continue;
         }
-        
+
         const colorInfo = trimmedGroup.substring(0, pipeIndex).trim();
         const urlsString = trimmedGroup.substring(pipeIndex + 1).trim();
-        
+
         // Parse color name and hex code
         const colonIndex = colorInfo.indexOf(':');
         if (colonIndex === -1) {
           errors.push(`Invalid color format: "${colorInfo}". Expected format: colorName:#hexCode`);
           continue;
         }
-        
+
         const colorName = colorInfo.substring(0, colonIndex).trim().toLowerCase();
         const hexCode = colorInfo.substring(colonIndex + 1).trim();
-        
+
         // Validate hex code format
         if (!/^#[0-9A-Fa-f]{6}$/.test(hexCode)) {
           errors.push(`Invalid hex color code: "${hexCode}". Expected format: #RRGGBB`);
           continue;
         }
-        
+
         // Parse URLs
         const urls = urlsString.split(',').map(url => url.trim()).filter(Boolean);
         if (urls.length === 0) {
           errors.push(`No image URLs provided for color: "${colorName}"`);
           continue;
         }
-        
+
         // Validate URLs (basic check)
         const validUrls = urls.filter(url => {
           try {
@@ -119,7 +191,7 @@ export const useDataProcessing = (categories: Category[], sizes: Size[], expecte
             return false;
           }
         });
-        
+
         if (validUrls.length > 0) {
           result[colorName] = {
             hex: hexCode.toUpperCase(),
@@ -130,7 +202,7 @@ export const useDataProcessing = (categories: Category[], sizes: Size[], expecte
     } catch (error) {
       errors.push(`Error parsing image data: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
-    
+
     return { data: result, errors };
   };
 
@@ -199,33 +271,31 @@ export const useDataProcessing = (categories: Category[], sizes: Size[], expecte
             }
             break;
           case 'category':
-            product.categoryId = value;
             if (!value) {
               product.errors.push('Category is required');
+              product.categoryId = '';
             } else {
-              // Try multiple matching strategies
-              let categoryFound = false;
-              
-              // Strategy 1: Direct case-insensitive match
-              if (categoryMap.has(value.toLowerCase())) {
-                categoryFound = true;
-              }
-              // Strategy 2: Normalized path match (remove extra spaces around >)
-              else {
-                const normalizedValue = value.replace(/\s*>\s*/g, '>').toLowerCase().replace(/\s+/g, '');
-                if (categoryMap.has(normalizedValue)) {
-                  categoryFound = true;
-                }
-              }
-              
-              if (!categoryFound) {
-                // Provide better error message with suggestions
-                const availablePaths = Array.from(categoryMap.keys())
-                  .filter(key => key.includes(' > '))
-                  .slice(0, 5); // Show first 5 as examples
-                
+              const categoryResult = findCategoryId(value);
+
+              if (categoryResult.matched && categoryResult.id) {
+                // Successfully matched - store the resolved category ID
+                product.categoryId = categoryResult.id;
+              } else {
+                // Could not find category - provide helpful error message
+                product.categoryId = value; // Keep original for debugging
+
+                // Get some example category paths for suggestions
+                const availablePaths = categories
+                  .filter(cat => cat.path && cat.path.length > 0)
+                  .slice(0, 5)
+                  .map(cat => cat.path.join(' > '));
+
+                const suggestions = availablePaths.length > 0
+                  ? `Available category paths include: ${availablePaths.slice(0, 3).join(', ')}...`
+                  : 'Please check the category name or path.';
+
                 product.errors.push(
-                  `Category "${value}" not found. Available category paths include: ${availablePaths.slice(0, 3).join(', ')}...`
+                  `Category "${value}" not found. ${suggestions}`
                 );
               }
             }

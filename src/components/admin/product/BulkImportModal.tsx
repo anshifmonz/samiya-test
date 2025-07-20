@@ -50,7 +50,8 @@ const BulkImportModal: React.FC<BulkImportModalProps> = ({
   // Expected column order for reference
   const expectedHeaders = ['Title', 'Description', 'Price', 'Original Price', 'Category', 'Tags', 'Sizes', 'Images', 'Active'];
   const sampleData = `Elegant Silk Saree\tBeautiful traditional silk saree with golden border\t1499\t1999\tLadies Wear > Saree\tsilk,traditional,wedding\tS,M,L\tred:#FF0000|https://example.com/saree-red1.jpg,https://example.com/saree-red2.jpg;blue:#0066CC|https://example.com/saree-blue1.jpg\ttrue
-Traditional Kurti\tBeautiful kurti for special occasions\t599\t799\tLadies Wear > Kurtis\tkurti,traditional,festive\tM,L,XL,2XL\tgreen:#00AA00|https://example.com/kurti-green1.jpg,https://example.com/kurti-green2.jpg\ttrue`;
+Traditional Kurti\tBeautiful kurti for special occasions\t599\t799\tLadies Wear>Kurtis\tkurti,traditional,festive\tM,L,XL,2XL\tgreen:#00AA00|https://example.com/kurti-green1.jpg,https://example.com/kurti-green2.jpg\ttrue
+Casual T-Shirt\tComfortable cotton t-shirt for daily wear\t299\t399\tMens Wear → Shirts\tcasual,cotton,comfortable\tS,M,L,XL\t\ttrue`;
 
   // Use custom hooks
   const {
@@ -147,7 +148,7 @@ Traditional Kurti\tBeautiful kurti for special occasions\t599\t799\tLadies Wear 
     const productsToImport: Omit<Product, 'id'>[] = validProducts.map(product => {
       // Convert image data to proper format
       const processedImages: Record<string, { hex: string; images: { url: string; publicId: string }[] }> = {};
-      
+
       Object.entries(product.images).forEach(([colorName, colorData]) => {
         processedImages[colorName] = {
           hex: colorData.hex,
@@ -157,13 +158,13 @@ Traditional Kurti\tBeautiful kurti for special occasions\t599\t799\tLadies Wear 
           }))
         };
       });
-      
+
       return {
         title: product.title,
         description: product.description,
         price: product.price,
         originalPrice: product.originalPrice,
-        categoryId: categoryMap.get(product.categoryId.toLowerCase()) || product.categoryId,
+        categoryId: product.categoryId, // Already resolved to ID during parsing
         tags: product.tags,
         sizes: product.sizes
           .map(sizeName => {
