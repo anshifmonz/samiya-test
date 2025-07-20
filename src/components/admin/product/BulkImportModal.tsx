@@ -31,6 +31,7 @@ interface ParsedProduct {
   categoryId: string;
   tags: string[];
   sizes: string[];
+  images: Record<string, { hex: string; images: string[] }>; // Color name -> hex + image URLs
   active: boolean;
   errors: string[];
   warnings: string[];
@@ -47,9 +48,9 @@ const BulkImportModal: React.FC<BulkImportModalProps> = ({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Expected column order for reference
-  const expectedHeaders = ['Title', 'Description', 'Price', 'Original Price', 'Category', 'Tags', 'Sizes', 'Active'];
-  const sampleData = `Elegant Silk Saree\tBeautiful traditional silk saree with golden border\t1499\t1999\tLadies Wear > Saree\tsilk,traditional,wedding\tS,M,L\ttrue
-Traditional Kurti\tBeautiful kurti for special occasions\t599\t799\tLadies Wear > Kurtis\tkurti,traditional,festive\tM,L,XL,2XL\ttrue`;
+  const expectedHeaders = ['Title', 'Description', 'Price', 'Original Price', 'Category', 'Tags', 'Sizes', 'Images', 'Active'];
+  const sampleData = `Elegant Silk Saree\tBeautiful traditional silk saree with golden border\t1499\t1999\tLadies Wear > Saree\tsilk,traditional,wedding\tS,M,L\tred:#FF0000|https://example.com/saree-red1.jpg,https://example.com/saree-red2.jpg;blue:#0066CC|https://example.com/saree-blue1.jpg\ttrue
+Traditional Kurti\tBeautiful kurti for special occasions\t599\t799\tLadies Wear > Kurtis\tkurti,traditional,festive\tM,L,XL,2XL\tgreen:#00AA00|https://example.com/kurti-green1.jpg,https://example.com/kurti-green2.jpg\ttrue`;
 
   // Use custom hooks
   const {
@@ -143,23 +144,38 @@ Traditional Kurti\tBeautiful kurti for special occasions\t599\t799\tLadies Wear 
     }
 
     // convert to Product format
-    const productsToImport: Omit<Product, 'id'>[] = validProducts.map(product => ({
-      title: product.title,
-      description: product.description,
-      price: product.price,
-      originalPrice: product.originalPrice,
-      categoryId: categoryMap.get(product.categoryId.toLowerCase()) || product.categoryId,
-      tags: product.tags,
-      sizes: product.sizes
-        .map(sizeName => {
-          const sizeId = sizeMap.get(sizeName.toLowerCase());
-          return sizeId ? sizes.find(s => s.id === sizeId) : null;
-        })
-        .filter(Boolean) as Size[],
-      active: product.active,
-      images: {}, // empty for bulk imports
-      short_code: `PROD-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-    }));
+    const productsToImport: Omit<Product, 'id'>[] = validProducts.map(product => {
+      // Convert image data to proper format
+      const processedImages: Record<string, { hex: string; images: { url: string; publicId: string }[] }> = {};
+      
+      Object.entries(product.images).forEach(([colorName, colorData]) => {
+        processedImages[colorName] = {
+          hex: colorData.hex,
+          images: colorData.images.map(imageUrl => ({
+            url: imageUrl,
+            publicId: '' // Will be populated by backend during upload/processing
+          }))
+        };
+      });
+      
+      return {
+        title: product.title,
+        description: product.description,
+        price: product.price,
+        originalPrice: product.originalPrice,
+        categoryId: categoryMap.get(product.categoryId.toLowerCase()) || product.categoryId,
+        tags: product.tags,
+        sizes: product.sizes
+          .map(sizeName => {
+            const sizeId = sizeMap.get(sizeName.toLowerCase());
+            return sizeId ? sizes.find(s => s.id === sizeId) : null;
+          })
+          .filter(Boolean) as Size[],
+        active: product.active,
+        images: processedImages,
+        short_code: `PROD-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+      };
+    });
 
     onImport(productsToImport);
   };
@@ -192,7 +208,11 @@ Traditional Kurti\tBeautiful kurti for special occasions\t599\t799\tLadies Wear 
             <AlertDescription>
               Paste tab-separated data from a spreadsheet. Headers are optional - data will be mapped to columns in the order shown below. Use Tab key or 4 consecutive spaces to separate columns.
               <br />
-              <strong className="text-luxury-gold">✨ Enhanced:</strong> The active column highlights dynamically as you type, and category cells feature smart suggestions with hierarchical navigation.
+              <strong className="text-luxury-gold">✨ Enhanced:</strong> Now supports optional image data grouped by color and category suggestions with smart navigation.
+              <br />
+              <strong>Image Format:</strong> <code className="text-sm bg-gray-100 px-1 rounded">colorName:#hexCode|url1,url2;anotherColor:#hex2|url3</code>
+              <br />
+              <em className="text-sm text-gray-600">Example: red:#FF0000|img1.jpg,img2.jpg;blue:#0066CC|img3.jpg</em>
             </AlertDescription>
           </Alert>
 

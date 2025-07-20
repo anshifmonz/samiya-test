@@ -10,6 +10,7 @@ interface ParsedProduct {
   categoryId: string;
   tags: string[];
   sizes: string[];
+  images: Record<string, { hex: string; images: string[] }>;
   active: boolean;
   errors: string[];
   warnings: string[];
@@ -63,6 +64,9 @@ export const DataPreviewTable: React.FC<DataPreviewTableProps> = ({
                     {header.toLowerCase() === 'category' && (
                       <span className="text-xs text-luxury-gold ml-2" title="Enhanced with smart suggestions">✨</span>
                     )}
+                    {header.toLowerCase() === 'images' && (
+                      <span className="text-xs text-purple-600 ml-2" title="Supports color-grouped image data">🎨</span>
+                    )}
                   </th>
                 ))}
               </tr>
@@ -86,12 +90,47 @@ export const DataPreviewTable: React.FC<DataPreviewTableProps> = ({
                         const cellValue = row[cellIndex]?.trim() || '';
                         const isCategory = headerLower === 'category';
                         const isTags = headerLower === 'tags';
+                        const isImages = headerLower === 'images';
                         const isPrice = headerLower === 'price' || headerLower === 'original price';
 
                         let cellType: 'text' | 'category' | 'number' | 'tags' = 'text';
                         if (isCategory) cellType = 'category';
                         else if (isTags) cellType = 'tags';
                         else if (isPrice) cellType = 'number';
+                        
+                        // For images column, use special display logic
+                        if (isImages && cellValue) {
+                          return (
+                            <td key={cellIndex} className="px-1 py-1 border-b border-luxury-gray/10">
+                              <div className="max-w-[200px] min-h-[32px] px-2 py-1 text-xs bg-purple-50 rounded border">
+                                <div className="font-medium text-purple-700 mb-1">Image Data</div>
+                                <div className="space-y-1">
+                                  {cellValue.split(';').slice(0, 2).map((colorGroup, idx) => {
+                                    const [colorInfo, urls] = colorGroup.split('|');
+                                    const [colorName, hex] = colorInfo?.split(':') || [];
+                                    const urlCount = urls?.split(',').length || 0;
+                                    return (
+                                      <div key={idx} className="flex items-center gap-2">
+                                        {hex && (
+                                          <div 
+                                            className="w-3 h-3 rounded border border-gray-300"
+                                            style={{ backgroundColor: hex }}
+                                          />
+                                        )}
+                                        <span className="capitalize text-gray-700">
+                                          {colorName} ({urlCount} {urlCount === 1 ? 'image' : 'images'})
+                                        </span>
+                                      </div>
+                                    );
+                                  })}
+                                  {cellValue.split(';').length > 2 && (
+                                    <div className="text-gray-500">+{cellValue.split(';').length - 2} more colors</div>
+                                  )}
+                                </div>
+                              </div>
+                            </td>
+                          );
+                        }
 
                         return (
                           <td key={cellIndex} className="px-1 py-1 border-b border-luxury-gray/10">

@@ -10,6 +10,7 @@ interface ParsedProduct {
   categoryId: string;
   tags: string[];
   sizes: string[];
+  images: Record<string, { hex: string; images: string[] }>;
   active: boolean;
   errors: string[];
   warnings: string[];
@@ -58,6 +59,81 @@ export const useDataProcessing = (categories: Category[], sizes: Size[], expecte
     return map;
   }, [sizes]);
 
+  // Helper function to parse image data
+  const parseImageData = (imageString: string): { data: Record<string, { hex: string; images: string[] }>; errors: string[] } => {
+    const result: Record<string, { hex: string; images: string[] }> = {};
+    const errors: string[] = [];
+    
+    if (!imageString.trim()) {
+      return { data: result, errors };
+    }
+    
+    try {
+      // Format: colorName:#hexCode|url1,url2,url3;anotherColor:#anotherHex|url4,url5
+      const colorGroups = imageString.split(';');
+      
+      for (const colorGroup of colorGroups) {
+        const trimmedGroup = colorGroup.trim();
+        if (!trimmedGroup) continue;
+        
+        // Split by first '|' to separate color info from URLs
+        const pipeIndex = trimmedGroup.indexOf('|');
+        if (pipeIndex === -1) {
+          errors.push(`Invalid image format: "${trimmedGroup}". Expected format: colorName:#hexCode|url1,url2`);
+          continue;
+        }
+        
+        const colorInfo = trimmedGroup.substring(0, pipeIndex).trim();
+        const urlsString = trimmedGroup.substring(pipeIndex + 1).trim();
+        
+        // Parse color name and hex code
+        const colonIndex = colorInfo.indexOf(':');
+        if (colonIndex === -1) {
+          errors.push(`Invalid color format: "${colorInfo}". Expected format: colorName:#hexCode`);
+          continue;
+        }
+        
+        const colorName = colorInfo.substring(0, colonIndex).trim().toLowerCase();
+        const hexCode = colorInfo.substring(colonIndex + 1).trim();
+        
+        // Validate hex code format
+        if (!/^#[0-9A-Fa-f]{6}$/.test(hexCode)) {
+          errors.push(`Invalid hex color code: "${hexCode}". Expected format: #RRGGBB`);
+          continue;
+        }
+        
+        // Parse URLs
+        const urls = urlsString.split(',').map(url => url.trim()).filter(Boolean);
+        if (urls.length === 0) {
+          errors.push(`No image URLs provided for color: "${colorName}"`);
+          continue;
+        }
+        
+        // Validate URLs (basic check)
+        const validUrls = urls.filter(url => {
+          try {
+            new URL(url);
+            return true;
+          } catch {
+            errors.push(`Invalid URL for color "${colorName}": "${url}"`);
+            return false;
+          }
+        });
+        
+        if (validUrls.length > 0) {
+          result[colorName] = {
+            hex: hexCode.toUpperCase(),
+            images: validUrls
+          };
+        }
+      }
+    } catch (error) {
+      errors.push(`Error parsing image data: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+    
+    return { data: result, errors };
+  };
+
   const parsePastedData = (data: string): ParsedProduct[] => {
     const lines = data.trim().split('\n');
     if (lines.length < 1) return [];
@@ -85,6 +161,7 @@ export const useDataProcessing = (categories: Category[], sizes: Size[], expecte
         categoryId: '',
         tags: [],
         sizes: [],
+        images: {},
         active: true,
         errors: [],
         warnings: []
@@ -164,6 +241,12 @@ export const useDataProcessing = (categories: Category[], sizes: Size[], expecte
                 product.warnings.push(`Size "${size}" not found - will be skipped`);
               }
             });
+            break;
+          case 'images':
+            const imageResult = parseImageData(value);
+            product.images = imageResult.data;
+            // Add any image parsing errors
+            product.errors.push(...imageResult.errors);
             break;
           case 'active':
             product.active = value.toLowerCase() === 'true' || value === '1' || value === '';
