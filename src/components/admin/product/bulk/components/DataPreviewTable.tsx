@@ -25,11 +25,10 @@ interface DataPreviewTableProps {
   categories: Category[];
   updateCellValue: (rowIndex: number, colIndex: number, newValue: string) => void;
   onEditImages?: (rowIndex: number, productTitle: string, imageData: Record<string, { hex: string; images: string[] }>) => void;
+  textareaRef?: React.RefObject<HTMLTextAreaElement>;
+  onRowClick?: (rowIndex: number) => void;
 }
 
-/**
- * Data preview table with editable cells
- */
 export const DataPreviewTable: React.FC<DataPreviewTableProps> = ({
   pastedData,
   expectedHeaders,
@@ -37,14 +36,15 @@ export const DataPreviewTable: React.FC<DataPreviewTableProps> = ({
   parsedProducts,
   categories,
   updateCellValue,
-  onEditImages
+  onEditImages,
+  textareaRef,
+  onRowClick
 }) => {
   if (!pastedData.trim()) return null;
 
   const lines = pastedData.trim().split('\n');
   if (lines.length < 1) return null;
 
-  // Check if first line contains headers
   const firstLineFields = lines[0].split('\t');
   const hasCustomHeaders = expectedHeaders.some((header, index) =>
     firstLineFields[index]?.toLowerCase().includes(header.toLowerCase())
@@ -52,6 +52,27 @@ export const DataPreviewTable: React.FC<DataPreviewTableProps> = ({
 
   const headers = hasCustomHeaders ? lines[0].split('\t') : expectedHeaders;
   const dataRows = (hasCustomHeaders ? lines.slice(1) : lines).filter(line => line.trim());
+
+  const jumpToLine = (rowIndex: number) => {
+    if (!textareaRef?.current) return;
+    const targetLineNumber = hasCustomHeaders ? rowIndex + 2 : rowIndex + 1;
+    const allLines = pastedData.split('\n');
+
+    let charPosition = 0;
+    for (let i = 0; i < Math.min(targetLineNumber - 1, allLines.length); i++) {
+      charPosition += allLines[i].length + 1;
+    }
+
+    textareaRef.current.focus();
+    textareaRef.current.setSelectionRange(charPosition, charPosition);
+
+    const textarea = textareaRef.current;
+    const lineHeight = parseInt(window.getComputedStyle(textarea).lineHeight);
+    const currentLine = targetLineNumber - 1;
+    textarea.scrollTop = Math.max(0, currentLine * lineHeight - textarea.clientHeight / 2);
+
+    onRowClick?.(rowIndex);
+  };
 
   return (
     <div className="mt-4">
@@ -61,6 +82,9 @@ export const DataPreviewTable: React.FC<DataPreviewTableProps> = ({
           <table className="w-full text-sm">
             <thead className="bg-luxury-gray/10 sticky top-0">
               <tr>
+                <th className="px-3 py-2 text-center font-medium text-luxury-black border-b border-luxury-gray/20 whitespace-nowrap w-12">
+                  No
+                </th>
                 {headers.map((header, index) => (
                   <th key={index} className="px-3 py-2 text-left font-medium text-luxury-black border-b border-luxury-gray/20 whitespace-nowrap">
                     {header.trim()}
@@ -87,6 +111,15 @@ export const DataPreviewTable: React.FC<DataPreviewTableProps> = ({
                         hasErrors ? 'bg-red-50' : hasWarnings ? 'bg-yellow-50' : ''
                       }`}
                     >
+                      <td className="px-3 py-2 border-b border-luxury-gray/10 text-center">
+                        <button
+                          onClick={() => jumpToLine(rowIndex)}
+                          className="text-luxury-gray hover:text-luxury-gold hover:bg-luxury-gold/10 px-2 py-1 rounded transition-colors duration-200 text-xs font-medium cursor-pointer"
+                          title={`Click to jump to line ${hasCustomHeaders ? rowIndex + 2 : rowIndex + 1} in textarea`}
+                        >
+                          {rowIndex + 1}
+                        </button>
+                      </td>
                       {headers.map((header, cellIndex) => {
                         const headerLower = header.toLowerCase();
                         const cellValue = row[cellIndex]?.trim() || '';
@@ -185,6 +218,15 @@ export const DataPreviewTable: React.FC<DataPreviewTableProps> = ({
                         hasErrors ? 'bg-red-50' : hasWarnings ? 'bg-yellow-50' : ''
                       }`}
                     >
+                      <td className="px-3 py-2 border-b border-luxury-gray/10 text-center">
+                        <button
+                          onClick={() => jumpToLine(rowIndex)}
+                          className="text-luxury-gray hover:text-luxury-gold hover:bg-luxury-gold/10 px-2 py-1 rounded transition-colors duration-200 text-xs font-medium cursor-pointer"
+                          title={`Click to jump to line ${hasCustomHeaders ? rowIndex + 2 : rowIndex + 1} in textarea`}
+                        >
+                          {rowIndex + 1}
+                        </button>
+                      </td>
                       {headers.map((_, cellIndex) => (
                         <td key={cellIndex} className="px-3 py-2 border-b border-luxury-gray/10 whitespace-nowrap">
                           <div className="max-w-[150px] overflow-hidden text-ellipsis" title={cells[cellIndex]?.trim() || ''}>
