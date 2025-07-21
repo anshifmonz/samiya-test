@@ -1,5 +1,5 @@
 import React from 'react';
-import AdminSearchBar from '../AdminSearchBar';
+import AdminSearchBar from './AdminSearchBar';
 import AdminTabHeaderButton from './AdminTabHeaderButton';
 
 interface AdminTabHeaderProps {
