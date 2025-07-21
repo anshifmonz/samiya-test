@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Info } from 'lucide-react';
-import { type Product, type CreateProductData } from 'types/product';
+import { type CreateProductData } from 'types/product';
 import { type Category } from 'types/category';
 import { type Size } from 'types/product';
 import { Textarea } from 'ui/textarea';
@@ -48,20 +48,17 @@ const BulkImportModal: React.FC<BulkImportModalProps> = ({
   const [isValidating, setIsValidating] = useState(false);
   const [mounted, setMounted] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  
+
   // Image dialog state
   const [showImageDialog, setShowImageDialog] = useState(false);
   const [currentImageRowIndex, setCurrentImageRowIndex] = useState<number>(-1);
   const [currentImageProductTitle, setCurrentImageProductTitle] = useState('');
   const [currentImageData, setCurrentImageData] = useState<Record<string, { hex: string; images: string[] }>>({});
 
-  // Expected column order for reference
   const expectedHeaders = ['Title', 'Description', 'Price', 'Original Price', 'Category', 'Tags', 'Sizes', 'Images', 'Active'];
-  const sampleData = `Elegant Silk Saree\tBeautiful traditional silk saree with golden border\t1499\t1999\tLadies Wear > Saree\tsilk,traditional,wedding\tS,M,L\tred:#FF0000|https://example.com/saree-red1.jpg,https://example.com/saree-red2.jpg;blue:#0066CC|https://example.com/saree-blue1.jpg\ttrue
-Traditional Kurti\tBeautiful kurti for special occasions\t599\t799\tLadies Wear>Kurtis\tkurti,traditional,festive\tM,L,XL,2XL\tgreen:#00AA00|https://example.com/kurti-green1.jpg,https://example.com/kurti-green2.jpg\ttrue
-Casual T-Shirt\tComfortable cotton t-shirt for daily wear\t299\t399\tMens Wear â†’ Shirts\tcasual,cotton,comfortable\tS,M,L,XL\t\ttrue`;
+  const sampleData = `Casual T-Shirt\tComfortable cotton t-shirt for daily wear\t299\t399\tMen's Wear > Shirts\tcasual,cotton,comfortable\tS,M,L,XL\tred:#FF0000|https://tinyurl.com/2s4xucnk,https://tinyurl.com/snzrbdrk;blue:#0066CC|https://tinyurl.com/2yhwb4au\tfalse
+Elegant Silk Saree\tBeautiful traditional silk saree with golden border\t1499\t1999\tLadies Wear > Saree\tsilk,traditional,wedding\tS,M,L\t\tfalse`;
 
-  // Use custom hooks
   const {
     pastedData,
     setPastedData,
@@ -89,14 +86,12 @@ Casual T-Shirt\tComfortable cotton t-shirt for daily wear\t299\t399\tMens Wear â
     };
   }, []);
 
-  // Handle input changes with cursor tracking
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const processedValue = processAndUpdateData(e.target.value);
     setPastedData(processedValue);
     setCursorPosition(e.target.selectionStart);
   };
 
-  // Handle loading sample data
   const handleLoadSample = () => {
     const processedValue = processAndUpdateData(sampleData);
     setPastedData(processedValue);
@@ -104,20 +99,17 @@ Casual T-Shirt\tComfortable cotton t-shirt for daily wear\t299\t399\tMens Wear â
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Tab') {
-      e.preventDefault(); // Prevent default tab behavior (focus change)
+      e.preventDefault();
 
       const textarea = e.target as HTMLTextAreaElement;
       const start = textarea.selectionStart;
       const end = textarea.selectionEnd;
 
-      // Insert four spaces at cursor position
       const newValue = pastedData.substring(0, start) + '    ' + pastedData.substring(end);
 
-      // Process the updated value and update state
       const processedValue = processAndUpdateData(newValue);
       setPastedData(processedValue);
 
-      // Set cursor position after the inserted spaces
       setTimeout(() => {
         textarea.selectionStart = textarea.selectionEnd = start + 4;
         setCursorPosition(start + 4);
@@ -125,7 +117,6 @@ Casual T-Shirt\tComfortable cotton t-shirt for daily wear\t299\t399\tMens Wear â
     }
   };
 
-  // Handle category suggestion selection from textarea
   const handleSuggestionSelect = (suggestion: string, startPos: number, endPos: number) => {
     const newValue = pastedData.substring(0, startPos) + suggestion + pastedData.substring(endPos);
     const processedValue = processAndUpdateData(newValue);
@@ -141,7 +132,6 @@ Casual T-Shirt\tComfortable cotton t-shirt for daily wear\t299\t399\tMens Wear â
     }, 0);
   };
 
-  // Handle editing images
   const handleEditImages = (rowIndex: number, productTitle: string, imageData: Record<string, { hex: string; images: string[] }>) => {
     setCurrentImageRowIndex(rowIndex);
     setCurrentImageProductTitle(productTitle);
@@ -149,13 +139,10 @@ Casual T-Shirt\tComfortable cotton t-shirt for daily wear\t299\t399\tMens Wear â
     setShowImageDialog(true);
   };
 
-  // Handle saving image changes (includes real-time updates from color removal)
   const handleSaveImageChanges = (newImageData: Record<string, { hex: string; images: string[] }>) => {
     if (currentImageRowIndex >= 0 && currentImageRowIndex < rawTableData.length) {
-      // Convert imageData back to string format for the cell
       const imageString = Object.entries(newImageData)
         .filter(([colorName, colorData]) => {
-          // Only include colors that have images or if it's the only color
           return colorData.images.length > 0 || (Object.keys(newImageData).length === 1 && colorName);
         })
         .map(([colorName, colorData]) => {
@@ -163,29 +150,25 @@ Casual T-Shirt\tComfortable cotton t-shirt for daily wear\t299\t399\tMens Wear â
           return `${colorName}:${colorData.hex}|${urls}`;
         })
         .join(';');
-      
-      // Find the Images column index
+
       const imagesColumnIndex = expectedHeaders.findIndex(header => header.toLowerCase() === 'images');
       if (imagesColumnIndex >= 0) {
         updateCellValue(currentImageRowIndex, imagesColumnIndex, imageString);
       }
-      
-      // Update the current image data state to reflect changes
+
+      // update the current image data state to reflect changes
       setCurrentImageData(newImageData);
-      
-      // If no colors remain, close the dialog
+
       if (Object.keys(newImageData).length === 0) {
         setShowImageDialog(false);
       }
     }
   };
 
-  // Handle real-time updates from the dialog (for color removal)
   const handleRealTimeImageUpdate = (newImageData: Record<string, { hex: string; images: string[] }>) => {
     handleSaveImageChanges(newImageData);
   };
 
-  // Handle closing image dialog
   const handleCloseImageDialog = () => {
     setShowImageDialog(false);
   };
@@ -193,7 +176,6 @@ Casual T-Shirt\tComfortable cotton t-shirt for daily wear\t299\t399\tMens Wear â
   const handleImport = () => {
     setIsValidating(true);
 
-    // filter out products with errors
     const validProducts = parsedProducts.filter(product => product.errors.length === 0);
 
     if (validProducts.length === 0) {
@@ -201,23 +183,18 @@ Casual T-Shirt\tComfortable cotton t-shirt for daily wear\t299\t399\tMens Wear â
       return;
     }
 
-    // Validate for duplicate image URLs across all products
     const duplicateImageWarnings = validateDuplicateImages(validProducts);
     if (duplicateImageWarnings.length > 0) {
       console.warn('Duplicate image warnings:', duplicateImageWarnings);
       // You could show these warnings to the user if needed
     }
 
-    // convert to Product format
     const productsToImport: CreateProductData[] = validProducts.map(product => {
-      // Convert image data to proper format with additional deduplication
       const processedImages: Record<string, { hex: string; images: { url: string; publicId: string }[] }> = {};
 
       Object.entries(product.images).forEach(([colorName, colorData]) => {
-        // Additional deduplication to ensure no duplicate URLs per color
         const uniqueImageUrls = Array.from(new Set(colorData.images));
 
-        // Filter out any empty or invalid URLs
         const validImageUrls = uniqueImageUrls.filter(url => url && url.trim() !== '');
 
         if (validImageUrls.length > 0) {
@@ -233,7 +210,7 @@ Casual T-Shirt\tComfortable cotton t-shirt for daily wear\t299\t399\tMens Wear â
         description: product.description,
         price: product.price,
         originalPrice: product.originalPrice,
-        categoryId: product.categoryId, // Already resolved to ID during parsing
+        categoryId: product.categoryId,
         tags: product.tags,
         sizes: product.sizes
           .map(sizeName => {
@@ -243,15 +220,12 @@ Casual T-Shirt\tComfortable cotton t-shirt for daily wear\t299\t399\tMens Wear â
           .filter(Boolean) as Size[],
         active: product.active,
         images: processedImages
-        // Note: short_code removed - will be auto-generated by database
-        // publicIds are consistently assigned: server publicId for uploads, URL extraction for bulk import URLs
       };
     });
 
     onImport(productsToImport);
   };
 
-  // Helper function to validate for duplicate images across products
   const validateDuplicateImages = (products: ParsedProduct[]): string[] => {
     const warnings: string[] = [];
     const imageUrlMap = new Map<string, { productTitle: string; colorName: string }[]>();
@@ -270,7 +244,6 @@ Casual T-Shirt\tComfortable cotton t-shirt for daily wear\t299\t399\tMens Wear â
       });
     });
 
-    // Check for duplicates
     imageUrlMap.forEach((usages, imageUrl) => {
       if (usages.length > 1) {
         const usageList = usages.map(usage => `${usage.productTitle} (${usage.colorName})`).join(', ');
@@ -362,6 +335,7 @@ Casual T-Shirt\tComfortable cotton t-shirt for daily wear\t299\t399\tMens Wear â
               categories={categories}
               updateCellValue={updateCellValue}
               onEditImages={handleEditImages}
+              textareaRef={textareaRef}
             />
           </div>
 
@@ -371,6 +345,7 @@ Casual T-Shirt\tComfortable cotton t-shirt for daily wear\t299\t399\tMens Wear â
             totalProductsCount={totalProductsCount}
             hasErrors={hasErrors}
             hasWarnings={hasWarnings}
+            categories={categories}
           />
 
           <ModalActionButtons
@@ -381,7 +356,7 @@ Casual T-Shirt\tComfortable cotton t-shirt for daily wear\t299\t399\tMens Wear â
           />
         </div>
       </div>
-      
+
       {/* Image Editor Dialog */}
       <BulkImportImageDialog
         show={showImageDialog}
