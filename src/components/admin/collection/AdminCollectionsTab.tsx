@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
-import AdminSearchBar from '../AdminSearchBar';
+import { useState } from 'react';
+import { Plus } from 'lucide-react';
+import { type Collection } from 'types/collection';
 import AdminCollectionGrid from './AdminCollectionGrid';
 import AdminCollectionForm from './AdminCollectionForm';
 import AdminTabHeader from '../shared/AdminTabHeader';
-import { Plus } from 'lucide-react';
-import { type Collection } from '@/types/collection';
 
 interface AdminCollectionsTabProps {
   collections: Collection[];
