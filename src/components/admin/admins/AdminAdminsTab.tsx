@@ -7,7 +7,7 @@ import {
   AdminsTable,
   AddAdminModal,
   EditAdminModal,
-} from './admins';
+} from './index';
 
 interface AdminAdminsTabProps {
   isSuperAdmin: boolean;

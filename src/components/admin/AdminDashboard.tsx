@@ -1,19 +1,19 @@
 'use client';
 
+import { useState } from 'react';
 import { type Product } from 'types/product';
 import { type Collection } from 'types/collection';
 import { type Category } from 'types/category';
 import { type SectionWithProducts } from 'types/section';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from 'ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui/select';
-import AdminProductsTab from './product/AdminProductsTab';
-import AdminCollectionsTab from './collection/AdminCollectionsTab';
-import AdminCategoriesTab from './category/AdminCategoriesTab';
 import { AdminSectionsTab } from './section';
 import { useAdminDashboard } from 'hooks/useAdminDashboard';
 import { useCurrentAdmin } from 'hooks/useCurrentAdmin';
-import React, { useState } from 'react';
-import AdminAdminsTab from './AdminAdminsTab';
+import AdminProductsTab from './product/AdminProductsTab';
+import AdminCollectionsTab from './collection/AdminCollectionsTab';
+import AdminCategoriesTab from './category/AdminCategoriesTab';
+import AdminAdminsTab from './admins/AdminAdminsTab';
 
 interface AdminDashboardProps {
   initialProducts: Product[];
