@@ -43,19 +43,33 @@ export default async function createProduct(newProduct: Omit<Product, 'id'>): Pr
     const color = colorKeys[colorIndex];
     const colorData = newProduct.images[color];
     const images = colorData.images;
+
+    // deduplication to prevent duplicate image
+    const uniqueImages = new Map<string, any>();
+
     images.forEach((img, idx) => {
+      const imageUrl = typeof img === 'string' ? img : img.url;
+      const publicId = typeof img === 'string' ? null : img.publicId;
+
+      if (uniqueImages.has(imageUrl)) return;
+
       const isPrimary = colorIndex === 0 && idx === 0;
-      imageRows.push({
+      const imageRow = {
         product_id: productId,
         color_name: color,
         hex_code: colorData.hex,
-        image_url: typeof img === 'string' ? img : img.url,
-        public_id: typeof img === 'string' ? null : img.publicId,
+        image_url: imageUrl,
+        public_id: publicId,
         is_primary: isPrimary,
-        sort_order: idx,
-      });
+        sort_order: uniqueImages.size,
+      };
+
+      uniqueImages.set(imageUrl, imageRow);
     });
+
+    imageRows.push(...Array.from(uniqueImages.values()));
   }
+
   if (imageRows.length > 0) {
     const { error: imgError } = await supabaseAdmin
       .from('product_images')

@@ -144,19 +144,34 @@ Casual T-Shirt\tComfortable cotton t-shirt for daily wear\t299\t399\tMens Wear â
       return;
     }
 
+    // Validate for duplicate image URLs across all products
+    const duplicateImageWarnings = validateDuplicateImages(validProducts);
+    if (duplicateImageWarnings.length > 0) {
+      console.warn('Duplicate image warnings:', duplicateImageWarnings);
+      // You could show these warnings to the user if needed
+    }
+
     // convert to Product format
     const productsToImport: Omit<Product, 'id'>[] = validProducts.map(product => {
-      // Convert image data to proper format
+      // Convert image data to proper format with additional deduplication
       const processedImages: Record<string, { hex: string; images: { url: string; publicId: string }[] }> = {};
 
       Object.entries(product.images).forEach(([colorName, colorData]) => {
-        processedImages[colorName] = {
-          hex: colorData.hex,
-          images: colorData.images.map(imageUrl => ({
-            url: imageUrl,
-            publicId: '' // Will be populated by backend during upload/processing
-          }))
-        };
+        // Additional deduplication to ensure no duplicate URLs per color
+        const uniqueImageUrls = Array.from(new Set(colorData.images));
+
+        // Filter out any empty or invalid URLs
+        const validImageUrls = uniqueImageUrls.filter(url => url && url.trim() !== '');
+
+        if (validImageUrls.length > 0) {
+          processedImages[colorName] = {
+            hex: colorData.hex,
+            images: validImageUrls.map(imageUrl => ({
+              url: imageUrl.trim(),
+              publicId: '' // Will be populated by backend during upload/processing
+            }))
+          };
+        }
       });
 
       return {
@@ -179,6 +194,36 @@ Casual T-Shirt\tComfortable cotton t-shirt for daily wear\t299\t399\tMens Wear â
     });
 
     onImport(productsToImport);
+  };
+
+  // Helper function to validate for duplicate images across products
+  const validateDuplicateImages = (products: ParsedProduct[]): string[] => {
+    const warnings: string[] = [];
+    const imageUrlMap = new Map<string, { productTitle: string; colorName: string }[]>();
+
+    products.forEach((product, productIndex) => {
+      Object.entries(product.images).forEach(([colorName, colorData]) => {
+        colorData.images.forEach(imageUrl => {
+          if (!imageUrlMap.has(imageUrl)) {
+            imageUrlMap.set(imageUrl, []);
+          }
+          imageUrlMap.get(imageUrl)!.push({
+            productTitle: product.title,
+            colorName: colorName
+          });
+        });
+      });
+    });
+
+    // Check for duplicates
+    imageUrlMap.forEach((usages, imageUrl) => {
+      if (usages.length > 1) {
+        const usageList = usages.map(usage => `${usage.productTitle} (${usage.colorName})`).join(', ');
+        warnings.push(`Image URL "${imageUrl}" is used in multiple products/colors: ${usageList}`);
+      }
+    });
+
+    return warnings;
   };
 
   const validProductsCount = parsedProducts.filter(p => p.errors.length === 0).length;

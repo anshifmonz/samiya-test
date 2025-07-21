@@ -174,15 +174,18 @@ export const useDataProcessing = (categories: Category[], sizes: Size[], expecte
           continue;
         }
 
-        // Parse URLs
+        // Parse URLs and deduplicate them
         const urls = urlsString.split(',').map(url => url.trim()).filter(Boolean);
-        if (urls.length === 0) {
+        // Remove duplicates while preserving order
+        const uniqueUrls = Array.from(new Set(urls));
+
+        if (uniqueUrls.length === 0) {
           errors.push(`No image URLs provided for color: "${colorName}"`);
           continue;
         }
 
         // Validate URLs (basic check)
-        const validUrls = urls.filter(url => {
+        const validUrls = uniqueUrls.filter(url => {
           try {
             new URL(url);
             return true;
@@ -193,10 +196,29 @@ export const useDataProcessing = (categories: Category[], sizes: Size[], expecte
         });
 
         if (validUrls.length > 0) {
-          result[colorName] = {
-            hex: hexCode.toUpperCase(),
-            images: validUrls
-          };
+          // Check if this color already exists
+          if (result[colorName]) {
+            // If color exists with different hex code, warn and skip
+            if (result[colorName].hex !== hexCode.toUpperCase()) {
+              errors.push(`Color "${colorName}" already defined with hex code ${result[colorName].hex}. Skipping duplicate with hex code ${hexCode.toUpperCase()}`);
+              continue;
+            }
+
+            // If same hex code, merge URLs and deduplicate
+            const existingUrls = result[colorName].images;
+            const combinedUrls = Array.from(new Set([...existingUrls, ...validUrls]));
+
+            result[colorName] = {
+              hex: hexCode.toUpperCase(),
+              images: combinedUrls
+            };
+          } else {
+            // New color entry
+            result[colorName] = {
+              hex: hexCode.toUpperCase(),
+              images: validUrls
+            };
+          }
         }
       }
     } catch (error) {
