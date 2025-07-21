@@ -123,13 +123,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         )}
 
-        {/* Category Badge */}
-        {product.categoryId && (
+        {/* Short Code Badge */}
+        {product.short_code && (
           <Badge
-            variant={getBadgeVariant(product.categoryId)}
+            variant={getBadgeVariant(product.short_code)}
             className="absolute top-2 left-2"
           >
-            {product.categoryId}
+            {product.short_code}
           </Badge>
         )}
       </div>
