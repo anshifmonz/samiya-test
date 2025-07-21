@@ -1,5 +1,5 @@
 import { type ProductImage, type ProductColorData, type LegacyProduct, type Product, type LegacyProductWithImages } from 'types/product';
-import { extractPublicIdFromUrl } from 'lib/upload/cloudinary';
+import { createProductImageWithId } from 'utils/imageIdUtils';
 
 // Function to get fallback hex color for legacy color names
 function getDefaultHexColor(colorName: string): string {
@@ -27,10 +27,7 @@ export function migrateProductImages(legacyProduct: LegacyProduct): Product {
   Object.entries(legacyProduct.images).forEach(([color, urls]) => {
     migratedImages[color] = {
       hex: getDefaultHexColor(color),
-      images: urls.map(url => ({
-        url,
-        publicId: extractPublicIdFromUrl(url) || `legacy-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-      }))
+      images: urls.map(url => createProductImageWithId(url))
     };
   });
 
@@ -58,23 +55,11 @@ export function ensureProductImageFormat(product: Product | LegacyProduct | Lega
           hex: getDefaultHexColor(color),
           images: (images as ProductImage[]).map((img: any) => {
             if (typeof img === 'string') {
-              return {
-                url: img,
-                publicId: extractPublicIdFromUrl(img) || `legacy-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-              };
+              return createProductImageWithId(img);
             } else if (img && typeof img === 'object' && img.url) {
-              let publicId = img.publicId;
-              if (!publicId && img.url && img.url.includes('cloudinary.com')) {
-                const urlParts = img.url.split('/');
-                const uploadIndex = urlParts.findIndex(part => part === 'upload');
-                if (uploadIndex !== -1 && urlParts[uploadIndex + 2]) {
-                  // Extract public ID from Cloudinary URL
-                }
-              }
-
               return {
                 url: img.url,
-                publicId: publicId || extractPublicIdFromUrl(img.url) || `legacy-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+                publicId: img.publicId || createProductImageWithId(img.url).publicId
               };
             }
             return img;

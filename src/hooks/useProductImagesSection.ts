@@ -1,7 +1,8 @@
 import { useState, useCallback } from 'react';
 import { DragEndEvent } from '@dnd-kit/core';
 import { type ProductImage, type ProductColorData } from 'types/product';
-import { deleteImageFromCloudinary, deleteMultipleImagesFromCloudinary, extractPublicIdFromUrl } from 'lib/upload/cloudinary';
+import { deleteImageFromCloudinary, deleteMultipleImagesFromCloudinary } from 'lib/upload/cloudinary';
+import { createProductImageWithId } from 'utils/imageIdUtils';
 
 export interface ProductImagesSectionProps {
   images: Record<string, ProductColorData>;
@@ -44,21 +45,15 @@ export function useProductImagesSection({ images, onImagesChange, activeColorTab
 
   const addImage = () => {
     if (selectedColorForImage && newImageUrl) {
-      const publicId = extractPublicIdFromUrl(newImageUrl) || `url-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-
-      const newImage: ProductImage = {
-        url: newImageUrl,
-        publicId: publicId
-      };
+      const newImage: ProductImage = createProductImageWithId(newImageUrl);
 
       const currentColorData = images[selectedColorForImage];
       const existingImages = currentColorData?.images || [];
-      
-      // Check if this image already exists (by publicId and url)
-      const imageExists = existingImages.some(img => 
+
+      const imageExists = existingImages.some(img =>
         img.publicId === newImage.publicId && img.url === newImage.url
       );
-      
+
       if (imageExists) {
         console.warn('Image with same publicId and URL already exists, skipping duplicate.');
         setNewImageUrl('');

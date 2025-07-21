@@ -11,6 +11,7 @@ import {
 import { uploadImagesToCloudinary } from 'lib/upload/cloudinary';
 import optimizeFile from 'utils/optimizeFile';
 import { type ProductColorData } from 'types/product';
+import { createProductImageFromServerResponse } from 'utils/imageIdUtils';
 
 interface UseProductImagesSectionUIProps {
   images: { [color: string]: ProductColorData };
@@ -203,7 +204,7 @@ export const useProductImagesSectionUI = (props: UseProductImagesSectionUIProps)
 
         const uploadedImages = results
           .filter(r => r.url && r.publicId)
-          .map(r => ({ url: r.url!, publicId: r.publicId! }));
+          .map(r => createProductImageFromServerResponse(r.url!, r.publicId!));
 
         if (uploadedImages.length > 0) {
           const currentColorData = images[selectedColorForImage];
