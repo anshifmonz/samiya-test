@@ -13,11 +13,13 @@ import {
 } from '@dnd-kit/sortable';
 import { useProductImagesSection, ProductImagesSectionProps } from 'hooks/useProductImagesSection';
 import { useProductImagesSectionUI } from 'hooks/useProductImagesSectionUI';
-import DraggableColorTab from './imagesSection/DraggableColorTab';
-import AddColorDialog from './imagesSection/AddColorDialog';
-import AddImageDialog from './imagesSection/AddImageDialog';
-import ColorImagePanel from './imagesSection/ColorImagePanel';
-import NoColorsState from './imagesSection/NoColorsState';
+import {
+  DraggableColorTab,
+  AddColorDialog,
+  AddImageDialog,
+  ColorImagePanel,
+  NoColorsState
+} from '../shared';
 
 const ProductImagesSection: React.FC<ProductImagesSectionProps> = (props) => {
   const {

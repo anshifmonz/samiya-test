@@ -14,11 +14,13 @@ import {
 import { useProductImagesSection } from 'hooks/useProductImagesSection';
 import { useProductImagesSectionUI } from 'hooks/useProductImagesSectionUI';
 import { useBulkImportImages } from 'hooks/useBulkImportImages';
-import DraggableColorTab from 'components/admin/product/form/imagesSection/DraggableColorTab';
-import AddColorDialog from 'components/admin/product/form/imagesSection/AddColorDialog';
-import ColorImagePanel from 'components/admin/product/form/imagesSection/ColorImagePanel';
-import NoColorsState from 'components/admin/product/form/imagesSection/NoColorsState';
-import AddImageDialog from 'components/admin/product/form/imagesSection/AddImageDialog';
+import {
+  DraggableColorTab,
+  AddColorDialog,
+  ColorImagePanel,
+  NoColorsState,
+  AddImageDialog
+} from '../../shared';
 
 interface BulkImportImagesSectionProps {
   imageData: Record<string, { hex: string; images: string[] }>;

@@ -1,5 +1,5 @@
 import React from 'react';
-import DraggableImageList from '../../DraggableImageList';
+import DraggableImageList from './DraggableImageList';
 import { Trash, Plus } from 'lucide-react';
 import { type ProductImage } from 'types/product';
 
