@@ -52,11 +52,26 @@ export function useProductImagesSection({ images, onImagesChange, activeColorTab
       };
 
       const currentColorData = images[selectedColorForImage];
+      const existingImages = currentColorData?.images || [];
+      
+      // Check if this image already exists (by publicId and url)
+      const imageExists = existingImages.some(img => 
+        img.publicId === newImage.publicId && img.url === newImage.url
+      );
+      
+      if (imageExists) {
+        console.warn('Image with same publicId and URL already exists, skipping duplicate.');
+        setNewImageUrl('');
+        setShowAddImageDialog(false);
+        setSelectedColorForImage('');
+        return;
+      }
+
       onImagesChange({
         ...images,
         [selectedColorForImage]: {
           hex: currentColorData?.hex || '######',
-          images: currentColorData?.images ? [...currentColorData.images, newImage] : [newImage]
+          images: [...existingImages, newImage]
         }
       });
       setNewImageUrl('');

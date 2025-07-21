@@ -148,6 +148,13 @@ const DraggableImageList: React.FC<DraggableImageListProps> = ({
   onRemove,
   deletingImages = new Set()
 }) => {
+  // Deduplicate images by publicId and url
+  const uniqueImages = images.reduce<ProductImage[]>((accumulated, current) => {
+    if (!accumulated.some(image => image.publicId === current.publicId && image.url === current.url)) {
+      accumulated.push(current);
+    }
+    return accumulated;
+  }, []);
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -164,17 +171,17 @@ const DraggableImageList: React.FC<DraggableImageListProps> = ({
     const { active, over } = event;
 
     if (active.id !== over?.id) {
-      const oldIndex = images.findIndex((_, index) => `image-${index}` === active.id);
-      const newIndex = images.findIndex((_, index) => `image-${index}` === over?.id);
+      const oldIndex = uniqueImages.findIndex((_, index) => `image-${index}` === active.id);
+      const newIndex = uniqueImages.findIndex((_, index) => `image-${index}` === over?.id);
 
       if (oldIndex !== -1 && newIndex !== -1) {
-        const newImages = arrayMove(images, oldIndex, newIndex);
+        const newImages = arrayMove(uniqueImages, oldIndex, newIndex);
         onReorder(newImages);
       }
     }
   };
 
-  if (images.length === 0) {
+  if (uniqueImages.length === 0) {
     return (
       <div className="text-center py-8 text-luxury-gray">
         <p className="luxury-body text-sm">No images added yet</p>
@@ -195,21 +202,28 @@ const DraggableImageList: React.FC<DraggableImageListProps> = ({
         }}
       >
         <SortableContext
-          items={images.map((_, index) => `image-${index}`)}
+          items={uniqueImages.map((_, index) => `image-${index}`)}
           strategy={verticalListSortingStrategy}
         >
           <div className="space-y-3">
-            {images.map((image, index) => (
-              <DraggableImageItem
-                key={`image-${index}`}
-                id={`image-${index}`}
-                image={image}
-                index={index}
-                onRemove={() => onRemove(index)}
-                isPrimary={index === 0}
-                isDeleting={deletingImages.has(image.publicId)}
-              />
-            ))}
+            {uniqueImages.map((image, index) => {
+              // Find the original index in the duplicated array to ensure correct removal
+              const originalIndex = images.findIndex(img => 
+                img.publicId === image.publicId && img.url === image.url
+              );
+              
+              return (
+                <DraggableImageItem
+                  key={`image-${index}`}
+                  id={`image-${index}`}
+                  image={image}
+                  index={index}
+                  onRemove={() => onRemove(originalIndex !== -1 ? originalIndex : index)}
+                  isPrimary={index === 0}
+                  isDeleting={deletingImages.has(image.publicId)}
+                />
+              );
+            })}
           </div>
         </SortableContext>
       </DndContext>
