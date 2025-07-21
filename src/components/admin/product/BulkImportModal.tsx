@@ -1,25 +1,27 @@
 import React, { useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Info } from 'lucide-react';
-import { type Product } from 'types/product';
+import { type Product, type CreateProductData } from 'types/product';
 import { type Category } from 'types/category';
 import { type Size } from 'types/product';
 import { Textarea } from 'ui/textarea';
 import { Alert, AlertDescription } from 'ui/alert';
 import { useCursorTracking, useDataProcessing } from './bulk/hooks';
+import { createProductImagesWithIds } from 'utils/imageIdUtils';
 import {
   Instructions,
   DynamicColumnHeaders,
   DataPreviewTable,
   ValidationResults,
   ModalActionButtons,
-  TextareaCategorySuggestions
+  TextareaCategorySuggestions,
+  BulkImportImageDialog
 } from './bulk/components';
 
 interface BulkImportModalProps {
   categories: Category[];
   sizes: Size[];
-  onImport: (products: Omit<Product, 'id'>[]) => void;
+  onImport: (products: CreateProductData[]) => void;
   onCancel: () => void;
 }
 
@@ -46,6 +48,12 @@ const BulkImportModal: React.FC<BulkImportModalProps> = ({
   const [isValidating, setIsValidating] = useState(false);
   const [mounted, setMounted] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  
+  // Image dialog state
+  const [showImageDialog, setShowImageDialog] = useState(false);
+  const [currentImageRowIndex, setCurrentImageRowIndex] = useState<number>(-1);
+  const [currentImageProductTitle, setCurrentImageProductTitle] = useState('');
+  const [currentImageData, setCurrentImageData] = useState<Record<string, { hex: string; images: string[] }>>({});
 
   // Expected column order for reference
   const expectedHeaders = ['Title', 'Description', 'Price', 'Original Price', 'Category', 'Tags', 'Sizes', 'Images', 'Active'];
@@ -133,6 +141,55 @@ Casual T-Shirt\tComfortable cotton t-shirt for daily wear\t299\t399\tMens Wear â
     }, 0);
   };
 
+  // Handle editing images
+  const handleEditImages = (rowIndex: number, productTitle: string, imageData: Record<string, { hex: string; images: string[] }>) => {
+    setCurrentImageRowIndex(rowIndex);
+    setCurrentImageProductTitle(productTitle);
+    setCurrentImageData(imageData);
+    setShowImageDialog(true);
+  };
+
+  // Handle saving image changes (includes real-time updates from color removal)
+  const handleSaveImageChanges = (newImageData: Record<string, { hex: string; images: string[] }>) => {
+    if (currentImageRowIndex >= 0 && currentImageRowIndex < rawTableData.length) {
+      // Convert imageData back to string format for the cell
+      const imageString = Object.entries(newImageData)
+        .filter(([colorName, colorData]) => {
+          // Only include colors that have images or if it's the only color
+          return colorData.images.length > 0 || (Object.keys(newImageData).length === 1 && colorName);
+        })
+        .map(([colorName, colorData]) => {
+          const urls = colorData.images.join(',');
+          return `${colorName}:${colorData.hex}|${urls}`;
+        })
+        .join(';');
+      
+      // Find the Images column index
+      const imagesColumnIndex = expectedHeaders.findIndex(header => header.toLowerCase() === 'images');
+      if (imagesColumnIndex >= 0) {
+        updateCellValue(currentImageRowIndex, imagesColumnIndex, imageString);
+      }
+      
+      // Update the current image data state to reflect changes
+      setCurrentImageData(newImageData);
+      
+      // If no colors remain, close the dialog
+      if (Object.keys(newImageData).length === 0) {
+        setShowImageDialog(false);
+      }
+    }
+  };
+
+  // Handle real-time updates from the dialog (for color removal)
+  const handleRealTimeImageUpdate = (newImageData: Record<string, { hex: string; images: string[] }>) => {
+    handleSaveImageChanges(newImageData);
+  };
+
+  // Handle closing image dialog
+  const handleCloseImageDialog = () => {
+    setShowImageDialog(false);
+  };
+
   const handleImport = () => {
     setIsValidating(true);
 
@@ -152,7 +209,7 @@ Casual T-Shirt\tComfortable cotton t-shirt for daily wear\t299\t399\tMens Wear â
     }
 
     // convert to Product format
-    const productsToImport: Omit<Product, 'id'>[] = validProducts.map(product => {
+    const productsToImport: CreateProductData[] = validProducts.map(product => {
       // Convert image data to proper format with additional deduplication
       const processedImages: Record<string, { hex: string; images: { url: string; publicId: string }[] }> = {};
 
@@ -166,10 +223,7 @@ Casual T-Shirt\tComfortable cotton t-shirt for daily wear\t299\t399\tMens Wear â
         if (validImageUrls.length > 0) {
           processedImages[colorName] = {
             hex: colorData.hex,
-            images: validImageUrls.map(imageUrl => ({
-              url: imageUrl.trim(),
-              publicId: '' // Will be populated by backend during upload/processing
-            }))
+            images: createProductImagesWithIds(validImageUrls)
           };
         }
       });
@@ -188,8 +242,9 @@ Casual T-Shirt\tComfortable cotton t-shirt for daily wear\t299\t399\tMens Wear â
           })
           .filter(Boolean) as Size[],
         active: product.active,
-        images: processedImages,
-        short_code: `PROD-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+        images: processedImages
+        // Note: short_code removed - will be auto-generated by database
+        // publicIds are consistently assigned: server publicId for uploads, URL extraction for bulk import URLs
       };
     });
 
@@ -306,6 +361,7 @@ Casual T-Shirt\tComfortable cotton t-shirt for daily wear\t299\t399\tMens Wear â
               parsedProducts={parsedProducts}
               categories={categories}
               updateCellValue={updateCellValue}
+              onEditImages={handleEditImages}
             />
           </div>
 
@@ -325,6 +381,16 @@ Casual T-Shirt\tComfortable cotton t-shirt for daily wear\t299\t399\tMens Wear â
           />
         </div>
       </div>
+      
+      {/* Image Editor Dialog */}
+      <BulkImportImageDialog
+        show={showImageDialog}
+        onClose={handleCloseImageDialog}
+        productTitle={currentImageProductTitle}
+        imageData={currentImageData}
+        onSave={handleSaveImageChanges}
+        onRealTimeUpdate={handleRealTimeImageUpdate}
+      />
     </div>
   );
 

@@ -8,3 +8,5 @@ export { DataPreviewTable } from './DataPreviewTable';
 export { ValidationResults } from './ValidationResults';
 export { ModalActionButtons } from './ModalActionButtons';
 export { TextareaCategorySuggestions } from './TextareaCategorySuggestions';
+export { default as BulkImportImageDialog } from './BulkImportImageDialog';
+export { default as BulkImportImagesSection } from './BulkImportImagesSection';

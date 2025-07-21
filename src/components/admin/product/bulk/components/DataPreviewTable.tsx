@@ -1,6 +1,7 @@
 import React from 'react';
 import { type Category } from 'types/category';
 import BulkImportCellEditor from '../BulkImportCellEditor';
+import { Edit2 } from 'lucide-react';
 
 interface ParsedProduct {
   title: string;
@@ -23,6 +24,7 @@ interface DataPreviewTableProps {
   parsedProducts: ParsedProduct[];
   categories: Category[];
   updateCellValue: (rowIndex: number, colIndex: number, newValue: string) => void;
+  onEditImages?: (rowIndex: number, productTitle: string, imageData: Record<string, { hex: string; images: string[] }>) => void;
 }
 
 /**
@@ -34,7 +36,8 @@ export const DataPreviewTable: React.FC<DataPreviewTableProps> = ({
   rawTableData,
   parsedProducts,
   categories,
-  updateCellValue
+  updateCellValue,
+  onEditImages
 }) => {
   if (!pastedData.trim()) return null;
 
@@ -72,7 +75,6 @@ export const DataPreviewTable: React.FC<DataPreviewTableProps> = ({
               </tr>
             </thead>
             <tbody>
-              {/* Use inline editors if we have raw table data, otherwise show read-only cells */}
               {rawTableData.length > 0 ? (
                 rawTableData.map((row, rowIndex) => {
                   const hasErrors = parsedProducts[rowIndex]?.errors.length > 0;
@@ -97,36 +99,57 @@ export const DataPreviewTable: React.FC<DataPreviewTableProps> = ({
                         if (isCategory) cellType = 'category';
                         else if (isTags) cellType = 'tags';
                         else if (isPrice) cellType = 'number';
-                        
+
                         // For images column, use special display logic
-                        if (isImages && cellValue) {
+                        if (isImages) {
+                          const product = parsedProducts[rowIndex];
+                          const hasImageData = cellValue && cellValue.trim();
+
                           return (
                             <td key={cellIndex} className="px-1 py-1 border-b border-luxury-gray/10">
-                              <div className="max-w-[200px] min-h-[32px] px-2 py-1 text-xs bg-purple-50 rounded border">
-                                <div className="font-medium text-purple-700 mb-1">Image Data</div>
-                                <div className="space-y-1">
-                                  {cellValue.split(';').slice(0, 2).map((colorGroup, idx) => {
-                                    const [colorInfo, urls] = colorGroup.split('|');
-                                    const [colorName, hex] = colorInfo?.split(':') || [];
-                                    const urlCount = urls?.split(',').length || 0;
-                                    return (
-                                      <div key={idx} className="flex items-center gap-2">
-                                        {hex && (
-                                          <div 
-                                            className="w-3 h-3 rounded border border-gray-300"
-                                            style={{ backgroundColor: hex }}
-                                          />
-                                        )}
-                                        <span className="capitalize text-gray-700">
-                                          {colorName} ({urlCount} {urlCount === 1 ? 'image' : 'images'})
-                                        </span>
-                                      </div>
-                                    );
-                                  })}
-                                  {cellValue.split(';').length > 2 && (
-                                    <div className="text-gray-500">+{cellValue.split(';').length - 2} more colors</div>
-                                  )}
-                                </div>
+                              <div
+                                className={`max-w-[200px] min-h-[32px] px-2 py-1 text-xs rounded border relative group ${
+                                  hasImageData ? 'bg-purple-50 cursor-pointer hover:bg-purple-100' : 'bg-gray-50 cursor-pointer hover:bg-gray-100'
+                                } transition-colors duration-200`}
+                                onClick={() => onEditImages?.(rowIndex, product?.title || `Product ${rowIndex + 1}`, product?.images || {})}
+                              >
+                                {hasImageData ? (
+                                  <>
+                                    <div className="font-medium text-purple-700 mb-1 flex items-center justify-between">
+                                      <span>Image Data</span>
+                                      <Edit2 size={12} className="opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                                    </div>
+                                    <div className="space-y-1">
+                                      {cellValue.split(';').slice(0, 2).map((colorGroup, idx) => {
+                                        const [colorInfo, urls] = colorGroup.split('|');
+                                        const [colorName, hex] = colorInfo?.split(':') || [];
+                                        const urlCount = urls?.split(',').length || 0;
+                                        return (
+                                          <div key={idx} className="flex items-center gap-2">
+                                            {hex && (
+                                              <div
+                                                className="w-3 h-3 rounded border border-gray-300"
+                                                style={{ backgroundColor: hex }}
+                                              />
+                                            )}
+                                            <span className="capitalize text-gray-700">
+                                              {colorName} ({urlCount} {urlCount === 1 ? 'image' : 'images'})
+                                            </span>
+                                          </div>
+                                        );
+                                      })}
+                                      {cellValue.split(';').length > 2 && (
+                                        <div className="text-gray-500">+{cellValue.split(';').length - 2} more colors</div>
+                                      )}
+                                    </div>
+                                  </>
+                                ) : (
+                                  <div className="font-medium text-gray-500 flex items-center justify-between">
+                                    <span>No Images</span>
+                                    <Edit2 size={12} className="opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                                  </div>
+                                )}
+                                <div className="absolute inset-0 bg-luxury-gold/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded pointer-events-none" />
                               </div>
                             </td>
                           );
