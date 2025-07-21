@@ -2,6 +2,7 @@ import React from 'react';
 import { CheckCircle, AlertCircle } from 'lucide-react';
 import { Badge } from 'ui/badge';
 import { Separator } from 'ui/separator';
+import { type Category } from 'types/category';
 
 interface ParsedProduct {
   title: string;
@@ -22,6 +23,7 @@ interface ValidationResultsProps {
   totalProductsCount: number;
   hasErrors: boolean;
   hasWarnings: boolean;
+  categories: Category[];
 }
 
 /**
@@ -32,8 +34,20 @@ export const ValidationResults: React.FC<ValidationResultsProps> = ({
   validProductsCount,
   totalProductsCount,
   hasErrors,
-  hasWarnings
+  hasWarnings,
+  categories
 }) => {
+  // Helper function to get readable category name from ID
+  const getCategoryDisplay = (categoryId: string): string => {
+    if (!categoryId) return 'No Category';
+    
+    const category = categories.find(cat => cat.id === categoryId);
+    if (!category) return categoryId; // Fallback to ID if not found
+    
+    // Show full path with arrow separators (e.g., "Mens Wear → Shirts")
+    return category.path.join(' → ');
+  };
+  
   if (parsedProducts.length === 0) return null;
 
   return (
@@ -78,7 +92,7 @@ export const ValidationResults: React.FC<ValidationResultsProps> = ({
                   {product.title || `Row ${index + 2}`}
                 </h4>
                 <p className="text-sm text-luxury-gray mt-1">
-                  Price: ₹{product.price} | Category: {product.categoryId}
+                  Price: ₹{product.price} | Category: {getCategoryDisplay(product.categoryId)}
                 </p>
               </div>
               <div className="ml-4">
