@@ -69,7 +69,7 @@ async function getProduct(limit: number, offset: number, query: string): Promise
       price: Number(row.price),
       originalPrice: row.original_price,
       tags,
-      category: row.category?.name || '',
+      categoryId: row.category_id || '',
       sizes,
       active: row.is_active,
     };
