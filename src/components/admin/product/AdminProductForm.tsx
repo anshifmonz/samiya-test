@@ -1,6 +1,6 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
-import { type Product } from 'types/product';
+import { type Product, type CreateProductData } from 'types/product';
 import { type Category } from 'types/category';
 import { X } from 'lucide-react';
 import {
@@ -20,7 +20,7 @@ import { useAdminProductForm } from 'hooks/useAdminProductForm';
 interface AdminProductFormProps {
   product?: Product | null;
   categories: Category[];
-  onSave: (product: Product | Omit<Product, 'id'>) => void;
+  onSave: (product: Product | CreateProductData) => void;
   onCancel: () => void;
 }
 

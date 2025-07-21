@@ -1,7 +1,8 @@
 import { supabaseAdmin } from 'lib/supabase';
-import type { Product } from 'types/product';
+import type { Product, CreateProductData } from 'types/product';
+import { extractPublicIdFromUrl } from 'lib/upload/cloudinary';
 
-export default async function createProduct(newProduct: Omit<Product, 'id'>): Promise<Product | null> {
+export default async function createProduct(newProduct: CreateProductData): Promise<Product | null> {
   const { data: categories, error: catError } = await supabaseAdmin
     .from('categories')
     .select('id')
@@ -49,7 +50,11 @@ export default async function createProduct(newProduct: Omit<Product, 'id'>): Pr
 
     images.forEach((img, idx) => {
       const imageUrl = typeof img === 'string' ? img : img.url;
-      const publicId = typeof img === 'string' ? null : img.publicId;
+      let publicId = typeof img === 'string' ? null : img.publicId;
+
+      if (!publicId || publicId.trim() === '') {
+        publicId = extractPublicIdFromUrl(imageUrl) || `url-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      }
 
       if (uniqueImages.has(imageUrl)) return;
 

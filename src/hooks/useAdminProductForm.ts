@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import { type Product, type ProductColorData, type Size } from 'types/product';
+import { type Product, type CreateProductData, type ProductColorData, type Size } from 'types/product';
 import { type Category } from 'types/category';
 import { ensureProductImageFormat } from 'utils/migrateProductImages';
 
 interface UseAdminProductFormProps {
   product?: Product | null;
   categories: Category[];
-  onSave: (product: Product | Omit<Product, 'id'>) => void;
+  onSave: (product: Product | CreateProductData) => void;
   onCancel: () => void;
 }
 
@@ -34,7 +34,7 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
     tags: [],
     sizes: [],
     active: true,
-    short_code: `PROD-${Date.now()}`
+    short_code: ''
   });
 
   const [activeColorTab, setActiveColorTab] = useState<string>('');
@@ -99,14 +99,16 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const productData = {
-      ...formData,
-    };
-
     if (product) {
-      onSave({ ...productData, id: product.id, short_code: product.short_code });
-    } else {
+      const productData = {
+        ...formData,
+        id: product.id,
+        short_code: product.short_code
+      };
       onSave(productData);
+    } else {
+      const { short_code, ...productDataWithoutShortCode } = formData;
+      onSave(productDataWithoutShortCode);
     }
   };
 

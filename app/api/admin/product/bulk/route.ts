@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import createProduct from '@/lib/admin/product/create';
-import { type Product } from '@/types/product';
+import createProduct from 'lib/admin/product/create';
+import { type CreateProductData } from 'types/product';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { products }: { products: Omit<Product, 'id'>[] } = body;
+    const { products }: { products: CreateProductData[] } = body;
 
     if (!products || !Array.isArray(products) || products.length === 0) {
       return NextResponse.json(
