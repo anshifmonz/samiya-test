@@ -29,6 +29,10 @@ export interface Product {
   active?: boolean;
 }
 
+export type CreateProductData = Omit<Product, 'id' | 'short_code'> & {
+  short_code?: string;
+};
+
 export interface LegacyProduct {
   id: string;
   title: string;
