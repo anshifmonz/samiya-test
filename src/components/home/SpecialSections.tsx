@@ -1,11 +1,11 @@
 'use client';
 
+import { useRef, useState, useEffect, Fragment } from 'react';
 import { type SectionWithProducts } from 'types/section';
 import CarouselWrapper from './shared/CarouselWrapper';
 import ProductCard from './shared/ProductCard';
 import SectionHeading from './shared/SectionHeading';
 import BudgetSection from './BudgetSelection';
-import { useRef, useState, useEffect } from 'react';
 
 interface SpecialSectionsProps {
   specials: SectionWithProducts[];
@@ -22,7 +22,7 @@ const useInView = <T extends HTMLElement>(options?: IntersectionObserverInit): [
       ([entry]) => {
         if (entry.isIntersecting) {
           setInView(true);
-          observer && observer.disconnect(); // trigger once
+          observer && observer.disconnect();
         }
       },
       options || { threshold: 0.18 }
@@ -35,39 +35,41 @@ const useInView = <T extends HTMLElement>(options?: IntersectionObserverInit): [
 };
 
 const SpecialSections = ({ specials }: SpecialSectionsProps) => {
-  return (
-    <section className="flex flex-col gap-[70px]">
-      {specials.map((special, index) => {
-        const [sectionRef, inView] = useInView<HTMLElement>({ threshold: 0.18 });
-        const [budgetRef, budgetInView] = useInView<HTMLElement>({ threshold: 0.18 });
-        return (
-          <>
-            {index === 2 && (
-              <section
-                ref={budgetRef}
-                key={`budget-${special.id}`}
-                className={`relative overflow-hidden transition-opacity duration-1000 ${budgetInView ? 'animate-fade-in-up' : 'opacity-0'}`}
-              >
-                <BudgetSection />
-              </section>
-            )}
+  const nonEmptySpecials = specials.filter(special => special.products && special.products.length > 0);
+
+return (
+  <section className="flex flex-col gap-[70px]">
+    {nonEmptySpecials.map((special, index) => {
+      const [sectionRef, inView] = useInView<HTMLElement>({ threshold: 0.18 });
+      const [budgetRef, budgetInView] = useInView<HTMLElement>({ threshold: 0.18 });
+
+      return (
+        <Fragment key={special.id}>
+          <section
+            ref={sectionRef}
+            className={`relative overflow-hidden transition-opacity duration-1000 ${index === 0 ? '-mt-8' : ''} ${inView ? 'animate-fade-in-up' : 'opacity-0'}`}
+          >
+            <SectionHeading title={special.title.toUpperCase()} />
+            <CarouselWrapper>
+              {special.products.map(p => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </CarouselWrapper>
+          </section>
+
+          {index === 1 && (
             <section
-              ref={sectionRef}
-              key={special.id}
-              className={`relative overflow-hidden transition-opacity duration-1000 ${index === 0 ? '-mt-8' : ''} ${inView ? 'animate-fade-in-up' : 'opacity-0'}`}
+              ref={budgetRef}
+              className={`relative overflow-hidden transition-opacity duration-1000 ${budgetInView ? 'animate-fade-in-up' : 'opacity-0'}`}
             >
-              <SectionHeading title={special.title.toUpperCase()} />
-              <CarouselWrapper>
-                {special.products.map(p => (
-                  <ProductCard key={p.id} product={p} />
-                ))}
-              </CarouselWrapper>
+              <BudgetSection />
             </section>
-          </>
-        );
-      })}
-    </section>
-  );
+          )}
+        </Fragment>
+      );
+    })}
+  </section>
+);
 };
 
 export default SpecialSections;
