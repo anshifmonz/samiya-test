@@ -1,5 +1,6 @@
-import { supabaseAdmin } from '@/lib/supabase';
-import { deleteMultipleImagesFromCloudinary } from '@/lib/upload/cloudinary-server';
+import { supabaseAdmin } from 'lib/supabase';
+import { deleteMultipleImagesFromCloudinary } from 'lib/upload/cloudinary-server';
+import isValidPublicId from 'utils/isValidPublicId';
 
 export default async function deleteProduct(productId: string): Promise<boolean> {
   try {
@@ -12,7 +13,7 @@ export default async function deleteProduct(productId: string): Promise<boolean>
     if (fetchError) {
       console.error('Error fetching product images:', fetchError);
     } else if (productImages && productImages.length > 0) {
-      const publicIds = productImages.map(img => img.public_id).filter(Boolean);
+      const publicIds = productImages.map(img => img.public_id).filter(isValidPublicId);
       if (publicIds.length > 0) {
         const cloudinaryResult = await deleteMultipleImagesFromCloudinary(publicIds);
         if (!cloudinaryResult.success) {

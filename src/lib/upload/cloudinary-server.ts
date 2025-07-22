@@ -3,6 +3,7 @@ import { writeFile, unlink } from 'fs/promises';
 import path from 'path';
 import { tmpdir } from 'os';
 import { randomUUID } from 'crypto';
+import isValidPublicId from 'utils/isValidPublicId';
 
 const requiredEnvVars = {
   CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
@@ -92,7 +93,7 @@ export async function deleteImageFromCloudinary(publicId: string): Promise<{ suc
 export async function deleteMultipleImagesFromCloudinary(publicIds: string[]): Promise<{ success: boolean; errors: string[] }> {
   const errors: string[] = [];
   const results = await Promise.allSettled(
-    publicIds.map(publicId => deleteImageFromCloudinary(publicId))
+    publicIds.map(publicId => isValidPublicId(publicId) && deleteImageFromCloudinary(publicId))
   );
 
   results.forEach((result, index) => {

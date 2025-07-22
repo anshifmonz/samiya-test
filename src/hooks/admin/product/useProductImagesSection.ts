@@ -3,6 +3,8 @@ import { DragEndEvent } from '@dnd-kit/core';
 import { type ProductImage, type ProductColorData } from 'types/product';
 import { deleteImageFromCloudinary, deleteMultipleImagesFromCloudinary } from 'lib/upload/cloudinary';
 import { createProductImageWithId } from 'utils/imageIdUtils';
+import isValidPublicId from 'utils/isValidPublicId';
+import isCloudinaryUrl from 'utils/isCloudinaryUrls';
 
 export interface ProductImagesSectionProps {
   images: Record<string, ProductColorData>;
@@ -147,12 +149,12 @@ export function useProductImagesSection({ images, onImagesChange, activeColorTab
       const colorData = images[colorToRemove];
       const imagesToRemove = colorData?.images || [];
 
-      const publicIds = imagesToRemove.map(img => img.publicId);
+      const publicIds = imagesToRemove.map(img => img.publicId).filter(isValidPublicId);
       setDeletingImages(prev => new Set([...Array.from(prev), ...publicIds]));
 
       try {
         const cloudinaryImages = imagesToRemove.filter(img =>
-          img.publicId && !img.publicId.startsWith('url-')
+          isCloudinaryUrl(img.publicId)
         );
 
         if (cloudinaryImages.length > 0) {
