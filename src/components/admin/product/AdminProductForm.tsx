@@ -2,7 +2,6 @@ import React from 'react';
 import { createPortal } from 'react-dom';
 import { type Product, type CreateProductData } from 'types/product';
 import { type Category } from 'types/category';
-import { X } from 'lucide-react';
 import {
   ProductTitleInput,
   ProductIdDisplay,
@@ -12,10 +11,12 @@ import {
   ProductImagesSection,
   TagsSection,
   SizeSelect,
-  ActionButtons
+  ActionButtons,
+  ActiveStatusSwitch,
+  AdminProductFormHeader
 } from './form';
-import ActiveStatusSwitch from '../category/form/ActiveStatusSwitch';
 import { useAdminProductForm } from 'hooks/useAdminProductForm';
+import { AdminProductFormProvider, useAdminProductFormContext } from './form/AdminProductFormContext';
 
 interface AdminProductFormProps {
   product?: Product | null;
@@ -24,110 +25,107 @@ interface AdminProductFormProps {
   onCancel: () => void;
 }
 
+const AdminProductFormContent: React.FC = () => {
+  const { product, handleSubmit } = useAdminProductFormContext();
+
+  return (
+    <form onSubmit={handleSubmit} className="p-3 sm:p-6 space-y-6">
+      <ProductIdDisplay productId={product?.short_code} />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <ProductTitleInput />
+        <CategorySelect />
+      </div>
+
+      <DescriptionTextarea />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <PriceInput label="Price" field="price" />
+        <PriceInput label="Original Price" field="originalPrice" />
+      </div>
+
+      <ProductImagesSection />
+      <SizeSelect />
+      <TagsSection />
+      <ActiveStatusSwitch />
+      <ActionButtons />
+    </form>
+  );
+};
+
 const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories, onSave, onCancel }) => {
-  const {
-    formData,
-    activeColorTab,
-    mounted,
-    handleTitleChange,
-    handleDescriptionChange,
-    handlePriceChange,
-    handleCategoryChange,
-    handleImagesChange,
-    handleTagsChange,
-    handleSizesChange,
-    handleActiveChange,
-    handleSubmit,
-    handleCancel,
-    setActiveColorTab,
-    isEditing,
-    modalTitle,
-    handleOriginalPriceChange
-  } = useAdminProductForm({ product, categories, onSave, onCancel });
+  const logic = useAdminProductForm({ product, categories, onSave, onCancel });
+
+  const providerValue = {
+    // ===== ORGANIZED CONTEXT STRUCTURE =====
+    config: {
+      product,
+      categories,
+    },
+
+    state: {
+      formData: logic.formData,
+      activeColorTab: logic.activeColorTab,
+      mounted: logic.mounted,
+    },
+
+    computed: {
+      isEditing: logic.isEditing,
+      modalTitle: logic.modalTitle,
+    },
+
+    actions: {
+      handleTitleChange: logic.handleTitleChange,
+      handleDescriptionChange: logic.handleDescriptionChange,
+      handlePriceChange: logic.handlePriceChange,
+      handleOriginalPriceChange: logic.handleOriginalPriceChange,
+      handleCategoryChange: logic.handleCategoryChange,
+      handleImagesChange: logic.handleImagesChange,
+      handleTagsChange: logic.handleTagsChange,
+      handleSizesChange: logic.handleSizesChange,
+      handleActiveChange: logic.handleActiveChange,
+      setActiveColorTab: logic.setActiveColorTab,
+    },
+
+    formControl: {
+      handleSubmit: logic.handleSubmit,
+      handleCancel: logic.handleCancel,
+    },
+
+    // ===== LEGACY COMPATIBILITY =====
+    formData: logic.formData,
+    activeColorTab: logic.activeColorTab,
+    mounted: logic.mounted,
+    handleTitleChange: logic.handleTitleChange,
+    handleDescriptionChange: logic.handleDescriptionChange,
+    handlePriceChange: logic.handlePriceChange,
+    handleOriginalPriceChange: logic.handleOriginalPriceChange,
+    handleCategoryChange: logic.handleCategoryChange,
+    handleImagesChange: logic.handleImagesChange,
+    handleTagsChange: logic.handleTagsChange,
+    handleSizesChange: logic.handleSizesChange,
+    handleActiveChange: logic.handleActiveChange,
+    handleSubmit: logic.handleSubmit,
+    handleCancel: logic.handleCancel,
+    setActiveColorTab: logic.setActiveColorTab,
+    isEditing: logic.isEditing,
+    modalTitle: logic.modalTitle,
+    categories,
+    product,
+  };
 
   const modalContent = (
-    <div className="fixed inset-0 bg-luxury-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white rounded-t-2xl border-b border-luxury-gray/20 p-6 flex items-center justify-between z-[9999]">
-          <h2 className="luxury-heading text-2xl text-luxury-black">
-            {modalTitle}
-          </h2>
-          <button
-            onClick={handleCancel}
-            className="text-luxury-gray hover:text-luxury-black transition-colors duration-200"
-            type="button"
-          >
-            <X size={24} />
-          </button>
+    <AdminProductFormProvider value={providerValue}>
+      <div className="fixed inset-0 bg-luxury-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+          <AdminProductFormHeader />
+          <AdminProductFormContent />
         </div>
-
-        <form onSubmit={handleSubmit} className="p-3 sm:p-6 space-y-6">
-          <ProductIdDisplay productId={product?.short_code} />
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <ProductTitleInput
-              value={formData.title}
-              onChange={handleTitleChange}
-            />
-
-            <CategorySelect
-              value={formData.categoryId}
-              onChange={handleCategoryChange}
-              categories={categories}
-            />
-          </div>
-
-          <DescriptionTextarea
-            value={formData.description}
-            onChange={handleDescriptionChange}
-          />
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <PriceInput
-              label="Price"
-              value={formData.price}
-              onChange={handlePriceChange}
-            />
-            <PriceInput
-              label="Original Price"
-              value={formData.originalPrice}
-              onChange={handleOriginalPriceChange}
-            />
-          </div>
-
-          <ProductImagesSection
-            images={formData.images}
-            onImagesChange={handleImagesChange}
-            activeColorTab={activeColorTab}
-            onActiveColorTabChange={(color) => setActiveColorTab(color)}
-          />
-
-          <SizeSelect
-            sizes={formData.sizes}
-            onSizesChange={handleSizesChange}
-          />
-
-          <TagsSection
-            tags={formData.tags}
-            onTagsChange={handleTagsChange}
-          />
-
-          <ActiveStatusSwitch
-            label="Product"
-            value={formData.active}
-            onChange={handleActiveChange}
-          />
-
-          <ActionButtons
-            onCancel={handleCancel}
-            isEditing={isEditing}
-          />
-        </form>
       </div>
-    </div>
+    </AdminProductFormProvider>
   );
 
-  return mounted ? createPortal(modalContent, document.body) : null;
+  return logic.mounted ? createPortal(modalContent, document.body) : null;
 };
 
 export default AdminProductForm;

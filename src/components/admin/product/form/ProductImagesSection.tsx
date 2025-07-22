@@ -11,8 +11,9 @@ import {
   SortableContext,
   horizontalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { useProductImagesSection, ProductImagesSectionProps } from 'hooks/useProductImagesSection';
+import { useProductImagesSection } from 'hooks/useProductImagesSection';
 import { useProductImagesSectionUI } from 'hooks/useProductImagesSectionUI';
+import { useAdminProductFormImages } from './AdminProductFormContext';
 import {
   DraggableColorTab,
   AddColorDialog,
@@ -21,7 +22,16 @@ import {
   NoColorsState
 } from '../shared';
 
-const ProductImagesSection: React.FC<ProductImagesSectionProps> = (props) => {
+const ProductImagesSection: React.FC = () => {
+  const { images, activeColorTab, handleImagesChange, setActiveColorTab } = useAdminProductFormImages();
+  
+  const props = {
+    images,
+    onImagesChange: handleImagesChange,
+    activeColorTab,
+    onActiveColorTabChange: setActiveColorTab
+  };
+  
   const {
     showAddColorDialog, setShowAddColorDialog,
     showAddImageDialog, setShowAddImageDialog,
@@ -38,7 +48,7 @@ const ProductImagesSection: React.FC<ProductImagesSectionProps> = (props) => {
     uploadErrors, setUploadErrors,
     deletingImages,
     addColor, addImage, reorderImages, removeImage, removeColor, handleColorDragEnd,
-    onImagesChange, images, activeColorTab, onActiveColorTabChange
+    onImagesChange, onActiveColorTabChange
   } = useProductImagesSection(props);
 
   const {

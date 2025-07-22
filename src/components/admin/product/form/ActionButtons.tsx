@@ -1,16 +1,14 @@
 import React from 'react';
+import { useAdminProductFormActions_Buttons } from './AdminProductFormContext';
 
-interface ActionButtonsProps {
-  onCancel: () => void;
-  isEditing: boolean;
-}
-
-const ActionButtons: React.FC<ActionButtonsProps> = ({ onCancel, isEditing }) => {
+const ActionButtons: React.FC = () => {
+  const { handleCancel, isEditing } = useAdminProductFormActions_Buttons();
+  
   return (
     <div className="flex gap-4 pt-6 border-t border-luxury-gray/20">
       <button
         type="button"
-        onClick={onCancel}
+        onClick={handleCancel}
         className="flex-1 px-6 py-3 luxury-body text-sm font-medium text-luxury-gray bg-luxury-cream/50 rounded-xl hover:bg-luxury-cream transition-all duration-300 border border-luxury-gray/20"
       >
         Cancel

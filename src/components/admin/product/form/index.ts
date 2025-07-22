@@ -7,3 +7,5 @@ export { default as ProductImagesSection } from './ProductImagesSection';
 export { default as TagsSection } from './TagsSection';
 export { default as SizeSelect } from './SizeSelect';
 export { default as ActionButtons } from './ActionButtons';
+export { default as ActiveStatusSwitch } from './ActiveStatusSwitch';
+export { default as AdminProductFormHeader } from './AdminProductFormHeader';

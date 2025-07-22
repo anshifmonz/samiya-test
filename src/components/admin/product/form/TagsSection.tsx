@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { Plus, X } from 'lucide-react';
+import { useAdminProductFormFields } from './AdminProductFormContext';
 
-interface TagsSectionProps {
-  tags: string[];
-  onTagsChange: (tags: string[]) => void;
-}
-
-const TagsSection: React.FC<TagsSectionProps> = ({ tags, onTagsChange }) => {
+const TagsSection: React.FC = () => {
+  const { formData, handleTagsChange } = useAdminProductFormFields();
+  const tags = formData.tags;
+  const onTagsChange = handleTagsChange;
   const [newTag, setNewTag] = useState('');
 
   const addTag = () => {

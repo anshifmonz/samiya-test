@@ -1,9 +1,6 @@
 import { type Size } from 'types/product';
-
-interface SizeSelectProps {
-  sizes: Size[];
-  onSizesChange: (sizes: Size[]) => void;
-}
+import React from 'react';
+import { useAdminProductFormFields } from './AdminProductFormContext';
 
 const sizeIdMap: Record<string, string> = {
   XS: 'xs',
@@ -25,7 +22,10 @@ const standardSizes: Size[] = [
   { id: sizeIdMap['3XL'], name: '3XL', sort_order: 7 },
 ];
 
-const SizeSelect: React.FC<SizeSelectProps> = ({ sizes, onSizesChange }) => {
+const SizeSelect: React.FC = () => {
+  const { formData, handleSizesChange } = useAdminProductFormFields();
+  const sizes = formData.sizes;
+  const onSizesChange = handleSizesChange;
   const handleSizeToggle = (size: Size) => {
     const isSelected = sizes.some(s => s.id === size.id || s.name === size.name);
     if (isSelected) {

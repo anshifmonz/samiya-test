@@ -2,25 +2,19 @@ import React, { useState, useRef, useEffect } from 'react';
 import { type Category } from '@/types/category';
 import { ChevronDown, Check, ChevronRight } from 'lucide-react';
 import { buildCategoryTree } from '@/lib/utils/buildCategoryTree';
+import { useAdminProductFormCategory } from './AdminProductFormContext';
 
-interface CategorySelectProps {
-  value: string;
-  onChange: (value: string) => void;
-  categories: Category[];
-}
-
-const CategorySelect: React.FC<CategorySelectProps> = ({ value, onChange, categories }) => {
+const CategorySelect: React.FC = () => {
+  const { categories, categoryId, handleCategoryChange } = useAdminProductFormCategory();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // get the display name for the selected value
   const getSelectedDisplayName = () => {
-    if (!value) return "Select a category";
-    const category = categories.find(cat => cat.id === value);
+    if (!categoryId) return "Select a category";
+    const category = categories.find(cat => cat.id === categoryId);
     return category ? category.name : "Select a category";
   };
 
-  // handle click outside to close dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -34,7 +28,6 @@ const CategorySelect: React.FC<CategorySelectProps> = ({ value, onChange, catego
 
   const categoryTree = buildCategoryTree(categories);
 
-  // recursive function to render category tree
   const renderCategoryTree = (categoryList: Category[], level: number = 0) => {
     return categoryList.map((category, index) => {
       const indent = level * 20;
@@ -54,11 +47,11 @@ const CategorySelect: React.FC<CategorySelectProps> = ({ value, onChange, catego
 
           <div
             className={`px-4 py-2 cursor-pointer hover:bg-luxury-gold/10 transition-colors duration-200 relative ${
-              value === category.id ? 'bg-luxury-gold/20 text-luxury-gold' : 'text-luxury-black'
+              categoryId === category.id ? 'bg-luxury-gold/20 text-luxury-gold' : 'text-luxury-black'
             }`}
             style={{ paddingLeft: `${indent + 16}px` }}
             onClick={() => {
-              onChange(category.id);
+              handleCategoryChange(category.id);
               setIsOpen(false);
             }}
           >
@@ -97,7 +90,7 @@ const CategorySelect: React.FC<CategorySelectProps> = ({ value, onChange, catego
                 <span className="luxury-body text-sm">{category.name}</span>
               </div>
 
-              {value === category.id && (
+              {categoryId === category.id && (
                 <Check className="w-4 h-4 text-luxury-gold" />
               )}
             </div>
@@ -125,7 +118,7 @@ const CategorySelect: React.FC<CategorySelectProps> = ({ value, onChange, catego
         className="w-full px-4 py-3 luxury-body text-sm rounded-xl bg-luxury-cream/50 text-luxury-black border border-luxury-gray/20 focus:outline-none focus:ring-2 focus:ring-luxury-gold/50 focus:border-luxury-gold/30 transition-all duration-300 cursor-pointer flex items-center justify-between"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <span className={value ? 'text-luxury-black' : 'text-luxury-gray'}>
+        <span className={categoryId ? 'text-luxury-black' : 'text-luxury-gray'}>
           {getSelectedDisplayName()}
         </span>
         <ChevronDown

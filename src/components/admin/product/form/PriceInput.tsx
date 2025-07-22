@@ -1,12 +1,16 @@
 import React from 'react';
+import { useAdminProductFormFields } from './AdminProductFormContext';
 
 interface PriceInputProps {
-  value: number;
-  onChange: (value: number) => void;
   label: string;
+  field: 'price' | 'originalPrice';
 }
 
-const PriceInput: React.FC<PriceInputProps> = ({ value, onChange, label  }) => {
+const PriceInput: React.FC<PriceInputProps> = ({ label, field }) => {
+  const { formData, handlePriceChange, handleOriginalPriceChange } = useAdminProductFormFields();
+  
+  const value = formData[field];
+  const onChange = field === 'price' ? handlePriceChange : handleOriginalPriceChange;
   return (
     <div>
       <label className="block luxury-subheading text-sm text-luxury-black mb-2">
