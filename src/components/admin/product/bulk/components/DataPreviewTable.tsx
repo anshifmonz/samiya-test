@@ -56,24 +56,30 @@ export const DataPreviewTable: React.FC<DataPreviewTableProps> = ({
 
   return (
     <div className="mt-4">
-      <h4 className="font-medium text-luxury-black mb-2">Data Preview</h4>
+      <h4 className="font-medium text-luxury-black mb-2 text-sm sm:text-base">Data Preview</h4>
       <div className="border border-luxury-gray/20 rounded-lg overflow-hidden">
-        <div className="overflow-x-auto max-h-[300px] overflow-y-auto">
-          <table className="w-full text-sm">
+        <div className="overflow-x-auto max-h-[250px] sm:max-h-[300px] overflow-y-auto">
+          <table className="w-full text-xs sm:text-sm">
             <thead className="bg-luxury-gray/10 sticky top-0">
               <tr>
-                <th className="px-3 py-2 text-center font-medium text-luxury-black border-b border-luxury-gray/20 whitespace-nowrap w-12">
-                  No
+                <th className="px-2 sm:px-3 py-2 text-center font-medium text-luxury-black border-b border-luxury-gray/20 whitespace-nowrap w-8 sm:w-12">
+                  <span className="hidden sm:inline">No</span>
+                  <span className="sm:hidden">#</span>
                 </th>
                 {headers.map((header, index) => (
-                  <th key={index} className="px-3 py-2 text-left font-medium text-luxury-black border-b border-luxury-gray/20 whitespace-nowrap">
-                    {header.trim()}
-                    {header.toLowerCase() === 'category' && (
-                      <span className="text-xs text-luxury-gold ml-2" title="Enhanced with smart suggestions">✨</span>
-                    )}
-                    {header.toLowerCase() === 'images' && (
-                      <span className="text-xs text-purple-600 ml-2" title="Supports color-grouped image data">🎨</span>
-                    )}
+                  <th key={index} className="px-2 sm:px-3 py-2 text-left font-medium text-luxury-black border-b border-luxury-gray/20 whitespace-nowrap min-w-[100px]">
+                    <div className="flex items-center">
+                      <span className="block sm:hidden text-xs" title={header.trim()}>
+                        {header.trim().length > 6 ? `${header.trim().substring(0, 6)}...` : header.trim()}
+                      </span>
+                      <span className="hidden sm:block">{header.trim()}</span>
+                      {header.toLowerCase() === 'category' && (
+                        <span className="text-xs text-luxury-gold ml-2" title="Enhanced with smart suggestions">✨</span>
+                      )}
+                      {header.toLowerCase() === 'images' && (
+                        <span className="text-xs text-purple-600 ml-2" title="Supports color-grouped image data">🎨</span>
+                      )}
+                    </div>
                   </th>
                 ))}
               </tr>
@@ -91,10 +97,10 @@ export const DataPreviewTable: React.FC<DataPreviewTableProps> = ({
                         hasErrors ? 'bg-red-50' : hasWarnings ? 'bg-yellow-50' : ''
                       }`}
                     >
-                      <td className="px-3 py-2 border-b border-luxury-gray/10 text-center">
+                      <td className="px-2 sm:px-3 py-2 border-b border-luxury-gray/10 text-center">
                         <button
                           onClick={() => jumpToLine(rowIndex)}
-                          className="text-luxury-gray hover:text-luxury-gold hover:bg-luxury-gold/10 px-2 py-1 rounded transition-colors duration-200 text-xs font-medium cursor-pointer"
+                          className="text-luxury-gray hover:text-luxury-gold hover:bg-luxury-gold/10 px-1 sm:px-2 py-1 rounded transition-colors duration-200 text-xs font-medium cursor-pointer"
                           title={`Click to jump to line ${hasCustomHeaders ? rowIndex + 2 : rowIndex + 1} in textarea`}
                         >
                           {rowIndex + 1}
@@ -121,7 +127,7 @@ export const DataPreviewTable: React.FC<DataPreviewTableProps> = ({
                           return (
                             <td key={cellIndex} className="px-1 py-1 border-b border-luxury-gray/10">
                               <div
-                                className={`max-w-[200px] min-h-[32px] px-2 py-1 text-xs rounded border relative group ${
+                                className={`max-w-[150px] sm:max-w-[200px] min-h-[32px] px-2 py-1 text-xs rounded border relative group ${
                                   hasImageData ? 'bg-purple-50 cursor-pointer hover:bg-purple-100' : 'bg-gray-50 cursor-pointer hover:bg-gray-100'
                                 } transition-colors duration-200`}
                                 onClick={() => handleEditImages(rowIndex, product?.title || `Product ${rowIndex + 1}`, product?.images || {})}
@@ -170,14 +176,16 @@ export const DataPreviewTable: React.FC<DataPreviewTableProps> = ({
 
                         return (
                           <td key={cellIndex} className="px-1 py-1 border-b border-luxury-gray/10">
-                            <BulkImportCellEditor
-                              value={cellValue}
-                              onChange={(newValue) => updateCellValue(rowIndex, cellIndex, newValue)}
-                              categories={isCategory ? categories : undefined}
-                              type={cellType}
-                              placeholder={`Enter ${header.toLowerCase()}...`}
-                              className="text-sm"
-                            />
+                            <div className="max-w-[120px] sm:max-w-[200px]">
+                              <BulkImportCellEditor
+                                value={cellValue}
+                                onChange={(newValue) => updateCellValue(rowIndex, cellIndex, newValue)}
+                                categories={isCategory ? categories : undefined}
+                                type={cellType}
+                                placeholder={`Enter ${header.toLowerCase()}...`}
+                                className="text-xs sm:text-sm w-full"
+                              />
+                            </div>
                           </td>
                         );
                       })}
@@ -198,18 +206,18 @@ export const DataPreviewTable: React.FC<DataPreviewTableProps> = ({
                         hasErrors ? 'bg-red-50' : hasWarnings ? 'bg-yellow-50' : ''
                       }`}
                     >
-                      <td className="px-3 py-2 border-b border-luxury-gray/10 text-center">
+                      <td className="px-2 sm:px-3 py-2 border-b border-luxury-gray/10 text-center">
                         <button
                           onClick={() => jumpToLine(rowIndex)}
-                          className="text-luxury-gray hover:text-luxury-gold hover:bg-luxury-gold/10 px-2 py-1 rounded transition-colors duration-200 text-xs font-medium cursor-pointer"
+                          className="text-luxury-gray hover:text-luxury-gold hover:bg-luxury-gold/10 px-1 sm:px-2 py-1 rounded transition-colors duration-200 text-xs font-medium cursor-pointer"
                           title={`Click to jump to line ${hasCustomHeaders ? rowIndex + 2 : rowIndex + 1} in textarea`}
                         >
                           {rowIndex + 1}
                         </button>
                       </td>
                       {headers.map((_, cellIndex) => (
-                        <td key={cellIndex} className="px-3 py-2 border-b border-luxury-gray/10 whitespace-nowrap">
-                          <div className="max-w-[150px] overflow-hidden text-ellipsis" title={cells[cellIndex]?.trim() || ''}>
+                        <td key={cellIndex} className="px-2 sm:px-3 py-2 border-b border-luxury-gray/10">
+                          <div className="max-w-[100px] sm:max-w-[150px] overflow-hidden text-ellipsis text-xs sm:text-sm" title={cells[cellIndex]?.trim() || ''}>
                             {cells[cellIndex]?.trim() || '-'}
                           </div>
                         </td>
@@ -224,8 +232,8 @@ export const DataPreviewTable: React.FC<DataPreviewTableProps> = ({
       </div>
 
       {/* Data summary */}
-      <div className="mt-2 flex items-center justify-between text-sm text-luxury-gray">
-        <span>
+      <div className="mt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-sm text-luxury-gray">
+        <span className="text-xs sm:text-sm">
           {(() => {
             const firstLineFields = lines[0].split('\t');
             const hasCustomHeaders = expectedHeaders.some((header, index) =>
@@ -235,7 +243,7 @@ export const DataPreviewTable: React.FC<DataPreviewTableProps> = ({
             return `${dataRows} rows • ${lines[0]?.split('\t').length || 0} columns${hasCustomHeaders ? ' (with headers)' : ''}`;
           })()}
         </span>
-        <span className="text-xs">
+        <span className="text-xs text-luxury-gray/70">
           Hover over cells to see full content
         </span>
       </div>

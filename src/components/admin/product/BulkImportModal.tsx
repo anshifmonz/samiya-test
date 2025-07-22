@@ -40,17 +40,19 @@ const BulkImportModalContent: React.FC = () => {
   } = useBulkImportContext();
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
       <Alert>
-        <Info className="h-4 w-4" />
-        <AlertDescription>
-          Paste tab-separated data from a spreadsheet. Headers are optional - data will be mapped to columns in the order shown below. Use Tab key or 4 consecutive spaces to separate columns.
-          <br />
-          <strong className="text-luxury-gold">✨ Enhanced:</strong> Now supports optional image data grouped by color and category suggestions with smart navigation.
-          <br />
-          <strong>Image Format:</strong> <code className="text-sm bg-gray-100 px-1 rounded">colorName:#hexCode|url1,url2;anotherColor:#hex2|url3</code>
-          <br />
-          <em className="text-sm text-gray-600">Example: red:#FF0000|img1.jpg,img2.jpg;blue:#0066CC|img3.jpg</em>
+        <Info className="h-4 w-4 flex-shrink-0" />
+        <AlertDescription className="text-sm">
+          <div className="space-y-2">
+            <p>Paste tab-separated data from a spreadsheet. Headers are optional - data will be mapped to columns in the order shown below. Use Tab key or 4 consecutive spaces to separate columns.</p>
+            <p><strong className="text-luxury-gold">✨ Enhanced:</strong> Now supports optional image data grouped by color and category suggestions with smart navigation.</p>
+            <div className="space-y-1">
+              <p><strong>Image Format:</strong></p>
+              <code className="text-xs sm:text-sm bg-gray-100 px-2 py-1 rounded block overflow-x-auto">colorName:#hexCode|url1,url2;anotherColor:#hex2|url3</code>
+              <p className="text-xs text-gray-600"><em>Example: red:#FF0000|img1.jpg,img2.jpg;blue:#0066CC|img3.jpg</em></p>
+            </div>
+          </div>
         </AlertDescription>
       </Alert>
 
@@ -71,7 +73,7 @@ const BulkImportModalContent: React.FC = () => {
             onClick={handleCursorChange}
             onKeyUp={handleCursorChange}
             placeholder="Paste tab-separated data here (headers optional). Use Tab key or 4 spaces for columns..."
-            className="min-h-[200px] font-mono text-sm"
+            className="min-h-[150px] sm:min-h-[200px] font-mono text-xs sm:text-sm w-full"
           />
 
           <TextareaCategorySuggestions />
@@ -209,8 +211,8 @@ const BulkImportModal: React.FC<BulkImportModalProps> = ({
 
   const modalContent = (
     <BulkImportProvider value={providerValue}>
-      <div className="fixed inset-0 bg-luxury-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="fixed inset-0 bg-luxury-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
+        <div className="bg-white rounded-xl sm:rounded-2xl shadow-2xl max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
           <BulkImportModalHeader />
           <BulkImportModalContent />
         </div>
