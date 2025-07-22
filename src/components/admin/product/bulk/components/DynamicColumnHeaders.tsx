@@ -1,12 +1,11 @@
-interface DynamicColumnHeadersProps {
-  expectedHeaders: string[];
-  activeColumnIndex: number | null;
-}
+import React from 'react';
+import { useBulkImportConfig, useBulkImportCursor } from './BulkImportContext';
 
-export const DynamicColumnHeaders: React.FC<DynamicColumnHeadersProps> = ({
-  expectedHeaders,
-  activeColumnIndex
-}) => (
+export const DynamicColumnHeaders: React.FC = () => {
+  const { expectedHeaders } = useBulkImportConfig();
+  const { activeColumnIndex } = useBulkImportCursor();
+  
+  return (
   <div className="px-3 py-2 bg-luxury-gray/10 rounded-md border">
     <span className="text-sm font-medium text-luxury-black mb-2 block">Column Order:</span>
     <div className="flex flex-wrap gap-2">
@@ -25,4 +24,5 @@ export const DynamicColumnHeaders: React.FC<DynamicColumnHeadersProps> = ({
       ))}
     </div>
   </div>
-);
+  );
+};

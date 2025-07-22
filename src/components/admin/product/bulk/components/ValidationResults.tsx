@@ -2,52 +2,26 @@ import React from 'react';
 import { CheckCircle, AlertCircle } from 'lucide-react';
 import { Badge } from 'ui/badge';
 import { Separator } from 'ui/separator';
-import { type Category } from 'types/category';
+import { useBulkImportValidation } from './BulkImportContext';
 
-interface ParsedProduct {
-  title: string;
-  description: string;
-  price: number;
-  originalPrice?: number;
-  categoryId: string;
-  tags: string[];
-  sizes: string[];
-  active: boolean;
-  errors: string[];
-  warnings: string[];
-}
-
-interface ValidationResultsProps {
-  parsedProducts: ParsedProduct[];
-  validProductsCount: number;
-  totalProductsCount: number;
-  hasErrors: boolean;
-  hasWarnings: boolean;
-  categories: Category[];
-}
-
-/**
- * Validation results component showing product validation status
- */
-export const ValidationResults: React.FC<ValidationResultsProps> = ({
-  parsedProducts,
-  validProductsCount,
-  totalProductsCount,
-  hasErrors,
-  hasWarnings,
-  categories
-}) => {
-  // Helper function to get readable category name from ID
+export const ValidationResults: React.FC = () => {
+  const {
+    parsedProducts,
+    validProductsCount,
+    totalProductsCount,
+    hasErrors,
+    hasWarnings,
+    categories
+  } = useBulkImportValidation();
+  // Helper function to get category name from ID
   const getCategoryDisplay = (categoryId: string): string => {
     if (!categoryId) return 'No Category';
-    
+
     const category = categories.find(cat => cat.id === categoryId);
-    if (!category) return categoryId; // Fallback to ID if not found
-    
-    // Show full path with arrow separators (e.g., "Mens Wear → Shirts")
+    if (!category) return categoryId;
     return category.path.join(' → ');
   };
-  
+
   if (parsedProducts.length === 0) return null;
 
   return (

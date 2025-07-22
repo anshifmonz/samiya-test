@@ -10,3 +10,4 @@ export { ModalActionButtons } from './ModalActionButtons';
 export { TextareaCategorySuggestions } from './TextareaCategorySuggestions';
 export { default as BulkImportImageDialog } from './BulkImportImageDialog';
 export { default as BulkImportImagesSection } from './BulkImportImagesSection';
+export { default as BulkImportModalHeader } from './BulkImportHeader';

@@ -14,9 +14,7 @@ interface SuggestionsDropdownProps {
   onMouseDown: (e: React.MouseEvent) => void;
 }
 
-/**
- * Dropdown component containing all suggestions and help text
- */
+// Dropdown component containing all suggestions and help text
 export const SuggestionsDropdown = forwardRef<HTMLUListElement, SuggestionsDropdownProps>(
   ({ suggestions, highlightedIndex, categories, value, onSuggestionSelect, onMouseDown }, ref) => {
     if (suggestions.length === 0) return null;
@@ -40,7 +38,7 @@ export const SuggestionsDropdown = forwardRef<HTMLUListElement, SuggestionsDropd
             );
           })}
         </ul>
-        
+
         <CategoryHelpText
           value={value}
           suggestions={suggestions}

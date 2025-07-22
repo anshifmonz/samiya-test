@@ -1,40 +1,28 @@
 import React from 'react';
 import { X } from 'lucide-react';
 import BulkImportImagesSection from './BulkImportImagesSection';
+import { useBulkImportContext } from './BulkImportContext';
 
-interface ColorImageData {
-  hex: string;
-  images: string[];
-}
-
-interface BulkImportImageDialogProps {
-  show: boolean;
-  onClose: () => void;
-  productTitle: string;
-  imageData: Record<string, ColorImageData>;
-  onSave: (imageData: Record<string, ColorImageData>) => void;
-  onRealTimeUpdate?: (imageData: Record<string, ColorImageData>) => void;
-}
-
-const BulkImportImageDialog: React.FC<BulkImportImageDialogProps> = ({
-  show,
-  onClose,
-  productTitle,
-  imageData,
-  onSave,
-  onRealTimeUpdate
-}) => {
-  if (!show) return null;
+const BulkImportImageDialog: React.FC = () => {
+  const {
+    showImageDialog,
+    handleCloseImageDialog,
+    currentImageProductTitle,
+    currentImageData,
+    handleSaveImageChanges,
+    handleRealTimeImageUpdate
+  } = useBulkImportContext();
+  if (!showImageDialog) return null;
 
   return (
     <div className="fixed inset-0 bg-luxury-black/60 backdrop-blur-sm z-[10000] flex items-center justify-center p-4">
       <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
         <div className="bg-white border-b border-luxury-gray/20 p-6 flex items-center justify-between">
           <h3 className="luxury-heading text-xl text-luxury-black">
-            Edit Images - {productTitle}
+            Edit Images - {currentImageProductTitle}
           </h3>
           <button
-            onClick={onClose}
+            onClick={handleCloseImageDialog}
             className="text-luxury-gray hover:text-luxury-black transition-colors duration-200"
             type="button"
           >
@@ -44,16 +32,16 @@ const BulkImportImageDialog: React.FC<BulkImportImageDialogProps> = ({
 
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
           <BulkImportImagesSection
-            imageData={imageData}
-            onSave={onSave}
-            onRealTimeUpdate={onRealTimeUpdate}
+            imageData={currentImageData}
+            onSave={handleSaveImageChanges}
+            onRealTimeUpdate={handleRealTimeImageUpdate}
           />
         </div>
 
         <div className="bg-white border-t border-luxury-gray/20 p-6 flex gap-3">
           <button
             type="button"
-            onClick={onClose}
+            onClick={handleCloseImageDialog}
             className="flex-1 px-4 py-2 text-sm font-medium text-luxury-gray bg-luxury-cream/50 rounded-xl hover:bg-luxury-cream transition-all duration-300 border border-luxury-gray/20"
           >
             Cancel
@@ -61,8 +49,8 @@ const BulkImportImageDialog: React.FC<BulkImportImageDialogProps> = ({
           <button
             type="button"
             onClick={() => {
-              onSave(imageData);
-              onClose();
+              handleSaveImageChanges(currentImageData);
+              handleCloseImageDialog();
             }}
             className="flex-1 bg-luxury-gold text-luxury-black px-4 py-2 rounded-xl hover:bg-luxury-gold-light transition-colors duration-200"
           >

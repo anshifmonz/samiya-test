@@ -10,7 +10,7 @@ interface CategoryAutocompleteProps {
   categories: Category[];
   value: string;
   onChange: (value: string) => void;
-  onSelect?: (value: string) => void; // Called when a final selection is made
+  onSelect?: (value: string) => void;
   placeholder?: string;
   className?: string;
   disabled?: boolean;
@@ -32,11 +32,8 @@ const CategoryAutocomplete: React.FC<CategoryAutocompleteProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-
-  // Generate suggestions using custom hook
   const suggestions = useCategorySuggestions(value, categories);
 
-  // Handle input change
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     onChange(newValue);
@@ -44,35 +41,30 @@ const CategoryAutocomplete: React.FC<CategoryAutocompleteProps> = ({
     setHighlightedIndex(0);
   };
 
-  // Handle suggestion selection
   const handleSuggestionSelect = (suggestion: CategorySuggestion) => {
     const { segments, isComplete } = parseInput(value);
-    
+
     let newValue: string;
     if (isComplete || segments.length === 0) {
-      // If we're at root or after a separator, use the full path
       newValue = suggestion.pathText;
     } else {
-      // Replace the current segment with the selected category
       const newSegments = [...segments, suggestion.category.name];
       newValue = newSegments.join(' > ');
     }
-    
+
     onChange(newValue);
-    
-    // Check if this is a final selection (no subcategories or explicit selection)
+
     const hasChildren = hasSubcategories(suggestion.category, categories);
     const isFinalSelection = !hasChildren || suggestion.isPartialMatch;
-    
+
     if (isFinalSelection && onSelect) {
       onSelect(newValue);
     }
-    
+
     if (autoCloseOnSelect && isFinalSelection) {
       setIsOpen(false);
       setHighlightedIndex(0);
     } else if (!hasChildren) {
-      // Close if no children, even if autoCloseOnSelect is false
       setIsOpen(false);
       setHighlightedIndex(0);
     } else {
@@ -80,13 +72,13 @@ const CategoryAutocomplete: React.FC<CategoryAutocompleteProps> = ({
       // to show the selected category, ready for user to type " > " for subcategories
       setHighlightedIndex(0);
     }
-    
+
     // Keep focus on input to allow continued typing
     setTimeout(() => {
       inputRef.current?.focus();
     }, 10);
   };
-  
+
   // Handle mouse events to prevent premature closing
   const handleSuggestionMouseDown = (e: React.MouseEvent) => {
     // Prevent input blur when clicking on suggestions

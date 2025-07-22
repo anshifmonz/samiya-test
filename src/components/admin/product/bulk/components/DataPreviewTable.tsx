@@ -1,45 +1,25 @@
 import React from 'react';
-import { type Category } from 'types/category';
 import BulkImportCellEditor from '../BulkImportCellEditor';
 import { Edit2 } from 'lucide-react';
-
-interface ParsedProduct {
-  title: string;
-  description: string;
-  price: number;
-  originalPrice?: number;
-  categoryId: string;
-  tags: string[];
-  sizes: string[];
-  images: Record<string, { hex: string; images: string[] }>;
-  active: boolean;
-  errors: string[];
-  warnings: string[];
-}
+import { useBulkImportTableData } from './BulkImportContext';
 
 interface DataPreviewTableProps {
-  pastedData: string;
-  expectedHeaders: string[];
-  rawTableData: string[][];
-  parsedProducts: ParsedProduct[];
-  categories: Category[];
-  updateCellValue: (rowIndex: number, colIndex: number, newValue: string) => void;
-  onEditImages?: (rowIndex: number, productTitle: string, imageData: Record<string, { hex: string; images: string[] }>) => void;
-  textareaRef?: React.RefObject<HTMLTextAreaElement>;
   onRowClick?: (rowIndex: number) => void;
 }
 
 export const DataPreviewTable: React.FC<DataPreviewTableProps> = ({
-  pastedData,
-  expectedHeaders,
-  rawTableData,
-  parsedProducts,
-  categories,
-  updateCellValue,
-  onEditImages,
-  textareaRef,
   onRowClick
 }) => {
+  const { 
+    pastedData,
+    expectedHeaders,
+    rawTableData,
+    parsedProducts,
+    categories, 
+    updateCellValue, 
+    handleEditImages, 
+    textareaRef 
+  } = useBulkImportTableData();
   if (!pastedData.trim()) return null;
 
   const lines = pastedData.trim().split('\n');
@@ -144,7 +124,7 @@ export const DataPreviewTable: React.FC<DataPreviewTableProps> = ({
                                 className={`max-w-[200px] min-h-[32px] px-2 py-1 text-xs rounded border relative group ${
                                   hasImageData ? 'bg-purple-50 cursor-pointer hover:bg-purple-100' : 'bg-gray-50 cursor-pointer hover:bg-gray-100'
                                 } transition-colors duration-200`}
-                                onClick={() => onEditImages?.(rowIndex, product?.title || `Product ${rowIndex + 1}`, product?.images || {})}
+                                onClick={() => handleEditImages(rowIndex, product?.title || `Product ${rowIndex + 1}`, product?.images || {})}
                               >
                                 {hasImageData ? (
                                   <>

@@ -1,16 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { type Category } from 'types/category';
 import { useCategorySuggestions } from '../hooks/useCategorySuggestions';
 import { SuggestionsDropdown } from './SuggestionsDropdown';
-
-interface TextareaCategorySuggestionsProps {
-  value: string;
-  categories: Category[];
-  cursorPosition: number;
-  textareaRef: React.RefObject<HTMLTextAreaElement>;
-  onSuggestionSelect: (suggestion: string, startPos: number, endPos: number) => void;
-  expectedHeaders: string[];
-}
+import { useBulkImportContext } from './BulkImportContext';
 
 interface SuggestionPosition {
   top: number;
@@ -20,17 +11,16 @@ interface SuggestionPosition {
   endPos: number;
 }
 
-/**
- * Component that provides inline category suggestions in the textarea
- */
-export const TextareaCategorySuggestions: React.FC<TextareaCategorySuggestionsProps> = ({
-  value,
-  categories,
-  cursorPosition,
-  textareaRef,
-  onSuggestionSelect,
-  expectedHeaders
-}) => {
+// Component that provides inline category suggestions in the textarea
+export const TextareaCategorySuggestions: React.FC = () => {
+  const {
+    pastedData: value,
+    categories,
+    cursorPosition,
+    textareaRef,
+    handleSuggestionSelect: onSuggestionSelect,
+    expectedHeaders
+  } = useBulkImportContext();
   const [suggestionPosition, setSuggestionPosition] = useState<SuggestionPosition | null>(null);
   const [highlightedIndex, setHighlightedIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
@@ -128,9 +118,6 @@ export const TextareaCategorySuggestions: React.FC<TextareaCategorySuggestionsPr
 
     // Measure position
     measure.textContent = textBeforeCategoryLine + (textBeforeCategoryLine ? '\n' : '') + textBeforeCategory;
-
-    const textareaRect = textarea.getBoundingClientRect();
-    const measureRect = measure.getBoundingClientRect();
 
     // Calculate the position relative to the textarea
     const lineHeight = parseInt(computedStyle.lineHeight) || 20;
@@ -235,7 +222,6 @@ export const TextareaCategorySuggestions: React.FC<TextareaCategorySuggestionsPr
   if (!isVisible || !suggestionPosition || suggestions.length === 0) {
     return (
       <>
-        {/* Hidden measuring element */}
         <div
           ref={measureRef}
           style={{
@@ -253,7 +239,6 @@ export const TextareaCategorySuggestions: React.FC<TextareaCategorySuggestionsPr
 
   return (
     <>
-      {/* Hidden measuring element */}
       <div
         ref={measureRef}
         style={{
@@ -266,7 +251,6 @@ export const TextareaCategorySuggestions: React.FC<TextareaCategorySuggestionsPr
         }}
       />
 
-      {/* Suggestion dropdown positioned relative to textarea */}
       <div
         style={{
           position: 'absolute',
