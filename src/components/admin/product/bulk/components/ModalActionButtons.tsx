@@ -9,7 +9,7 @@ export const ModalActionButtons: React.FC = () => {
   const { handleImport, handleCancel } = useBulkImportModalActions();
 
   return (
-    <div className="flex items-center justify-end space-x-3 pt-4 border-t">
+    <div className="flex items-center justify-end gap-3 pt-4 border-t">
       <Button variant="outline" onClick={handleCancel}>
         Cancel
       </Button>

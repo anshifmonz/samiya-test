@@ -7,4 +7,5 @@ export { useBulkImportImageDialog } from './useBulkImportImageDialog';
 export { useBulkImportTextareaHandlers } from './useBulkImportTextareaHandlers';
 export { useBulkImportSubmit } from './useBulkImportSubmit';
 export { useModalMountEffect } from './useModalMountEffect';
+export { usePersistentBulkImportData } from './usePersistentBulkImportData';
 export { type CategorySuggestion } from './useCategorySuggestions';

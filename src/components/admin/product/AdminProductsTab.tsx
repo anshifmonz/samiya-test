@@ -8,6 +8,7 @@ import AdminProductGrid from './AdminProductGrid';
 import BulkImportModal from './BulkImportModal';
 import { useAdminProductsTab } from 'hooks/admin/product/useAdminProductsTab';
 import { useSizes } from 'hooks/admin/product/useSizes';
+import { usePersistentBulkImportData } from './bulk/hooks';
 import { apiRequest } from 'utils/apiRequest';
 import { showToast } from 'hooks/ui/use-toast';
 
@@ -31,6 +32,8 @@ const AdminProductsTab: React.FC<AdminProductsTabProps> = ({
   const { sizes, loading: sizesLoading } = useSizes();
   const [showBulkImport, setShowBulkImport] = useState(false);
   const [isBulkImporting, setIsBulkImporting] = useState(false);
+
+  const { persistentData, saveData, clearData, isLoaded } = usePersistentBulkImportData();
 
   const {
     searchQuery,
@@ -86,6 +89,7 @@ const AdminProductsTab: React.FC<AdminProductsTabProps> = ({
       }
 
       refreshProducts();
+      clearData();
       setShowBulkImport(false);
     } catch (err) {
       console.error('Bulk import error:', err);
@@ -160,12 +164,15 @@ const AdminProductsTab: React.FC<AdminProductsTabProps> = ({
         />
       )}
 
-      {showBulkImport && (
+      {showBulkImport && isLoaded && (
         <BulkImportModal
           categories={categories}
           sizes={sizes}
           onImport={handleBulkImport}
           onCancel={handleCancelBulkImport}
+          persistentData={persistentData}
+          onDataChange={saveData}
+          onClearData={clearData}
         />
       )}
     </div>

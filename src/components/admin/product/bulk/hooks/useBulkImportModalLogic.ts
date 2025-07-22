@@ -10,7 +10,10 @@ export function useBulkImportModalLogic({
   expectedHeaders,
   sampleData,
   onImport,
-  onCancel
+  onCancel,
+  persistentData,
+  onDataChange,
+  onClearData
 }: {
   categories: Category[];
   sizes: Size[];
@@ -18,6 +21,9 @@ export function useBulkImportModalLogic({
   sampleData: string;
   onImport: (products: CreateProductData[]) => void;
   onCancel: () => void;
+  persistentData: string;
+  onDataChange: (data: string) => void;
+  onClearData: () => void;
 }) {
   const [isValidating, setIsValidating] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -32,7 +38,7 @@ export function useBulkImportModalLogic({
     sizeMap,
     processAndUpdateData,
     updateCellValue
-  } = useDataProcessing(categories, sizes, expectedHeaders);
+  } = useDataProcessing(categories, sizes, expectedHeaders, persistentData, onDataChange);
 
   const {
     cursorPosition,
@@ -75,6 +81,12 @@ export function useBulkImportModalLogic({
   const hasErrors = parsedProducts.some(p => p.errors.length > 0);
   const hasWarnings = parsedProducts.some(p => p.warnings.length > 0);
 
+  const handleClearData = () => {
+    setPastedData('');
+    onClearData();
+    setCursorPosition(0);
+  };
+
   return {
     isValidating,
     mounted,
@@ -98,6 +110,7 @@ export function useBulkImportModalLogic({
     totalProductsCount,
     hasErrors,
     hasWarnings,
-    onCancel
+    onCancel,
+    handleClearData
   };
 }

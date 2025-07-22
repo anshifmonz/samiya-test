@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Info } from 'lucide-react';
+import { Info, X } from 'lucide-react';
 import { type CreateProductData } from 'types/product';
 import { type Category } from 'types/category';
 import { type Size } from 'types/product';
 import { Textarea } from 'ui/textarea';
 import { Alert, AlertDescription } from 'ui/alert';
+import { Button } from 'ui/button';
 import {
   Instructions,
   DynamicColumnHeaders,
@@ -24,6 +25,9 @@ interface BulkImportModalProps {
   sizes: Size[];
   onImport: (products: CreateProductData[]) => void;
   onCancel: () => void;
+  persistentData: string;
+  onDataChange: (data: string) => void;
+  onClearData: () => void;
 }
 
 const expectedHeaders = ['Title', 'Description', 'Price', 'Original Price', 'Category', 'Tags', 'Sizes', 'Images', 'Active'];
@@ -36,7 +40,8 @@ const BulkImportModalContent: React.FC = () => {
     pastedData,
     handleInputChange,
     handleKeyDown,
-    handleCursorChange
+    handleCursorChange,
+    handleClearData
   } = useBulkImportContext();
 
   return (
@@ -59,7 +64,21 @@ const BulkImportModalContent: React.FC = () => {
       <Instructions />
 
       <div className="space-y-2">
-        <label className="font-medium text-luxury-black">Paste your data here:</label>
+        <div className="flex items-center justify-between">
+          <label className="font-medium text-luxury-black">Paste your data here:</label>
+          {pastedData.trim() && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleClearData}
+              className="text-luxury-gray hover:text-red-600 hover:bg-red-50 h-8 px-3 transition-colors duration-200"
+              title="Clear all data"
+            >
+              <span className="inline xs:hidden">Clear</span>
+              <X className="h-4 w-4 mr-1 xs:mr-0" />
+            </Button>
+          )}
+        </div>
 
         <DynamicColumnHeaders />
 
@@ -93,7 +112,10 @@ const BulkImportModal: React.FC<BulkImportModalProps> = ({
   categories,
   sizes,
   onImport,
-  onCancel
+  onCancel,
+  persistentData,
+  onDataChange,
+  onClearData
 }) => {
   const logic = useBulkImportModalLogic({
     categories,
@@ -101,7 +123,10 @@ const BulkImportModal: React.FC<BulkImportModalProps> = ({
     expectedHeaders,
     sampleData,
     onImport,
-    onCancel
+    onCancel,
+    persistentData,
+    onDataChange,
+    onClearData
   });
 
   const providerValue = {
@@ -206,12 +231,31 @@ const BulkImportModal: React.FC<BulkImportModalProps> = ({
     handleSaveImageChanges: logic.handleSaveImageChanges,
     handleRealTimeImageUpdate: logic.handleRealTimeImageUpdate,
     handleImport: logic.handleImport,
-    onCancel: logic.onCancel
+    onCancel: logic.onCancel,
+    handleClearData: logic.handleClearData
   };
+
+  // Prevent accidental modal closing
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.stopPropagation();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   const modalContent = (
     <BulkImportProvider value={providerValue}>
-      <div className="fixed inset-0 bg-luxury-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
+      <div
+        className="fixed inset-0 bg-luxury-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="bg-white rounded-xl sm:rounded-2xl shadow-2xl max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
           <BulkImportModalHeader />
           <BulkImportModalContent />

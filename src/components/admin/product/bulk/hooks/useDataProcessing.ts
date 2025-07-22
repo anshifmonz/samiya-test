@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { type Category } from 'types/category';
 import { type Size } from 'types/product';
 
@@ -19,11 +19,18 @@ interface ParsedProduct {
 /**
  * Hook for handling data processing, parsing, and validation
  */
-export const useDataProcessing = (categories: Category[], sizes: Size[], expectedHeaders: string[]) => {
+export const useDataProcessing = (
+  categories: Category[], 
+  sizes: Size[], 
+  expectedHeaders: string[],
+  persistentData: string = '',
+  onDataChange?: (data: string) => void
+) => {
   const [pastedData, setPastedData] = useState('');
   const [parsedProducts, setParsedProducts] = useState<ParsedProduct[]>([]);
   const [rawTableData, setRawTableData] = useState<string[][]>([]);
   const [tableHeaders, setTableHeaders] = useState<string[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   // Enhanced category mapping with multiple strategies
   const categoryMap = useMemo(() => {
@@ -71,6 +78,34 @@ export const useDataProcessing = (categories: Category[], sizes: Size[], expecte
 
     return map;
   }, [categories]);
+
+  // Initialize with persistent data on first load
+  useEffect(() => {
+    if (!isInitialized && persistentData && persistentData.trim()) {
+      setPastedData(persistentData);
+      // Process the data without triggering persistence (to avoid circular dependency)
+      const lines = persistentData.trim().split('\n');
+      if (lines.length > 0) {
+        const firstLineFields = lines[0].split('\t');
+        const hasCustomHeaders = expectedHeaders.some((header, index) =>
+          firstLineFields[index]?.toLowerCase().includes(header.toLowerCase())
+        );
+
+        const headers = hasCustomHeaders ? lines[0].split('\t') : expectedHeaders;
+        const dataLines = hasCustomHeaders ? lines.slice(1) : lines;
+        const rawData = dataLines.filter(line => line.trim()).map(line => line.split('\t'));
+
+        setTableHeaders(headers);
+        setRawTableData(rawData);
+        
+        const parsed = parsePastedData(persistentData);
+        setParsedProducts(parsed);
+      }
+      setIsInitialized(true);
+    } else if (!isInitialized) {
+      setIsInitialized(true);
+    }
+  }, [persistentData, isInitialized, expectedHeaders]);
 
   // Helper function to find category ID with multiple fallback strategies
   const findCategoryId = (categoryInput: string): { id: string | null; matched: boolean } => {
@@ -378,6 +413,12 @@ export const useDataProcessing = (categories: Category[], sizes: Size[], expecte
       setRawTableData([]);
       setTableHeaders([]);
     }
+    
+    // Persist the data change
+    if (onDataChange && isInitialized) {
+      onDataChange(processedValue);
+    }
+    
     return processedValue;
   };
 
@@ -402,6 +443,11 @@ export const useDataProcessing = (categories: Category[], sizes: Size[], expecte
 
       const newPastedData = lines.join('\n');
       setPastedData(newPastedData);
+      
+      // Persist the data change
+      if (onDataChange && isInitialized) {
+        onDataChange(newPastedData);
+      }
 
       // Reparse data
       const parsed = parsePastedData(newPastedData);
@@ -409,9 +455,17 @@ export const useDataProcessing = (categories: Category[], sizes: Size[], expecte
     }
   };
 
+  // Custom setPastedData that also calls onDataChange for persistence
+  const setPastedDataWithPersistence = (value: string) => {
+    setPastedData(value);
+    if (onDataChange && isInitialized) {
+      onDataChange(value);
+    }
+  };
+
   return {
     pastedData,
-    setPastedData,
+    setPastedData: setPastedDataWithPersistence,
     parsedProducts,
     rawTableData,
     tableHeaders,

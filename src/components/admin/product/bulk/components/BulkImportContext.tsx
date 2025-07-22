@@ -137,6 +137,7 @@ interface BulkImportContextValue {
   handleRealTimeImageUpdate: (imageData: Record<string, ColorImageData>) => void;
   handleImport: () => void;
   onCancel: () => void;
+  handleClearData: () => void;
 }
 const BulkImportContext = createContext<BulkImportContextValue | undefined>(undefined);
 
