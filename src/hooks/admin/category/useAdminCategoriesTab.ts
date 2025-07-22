@@ -5,7 +5,7 @@ interface UseAdminCategoriesTabProps {
   categories: Category[];
   onAddCategory: (category: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>) => void;
   onEditCategory: (category: Category) => void;
-  onDeleteCategory: (categoryId: string) => void;
+  onDeleteCategory: (categoryId: string, categoryName?: string) => void;
 }
 
 export const useAdminCategoriesTab = ({
@@ -46,8 +46,8 @@ export const useAdminCategoriesTab = ({
     }
   };
 
-  const handleDeleteCategory = (categoryId: string) => {
-    onDeleteCategory(categoryId);
+  const handleDeleteCategory = (categoryId: string, categoryName: string) => {
+    onDeleteCategory(categoryId, categoryName);
   };
 
   const handleShowAddForm = () => setShowAddForm(true);

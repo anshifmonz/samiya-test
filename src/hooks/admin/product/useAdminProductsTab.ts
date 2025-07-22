@@ -8,7 +8,7 @@ interface UseAdminProductsTabProps {
   categories: Category[];
   onAddProduct: (product: Omit<Product, 'id'>) => void;
   onEditProduct: (product: Product) => void;
-  onDeleteProduct: (productId: string) => void;
+  onDeleteProduct: (productId: string, productTitle?: string) => void;
 }
 
 export const useAdminProductsTab = ({
@@ -45,8 +45,8 @@ export const useAdminProductsTab = ({
     refreshProducts();
   };
 
-  const handleDeleteProduct = async (productId: string) => {
-    onDeleteProduct(productId);
+  const handleDeleteProduct = async (productId: string, productTitle?: string) => {
+    onDeleteProduct(productId, productTitle);
     refreshProducts();
   };
 

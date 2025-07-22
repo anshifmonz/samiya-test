@@ -12,7 +12,7 @@ interface CategoryCardProps {
   indentationClass: string;
   onToggleExpanded: () => void;
   onEdit: (category: Category) => void;
-  onDelete: (categoryId: string) => void;
+  onDelete: (categoryId: string, categoryName: string) => void;
   isSuperAdmin: boolean;
 }
 
@@ -97,7 +97,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => onDelete(category.id)}
+                onClick={() => onDelete(category.id, category.name)}
                 className="text-red-500 hover:text-red-700 hover:bg-red-50"
               >
                 <Trash2 size={16} />

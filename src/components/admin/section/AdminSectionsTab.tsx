@@ -14,9 +14,9 @@ interface AdminSectionsTabProps {
   products: Product[];
   onAddSection: (section: Omit<Section, 'id' | 'createdAt' | 'updatedAt'>) => void;
   onEditSection: (section: Section) => void;
-  onDeleteSection: (sectionId: string) => void;
+  onDeleteSection: (sectionId: string, sectionTitle?: string) => void;
   onAddProductToSection: (sectionId: string, productId: string) => void;
-  onRemoveProductFromSection: (sectionId: string, productId: string) => void;
+  onRemoveProductFromSection: (sectionId: string, productId: string, productTitle?: string, sectionTitle?: string) => void;
   onReorderSections: (sectionIds: string[]) => void;
   onReorderSectionProducts: (sectionId: string, productIds: string[]) => void;
   isSuperAdmin: boolean;

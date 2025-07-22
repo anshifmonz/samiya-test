@@ -9,7 +9,7 @@ interface AdminCollectionsTabProps {
   collections: Collection[];
   onAddCollection: (collection: Omit<Collection, 'id'>) => void;
   onEditCollection: (collection: Collection) => void;
-  onDeleteCollection: (collectionId: string) => void;
+  onDeleteCollection: (collectionId: string, collectionTitle?: string) => void;
   isSuperAdmin: boolean;
 }
 
@@ -60,7 +60,7 @@ const AdminCollectionsTab: React.FC<AdminCollectionsTabProps> = ({
       <AdminCollectionGrid
         collections={filteredCollections}
         onEdit={setEditingCollection}
-        onDelete={onDeleteCollection}
+        onDelete={(collectionId, collectionTitle) => onDeleteCollection(collectionId, collectionTitle)}
         isSuperAdmin={isSuperAdmin}
       />
 

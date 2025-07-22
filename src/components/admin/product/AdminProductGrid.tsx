@@ -5,7 +5,7 @@ import ProductCard from '../../shared/ProductCard';
 interface AdminProductGridProps {
   products: Product[];
   onEdit: (product: Product) => void;
-  onDelete: (productId: string) => void;
+  onDelete: (productId: string, productTitle: string) => void;
   loading?: boolean;
   hasMore?: boolean;
   loaderRef?: React.RefObject<HTMLDivElement>;
@@ -25,6 +25,10 @@ const AdminProductGrid: React.FC<AdminProductGridProps> = ({
   isSearching = false,
   isSuperAdmin
 }) => {
+  const handleProductDelete = (product: Product) => {
+    onDelete(product.id, product.title);
+  };
+
   if (products.length === 0 && !loading && !isSearching) {
     return (
       <div className="text-center py-16">
@@ -47,7 +51,7 @@ const AdminProductGrid: React.FC<AdminProductGridProps> = ({
             product={product}
             isAdmin={true}
             onEdit={onEdit}
-            onDelete={isSuperAdmin ? onDelete : undefined}
+            onDelete={isSuperAdmin ? handleProductDelete : undefined}
             showTags={true}
           />
         ))}

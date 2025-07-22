@@ -5,6 +5,7 @@ import { deleteImageFromCloudinary, deleteMultipleImagesFromCloudinary } from 'l
 import { createProductImageWithId } from 'utils/imageIdUtils';
 import isValidPublicId from 'utils/isValidPublicId';
 import isCloudinaryUrl from 'utils/isCloudinaryUrls';
+import { useConfirmation } from '@/hooks/useConfirmation';
 
 export interface ProductImagesSectionProps {
   images: Record<string, ProductColorData>;
@@ -15,6 +16,7 @@ export interface ProductImagesSectionProps {
 
 export function useProductImagesSection({ images, onImagesChange, activeColorTab, onActiveColorTabChange }: ProductImagesSectionProps) {
   const [showAddColorDialog, setShowAddColorDialog] = useState(false);
+  const confirmation = useConfirmation();
   const [showAddImageDialog, setShowAddImageDialog] = useState(false);
   const [newImageColor, setNewImageColor] = useState('');
   const [newImageColorName, setNewImageColorName] = useState('');
@@ -145,7 +147,14 @@ export function useProductImagesSection({ images, onImagesChange, activeColorTab
   }, [images, onImagesChange]);
 
   const removeColor = useCallback(async (colorToRemove: string) => {
-    if (window.confirm(`Remove all images for ${colorToRemove}?`)) {
+    const confirmed = await confirmation.confirm({
+      title: 'Remove All Images',
+      message: `Are you sure you want to remove all images for the color "${colorToRemove}"? This action cannot be undone.`,
+      confirmText: 'Yes, Remove',
+      cancelText: 'Cancel',
+      variant: 'destructive',
+    });
+    if (confirmed) {
       const colorData = images[colorToRemove];
       const imagesToRemove = colorData?.images || [];
 
@@ -208,7 +217,8 @@ export function useProductImagesSection({ images, onImagesChange, activeColorTab
     uploadErrors, setUploadErrors,
     deletingImages,
     addColor, addImage, reorderColors, reorderImages, removeImage, removeColor, handleColorDragEnd,
-    onImagesChange, images, activeColorTab, onActiveColorTabChange
+    onImagesChange, images, activeColorTab, onActiveColorTabChange,
+    confirmation
   };
 }
 

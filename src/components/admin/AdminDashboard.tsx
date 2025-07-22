@@ -14,6 +14,7 @@ import AdminProductsTab from './product/AdminProductsTab';
 import AdminCollectionsTab from './collection/AdminCollectionsTab';
 import AdminCategoriesTab from './category/AdminCategoriesTab';
 import AdminAdminsTab from './admins/AdminAdminsTab';
+import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 
 interface AdminDashboardProps {
   initialProducts: Product[];
@@ -49,7 +50,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
     handleAddProductToSection,
     handleRemoveProductFromSection,
     handleReorderSections,
-    handleReorderSectionProducts
+    handleReorderSectionProducts,
+    confirmation
   } = useAdminDashboard({
     initialProducts,
     initialCollections,
@@ -184,6 +186,19 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
           <AdminAdminsTab isSuperAdmin={isSuperAdmin} />
         </TabsContent>
       </Tabs>
+      
+      {/* Global Confirmation Dialog */}
+      <ConfirmationDialog
+        isOpen={confirmation.isOpen}
+        onClose={confirmation.hideConfirmation}
+        onConfirm={confirmation.onConfirm || (() => {})}
+        title={confirmation.title}
+        message={confirmation.message}
+        confirmText={confirmation.confirmText}
+        cancelText={confirmation.cancelText}
+        variant={confirmation.variant}
+        isLoading={confirmation.isLoading}
+      />
     </div>
   );
 };

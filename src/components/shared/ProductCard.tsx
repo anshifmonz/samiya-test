@@ -14,7 +14,7 @@ interface ProductCardProps {
   product: Omit<Product, 'description'>;
   isAdmin?: boolean;
   onEdit?: (product: Product) => void;
-  onDelete?: (productId: string) => void;
+  onDelete?: (product: Product) => void;
   showTags?: boolean;
 }
 
@@ -68,8 +68,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
   };
 
   const handleDelete = () => {
-    if (onDelete && window.confirm(`Are you sure you want to delete "${product.title}"?`)) {
-      onDelete(product.id);
+    if (onDelete) {
+      onDelete(product as Product);
     }
   };
 

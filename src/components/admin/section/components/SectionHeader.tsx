@@ -18,7 +18,7 @@ interface SectionHeaderProps {
   onCancelEdit: () => void;
   onEditTitleChange: (title: string) => void;
   onToggleActive: (section: Section) => void;
-  onDeleteSection: (sectionId: string) => void;
+  onDeleteSection: (sectionId: string, sectionTitle?: string) => void;
   isSuperAdmin: boolean;
 }
 
@@ -137,7 +137,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
               </Button>
               {isSuperAdmin && (
                 <Button
-                  onClick={() => onDeleteSection(section.id)}
+                  onClick={() => onDeleteSection(section.id, section.title)}
                   size="sm"
                   variant="ghost"
                   className="text-red-500 hover:text-red-700 xs:w-4 w-6 sm:w-10"

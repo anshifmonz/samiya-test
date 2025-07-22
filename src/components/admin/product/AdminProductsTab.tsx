@@ -17,7 +17,7 @@ interface AdminProductsTabProps {
   categories: Category[];
   onAddProduct: (product: Omit<Product, 'id'>) => void;
   onEditProduct: (product: Product) => void;
-  onDeleteProduct: (productId: string) => void;
+  onDeleteProduct: (productId: string, productTitle?: string) => void;
   isSuperAdmin: boolean;
 }
 

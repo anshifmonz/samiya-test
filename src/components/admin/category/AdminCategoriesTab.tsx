@@ -9,7 +9,7 @@ interface AdminCategoriesTabProps {
   categories: Category[];
   onAddCategory: (category: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>) => void;
   onEditCategory: (category: Category) => void;
-  onDeleteCategory: (categoryId: string) => void;
+  onDeleteCategory: (categoryId: string, categoryName?: string) => void;
   isSuperAdmin: boolean;
 }
 

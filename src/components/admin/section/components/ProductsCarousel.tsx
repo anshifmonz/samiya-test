@@ -27,7 +27,7 @@ interface ProductsCarouselProps {
   section: SectionWithProducts;
   sectionProducts: SectionProductItem[];
   onDragEnd: (event: any, section: SectionWithProducts) => void;
-  onRemoveProduct: (sectionId: string, productId: string) => void;
+  onRemoveProduct: (sectionId: string, productId: string, productTitle?: string, sectionTitle?: string) => void;
 }
 
 const ProductsCarousel: React.FC<ProductsCarouselProps> = ({
@@ -139,7 +139,7 @@ const ProductsCarousel: React.FC<ProductsCarouselProps> = ({
               <DraggableProductItem
                 key={product.id}
                 product={product}
-                onRemove={() => onRemoveProduct(section.id, product.id)}
+                onRemove={() => onRemoveProduct(section.id, product.id, product.title, section.title)}
               />
             ))}
           </CarouselWrapper>

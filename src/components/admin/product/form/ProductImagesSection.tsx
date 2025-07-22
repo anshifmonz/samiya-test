@@ -13,6 +13,7 @@ import {
 import { useProductImagesSection } from 'hooks/admin/product/useProductImagesSection';
 import { useProductImagesSectionUI } from 'hooks/admin/product/useProductImagesSectionUI';
 import { useAdminProductFormImages } from './AdminProductFormContext';
+import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import {
   DraggableColorTab,
   AddColorDialog,
@@ -47,7 +48,8 @@ const ProductImagesSection: React.FC = () => {
     uploadErrors, setUploadErrors,
     deletingImages,
     addColor, addImage, reorderImages, removeImage, removeColor, handleColorDragEnd,
-    onImagesChange, onActiveColorTabChange
+    onImagesChange, onActiveColorTabChange,
+    confirmation
   } = useProductImagesSection(props);
 
   const {
@@ -209,6 +211,18 @@ const ProductImagesSection: React.FC = () => {
         uploadErrors={uploadErrors}
         setUploadErrors={setUploadErrors}
         onAddImage={handleImageUpload}
+      />
+      
+      <ConfirmationDialog
+        isOpen={confirmation.isOpen}
+        onClose={confirmation.hideConfirmation}
+        onConfirm={confirmation.onConfirm || (() => {})}
+        title={confirmation.title}
+        message={confirmation.message}
+        confirmText={confirmation.confirmText}
+        cancelText={confirmation.cancelText}
+        variant={confirmation.variant}
+        isLoading={confirmation.isLoading}
       />
     </div>
   );

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { apiRequest } from 'lib/utils/apiRequest';
+import { useConfirmation } from '@/hooks/useConfirmation';
 
 interface AdminUser {
   id: string;
@@ -11,6 +12,7 @@ interface AdminUser {
 
 export const useAdminAdminsTab = () => {
   const [admins, setAdmins] = useState<AdminUser[]>([]);
+  const confirmation = useConfirmation();
   const [currentAdmin, setCurrentAdmin] = useState<AdminUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -91,7 +93,14 @@ export const useAdminAdminsTab = () => {
   };
 
   const handleDelete = async (admin: AdminUser) => {
-    if (!window.confirm(`Are you sure you want to delete admin '${admin.username}'?`)) return;
+    const confirmed = await confirmation.confirm({
+      title: 'Delete Admin',
+      message: `Are you sure you want to permanently delete the admin '${admin.username}'? This action cannot be undone.`,
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      variant: 'destructive',
+    });
+    if (!confirmed) return;
     setDeleteLoading(admin.id);
     setError('');
     try {
@@ -216,5 +225,8 @@ export const useAdminAdminsTab = () => {
     setEditUsername,
     setEditPassword,
     setEditSuper,
+
+    // Confirmation dialog
+    confirmation,
   };
 };

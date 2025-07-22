@@ -5,7 +5,7 @@ import { CategoryTree, EmptyState } from './grid';
 interface AdminCategoryGridProps {
   categories: Category[];
   onEdit: (category: Category) => void;
-  onDelete: (categoryId: string) => void;
+  onDelete: (categoryId: string, categoryName: string) => void;
   isSuperAdmin: boolean;
 }
 

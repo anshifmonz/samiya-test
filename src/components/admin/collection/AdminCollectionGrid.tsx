@@ -5,7 +5,7 @@ import { type Collection } from '@/types/collection';
 interface AdminCollectionGridProps {
   collections: Collection[];
   onEdit: (collection: Collection) => void;
-  onDelete: (collectionId: string) => void;
+  onDelete: (collectionId: string, collectionTitle: string) => void;
   isSuperAdmin: boolean;
 }
 
@@ -30,7 +30,7 @@ const AdminCollectionGrid: React.FC<AdminCollectionGridProps> = ({ collections, 
           key={collection.id}
           collection={collection}
           onEdit={onEdit}
-          onDelete={isSuperAdmin ? onDelete : undefined}
+          onDelete={isSuperAdmin ? (collection) => onDelete(collection.id, collection.title) : undefined}
         />
       ))}
     </div>

@@ -9,9 +9,9 @@ interface UseAdminSectionsTabProps {
   products: Product[];
   onAddSection: (section: Omit<Section, 'id' | 'createdAt' | 'updatedAt'>) => void;
   onEditSection: (section: Section) => void;
-  onDeleteSection: (sectionId: string) => void;
+  onDeleteSection: (sectionId: string, sectionTitle?: string) => void;
   onAddProductToSection: (sectionId: string, productId: string) => void;
-  onRemoveProductFromSection: (sectionId: string, productId: string) => void;
+  onRemoveProductFromSection: (sectionId: string, productId: string, productTitle?: string, sectionTitle?: string) => void;
   onReorderSections: (sectionIds: string[]) => void;
   onReorderSectionProducts: (sectionId: string, productIds: string[]) => void;
 }
@@ -106,8 +106,8 @@ export const useAdminSectionsTab = ({
     return section ? section.products.map(p => p.id) : [];
   };
 
-  const handleRemoveProduct = (sectionId: string, productId: string) => {
-    onRemoveProductFromSection(sectionId, productId);
+  const handleRemoveProduct = (sectionId: string, productId: string, productTitle?: string, sectionTitle?: string) => {
+    onRemoveProductFromSection(sectionId, productId, productTitle, sectionTitle);
   };
 
   // Drag and drop handlers

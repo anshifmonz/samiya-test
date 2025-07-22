@@ -6,13 +6,13 @@ import { type Collection } from '@/types/collection';
 interface AdminCollectionCardProps {
   collection: Collection;
   onEdit: (collection: Collection) => void;
-  onDelete?: (collectionId: string) => void;
+  onDelete?: (collection: Collection) => void;
 }
 
 const AdminCollectionCard: React.FC<AdminCollectionCardProps> = ({ collection, onEdit, onDelete }) => {
   const handleDelete = () => {
-    if (window.confirm(`Are you sure you want to delete "${collection.title}"?`)) {
-      onDelete(collection.id);
+    if (onDelete) {
+      onDelete(collection);
     }
   };
 

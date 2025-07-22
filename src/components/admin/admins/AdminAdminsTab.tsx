@@ -1,5 +1,6 @@
 import { createPortal } from 'react-dom';
 import { useAdminAdminsTab } from 'hooks/admin/user/useAdminAdminsTab';
+import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import {
   AdminsHeader,
   AdminsStats,
@@ -51,6 +52,8 @@ const AdminAdminsTab: React.FC<AdminAdminsTabProps> = ({ isSuperAdmin }) => {
     setEditUsername,
     setEditPassword,
     setEditSuper,
+    
+    confirmation,
   } = useAdminAdminsTab();
 
   return (
@@ -109,6 +112,18 @@ const AdminAdminsTab: React.FC<AdminAdminsTabProps> = ({ isSuperAdmin }) => {
         />,
         document.body
       )}
+      
+      <ConfirmationDialog
+        isOpen={confirmation.isOpen}
+        onClose={confirmation.hideConfirmation}
+        onConfirm={confirmation.onConfirm || (() => {})}
+        title={confirmation.title}
+        message={confirmation.message}
+        confirmText={confirmation.confirmText}
+        cancelText={confirmation.cancelText}
+        variant={confirmation.variant}
+        isLoading={confirmation.isLoading}
+      />
     </>
   );
 };

@@ -8,7 +8,7 @@ interface SectionContentProps {
   section: SectionWithProducts;
   sectionProducts: SectionProductItem[];
   onAddProduct: (sectionId: string) => void;
-  onRemoveProduct: (sectionId: string, productId: string) => void;
+  onRemoveProduct: (sectionId: string, productId: string, productTitle?: string, sectionTitle?: string) => void;
   onProductDragEnd: (event: any, section: SectionWithProducts) => void;
 }
 

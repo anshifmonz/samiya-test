@@ -23,9 +23,9 @@ interface DraggableSectionItemProps {
   onCancelEdit: () => void;
   onEditTitleChange: (title: string) => void;
   onToggleActive: (section: any) => void;
-  onDeleteSection: (sectionId: string) => void;
+  onDeleteSection: (sectionId: string, sectionTitle?: string) => void;
   onAddProduct: (sectionId: string) => void;
-  onRemoveProduct: (sectionId: string, productId: string) => void;
+  onRemoveProduct: (sectionId: string, productId: string, productTitle?: string, sectionTitle?: string) => void;
   onReorderProducts: (sectionId: string, productIds: string[]) => void;
   setLocalProductOrders: React.Dispatch<React.SetStateAction<Record<string, SectionProductItem[]>>>;
   getSectionProducts: (section: SectionWithProducts) => SectionProductItem[];
