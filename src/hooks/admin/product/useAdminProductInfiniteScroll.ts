@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { apiRequest } from 'lib/utils/apiRequest';
 import { type Product } from 'types/product';
-import { useDebounce } from './useDebounce';
+import { useDebounce } from '@/hooks/ui/useDebounce';
 
 const PAGE_SIZE = 16;
 const DEBOUNCE_DELAY = 500; // 500ms delay

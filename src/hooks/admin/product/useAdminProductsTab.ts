@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { type Product } from 'types/product';
 import { type Category } from 'types/category';
-import { useAdminProductInfiniteScroll } from './useAdminProductInfiniteScroll';
+import { useAdminProductInfiniteScroll } from '@/hooks/admin/product/useAdminProductInfiniteScroll';
 
 interface UseAdminProductsTabProps {
   initialProducts: Product[];

@@ -3,7 +3,7 @@ import { type Product } from 'types/product';
 import { type Collection } from 'types/collection';
 import { type Category } from 'types/category';
 import { type Section, type SectionWithProducts } from 'types/section';
-import { showToast } from 'hooks/use-toast';
+import { showToast } from '@/hooks/ui/use-toast';
 import { apiRequest } from 'utils/apiRequest';
 
 interface UseAdminDashboardProps {
