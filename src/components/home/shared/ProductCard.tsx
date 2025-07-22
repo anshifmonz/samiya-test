@@ -61,7 +61,7 @@ const Productcard = ({ product, className, showDiscountBadge = true }: Productca
           <h4 className="font-cormorant text-sm md:text-xs text-gray-900 pt-2 leading-tight">{product.title}</h4>
           <span className="font-semibold text-foreground">
             <span className="mr-2">₹{product.price.toFixed(2)}</span>
-            {product?.originalPrice && <span className="line-through text-xs">₹{product?.originalPrice?.toFixed(2)}</span>}
+            {product?.originalPrice && product?.originalPrice > product?.price && <span className="line-through text-xs">₹{product?.originalPrice?.toFixed(2)}</span>}
           </span>
         </div>
       </div>
