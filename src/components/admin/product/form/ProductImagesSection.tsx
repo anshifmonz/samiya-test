@@ -1,4 +1,3 @@
-import React from 'react';
 import { Plus } from 'lucide-react';
 import { Tabs, TabsContent, TabsList } from 'ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui/select';
@@ -11,8 +10,8 @@ import {
   SortableContext,
   horizontalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { useProductImagesSection } from 'hooks/useProductImagesSection';
-import { useProductImagesSectionUI } from 'hooks/useProductImagesSectionUI';
+import { useProductImagesSection } from 'hooks/admin/product/useProductImagesSection';
+import { useProductImagesSectionUI } from 'hooks/admin/product/useProductImagesSectionUI';
 import { useAdminProductFormImages } from './AdminProductFormContext';
 import {
   DraggableColorTab,
@@ -24,14 +23,14 @@ import {
 
 const ProductImagesSection: React.FC = () => {
   const { images, activeColorTab, handleImagesChange, setActiveColorTab } = useAdminProductFormImages();
-  
+
   const props = {
     images,
     onImagesChange: handleImagesChange,
     activeColorTab,
     onActiveColorTabChange: setActiveColorTab
   };
-  
+
   const {
     showAddColorDialog, setShowAddColorDialog,
     showAddImageDialog, setShowAddImageDialog,

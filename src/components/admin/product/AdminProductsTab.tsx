@@ -6,10 +6,10 @@ import AdminTabHeader from '../shared/AdminTabHeader';
 import AdminProductForm from './AdminProductForm';
 import AdminProductGrid from './AdminProductGrid';
 import BulkImportModal from './BulkImportModal';
-import { useAdminProductsTab } from 'hooks/useAdminProductsTab';
-import { useSizes } from 'hooks/useSizes';
-import { apiRequest } from 'lib/utils/apiRequest';
-import { showToast } from 'hooks/use-toast';
+import { useAdminProductsTab } from 'hooks/admin/product/useAdminProductsTab';
+import { useSizes } from 'hooks/admin/product/useSizes';
+import { apiRequest } from 'utils/apiRequest';
+import { showToast } from 'hooks/ui/use-toast';
 
 interface AdminProductsTabProps {
   initialProducts: Product[];

@@ -5,7 +5,7 @@ import CategoryFilter from './filter/CategoryFilter';
 import PriceFilter from './filter/PriceFilter';
 import ColorFilter from './filter/ColorFilter';
 import TagsFilter from './filter/TagsFilter';
-import { useProductFilters } from 'hooks/useProductFilters';
+import { useProductFilters } from 'hooks/search/useProductFilters';
 import { type ProductFilters } from 'types/product';
 import { type Category } from 'types/category';
 

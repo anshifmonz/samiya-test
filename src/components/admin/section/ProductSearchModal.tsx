@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Search, Plus } from 'lucide-react';
 import { type Product } from 'types/product';
 import { Button } from 'components/ui/button';
 import { Input } from 'components/ui/input';
 import Image from 'next/image';
-import { useDebounce } from 'hooks/useDebounce';
+import { useDebounce } from 'hooks/ui/useDebounce';
 
 interface ProductSearchModalProps {
   isOpen: boolean;
@@ -161,21 +161,21 @@ const ProductSearchModal: React.FC<ProductSearchModalProps> = ({
     if (!images || typeof images !== 'object') return '';
     const firstColor = Object.keys(images)[0];
     if (!firstColor || !images[firstColor]) return '';
-    
+
     const colorData = images[firstColor];
-    
+
     // Check if this is the new format with hex and images
     if (colorData && colorData.images && Array.isArray(colorData.images) && colorData.images.length > 0) {
       const firstImage = colorData.images[0];
       return typeof firstImage === 'string' ? firstImage : firstImage.url || '';
     }
-    
+
     // Legacy format fallback
     if (Array.isArray(colorData) && colorData.length > 0) {
       const firstImage = colorData[0];
       return typeof firstImage === 'string' ? firstImage : firstImage.url || '';
     }
-    
+
     return '';
   };
 

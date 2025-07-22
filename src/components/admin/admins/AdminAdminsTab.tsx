@@ -1,6 +1,5 @@
-import React from 'react';
 import { createPortal } from 'react-dom';
-import { useAdminAdminsTab } from 'hooks/useAdminAdminsTab';
+import { useAdminAdminsTab } from 'hooks/admin/user/useAdminAdminsTab';
 import {
   AdminsHeader,
   AdminsStats,

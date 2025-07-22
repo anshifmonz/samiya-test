@@ -1,4 +1,4 @@
-import { showToast } from 'hooks/use-toast';
+import { showToast } from 'hooks/ui/use-toast';
 
 export interface ApiRequestOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';

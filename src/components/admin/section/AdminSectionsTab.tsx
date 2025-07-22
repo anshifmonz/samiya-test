@@ -1,8 +1,7 @@
-import React from 'react';
 import { type Section, type SectionWithProducts } from 'types/section';
 import { type Product } from 'types/product';
 import ProductSearchModal from './ProductSearchModal';
-import { useAdminSectionsTab } from 'hooks/useAdminSectionsTab';
+import { useAdminSectionsTab } from 'hooks/admin/section/useAdminSectionsTab';
 import {
   AddSectionForm,
   SectionsHeader,

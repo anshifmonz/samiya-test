@@ -1,5 +1,5 @@
 import { useMemo, useEffect } from 'react';
-import { useAddImageDialog } from 'hooks/useAddImageDialog';
+import { useAddImageDialog } from 'hooks/admin/product/useAddImageDialog';
 
 interface AddImageDialogProps {
   show: boolean;

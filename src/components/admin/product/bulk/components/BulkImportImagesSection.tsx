@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import { Tabs, TabsContent, TabsList } from 'ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui/select';
@@ -11,9 +11,9 @@ import {
   SortableContext,
   horizontalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { useProductImagesSection } from 'hooks/useProductImagesSection';
-import { useProductImagesSectionUI } from 'hooks/useProductImagesSectionUI';
-import { useBulkImportImages } from 'hooks/useBulkImportImages';
+import { useProductImagesSection } from 'hooks/admin/product/useProductImagesSection';
+import { useProductImagesSectionUI } from 'hooks/admin/product/useProductImagesSectionUI';
+import { useBulkImportImages } from 'hooks/admin/product/useBulkImportImages';
 import {
   DraggableColorTab,
   AddColorDialog,
@@ -32,11 +32,11 @@ const BulkImportImagesSection: React.FC<BulkImportImagesSectionProps> = ({ image
   // convert bulk import format to ProductImagesSection format
   const { images, onImagesChange } = useBulkImportImages(imageData, onRealTimeUpdate);
 
-  const [activeColorTab, setActiveColorTab] = React.useState<string>('');
+  const [activeColorTab, setActiveColorTab] = useState<string>('');
   const onActiveColorTabChange = (color: string) => setActiveColorTab(color);
 
   // auto-select first color when images change
-  React.useEffect(() => {
+  useEffect(() => {
     const colorKeys = Object.keys(images);
     if (colorKeys.length > 0 && !activeColorTab) {
       setActiveColorTab(colorKeys[0]);

@@ -1,4 +1,3 @@
-import React from 'react';
 import { createPortal } from 'react-dom';
 import { type Product, type CreateProductData } from 'types/product';
 import { type Category } from 'types/category';
@@ -15,7 +14,7 @@ import {
   ActiveStatusSwitch,
   AdminProductFormHeader
 } from './form';
-import { useAdminProductForm } from 'hooks/useAdminProductForm';
+import { useAdminProductForm } from 'hooks/admin/product/useAdminProductForm';
 import { AdminProductFormProvider, useAdminProductFormContext } from './form/AdminProductFormContext';
 
 interface AdminProductFormProps {

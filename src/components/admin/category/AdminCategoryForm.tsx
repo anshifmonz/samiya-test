@@ -1,4 +1,3 @@
-import React from 'react';
 import { createPortal } from 'react-dom';
 import { type Category } from 'types/category';
 import {
@@ -10,7 +9,7 @@ import {
   ActionButtons,
   ModalHeader
 } from './form';
-import { useAdminCategoryForm } from 'hooks/useAdminCategoryForm';
+import { useAdminCategoryForm } from 'hooks/admin/category/useAdminCategoryForm';
 
 interface AdminCategoryFormProps {
   category?: Category | null;

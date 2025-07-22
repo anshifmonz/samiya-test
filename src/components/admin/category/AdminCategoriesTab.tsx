@@ -1,10 +1,9 @@
-import React from 'react';
 import AdminCategoryGrid from './AdminCategoryGrid';
 import AdminCategoryForm from './AdminCategoryForm';
 import AdminTabHeader from '../shared/AdminTabHeader';
 import { Plus } from 'lucide-react';
 import { type Category } from 'types/category';
-import { useAdminCategoriesTab } from 'hooks/useAdminCategoriesTab';
+import { useAdminCategoriesTab } from 'hooks/admin/category/useAdminCategoriesTab';
 
 interface AdminCategoriesTabProps {
   categories: Category[];

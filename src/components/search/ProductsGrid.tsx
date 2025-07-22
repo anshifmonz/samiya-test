@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { type Product, type ProductFilters } from 'types/product';
 import ProductCard from '../shared/ProductCard';
 import SearchResultsHeader from './SearchResultsHeader';
-import { useInfiniteProductScroll } from 'hooks/useInfiniteProductScroll';
+import { useInfiniteProductScroll } from 'hooks/search/useInfiniteProductScroll';
 
 interface ProductsGridProps {
   products: Omit<Product, 'description'>[];
