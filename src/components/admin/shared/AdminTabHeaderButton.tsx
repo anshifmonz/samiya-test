@@ -5,6 +5,7 @@ interface AdminTabHeaderButtonProps {
   children?: React.ReactNode; // For icon
   label: string;
   className?: string;
+  forceSmLabel?: boolean;
 }
 
 const AdminTabHeaderButton: React.FC<AdminTabHeaderButtonProps> = ({
@@ -12,13 +13,14 @@ const AdminTabHeaderButton: React.FC<AdminTabHeaderButtonProps> = ({
   children,
   label,
   className = '',
+  forceSmLabel = false,
 }) => (
   <button
     onClick={onClick}
     className={`luxury-btn-primary xs:px-3 px-4 py-3 sm:px-6 sm:py-3 rounded-xl font-medium text-xs sm:text-sm tracking-wider uppercase shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 ${className}`}
   >
     {children}
-    <span className="xs:hidden">{label}</span>
+    <span className={forceSmLabel ? 'hidden sm:block' : 'xs:hidden'}>{label}</span>
   </button>
 );
 

@@ -10,6 +10,7 @@ interface AdminTabHeaderProps {
   children?: React.ReactNode; // For icon
   buttonClassName?: string;
   additionalActions?: React.ReactNode;
+  forceSmLabel?: boolean;
 }
 
 const AdminTabHeader: React.FC<AdminTabHeaderProps> = ({
@@ -20,6 +21,7 @@ const AdminTabHeader: React.FC<AdminTabHeaderProps> = ({
   children,
   buttonClassName = '',
   additionalActions,
+  forceSmLabel = false,
 }) => (
   <div className="flex flex-row md:flex-row gap-4 items-start md:items-center justify-between mb-8">
     <div className="flex-1 max-w-2xl">
@@ -34,6 +36,7 @@ const AdminTabHeader: React.FC<AdminTabHeaderProps> = ({
         onClick={onAddClick}
         label={addLabel}
         className={buttonClassName}
+        forceSmLabel={forceSmLabel}
       >
         {children}
       </AdminTabHeaderButton>

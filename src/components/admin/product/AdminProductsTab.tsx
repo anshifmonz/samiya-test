@@ -116,10 +116,11 @@ const AdminProductsTab: React.FC<AdminProductsTabProps> = ({
             className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-luxury-gold hover:text-luxury-gold/80 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={sizesLoading || isBulkImporting}
           >
-            <Upload size={16} className={isBulkImporting ? 'animate-spin' : ''} />
-            <span>{isBulkImporting ? 'Importing...' : 'Bulk Import'}</span>
+            <Upload size={20} className={isBulkImporting ? 'animate-spin' : ''} />
+            <span className="hidden sm:block">{isBulkImporting ? 'Importing...' : 'Bulk Import'}</span>
           </button>
         }
+        forceSmLabel={true}
       >
         <Plus size={20} />
       </AdminTabHeader>
