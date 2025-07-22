@@ -4,7 +4,7 @@ import { useBulkImportConfig, useBulkImportCursor } from './BulkImportContext';
 export const DynamicColumnHeaders: React.FC = () => {
   const { expectedHeaders } = useBulkImportConfig();
   const { activeColumnIndex } = useBulkImportCursor();
-  
+
   return (
   <div className="px-3 py-2 bg-luxury-gray/10 rounded-md border">
     <span className="text-sm font-medium text-luxury-black mb-2 block">Column Order:</span>
@@ -14,7 +14,7 @@ export const DynamicColumnHeaders: React.FC = () => {
           key={index}
           className={`px-2 py-1 rounded text-xs font-medium transition-all duration-200 ${
             activeColumnIndex === index
-              ? 'bg-luxury-gold text-black shadow-sm transform scale-105'
+              ? 'bg-luxury-gold text-luxury-gray shadow-sm transform scale-105'
               : 'bg-white text-luxury-gray border border-luxury-gray/20 hover:bg-luxury-gray/5'
           }`}
         >
