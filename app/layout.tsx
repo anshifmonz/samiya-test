@@ -6,6 +6,7 @@ import { ToasterProvider } from "./providers/ToasterProvider";
 import "./globals.css";
 import Footer from "components/shared/Footer";
 import NavBar from "components/shared/NavBar";
+import NextLoadingBar from "components/shared/NextLoadingBar";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -49,6 +50,7 @@ export default function RootLayout({
           <TooltipProvider>
             <ToasterProvider />
             <NavBar />
+            <NextLoadingBar color="#ef4444" />
             {children}
             <Footer />
           </TooltipProvider>

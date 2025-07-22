@@ -30,7 +30,7 @@ export const useConfirmation = () => {
   const showConfirmation = useCallback((config: ConfirmationConfig): Promise<boolean> => {
     return new Promise((resolve) => {
       const originalOnConfirm = config.onConfirm;
-      
+
       setState({
         ...config,
         isOpen: true,
