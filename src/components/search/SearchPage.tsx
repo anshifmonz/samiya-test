@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
@@ -20,6 +20,7 @@ export default function SearchPage({ initialProducts, initialQuery, initialFilte
   const [filters, setFilters] = useState<ProductFilters>(initialFilters);
   const router = useRouter();
   const isFirstRun = useRef(true);
+  const isUrlSyncInitialized = useRef(false);
 
   // fetch products when filters or query change and not on first run
   useEffect(() => {
@@ -37,6 +38,11 @@ export default function SearchPage({ initialProducts, initialQuery, initialFilte
 
   // sync url with current filters and query
   useEffect(() => {
+    if (!isUrlSyncInitialized.current) {
+      isUrlSyncInitialized.current = true;
+      return;
+    }
+
     const params = new URLSearchParams();
 
     params.set('q', initialQuery);
