@@ -1,23 +1,47 @@
 import React from 'react';
-import { useAdminProductFormActions_Buttons } from './AdminProductFormContext';
+import { useAdminProductFormActions_Buttons, useAdminProductFormState } from './AdminProductFormContext';
+import { checkSubmissionErrors } from 'lib/utils/isValidImageData';
 
 const ActionButtons: React.FC = () => {
   const { handleCancel, isEditing } = useAdminProductFormActions_Buttons();
-  
+  const { formData, isSubmitting } = useAdminProductFormState();
+
+  // check if submission should be blocked
+  const submissionCheck = checkSubmissionErrors(formData.images);
+  const canSubmit = submissionCheck.canSubmit && !isSubmitting;
+
   return (
     <div className="flex gap-4 pt-6 border-t border-luxury-gray/20">
       <button
         type="button"
         onClick={handleCancel}
-        className="flex-1 px-6 py-3 luxury-body text-sm font-medium text-luxury-gray bg-luxury-cream/50 rounded-xl hover:bg-luxury-cream transition-all duration-300 border border-luxury-gray/20"
+        disabled={isSubmitting}
+        className="flex-1 px-6 py-3 luxury-body text-sm font-medium text-luxury-gray bg-luxury-cream/50 rounded-xl hover:bg-luxury-cream transition-all duration-300 border border-luxury-gray/20 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         Cancel
       </button>
       <button
         type="submit"
-        className="flex-1 luxury-btn-primary px-6 py-3 rounded-xl font-medium text-sm tracking-wider uppercase shadow-lg hover:shadow-xl transition-all duration-300"
+        disabled={!canSubmit}
+        className={`
+          flex-1 px-6 py-3 rounded-xl font-medium text-sm tracking-wider uppercase shadow-lg transition-all duration-300
+          ${
+            canSubmit
+              ? 'luxury-btn-primary hover:shadow-xl'
+              : 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-none'
+          }
+          ${
+            isSubmitting ? 'opacity-70' : ''
+          }
+        `}
+        title={!canSubmit ? submissionCheck.errorMessage : undefined}
       >
-        {isEditing ? 'Update Product' : 'Create Product'}
+        {isSubmitting
+          ? (isEditing ? 'Updating...' : 'Creating...')
+          : canSubmit
+          ? (isEditing ? 'Update Product' : 'Create Product')
+          : 'Fix Validation Errors'
+        }
       </button>
     </div>
   );

@@ -12,7 +12,8 @@ import {
   SizeSelect,
   ActionButtons,
   ActiveStatusSwitch,
-  AdminProductFormHeader
+  AdminProductFormHeader,
+  ValidationFeedback
 } from './form';
 import { useAdminProductForm } from 'hooks/admin/product/useAdminProductForm';
 import { AdminProductFormProvider, useAdminProductFormContext } from './form/AdminProductFormContext';
@@ -44,6 +45,7 @@ const AdminProductFormContent: React.FC = () => {
       </div>
 
       <ProductImagesSection />
+      <ValidationFeedback />
       <SizeSelect />
       <TagsSection />
       <ActiveStatusSwitch />
@@ -66,6 +68,8 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
       formData: logic.formData,
       activeColorTab: logic.activeColorTab,
       mounted: logic.mounted,
+      validationError: logic.validationError,
+      isSubmitting: logic.isSubmitting,
     },
 
     computed: {
@@ -84,6 +88,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
       handleSizesChange: logic.handleSizesChange,
       handleActiveChange: logic.handleActiveChange,
       setActiveColorTab: logic.setActiveColorTab,
+      clearValidationError: logic.clearValidationError,
     },
 
     formControl: {

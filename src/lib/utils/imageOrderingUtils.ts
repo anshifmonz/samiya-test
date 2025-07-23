@@ -1,6 +1,6 @@
 import { type Product } from 'types/product';
-import { generateImagePublicId } from 'utils/imageIdUtils';
-import { validateProductImages } from 'utils/isValidImageData';
+import { generateImagePublicId } from './imageIdUtils';
+import { validateProductImages } from './isValidImageData';
 
 export interface ProcessedImageRow {
   product_id: string;
@@ -99,10 +99,12 @@ export function processProductImagesWithOrder(product: Product): {
 }
 
 // validates that the product images structure is consistent for ordering
+// now allows products without any images, but requires images for existing color variants
 export function validateProductImagesOrder(product: Product): {
   isValid: boolean;
   errors: string[];
 } {
+  // Use the new validation functions that allow products without images
   const validation = validateProductImages(product.images);
 
   return {

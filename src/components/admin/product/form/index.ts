@@ -9,3 +9,5 @@ export { default as SizeSelect } from './SizeSelect';
 export { default as ActionButtons } from './ActionButtons';
 export { default as ActiveStatusSwitch } from './ActiveStatusSwitch';
 export { default as AdminProductFormHeader } from './AdminProductFormHeader';
+export { default as ValidationFeedback } from './ValidationFeedback';
+export { default as ColorValidationIndicator } from './ColorValidationIndicator';

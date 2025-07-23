@@ -2,6 +2,7 @@ import { Plus } from 'lucide-react';
 import { Tabs, TabsContent, TabsList } from 'ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui/select';
 import { Crown } from 'lucide-react';
+import ColorValidationIndicator from './ColorValidationIndicator';
 import {
   DndContext,
   closestCenter,
@@ -112,6 +113,11 @@ const ProductImagesSection: React.FC = () => {
                           />
                           <span className="capitalize">{color}</span>
                           <span className="text-xs">({getImageCount(color)})</span>
+                          <ColorValidationIndicator 
+                            color={color} 
+                            colorData={images[color]} 
+                            className="ml-1"
+                          />
                           {isPrimaryColor(idx) && (
                             <Crown size={14} className="text-luxury-gold ml-1" />
                           )}

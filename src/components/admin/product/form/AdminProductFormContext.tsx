@@ -34,6 +34,8 @@ interface AdminProductFormContextValue {
     formData: FormData;
     activeColorTab: string;
     mounted: boolean;
+    validationError: string;
+    isSubmitting: boolean;
   };
 
   // ===== COMPUTED VALUES =====
@@ -56,6 +58,7 @@ interface AdminProductFormContextValue {
     handleSizesChange: (sizes: Size[]) => void;
     handleActiveChange: (active: boolean) => void;
     setActiveColorTab: (color: string) => void;
+    clearValidationError: () => void;
   };
 
   // ===== FORM CONTROL =====

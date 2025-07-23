@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { type Product, type CreateProductData, type ProductColorData, type Size } from 'types/product';
 import { type Category } from 'types/category';
 import { ensureProductImageFormat } from 'utils/migrateProductImages';
+import { checkSubmissionErrors } from 'lib/utils/isValidImageData';
 
 interface UseAdminProductFormProps {
   product?: Product | null;
@@ -39,6 +40,8 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
 
   const [activeColorTab, setActiveColorTab] = useState<string>('');
   const [mounted, setMounted] = useState(false);
+  const [validationError, setValidationError] = useState<string>('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -99,16 +102,42 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (product) {
-      const productData = {
-        ...formData,
-        id: product.id,
-        short_code: product.short_code
-      };
-      onSave(productData);
-    } else {
-      const { short_code, ...productDataWithoutShortCode } = formData;
-      onSave(productDataWithoutShortCode);
+    // Clear any previous validation errors
+    setValidationError('');
+    setIsSubmitting(true);
+
+    // Validate the form data
+    const { canSubmit, errorMessage, detailedErrors } = checkSubmissionErrors(formData.images);
+
+    if (!canSubmit) {
+      setValidationError(errorMessage || 'Please fix validation errors before submitting.');
+      setIsSubmitting(false);
+
+      // Log detailed errors for debugging
+      if (detailedErrors.length > 0) {
+        console.warn('Product validation errors:', detailedErrors);
+      }
+
+      return;
+    }
+
+    try {
+      if (product) {
+        const productData = {
+          ...formData,
+          id: product.id,
+          short_code: product.short_code
+        };
+        onSave(productData);
+      } else {
+        const { short_code, ...productDataWithoutShortCode } = formData;
+        onSave(productDataWithoutShortCode);
+      }
+    } catch (error) {
+      console.error('Error saving product:', error);
+      setValidationError('An error occurred while saving the product. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -121,6 +150,8 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
     formData,
     activeColorTab,
     mounted,
+    validationError,
+    isSubmitting,
 
     // Handlers
     handleTitleChange,
@@ -135,6 +166,7 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
     handleSubmit,
     handleCancel,
     setActiveColorTab,
+    clearValidationError: () => setValidationError(''),
 
     // Computed values
     isEditing: !!product,
