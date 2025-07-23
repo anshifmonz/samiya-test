@@ -307,7 +307,7 @@
 
   .luxury-btn-secondary {
     background: transparent;
-    color: white;
+    color: hsl(var(--luxury-gray));
     border: 2px solid hsl(var(--luxury-gold));
     transition: all 0.3s ease;
     position: relative;

@@ -78,8 +78,8 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
 
   return (
     <AlertDialog open={isOpen} onOpenChange={(open) => !open && handleCancel()}>
-      <AlertDialogContent className="sm:max-w-[425px] luxury-card border-luxury-gray/20">
-        <AlertDialogHeader className="space-y-3">
+      <AlertDialogContent className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto border-luxury-gray/20 p-0">
+        <AlertDialogHeader className="space-y-3 p-6 pb-0">
           <AlertDialogTitle className="luxury-heading text-xl text-luxury-black">
             {title}
           </AlertDialogTitle>
@@ -87,8 +87,7 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
             {message}
           </AlertDialogDescription>
         </AlertDialogHeader>
-        
-        <AlertDialogFooter className="gap-3 sm:gap-2">
+        <AlertDialogFooter className="gap-3 sm:gap-2 p-6 pt-0">
           <AlertDialogCancel
             ref={cancelButtonRef}
             onClick={handleCancel}
@@ -97,7 +96,6 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
           >
             {cancelText}
           </AlertDialogCancel>
-          
           <AlertDialogAction
             onClick={handleConfirm}
             disabled={isLoading}
