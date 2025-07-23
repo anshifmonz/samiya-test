@@ -65,9 +65,10 @@ const AdminProductsTab: React.FC<AdminProductsTabProps> = ({
   const handleBulkImport = async (products: Omit<Product, 'id'>[]) => {
     setIsBulkImporting(true);
     try {
-      const { data, error } = await apiRequest('/api/admin/product/bulk', {
+const { data, error } = await apiRequest('/api/admin/product/bulk', {
         method: 'POST',
-        body: { products }
+        body: { products },
+        showLoadingBar: true
       });
 
       if (error) {

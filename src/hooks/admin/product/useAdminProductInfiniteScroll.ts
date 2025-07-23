@@ -31,7 +31,10 @@ export function useAdminProductInfiniteScroll(initialProducts: Product[], search
 
     try {
       const params = buildAdminProductSearchParams(debouncedQuery, PAGE_SIZE, offset);
-      const res = await apiRequest(`/api/admin/product?${params.toString()}`);
+      const res = await apiRequest(`/api/admin/product?${params.toString()}`, {
+        showLoadingBar: true,
+        loadingBarDelay: 200
+      });
       if (res.error) throw new Error(res.error);
       const newProducts = res.data?.products || [];
 
@@ -57,7 +60,10 @@ export function useAdminProductInfiniteScroll(initialProducts: Product[], search
 
       try {
         const params = buildAdminProductSearchParams(debouncedQuery, PAGE_SIZE, 0);
-        const res = await apiRequest(`/api/admin/product?${params.toString()}`);
+        const res = await apiRequest(`/api/admin/product?${params.toString()}`, {
+          showLoadingBar: true,
+          loadingBarDelay: 150
+        });
         if (res.error) throw new Error(res.error);
         const newProducts = res.data?.products || [];
 
@@ -109,7 +115,10 @@ export function useAdminProductInfiniteScroll(initialProducts: Product[], search
 
     try {
       const params = buildAdminProductSearchParams(debouncedQuery, PAGE_SIZE, 0);
-      const res = await apiRequest(`/api/admin/product?${params.toString()}`);
+      const res = await apiRequest(`/api/admin/product?${params.toString()}`, {
+        showLoadingBar: true,
+        loadingBarDelay: 150
+      });
       if (res.error) throw new Error(res.error);
       const newProducts = res.data?.products || [];
 

@@ -14,7 +14,7 @@ import AdminProductsTab from './product/AdminProductsTab';
 import AdminCollectionsTab from './collection/AdminCollectionsTab';
 import AdminCategoriesTab from './category/AdminCategoriesTab';
 import AdminAdminsTab from './admins/AdminAdminsTab';
-import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
+import { ConfirmationDialog } from 'ui/confirmation-dialog';
 
 interface AdminDashboardProps {
   initialProducts: Product[];
@@ -186,7 +186,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
           <AdminAdminsTab isSuperAdmin={isSuperAdmin} />
         </TabsContent>
       </Tabs>
-      
+
       {/* Global Confirmation Dialog */}
       <ConfirmationDialog
         isOpen={confirmation.isOpen}

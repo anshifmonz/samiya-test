@@ -7,6 +7,7 @@ import { Input } from 'ui/input';
 import { Label } from 'ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from 'ui/card';
 import { Lock, Shield, User } from 'lucide-react';
+import { apiRequest } from 'lib/utils/apiRequest';
 
 const AdminLogin: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -26,19 +27,17 @@ const AdminLogin: React.FC = () => {
     setError('');
 
     try {
-      const response = await fetch('/api/admin/login', {
+      const { data, error: apiError } = await apiRequest('/api/admin/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
+        body: { username, password },
+        showLoadingBar: true,
+        showErrorToast: false // Handle errors manually
       });
 
-      if (response.ok) {
+      if (!apiError) {
         router.push('/admin/dashboard');
       } else {
-        const data = await response.json();
-        setError(data.error || 'Login failed');
+        setError(apiError || 'Login failed');
       }
     } catch (error) {
       console.error('Login error:', error);

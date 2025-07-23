@@ -39,14 +39,20 @@ export const useAdminAdminsTab = () => {
       setLoading(true);
       setError('');
       try {
-        const meRes = await apiRequest('/api/admin/me');
+        const meRes = await apiRequest('/api/admin/me', {
+          showLoadingBar: true,
+          loadingBarDelay: 150
+        });
         if (!meRes.error && meRes.data) {
           setCurrentAdmin(meRes.data.admin);
         } else {
           setCurrentAdmin(null);
         }
 
-        const adminsRes = await apiRequest('/api/admin');
+        const adminsRes = await apiRequest('/api/admin', {
+          showLoadingBar: true,
+          loadingBarDelay: 150
+        });
         if (adminsRes.error) {
           setError(adminsRes.error);
           setAdmins([]);
@@ -71,11 +77,13 @@ export const useAdminAdminsTab = () => {
     setAddLoading(true);
     setAddError('');
     try {
-      const res = await apiRequest('/api/admin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: { username: addUsername, password: addPassword }
-      });
+        const res = await apiRequest('/api/admin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: { username: addUsername, password: addPassword },
+          showLoadingBar: true, // Admin operations now show loading bar
+          loadingBarDelay: 200
+        });
       if (res.error) {
         setAddError(res.error || 'Failed to add admin');
         setAddLoading(false);
@@ -106,6 +114,8 @@ export const useAdminAdminsTab = () => {
     try {
       const res = await apiRequest(`/api/admin?id=${admin.id}`, {
         method: 'DELETE',
+        showLoadingBar: true,
+        loadingBarDelay: 200
       });
       if (res.error) {
         setError(res.error || 'Failed to delete admin');
@@ -142,7 +152,9 @@ export const useAdminAdminsTab = () => {
           username: editUsername,
           password: editPassword || undefined,
           is_superuser: editSuper
-        }
+        },
+        showLoadingBar: true,
+        loadingBarDelay: 200
       });
       if (res.error) {
         setEditError(res.error || 'Failed to update admin');

@@ -5,6 +5,7 @@ import { LogOut } from 'lucide-react';
 import React from 'react';
 import { useConfirmation } from '@/hooks/useConfirmation';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
+import { apiRequest } from 'lib/utils/apiRequest';
 
 function LogoutButton() {
   const [loading, setLoading] = React.useState(false);
@@ -12,8 +13,13 @@ function LogoutButton() {
   const handleLogout = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/admin/logout', { method: 'POST' });
-      if (response.ok) {
+      const { error } = await apiRequest('/api/admin/logout', {
+        method: 'POST',
+        showLoadingBar: true,
+        showErrorToast: false // Handle errors manually
+      });
+      
+      if (!error) {
         window.location.replace('/admin/login');
       } else {
         setLoading(false);

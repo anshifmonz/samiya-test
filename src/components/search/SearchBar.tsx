@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search } from 'lucide-react';
+import { useNextLoadingBar } from 'components/shared/NextLoadingBar';
 
 interface SearchBarProps {
   onSearch?: () => void;
@@ -11,10 +12,13 @@ interface SearchBarProps {
 const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   const [query, setQuery] = useState('');
   const router = useRouter();
+  const { startLoading } = useNextLoadingBar();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
+      // Trigger loading bar for search navigation
+      startLoading();
       router.push(`/search?q=${encodeURIComponent(query.trim())}`);
       onSearch?.();
     }

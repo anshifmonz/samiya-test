@@ -27,7 +27,7 @@ export const useAdminDashboard = ({
 
   // Product handlers with API calls
   const handleAddProduct = async (newProduct: Omit<Product, 'id'>) => {
-    const { data, error } = await apiRequest('/api/admin/product', { method: 'POST', body: newProduct });
+const { data, error } = await apiRequest('/api/admin/product', { method: 'POST', body: newProduct, showLoadingBar: true });
     if (error) {
       showToast({ type: 'error', title: 'Error', description: error });
       return null;
@@ -38,7 +38,7 @@ export const useAdminDashboard = ({
 
   const handleEditProduct = async (updatedProduct: Product) => {
     console.log('updatedProduct', updatedProduct);
-    const { data, error } = await apiRequest('/api/admin/product', { method: 'PUT', body: updatedProduct });
+const { data, error } = await apiRequest('/api/admin/product', { method: 'PUT', body: updatedProduct, showLoadingBar: true });
     if (error) {
       showToast({ type: 'error', title: 'Error', description: error });
       return null;
@@ -58,7 +58,7 @@ export const useAdminDashboard = ({
     
     if (!confirmed) return false;
     
-    const { error } = await apiRequest(`/api/admin/product?id=${encodeURIComponent(productId)}`, { method: 'DELETE' });
+const { error } = await apiRequest(`/api/admin/product?id=${encodeURIComponent(productId)}`, { method: 'DELETE', showLoadingBar: true });
     if (error) {
       showToast({ type: 'error', title: 'Error', description: error });
       return false;
@@ -69,14 +69,14 @@ export const useAdminDashboard = ({
 
   // Collection handlers with API calls
   const fetchCollections = async () => {
-    const { data } = await apiRequest('/api/admin/collection');
+const { data } = await apiRequest('/api/admin/collection', { showLoadingBar: true });
     if (data) {
       setCollectionList(data.collections);
     }
   };
 
   const handleAddCollection = async (newCollection: Omit<Collection, 'id'>) => {
-    const { error } = await apiRequest('/api/admin/collection', { method: 'POST', body: newCollection });
+const { error } = await apiRequest('/api/admin/collection', { method: 'POST', body: newCollection, showLoadingBar: true });
     if (!error) {
       await fetchCollections();
       showToast({ title: 'Success', description: 'Collection added successfully' });
@@ -86,7 +86,7 @@ export const useAdminDashboard = ({
   };
 
   const handleEditCollection = async (updatedCollection: Collection) => {
-    const { error } = await apiRequest('/api/admin/collection', { method: 'PUT', body: updatedCollection });
+const { error } = await apiRequest('/api/admin/collection', { method: 'PUT', body: updatedCollection, showLoadingBar: true });
     if (!error) {
       await fetchCollections();
       showToast({ title: 'Success', description: 'Collection updated successfully' });
@@ -106,7 +106,7 @@ export const useAdminDashboard = ({
     
     if (!confirmed) return;
     
-    const { error } = await apiRequest(`/api/admin/collection?id=${encodeURIComponent(collectionId)}`, { method: 'DELETE' });
+const { error } = await apiRequest(`/api/admin/collection?id=${encodeURIComponent(collectionId)}`, { method: 'DELETE', showLoadingBar: true });
     if (!error) {
       await fetchCollections();
       showToast({ title: 'Success', description: 'Collection deleted successfully' });
@@ -117,14 +117,14 @@ export const useAdminDashboard = ({
 
   // Category handlers with API calls
   const fetchCategories = async () => {
-    const { data } = await apiRequest('/api/admin/category');
+const { data } = await apiRequest('/api/admin/category', { showLoadingBar: true });
     if (data) {
       setCategoryList(data.categories);
     }
   };
 
   const handleAddCategory = async (newCategory: Omit<Category, 'id' | 'createdAt' | 'updatedAt' | 'children'>) => {
-    const { error } = await apiRequest('/api/admin/category', { method: 'POST', body: newCategory });
+const { error } = await apiRequest('/api/admin/category', { method: 'POST', body: newCategory, showLoadingBar: true });
     if (!error) {
       await fetchCategories();
       showToast({ title: 'Success', description: 'Category added successfully' });
@@ -134,7 +134,7 @@ export const useAdminDashboard = ({
   };
 
   const handleEditCategory = async (updatedCategory: Category) => {
-    const { error } = await apiRequest('/api/admin/category', { method: 'PUT', body: updatedCategory });
+const { error } = await apiRequest('/api/admin/category', { method: 'PUT', body: updatedCategory, showLoadingBar: true });
     if (!error) {
       await fetchCategories();
       showToast({ title: 'Success', description: 'Category updated successfully' });
@@ -154,7 +154,7 @@ export const useAdminDashboard = ({
     
     if (!confirmed) return;
     
-    const { error } = await apiRequest(`/api/admin/category?id=${encodeURIComponent(categoryId)}`, { method: 'DELETE' });
+const { error } = await apiRequest(`/api/admin/category?id=${encodeURIComponent(categoryId)}`, { method: 'DELETE', showLoadingBar: true });
     if (!error) {
       await fetchCategories();
       showToast({ title: 'Success', description: 'Category deleted successfully' });
@@ -165,14 +165,14 @@ export const useAdminDashboard = ({
 
   // Section handlers with API calls
   const fetchSections = async () => {
-    const { data } = await apiRequest('/api/admin/section?withProducts=true');
+const { data } = await apiRequest('/api/admin/section?withProducts=true', { showLoadingBar: true });
     if (data) {
       setSectionList(data.sections);
     }
   };
 
   const handleAddSection = async (newSection: Omit<Section, 'id' | 'createdAt' | 'updatedAt'>) => {
-    const { error } = await apiRequest('/api/admin/section', { method: 'POST', body: newSection });
+const { error } = await apiRequest('/api/admin/section', { method: 'POST', body: newSection, showLoadingBar: true });
     if (!error) {
       await fetchSections();
       showToast({ title: 'Success', description: 'Section added successfully' });
@@ -182,7 +182,7 @@ export const useAdminDashboard = ({
   };
 
   const handleEditSection = async (updatedSection: Section) => {
-    const { error } = await apiRequest('/api/admin/section', { method: 'PUT', body: updatedSection });
+const { error } = await apiRequest('/api/admin/section', { method: 'PUT', body: updatedSection, showLoadingBar: true });
     if (!error) {
       await fetchSections();
       showToast({ title: 'Success', description: 'Section updated successfully' });
@@ -202,7 +202,7 @@ export const useAdminDashboard = ({
     
     if (!confirmed) return;
     
-    const { error } = await apiRequest(`/api/admin/section?id=${encodeURIComponent(sectionId)}`, { method: 'DELETE' });
+const { error } = await apiRequest(`/api/admin/section?id=${encodeURIComponent(sectionId)}`, { method: 'DELETE', showLoadingBar: true });
     if (!error) {
       await fetchSections();
       showToast({ title: 'Success', description: 'Section deleted successfully' });
@@ -212,7 +212,7 @@ export const useAdminDashboard = ({
   };
 
   const handleAddProductToSection = async (sectionId: string, productId: string) => {
-    const { error } = await apiRequest('/api/admin/section/products', { method: 'POST', body: { sectionId, productId } });
+const { error } = await apiRequest('/api/admin/section/products', { method: 'POST', body: { sectionId, productId }, showLoadingBar: true });
     if (!error) {
       await fetchSections();
       showToast({ title: 'Success', description: 'Product added to section successfully' });
@@ -232,7 +232,7 @@ export const useAdminDashboard = ({
     
     if (!confirmed) return;
     
-    const { error } = await apiRequest(`/api/admin/section/products?sectionId=${encodeURIComponent(sectionId)}&productId=${encodeURIComponent(productId)}`, { method: 'DELETE' });
+const { error } = await apiRequest(`/api/admin/section/products?sectionId=${encodeURIComponent(sectionId)}&productId=${encodeURIComponent(productId)}`, { method: 'DELETE', showLoadingBar: true });
     if (!error) {
       await fetchSections();
       showToast({ title: 'Success', description: 'Product removed from section successfully' });
@@ -242,7 +242,7 @@ export const useAdminDashboard = ({
   };
 
   const handleReorderSectionProducts = async (sectionId: string, productIds: string[]) => {
-    const { error } = await apiRequest('/api/admin/section/products', { method: 'PATCH', body: { sectionId, productIds } });
+const { error } = await apiRequest('/api/admin/section/products', { method: 'PATCH', body: { sectionId, productIds }, showLoadingBar: true });
     if (!error) {
       await fetchSections();
       showToast({ title: 'Success', description: 'Section products reordered successfully' });
@@ -252,7 +252,7 @@ export const useAdminDashboard = ({
   };
 
   const handleReorderSections = async (sectionIds: string[]) => {
-    const { error } = await apiRequest('/api/admin/section', { method: 'PATCH', body: { sectionIds } });
+const { error } = await apiRequest('/api/admin/section', { method: 'PATCH', body: { sectionIds }, showLoadingBar: true });
     if (!error) {
       await fetchSections();
       showToast({ title: 'Success', description: 'Sections reordered successfully' });

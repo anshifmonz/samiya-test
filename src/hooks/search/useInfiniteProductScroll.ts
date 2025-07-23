@@ -30,7 +30,7 @@ export function useInfiniteProductScroll(initialProducts: Omit<Product, 'descrip
     setLoading(true);
     try {
       const params = buildProductSearchParams(query, filters, PAGE_SIZE, offset);
-      const res = await apiRequest(`/api/search?${params.toString()}`);
+      const res = await apiRequest(`/api/search?${params.toString()}`, { showLoadingBar: true, loadingBarDelay: 200 });
       if (res.error) throw new Error(res.error);
       const newProducts: Omit<Product, 'description'>[] = res.data || [];
       setProducts(prev => [...prev, ...newProducts]);
@@ -52,7 +52,7 @@ export function useInfiniteProductScroll(initialProducts: Omit<Product, 'descrip
       setOffset(0);
       try {
         const params = buildProductSearchParams(query, filters, PAGE_SIZE, 0);
-        const res = await apiRequest(`/api/search?${params.toString()}`);
+        const res = await apiRequest(`/api/search?${params.toString()}`, { showLoadingBar: true, loadingBarDelay: 200 });
         if (res.error) throw new Error(res.error);
         const newProducts: Omit<Product, 'description'>[] = res.data || [];
         if (!ignore) {

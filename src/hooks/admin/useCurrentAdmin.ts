@@ -24,7 +24,7 @@ export function useCurrentAdmin(): UseCurrentAdminReturn {
   useEffect(() => {
     const fetchAdmin = async () => {
       try {
-        const res = await apiRequest('/api/admin/me');
+const res = await apiRequest('/api/admin/me', { showLoadingBar: true });
         if (!res.error && res.data?.admin) {
           setAdmin(res.data.admin);
         } else {

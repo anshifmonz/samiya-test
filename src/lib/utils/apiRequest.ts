@@ -1,4 +1,5 @@
 import { showToast } from 'hooks/ui/use-toast';
+import { globalLoadingTracker } from './loadingTracker';
 
 export interface ApiRequestOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
@@ -8,6 +9,8 @@ export interface ApiRequestOptions {
   errorMessage?: string;
   showSuccessToast?: boolean;
   showErrorToast?: boolean;
+  showLoadingBar?: boolean; // New option to control loading bar
+  loadingBarDelay?: number; // Minimum time to show loading bar
 }
 
 export async function apiRequest<T = any>(
@@ -22,7 +25,16 @@ export async function apiRequest<T = any>(
     errorMessage,
     showSuccessToast = false,
     showErrorToast = true,
+    showLoadingBar = false,
+    loadingBarDelay = 200,
   } = options;
+
+  // Start loading bar if requested using global tracker
+  const startTime = Date.now();
+  let requestId: string | null = null;
+  if (showLoadingBar) {
+    requestId = globalLoadingTracker.startRequest();
+  }
 
   try {
     const fetchOptions: RequestInit = {
@@ -52,17 +64,40 @@ export async function apiRequest<T = any>(
       if (showErrorToast) {
         showToast({ type: 'error', title: 'Error', description: error });
       }
+      
+      // Stop loading bar on error using global tracker
+      if (showLoadingBar && requestId) {
+        globalLoadingTracker.completeRequest(requestId);
+      }
+      
       return { data: null, error, response };
     }
     if (showSuccessToast && successMessage) {
       showToast({ title: 'Success', description: successMessage });
     }
+    
+    // Stop loading bar with minimum delay if requested using global tracker
+    if (showLoadingBar && requestId) {
+      const elapsed = Date.now() - startTime;
+      const remainingDelay = Math.max(0, loadingBarDelay - elapsed);
+      
+      setTimeout(() => {
+        globalLoadingTracker.completeRequest(requestId!);
+      }, remainingDelay);
+    }
+    
     return { data, error: null, response };
   } catch (err: any) {
     const error = err?.message || errorMessage || 'Network error';
     if (showErrorToast) {
       showToast({ type: 'error', title: 'Error', description: error });
     }
+    
+    // Stop loading bar on exception using global tracker
+    if (showLoadingBar && requestId) {
+      globalLoadingTracker.completeRequest(requestId);
+    }
+    
     return { data: null, error, response: null };
   }
 }

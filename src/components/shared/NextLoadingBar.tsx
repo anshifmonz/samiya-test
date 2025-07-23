@@ -6,19 +6,15 @@ import { usePathname } from 'next/navigation';
 interface NextLoadingBarProps {
   color?: string;
   height?: number;
-  excludeRoutes?: string[];
 }
 
 export default function NextLoadingBar({
   color = '#ef4444',
   height = 1,
-  excludeRoutes = []
 }: NextLoadingBarProps) {
   const pathname = usePathname();
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
-
-  const isExcluded = excludeRoutes.some(route => pathname.startsWith(route));
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -49,9 +45,7 @@ export default function NextLoadingBar({
   }, [isLoading]);
 
   const startLoading = () => {
-    if (!isExcluded) {
-      setIsLoading(true);
-    }
+    setIsLoading(true);
   };
 
   const completeLoading = () => {
@@ -84,9 +78,8 @@ export default function NextLoadingBar({
         try {
           const url = new URL(link.href);
           const isExternal = url.origin !== window.location.origin;
-          const isTargetExcluded = excludeRoutes.some(route => url.pathname.startsWith(route));
 
-          if (!isExternal && !isTargetExcluded && url.pathname !== pathname) {
+          if (!isExternal && url.pathname !== pathname) {
             startLoading();
           }
         } catch (e) {
@@ -105,13 +98,13 @@ export default function NextLoadingBar({
       window.removeEventListener('stop-loading', handleComplete);
       document.removeEventListener('click', handleLinkClick);
     };
-  }, [pathname, excludeRoutes]);
+  }, [pathname]);
 
   useEffect(() => {
     completeLoading();
   }, [pathname]);
 
-  if (isExcluded || (!isLoading && progress === 0)) {
+  if (!isLoading && progress === 0) {
     return null;
   }
 

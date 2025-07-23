@@ -13,7 +13,7 @@ export const useSizes = () => {
         setLoading(true);
         setError(null);
 
-        const { data, error: apiError } = await apiRequest('/api/admin/sizes');
+const { data, error: apiError } = await apiRequest('/api/admin/sizes', { showLoadingBar: true });
 
         if (apiError) {
           throw new Error(apiError);
