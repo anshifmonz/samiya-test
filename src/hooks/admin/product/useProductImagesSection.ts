@@ -54,12 +54,11 @@ export function useProductImagesSection({ images, onImagesChange, activeColorTab
       const currentColorData = images[selectedColorForImage];
       const existingImages = currentColorData?.images || [];
 
-      const imageExists = existingImages.some(img =>
-        img.publicId === newImage.publicId && img.url === newImage.url
-      );
+      // duplicate checking to match the database constraint: product_id, color_name, image_url
+      // is the same image URL already exists for this color?
+      const imageExists = existingImages.some(img => img.url === newImage.url);
 
       if (imageExists) {
-        console.warn('Image with same publicId and URL already exists, skipping duplicate.');
         setNewImageUrl('');
         setShowAddImageDialog(false);
         setSelectedColorForImage('');

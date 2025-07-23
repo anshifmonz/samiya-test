@@ -1,5 +1,6 @@
 import { supabaseAdmin } from 'lib/supabase';
 import { type Product } from 'types/product';
+import { generateImagePublicId } from 'utils/imageIdUtils';
 
 export default async function updateProduct(product: Product): Promise<Product | null> {
   const { data: categories, error: catError } = await supabaseAdmin
@@ -49,25 +50,59 @@ export default async function updateProduct(product: Product): Promise<Product |
     const color = colorKeys[colorIndex];
     const colorData = product.images[color];
     const images = colorData.images;
-    images.forEach((img, idx) => {
-      const isPrimary = colorIndex === 0 && idx === 0;
-      imageRows.push({
+
+    // deduplication to prevent duplicate images with same product_id, color_name, image_url
+    // prevents violations of CONSTRAINT unique_product_color_image UNIQUE (product_id, color_name, image_url)
+    const uniqueImages = new Map<string, any>();
+
+    images.forEach((img, _) => {
+      const imageUrl = typeof img === 'string' ? img : img.url;
+      let publicId = typeof img === 'string' ? null : img.publicId;
+
+      if (!imageUrl || imageUrl.trim() === '') return;
+      if (!publicId || publicId.trim() === '')
+        publicId = generateImagePublicId(imageUrl);
+
+      const uniqueKey = `${product.id}:${color}:${imageUrl}`;
+
+      if (uniqueImages.has(uniqueKey)) return;
+
+      const isPrimary = colorIndex === 0 && uniqueImages.size === 0;
+      const imageRow = {
         product_id: product.id,
         color_name: color,
         hex_code: colorData.hex,
-        image_url: typeof img === 'string' ? img : img.url,
-        public_id: typeof img === 'string' ? null : img.publicId,
+        image_url: imageUrl,
+        public_id: publicId,
         is_primary: isPrimary,
-        sort_order: idx,
-      });
+        sort_order: uniqueImages.size,
+      };
+
+      uniqueImages.set(uniqueKey, imageRow);
     });
+
+    imageRows.push(...Array.from(uniqueImages.values()));
   }
+
   if (imageRows.length > 0) {
     const { error: imgError } = await supabaseAdmin
       .from('product_images')
       .insert(imageRows);
     if (imgError) {
       console.error('Error inserting product images:', imgError);
+      if (imgError.code === '23505') {
+        console.error('Unique constraint violation for product_images (likely unique_product_color_image):', {
+          constraint: 'unique_product_color_image',
+          message: 'Duplicate image detected with same product_id, color_name, and image_url',
+          productId: product.id,
+          imageRows: imageRows.map(row => ({
+            product_id: row.product_id,
+            color_name: row.color_name,
+            image_url: row.image_url
+          })),
+          error: imgError
+        });
+      }
     }
   }
 
@@ -75,9 +110,8 @@ export default async function updateProduct(product: Product): Promise<Product |
     .from('product_colors')
     .delete()
     .eq('product_id', product.id);
-  if (delColorError) {
+  if (delColorError)
     console.error('Error deleting old product colors:', delColorError);
-  }
 
   const colorRows = [];
   for (let colorIndex = 0; colorIndex < colorKeys.length; colorIndex++) {
@@ -95,18 +129,16 @@ export default async function updateProduct(product: Product): Promise<Product |
     const { error: colorError } = await supabaseAdmin
       .from('product_colors')
       .insert(colorRows);
-    if (colorError) {
+    if (colorError)
       console.error('Error inserting product colors:', colorError);
-    }
   }
 
   const { error: delTagError } = await supabaseAdmin
     .from('product_tags')
     .delete()
     .eq('product_id', product.id);
-  if (delTagError) {
+  if (delTagError)
     console.error('Error deleting old product tags:', delTagError);
-  }
 
   if (product.tags && product.tags.length > 0) {
     for (const tagName of product.tags) {
@@ -138,9 +170,8 @@ export default async function updateProduct(product: Product): Promise<Product |
           product_id: product.id,
           tag_id: tagId,
         });
-      if (linkError) {
+      if (linkError)
         console.error('Error linking product to tag:', linkError);
-      }
     }
   }
 
@@ -149,9 +180,8 @@ export default async function updateProduct(product: Product): Promise<Product |
     .from('product_sizes')
     .delete()
     .eq('product_id', product.id);
-  if (delSizeError) {
+  if (delSizeError)
     console.error('Error deleting old product sizes:', delSizeError);
-  }
 
   if (product.sizes && product.sizes.length > 0) {
     const sizeRows = product.sizes.map(size => ({
@@ -161,9 +191,8 @@ export default async function updateProduct(product: Product): Promise<Product |
     const { error: sizeError } = await supabaseAdmin
       .from('product_sizes')
       .insert(sizeRows);
-    if (sizeError) {
+    if (sizeError)
       console.error('Error linking product to sizes:', sizeError);
-    }
   }
 
   return product;

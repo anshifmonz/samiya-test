@@ -45,20 +45,20 @@ export default async function createProduct(newProduct: CreateProductData): Prom
     const colorData = newProduct.images[color];
     const images = colorData.images;
 
-    // deduplication to prevent duplicate image
     const uniqueImages = new Map<string, any>();
 
-    images.forEach((img, idx) => {
+    images.forEach((img, _) => {
       const imageUrl = typeof img === 'string' ? img : img.url;
       let publicId = typeof img === 'string' ? null : img.publicId;
 
-      if (!publicId || publicId.trim() === '') {
+      if (!imageUrl || imageUrl.trim() === '') return;
+      if (!publicId || publicId.trim() === '')
         publicId = generateImagePublicId(imageUrl);
-      }
 
-      if (uniqueImages.has(imageUrl)) return;
+      const uniqueKey = `${productId}:${color}:${imageUrl}`;
+      if (uniqueImages.has(uniqueKey)) return;
 
-      const isPrimary = colorIndex === 0 && idx === 0;
+      const isPrimary = colorIndex === 0 && uniqueImages.size === 0; // First image overall is primary
       const imageRow = {
         product_id: productId,
         color_name: color,
@@ -69,7 +69,7 @@ export default async function createProduct(newProduct: CreateProductData): Prom
         sort_order: uniqueImages.size,
       };
 
-      uniqueImages.set(imageUrl, imageRow);
+      uniqueImages.set(uniqueKey, imageRow);
     });
 
     imageRows.push(...Array.from(uniqueImages.values()));
@@ -81,6 +81,19 @@ export default async function createProduct(newProduct: CreateProductData): Prom
       .insert(imageRows);
     if (imgError) {
       console.error('Error inserting product images:', imgError);
+      if (imgError.code === '23505') {
+        console.error('Unique constraint violation for product_images (likely unique_product_color_image):', {
+          constraint: 'unique_product_color_image',
+          message: 'Duplicate image detected with same product_id, color_name, and image_url',
+          productId,
+          imageRows: imageRows.map(row => ({
+            product_id: row.product_id,
+            color_name: row.color_name,
+            image_url: row.image_url
+          })),
+          error: imgError
+        });
+      }
     }
   }
 
@@ -100,9 +113,8 @@ export default async function createProduct(newProduct: CreateProductData): Prom
     const { error: colorError } = await supabaseAdmin
       .from('product_colors')
       .insert(colorRows);
-    if (colorError) {
+    if (colorError)
       console.error('Error inserting product colors:', colorError);
-    }
   }
 
   if (newProduct.tags && newProduct.tags.length > 0) {
@@ -135,9 +147,8 @@ export default async function createProduct(newProduct: CreateProductData): Prom
           product_id: productId,
           tag_id: tagId,
         });
-      if (linkError) {
+      if (linkError)
         console.error('Error linking product to tag:', linkError);
-      }
     }
   }
 
@@ -150,9 +161,8 @@ export default async function createProduct(newProduct: CreateProductData): Prom
     const { error: sizeError } = await supabaseAdmin
       .from('product_sizes')
       .insert(sizeRows);
-    if (sizeError) {
+    if (sizeError)
       console.error('Error linking product to sizes:', sizeError);
-    }
   }
 
   return {
