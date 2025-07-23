@@ -163,7 +163,7 @@ export function useProductImagesSection({ images, onImagesChange, activeColorTab
 
       try {
         const cloudinaryImages = imagesToRemove.filter(img =>
-          isCloudinaryUrl(img.publicId)
+          isCloudinaryUrl(img.url)
         );
 
         if (cloudinaryImages.length > 0) {
