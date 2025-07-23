@@ -16,9 +16,10 @@ interface FilterPanelProps {
   availableTags?: string[];
   categories: Category[];
   categoryCountMap?: Map<string, number>;
+  filters?: ProductFilters;
 }
 
-const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange, availableColors, availableCategories, availableTags, categories, categoryCountMap }) => {
+const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange, availableColors, availableCategories, availableTags, categories, categoryCountMap, filters }) => {
   const {
     selectedCategory,
     priceRange,
@@ -29,7 +30,16 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange, availableCol
     handleColorChange,
     handleTagToggle,
     clearFilters,
-  } = useProductFilters({ onFiltersChange });
+  } = useProductFilters({
+    onFiltersChange,
+    initialCategory: filters?.category || 'all',
+    initialPriceRange: [
+      filters?.minPrice !== undefined ? filters.minPrice : 20,
+      filters?.maxPrice !== undefined ? filters.maxPrice : 3000,
+    ],
+    initialColors: filters?.colors || [],
+    initialTags: filters?.tags || [],
+  });
 
   return (
     <div className="w-80 bg-filter-bg border-r border-border p-6 space-y-6 h-fit sticky top-4 pt-8">

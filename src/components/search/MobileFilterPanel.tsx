@@ -26,9 +26,10 @@ interface MobileFilterPanelProps {
   availableTags?: string[];
   categories: Category[];
   categoryCountMap?: Map<string, number>;
+  filters?: ProductFilters; // <-- add this
 }
 
-const MobileFilterPanel: React.FC<MobileFilterPanelProps> = ({ onFiltersChange, availableColors, availableCategories, availableTags, categories, categoryCountMap }) => {
+const MobileFilterPanel: React.FC<MobileFilterPanelProps> = ({ onFiltersChange, availableColors, availableCategories, availableTags, categories, categoryCountMap, filters }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   // handle browser back button to close sidebar if open
@@ -58,7 +59,16 @@ const MobileFilterPanel: React.FC<MobileFilterPanelProps> = ({ onFiltersChange, 
     handleTagToggle,
     clearFilters,
     getActiveFiltersCount,
-  } = useProductFilters({ onFiltersChange });
+  } = useProductFilters({
+    onFiltersChange,
+    initialCategory: filters?.category || 'all',
+    initialPriceRange: [
+      filters?.minPrice !== undefined ? filters.minPrice : 20,
+      filters?.maxPrice !== undefined ? filters.maxPrice : 3000,
+    ],
+    initialColors: filters?.colors || [],
+    initialTags: filters?.tags || [],
+  });
 
   return (
     <div className="mb-6">

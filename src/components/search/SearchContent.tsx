@@ -11,7 +11,7 @@ interface SearchContentProps {
   onFiltersChange: (filters: ProductFilters) => void;
   categories: Category[];
   query?: string;
-  filters: ProductFilters;
+  filters?: ProductFilters;
 }
 
 const SearchContent: React.FC<SearchContentProps> = ({ products, onFiltersChange, categories, query, filters }) => {
@@ -54,6 +54,7 @@ const SearchContent: React.FC<SearchContentProps> = ({ products, onFiltersChange
           availableTags={availableTags}
           categories={categories}
           categoryCountMap={categoryCountMap}
+          filters={filters}
         />
       </div>
 
@@ -66,10 +67,11 @@ const SearchContent: React.FC<SearchContentProps> = ({ products, onFiltersChange
             availableTags={availableTags}
             categories={categories}
             categoryCountMap={categoryCountMap}
+            filters={filters}
           />
         </div>
 
-        <ProductsGrid products={products} query={query} filters={filters} />
+        <ProductsGrid products={products} query={query} filters={filters || {}} />
       </div>
     </div>
   );

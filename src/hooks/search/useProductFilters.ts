@@ -1,11 +1,24 @@
 import { useState } from 'react';
 import type { ProductFilters, UseProductFiltersProps } from '@/types';
 
-export const useProductFilters = ({ onFiltersChange }: UseProductFiltersProps) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [priceRange, setPriceRange] = useState<[number, number]>([200, 3000]);
-  const [selectedColors, setSelectedColors] = useState<string[]>([]);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+interface UseProductFiltersPropsWithInitial extends UseProductFiltersProps {
+  initialCategory?: string;
+  initialPriceRange?: [number, number];
+  initialColors?: string[];
+  initialTags?: string[];
+}
+
+export const useProductFilters = ({
+  onFiltersChange,
+  initialCategory = 'all',
+  initialPriceRange = [20, 3000],
+  initialColors = [],
+  initialTags = [],
+}: UseProductFiltersPropsWithInitial) => {
+  const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory);
+  const [priceRange, setPriceRange] = useState<[number, number]>(initialPriceRange);
+  const [selectedColors, setSelectedColors] = useState<string[]>(initialColors);
+  const [selectedTags, setSelectedTags] = useState<string[]>(initialTags);
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
@@ -57,7 +70,7 @@ export const useProductFilters = ({ onFiltersChange }: UseProductFiltersProps) =
 
   const clearFilters = () => {
     setSelectedCategory('all');
-    setPriceRange([20, 500]);
+    setPriceRange([20, 3000]);
     setSelectedColors([]);
     setSelectedTags([]);
     onFiltersChange({});
@@ -66,7 +79,7 @@ export const useProductFilters = ({ onFiltersChange }: UseProductFiltersProps) =
   const getActiveFiltersCount = () => {
     let count = 0;
     if (selectedCategory !== 'all') count++;
-    if (priceRange[0] > 20 || priceRange[1] < 500) count++;
+    if (priceRange[0] > 20 || priceRange[1] < 3000) count++;
     if (selectedColors.length > 0) count++;
     if (selectedTags.length > 0) count++;
     return count;
