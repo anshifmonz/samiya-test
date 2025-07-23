@@ -12,9 +12,10 @@ interface Props {
   initialQuery: string;
   initialFilters: ProductFilters;
   initialCategories: Category[];
+  source?: string;
 }
 
-export default function SearchPage({ initialProducts, initialQuery, initialFilters, initialCategories }: Props) {
+export default function SearchPage({ initialProducts, initialQuery, initialFilters, initialCategories, source }: Props) {
   const [products, setProducts] = useState<Omit<Product, 'description'>[]>(initialProducts);
   const [filters, setFilters] = useState<ProductFilters>(initialFilters);
   const router = useRouter();
@@ -55,11 +56,13 @@ export default function SearchPage({ initialProducts, initialQuery, initialFilte
     if (filters.tags && filters.tags.length > 0)
       params.set('tags', filters.tags.join(','));
 
+    if (source) params.set('source', source);
+
     const newUrl = `${window.location.pathname}?${params.toString()}`;
 
     if (newUrl !== window.location.href)
       router.replace(newUrl, { scroll: false });
-  }, [filters, initialQuery, router]);
+  }, [filters, initialQuery, router, source]);
 
   const handleFiltersChange = (newFilters: ProductFilters) => {
     setFilters(newFilters);

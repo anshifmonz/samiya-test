@@ -53,7 +53,7 @@ export default async function SearchPage({ searchParams }: Props) {
   const source = searchParams.source;
 
   if (
-    (!query || query.trim() === '') && source !== 'budget' ||
+    ((!query || query.trim() === '') && source !== 'budget') ||
     (source === 'budget' && minPrice == null && maxPrice == null)
   ) {
     redirect('/');
@@ -69,6 +69,7 @@ export default async function SearchPage({ searchParams }: Props) {
       initialQuery={query}
       initialFilters={filters}
       initialCategories={categories}
+      source={source}
     />
   );
 }

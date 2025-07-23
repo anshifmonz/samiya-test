@@ -9,9 +9,10 @@ interface Props {
   initialQuery: string;
   initialFilters: ProductFilters;
   initialCategories: Category[];
+  source?: string;
 }
 
-export default async function Search({ initialProducts, initialQuery, initialFilters, initialCategories }: Props) {
+export default async function Search({ initialProducts, initialQuery, initialFilters, initialCategories, source }: Props) {
   return (
     <div className="min-h-screen max-w-7xl mx-auto bg-background">
       <div className="pt-16">
@@ -21,6 +22,7 @@ export default async function Search({ initialProducts, initialQuery, initialFil
             initialQuery={initialQuery}
             initialFilters={initialFilters}
             initialCategories={initialCategories}
+            source={source}
           />
         </Suspense>
       </div>
