@@ -15,7 +15,7 @@ interface UseSearchContextLogicProps {
 /**
  * Custom hook that manages all search-related state, effects, and derived values.
  * Extracted from SearchContext to separate concerns and improve maintainability.
- * 
+ *
  * @param props - Initial values for search state
  * @returns Object containing all search state, handlers, and computed values
  */
@@ -33,7 +33,19 @@ const [filters, setFilters] = useState<ProductFilters>({ ...initialFilters, sort
 
   // Handle filter changes
   const handleFiltersChange = (newFilters: ProductFilters) => {
-    setFilters({ ...filters, ...newFilters });
+    // If the newFilters object has explicit undefined values, use them to clear those properties
+    // Otherwise, merge with existing filters
+    const updatedFilters = { ...filters };
+
+    Object.entries(newFilters).forEach(([key, value]) => {
+      if (value === undefined) {
+        delete updatedFilters[key as keyof ProductFilters];
+      } else {
+        (updatedFilters as any)[key] = value;
+      }
+    });
+
+    setFilters(updatedFilters);
   };
 
   // Method to update products externally
@@ -70,7 +82,7 @@ const [filters, setFilters] = useState<ProductFilters>({ ...initialFilters, sort
         categoryCountMap.set(product.categoryId, (categoryCountMap.get(product.categoryId) || 0) + 1);
       }
     });
-    const availableCategories = Array.from(categoryCountMap.keys()).map(id => 
+    const availableCategories = Array.from(categoryCountMap.keys()).map(id =>
       initialCategories.find(cat => cat.id === id)?.name || ''
     );
 

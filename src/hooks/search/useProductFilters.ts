@@ -105,7 +105,15 @@ export const useProductFilters = ({
     setSelectedColors([]);
     setSelectedTags([]);
     setSelectedSortOrder('relevance');
-    onFiltersChange({});
+
+    onFiltersChange({
+      category: undefined,
+      minPrice: undefined,
+      maxPrice: undefined,
+      colors: undefined,
+      tags: undefined,
+      sortOrder: undefined,
+    });
   };
 
   useEffect(() => {

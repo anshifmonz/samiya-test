@@ -58,7 +58,14 @@ const ProductsGrid: React.FC = () => {
             Try adjusting your search terms or filters to discover more products
           </p>
           <button
-            onClick={() => onFiltersChange({})}
+            onClick={() => onFiltersChange({
+              category: undefined,
+              minPrice: undefined,
+              maxPrice: undefined,
+              colors: undefined,
+              tags: undefined,
+              sortOrder: undefined,
+            })}
             className="bg-primary text-primary-foreground px-4 md:px-6 py-4 md:py-4 rounded-lg text-base md:text-lg tracking-wider uppercase shadow-lg hover:bg-primary-hover transition-colors"
           >
             Clear Filters
