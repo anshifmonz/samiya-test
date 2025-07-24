@@ -2,37 +2,40 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import searchProducts from 'lib/public/search';
 import SearchContent from './SearchContent';
-import { SearchProduct, type ProductFilters } from 'types/product';
+import { type ProductFilters, SearchProduct } from 'types/product';
 import { type Category } from 'types/category';
+import searchProducts from 'lib/public/search';
 
 interface Props {
   initialProducts: SearchProduct[];
+  initialTotalCount: number;
   initialQuery: string;
   initialFilters: ProductFilters;
   initialCategories: Category[];
   source?: string;
 }
 
-export default function SearchPage({ initialProducts, initialQuery, initialFilters, initialCategories, source }: Props) {
+export default function SearchPage({ initialProducts, initialTotalCount, initialQuery, initialFilters, initialCategories, source }: Props) {
   const [products, setProducts] = useState<SearchProduct[]>(initialProducts);
+  const [totalCount, setTotalCount] = useState<number>(initialTotalCount);
   const [filters, setFilters] = useState<ProductFilters>(initialFilters);
   const router = useRouter();
   const isFirstRun = useRef(true);
   const isUrlSyncInitialized = useRef(false);
 
   // fetch products when filters or query change and not on first run
+  const fetchProducts = async () => {
+    const results = await searchProducts(initialQuery, filters);
+    setProducts(results.products);
+    setTotalCount(results.totalCount);
+  };
+  
   useEffect(() => {
     if (isFirstRun.current) {
       isFirstRun.current = false;
       return;
     }
-
-    const fetchProducts = async () => {
-      const results = await searchProducts(initialQuery, filters);
-      setProducts(results);
-    };
     fetchProducts();
   }, [filters, initialQuery]);
 
@@ -77,6 +80,7 @@ export default function SearchPage({ initialProducts, initialQuery, initialFilte
   return (
     <SearchContent
       products={products}
+      totalCount={totalCount}
       onFiltersChange={handleFiltersChange}
       categories={initialCategories}
       query={initialQuery}

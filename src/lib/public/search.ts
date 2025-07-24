@@ -1,10 +1,10 @@
 import { supabasePublic } from 'lib/supabasePublic';
-import { type SearchProduct, type ProductFilters, type Size } from 'types/product';
+import { type SearchProductRaw, type SearchResult, type ProductFilters, type Size } from 'types/product';
 
 async function searchProducts(
   query: string,
   filters?: ProductFilters,
-): Promise<SearchProduct[]> {
+): Promise<SearchResult> {
   const rpcArgs: Record<string, any> = {
     query_text: query || null,
     min_price: filters?.minPrice ?? null,
@@ -21,10 +21,16 @@ async function searchProducts(
 
   if (error) {
     console.error('Error fetching products from Supabase RPC:', error);
-    return [];
-  }
+    return {
+      products: [],
+      totalCount: 0
+    };
+    }
 
-  return (data || []).map((row: any) => {
+  const totalCount = data.length > 0 ? data[0].total_count || 0 : 0;
+  const removedTotalCount = data.map(({ total_count, ...product }) => product);
+
+  const products = (removedTotalCount || []).map((row: SearchProductRaw) => {
     const images: Record<string, { hex: string; images: any[] }> = {};
     if (row.product_images) {
       const sortedImages = [...row.product_images].sort((a: any, b: any) => {
@@ -76,6 +82,11 @@ async function searchProducts(
       sizes
     };
   });
+
+  return {
+    products,
+    totalCount
+  };
 }
 
 export default searchProducts;

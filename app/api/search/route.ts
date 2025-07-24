@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import searchProducts from 'lib/public/search';
-import { type SearchProduct } from 'types/product';
+import { type SearchResult } from 'types/product';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
   const limitNumber = limit ? parseInt(limit) : 16;
   const offsetNumber = offset ? parseInt(offset) : 0;
 
-  const products: SearchProduct[] = await searchProducts(query, {
+  const products: SearchResult = await searchProducts(query, {
     category,
     minPrice: minPriceNumber,
     maxPrice: maxPriceNumber,

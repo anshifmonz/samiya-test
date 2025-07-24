@@ -17,11 +17,13 @@ function buildProductSearchParams(query?: string, filters?: ProductFilters, limi
   return params;
 }
 
-export function useInfiniteProductScroll(initialProducts: SearchProduct[], query?: string, filters?: ProductFilters) {
+export function useInfiniteProductScroll(initialProducts: SearchProduct[], initialTotalCount: number, query?: string, filters?: ProductFilters) {
   const [products, setProducts] = useState(initialProducts);
+  const [totalCount, setTotalCount] = useState(initialTotalCount);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [offset, setOffset] = useState(initialProducts.length);
+  const [isFirstRender, setIsFirstRender] = useState(true);
   const loaderRef = useRef<HTMLDivElement | null>(null);
 
   // fetch more products
@@ -32,7 +34,7 @@ export function useInfiniteProductScroll(initialProducts: SearchProduct[], query
       const params = buildProductSearchParams(query, filters, PAGE_SIZE, offset);
       const res = await apiRequest(`/api/search?${params.toString()}`, { showLoadingBar: true, loadingBarDelay: 200 });
       if (res.error) throw new Error(res.error);
-      const newProducts: SearchProduct[] = res.data || [];
+      const newProducts: SearchProduct[] = res.data?.products || res.data || [];
       setProducts(prev => [...prev, ...newProducts]);
       setOffset(prev => prev + newProducts.length);
       if (newProducts.length < PAGE_SIZE) setHasMore(false);
@@ -45,6 +47,11 @@ export function useInfiniteProductScroll(initialProducts: SearchProduct[], query
 
   // reset products and fetch first page if filters or query change
   useEffect(() => {
+    if (isFirstRender && initialProducts.length > 0) {
+      setIsFirstRender(false);
+      return;
+    }
+
     let ignore = false;
     async function fetchFirstPage() {
       setLoading(true);
@@ -54,9 +61,12 @@ export function useInfiniteProductScroll(initialProducts: SearchProduct[], query
         const params = buildProductSearchParams(query, filters, PAGE_SIZE, 0);
         const res = await apiRequest(`/api/search?${params.toString()}`, { showLoadingBar: true, loadingBarDelay: 200 });
         if (res.error) throw new Error(res.error);
-        const newProducts: SearchProduct[] = res.data || [];
+        const responseData = res.data;
+        const newProducts: SearchProduct[] = responseData?.products || [];
+        const newTotalCount = responseData?.totalCount || newProducts.length;
         if (!ignore) {
           setProducts(newProducts);
+          setTotalCount(newTotalCount);
           setOffset(newProducts.length);
           setHasMore(newProducts.length === PAGE_SIZE);
         }
@@ -67,8 +77,9 @@ export function useInfiniteProductScroll(initialProducts: SearchProduct[], query
       }
     }
     fetchFirstPage();
+    setIsFirstRender(false);
     return () => { ignore = true; };
-  }, [filters, query]);
+  }, [filters, query, isFirstRender, initialProducts.length]);
 
   // Intersection Observer to trigger fetchMoreProducts
   useEffect(() => {
@@ -89,5 +100,5 @@ export function useInfiniteProductScroll(initialProducts: SearchProduct[], query
     };
   }, [fetchMoreProducts, hasMore]);
 
-  return { products, loading, hasMore, loaderRef };
+  return { products, totalCount, loading, hasMore, loaderRef };
 }

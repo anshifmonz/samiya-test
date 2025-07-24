@@ -2,14 +2,27 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'u
 
 interface SearchResultsHeaderProps {
   productCount: number;
+  totalCount: number;
 }
 
-const SearchResultsHeader: React.FC<SearchResultsHeaderProps> = ({ productCount }) => {
+const SearchResultsHeader: React.FC<SearchResultsHeaderProps> = ({ productCount, totalCount }) => {
+  const getDisplayText = () => {
+    if (productCount === 0) {
+      return "No products found";
+    }
+
+    if (productCount >= totalCount) {
+      return `Showing all ${totalCount} product${totalCount !== 1 ? 's' : ''}`;
+    }
+
+    return `Showing ${productCount} of ${totalCount} product${totalCount !== 1 ? 's' : ''}`;
+  };
+
   return (
     <div className="flex items-center justify-between mb-6">
       <div>
         <h1 className="text-xl sm:text-2xl font-bold text-foreground">Search Results</h1>
-        <p className="text-sm sm:text-lg text-muted-foreground">Showing 1-{Math.min(productCount, 12)} of {productCount} products</p>
+        <p className="text-sm sm:text-lg text-muted-foreground">{getDisplayText()}</p>
       </div>
 
       <Select defaultValue="relevance">

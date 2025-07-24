@@ -8,13 +8,14 @@ import MobileFilterPanel from './MobileFilterPanel';
 
 interface SearchContentProps {
   products: SearchProduct[];
+  totalCount: number;
   onFiltersChange: (filters: ProductFilters) => void;
   categories: Category[];
   query?: string;
   filters?: ProductFilters;
 }
 
-const SearchContent: React.FC<SearchContentProps> = ({ products, onFiltersChange, categories, query, filters }) => {
+const SearchContent: React.FC<SearchContentProps> = ({ products, totalCount, onFiltersChange, categories, query, filters }) => {
   // collect all unique colors from the current products with their hex codes
   const colorMap = new Map<string, string>();
   products.forEach(product => {
@@ -75,7 +76,7 @@ const SearchContent: React.FC<SearchContentProps> = ({ products, onFiltersChange
           />
         </div>
 
-        <ProductsGrid products={products} query={query} filters={filters || {}} />
+        <ProductsGrid products={products} totalCount={totalCount} query={query} filters={filters || {}} />
       </div>
     </div>
   );

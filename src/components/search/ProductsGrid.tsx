@@ -8,19 +8,19 @@ import { useInfiniteProductScroll } from 'hooks/search/useInfiniteProductScroll'
 
 interface ProductsGridProps {
   products: SearchProduct[];
+  totalCount: number;
   query?: string;
   filters: ProductFilters;
 }
 
-const ProductsGrid: React.FC<ProductsGridProps> = ({ products: initialProducts, query, filters }) => {
+const ProductsGrid: React.FC<ProductsGridProps> = ({ products: initialProducts, totalCount: initialTotalCount, query, filters }) => {
   const router = useRouter();
-  const { products, loading, hasMore, loaderRef } = useInfiniteProductScroll(initialProducts, query, filters);
-
+  const { products, totalCount, loading, hasMore, loaderRef } = useInfiniteProductScroll(initialProducts, initialTotalCount, query, filters);
   return (
     <div className="flex-1 px-4 sm:px-6 py-6 lg:p-6">
       {products.length > 0 ? (
         <>
-          <SearchResultsHeader productCount={products.length} />
+          <SearchResultsHeader productCount={products.length} totalCount={totalCount} />
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} />
