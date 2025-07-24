@@ -96,4 +96,26 @@ export interface SearchProduct {
   categoryId: string;
   sizes?: Size[];
   images: Record<string, ProductColorData>;
+  total_count?: number;
+}
+
+// Raw database result from search_products_rpc with total_count
+export interface SearchProductRaw {
+  id: string;
+  title: string;
+  price: number;
+  original_price?: number;
+  primary_color?: string;
+  primary_image_url?: string;
+  category_id: string;
+  product_images: any[];
+  product_tags: any[];
+  product_sizes: any[];
+  total_count: number;
+}
+
+// Enhanced search result with separate total count
+export interface SearchResult {
+  products: SearchProduct[];
+  totalCount: number;
 }
