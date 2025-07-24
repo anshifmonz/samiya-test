@@ -98,8 +98,8 @@ const SimilarProductCard: React.FC<SimilarProductCardProps> = ({ product }) => {
           <div className="flex items-center space-x-2">
             <span className="font-semibold text-foreground">
               <span className="mr-2">₹{product.price.toFixed(2)}</span>
-              {product.original_price && (
-                <span className="line-through text-xs">₹{product.original_price.toFixed(2)}</span>
+              {product.original_price && product.original_price > product.price && (
+                <span className="text-xs line-through text-muted-foreground">₹{product.original_price.toLocaleString()}</span>
               )}
             </span>
           </div>
