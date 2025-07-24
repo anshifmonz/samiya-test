@@ -1,7 +1,13 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import type { ProductFilters, UseProductFiltersProps } from '@/types';
+import type { ProductFilters } from 'types/product';
 
-interface UseProductFiltersPropsWithInitial extends UseProductFiltersProps {
+interface UseProductFiltersProps {
+  initialFilters: ProductFilters;
+  onFiltersChange?: (filters: ProductFilters) => void;
+}
+
+interface UseProductFiltersPropsWithInitial {
+  onFiltersChange?: (filters: ProductFilters) => void;
   initialCategory?: string;
   initialPriceRange?: [number, number];
   initialColors?: string[];
@@ -23,8 +29,9 @@ export const useProductFilters = ({
   const [selectedTags, setSelectedTags] = useState<string[]>(initialTags);
   const [selectedSortOrder, setSelectedSortOrder] = useState<string>(initialSortOrder);
 
+
   // Debounce timer ref for price changes
-  const priceDebounceTimer = useRef<NodeJS.Timeout | null>(null);
+  const priceDebounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const updateFilters = useCallback((partialFilters: Partial<ProductFilters>) => {
     const newFilters = {
@@ -41,12 +48,26 @@ export const useProductFilters = ({
       Object.entries(newFilters).filter(([_, value]) => value !== undefined)
     );
 
-    onFiltersChange(cleanFilters);
+    onFiltersChange?.(cleanFilters);
   }, [selectedCategory, priceRange, selectedColors, selectedTags, selectedSortOrder, onFiltersChange]);
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
-    updateFilters({ category: category === 'all' ? undefined : category });
+    // Use the new category value directly instead of relying on state
+    const newFilters = {
+      category: category === 'all' ? undefined : category,
+      minPrice: priceRange[0] !== 20 ? priceRange[0] : undefined,
+      maxPrice: priceRange[1] !== 3000 ? priceRange[1] : undefined,
+      colors: selectedColors.length > 0 ? selectedColors : undefined,
+      tags: selectedTags.length > 0 ? selectedTags : undefined,
+      sortOrder: selectedSortOrder === 'relevance' ? undefined : selectedSortOrder,
+    };
+    
+    const cleanFilters = Object.fromEntries(
+      Object.entries(newFilters).filter(([_, value]) => value !== undefined)
+    );
+    
+    onFiltersChange?.(cleanFilters);
   };
 
   /**
@@ -74,19 +95,46 @@ export const useProductFilters = ({
       ? [...selectedColors, color]
       : selectedColors.filter(c => c !== color);
     setSelectedColors(newColors);
-    updateFilters({ colors: newColors.length > 0 ? newColors : undefined });
+    
+    // Use the new colors value directly
+    const newFilters = {
+      category: selectedCategory === 'all' ? undefined : selectedCategory,
+      minPrice: priceRange[0] !== 20 ? priceRange[0] : undefined,
+      maxPrice: priceRange[1] !== 3000 ? priceRange[1] : undefined,
+      colors: newColors.length > 0 ? newColors : undefined,
+      tags: selectedTags.length > 0 ? selectedTags : undefined,
+      sortOrder: selectedSortOrder === 'relevance' ? undefined : selectedSortOrder,
+    };
+    
+    const cleanFilters = Object.fromEntries(
+      Object.entries(newFilters).filter(([_, value]) => value !== undefined)
+    );
+    
+    onFiltersChange?.(cleanFilters);
   };
 
   const handleTagToggle = (tag: string) => {
-    setSelectedTags(prevTags => {
-      const isCurrentlySelected = prevTags.includes(tag);
-      const newTags = isCurrentlySelected
-        ? prevTags.filter(t => t !== tag)
-        : [...prevTags, tag];
-
-      updateFilters({ tags: newTags.length > 0 ? newTags : undefined });
-      return newTags;
-    });
+    const isCurrentlySelected = selectedTags.includes(tag);
+    const newTags = isCurrentlySelected
+      ? selectedTags.filter(t => t !== tag)
+      : [...selectedTags, tag];
+    setSelectedTags(newTags);
+    
+    // Use the new tags value directly
+    const newFilters = {
+      category: selectedCategory === 'all' ? undefined : selectedCategory,
+      minPrice: priceRange[0] !== 20 ? priceRange[0] : undefined,
+      maxPrice: priceRange[1] !== 3000 ? priceRange[1] : undefined,
+      colors: selectedColors.length > 0 ? selectedColors : undefined,
+      tags: newTags.length > 0 ? newTags : undefined,
+      sortOrder: selectedSortOrder === 'relevance' ? undefined : selectedSortOrder,
+    };
+    
+    const cleanFilters = Object.fromEntries(
+      Object.entries(newFilters).filter(([_, value]) => value !== undefined)
+    );
+    
+    onFiltersChange?.(cleanFilters);
   };
 
   const handleSortChange = (sortOrder: string) => {
@@ -106,7 +154,7 @@ export const useProductFilters = ({
     setSelectedTags([]);
     setSelectedSortOrder('relevance');
 
-    onFiltersChange({
+    onFiltersChange?.({
       category: undefined,
       minPrice: undefined,
       maxPrice: undefined,
@@ -153,3 +201,47 @@ export const useProductFilters = ({
     getActiveFiltersCount,
   };
 };
+
+/**
+ * Simplified hook for context-based filter management.
+ * Extracted from the original useSearchContextLogic to focus specifically on filter management.
+ */
+export function useProductFiltersForContext({
+  initialFilters,
+}: UseProductFiltersProps) {
+  // Dynamic state
+  const [filters, setFilters] = useState<ProductFilters>({
+    ...initialFilters,
+    sortOrder: initialFilters.sortOrder || 'relevance'
+  });
+
+  // Handle filter changes
+  const handleFiltersChange = useCallback((newFilters: ProductFilters) => {
+    setFilters(prevFilters => {
+      // If the newFilters object has explicit undefined values, use them to clear those properties
+      // Otherwise, merge with existing filters
+      const updatedFilters = { ...prevFilters };
+
+      Object.entries(newFilters).forEach(([key, value]) => {
+        if (value === undefined) {
+          delete updatedFilters[key as keyof ProductFilters];
+        } else {
+          (updatedFilters as any)[key] = value;
+        }
+      });
+
+      return updatedFilters;
+    });
+  }, []);
+
+  // Clear all filters except essential ones
+  const clearFilters = useCallback(() => {
+    setFilters({});
+  }, []);
+
+  return {
+    filters,
+    onFiltersChange: handleFiltersChange,
+    clearFilters,
+  };
+}

@@ -1,57 +1,41 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { SearchProduct, ProductFilters } from 'types/product';
+import { SearchProduct } from 'types/product';
 import { Category } from 'types/category';
 
-interface UseSearchContextLogicProps {
+interface UseProductsProps {
   initialProducts: SearchProduct[];
   initialTotalCount: number;
-  initialQuery: string;
-  initialFilters: ProductFilters;
   initialCategories: Category[];
 }
 
 /**
- * Custom hook that manages all search-related state, effects, and derived values.
- * Extracted from SearchContext to separate concerns and improve maintainability.
+ * Custom hook that manages product data, counts, and computed values.
+ * Extracted from the original useSearchContextLogic to focus specifically on product management.
  *
- * @param props - Initial values for search state
- * @returns Object containing all search state, handlers, and computed values
+ * @param props - Initial values for product state
+ * @returns Object containing product state, handlers, and computed values
  */
-export default function useSearchContextLogic({
+export function useProducts({
   initialProducts,
   initialTotalCount,
-  initialQuery,
-  initialFilters,
   initialCategories,
-}: UseSearchContextLogicProps) {
+}: UseProductsProps) {
   // Dynamic state
   const [products, setProducts] = useState<SearchProduct[]>(initialProducts);
   const [totalCount, setTotalCount] = useState<number>(initialTotalCount);
-const [filters, setFilters] = useState<ProductFilters>({ ...initialFilters, sortOrder: initialFilters.sortOrder || 'relevance' });
-
-  // Handle filter changes
-  const handleFiltersChange = (newFilters: ProductFilters) => {
-    // If the newFilters object has explicit undefined values, use them to clear those properties
-    // Otherwise, merge with existing filters
-    const updatedFilters = { ...filters };
-
-    Object.entries(newFilters).forEach(([key, value]) => {
-      if (value === undefined) {
-        delete updatedFilters[key as keyof ProductFilters];
-      } else {
-        (updatedFilters as any)[key] = value;
-      }
-    });
-
-    setFilters(updatedFilters);
-  };
+  const [loading, setLoading] = useState<boolean>(false);
 
   // Method to update products externally
   const updateProducts = (newProducts: SearchProduct[], newTotalCount: number) => {
     setProducts(newProducts);
     setTotalCount(newTotalCount);
+  };
+
+  // Method to set loading state
+  const setProductsLoading = (isLoading: boolean) => {
+    setLoading(isLoading);
   };
 
   // Update products when initial values change
@@ -67,8 +51,11 @@ const [filters, setFilters] = useState<ProductFilters>({ ...initialFilters, sort
     products.forEach(product => {
       if (product.images) {
         Object.entries(product.images).forEach(([colorName, colorData]) => {
-          if (colorData.hex && colorData.hex !== '######') {
-            colorMap.set(colorName, colorData.hex);
+          if (colorData && typeof colorData === 'object' && 'hex' in colorData) {
+            const hex = (colorData as any).hex;
+            if (hex && hex !== '######') {
+              colorMap.set(colorName, hex);
+            }
           }
         });
       }
@@ -108,11 +95,16 @@ const [filters, setFilters] = useState<ProductFilters>({ ...initialFilters, sort
   }, [products, initialCategories]);
 
   return {
+    // State
     products,
     totalCount,
-    filters,
-    onFiltersChange: handleFiltersChange,
+    loading,
+    
+    // Actions
     updateProducts,
+    setProductsLoading,
+    
+    // Computed values
     ...computedValues,
   };
 }
