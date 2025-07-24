@@ -158,8 +158,6 @@ const { data, error } = await apiRequest('/api/admin/product/bulk', {
               <SelectItem value="price-high">Price: High to Low</SelectItem>
               <SelectItem value="newest">Newest First</SelectItem>
               <SelectItem value="oldest">Oldest First</SelectItem>
-              <SelectItem value="first-created">First Created</SelectItem>
-              <SelectItem value="last-created">Last Created</SelectItem>
               <SelectItem value="first-updated">First Updated</SelectItem>
               <SelectItem value="last-updated">Last Updated</SelectItem>
             </SelectContent>
