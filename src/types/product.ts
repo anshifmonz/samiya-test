@@ -69,6 +69,7 @@ export type ProductFilters = {
   tags?: string[];
   limit?: number;
   offset?: number;
+  sortOrder?: string;
 };
 
 export interface SimilarProduct {
