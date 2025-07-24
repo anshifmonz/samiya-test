@@ -1,82 +1,16 @@
 'use client';
 
-import { type SearchProduct, type ProductFilters } from 'types/product';
-import { type Category } from 'types/category';
 import FilterPanel from './FilterPanel';
 import ProductsGrid from './ProductsGrid';
 import MobileFilterPanel from './MobileFilterPanel';
 
-interface SearchContentProps {
-  products: SearchProduct[];
-  totalCount: number;
-  onFiltersChange: (filters: ProductFilters) => void;
-  categories: Category[];
-  query?: string;
-  filters?: ProductFilters;
-}
-
-const SearchContent: React.FC<SearchContentProps> = ({ products, totalCount, onFiltersChange, categories, query, filters }) => {
-  // collect all unique colors from the current products with their hex codes
-  const colorMap = new Map<string, string>();
-  products.forEach(product => {
-    if (product.images) {
-      Object.entries(product.images).forEach(([colorName, colorData]) => {
-        if (colorData.hex && colorData.hex !== '######') {
-          colorMap.set(colorName, colorData.hex);
-        }
-      });
-    }
-  });
-  const availableColors = Array.from(colorMap.entries()).map(([name, hex]) => ({ name, hex }));
-
-  const categoryCountMap = new Map<string, number>();
-  products.forEach(product => {
-    if (product.categoryId) {
-      categoryCountMap.set(product.categoryId, (categoryCountMap.get(product.categoryId) || 0) + 1);
-    }
-  });
-  const availableCategories = Array.from(categoryCountMap.keys()).map(id => categories.find(cat => cat.id === id)?.name || '');
-
-  const tagCountMap = new Map<string, number>();
-  products.forEach(product => {
-    if (product.tags) {
-      product.tags.forEach((tag: string) => {
-        tagCountMap.set(tag, (tagCountMap.get(tag) || 0) + 1);
-      });
-    }
-  });
-  const availableTags = Array.from(tagCountMap.entries())
-    .map(([name, count]) => ({ name, count }))
-    .sort((a, b) => b.count - a.count);
-
+const SearchContent: React.FC = () => {
   return (
     <div className="flex">
-      <div className="hidden lg:block">
-        <FilterPanel
-          onFiltersChange={onFiltersChange}
-          availableColors={availableColors}
-          availableCategories={availableCategories}
-          availableTags={availableTags}
-          categories={categories}
-          categoryCountMap={categoryCountMap}
-          filters={filters}
-        />
-      </div>
-
+      <FilterPanel />
       <div className="flex-1">
-        <div className="lg:hidden px-3 sm:px-5 pt-6">
-          <MobileFilterPanel
-            onFiltersChange={onFiltersChange}
-            availableColors={availableColors}
-            availableCategories={availableCategories}
-            availableTags={availableTags}
-            categories={categories}
-            categoryCountMap={categoryCountMap}
-            filters={filters}
-          />
-        </div>
-
-        <ProductsGrid products={products} totalCount={totalCount} query={query} filters={filters || {}} />
+        <MobileFilterPanel />
+        <ProductsGrid />
       </div>
     </div>
   );

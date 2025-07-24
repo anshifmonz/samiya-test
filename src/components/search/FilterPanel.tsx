@@ -6,20 +6,18 @@ import PriceFilter from './filter/PriceFilter';
 import ColorFilter from './filter/ColorFilter';
 import TagsFilter from './filter/TagsFilter';
 import { useProductFilters } from 'hooks/search/useProductFilters';
-import { type ProductFilters } from 'types/product';
-import { type Category } from 'types/category';
+import { useSearchContext } from 'contexts/SearchContext';
 
-interface FilterPanelProps {
-  onFiltersChange: (filters: ProductFilters) => void;
-  availableColors?: Array<{ name: string; hex: string }>;
-  availableCategories?: string[];
-  availableTags?: Array<{ name: string; count: number }>;
-  categories: Category[];
-  categoryCountMap?: Map<string, number>;
-  filters?: ProductFilters;
-}
-
-const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange, availableColors, availableCategories, availableTags, categories, categoryCountMap, filters }) => {
+const FilterPanel: React.FC = () => {
+  const {
+    onFiltersChange,
+    availableColors,
+    availableCategories,
+    availableTags,
+    categoryCountMap,
+    filters,
+    initialCategories: categories,
+  } = useSearchContext();
   const {
     selectedCategory,
     priceRange,
@@ -42,49 +40,51 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange, availableCol
   });
 
   return (
-    <div className="w-80 bg-filter-bg border-r border-border p-6 space-y-6 h-fit sticky top-4 pt-8">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-foreground">Filters</h2>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={clearFilters}
-          className="text-muted-foreground hover:text-foreground"
-        >
-          Clear All
-        </Button>
-      </div>
-
-      <div className="space-y-6">
-        <CategoryFilter
-          selectedCategory={selectedCategory}
-          onCategoryChange={handleCategoryChange}
-          availableCategories={availableCategories}
-          categories={categories}
-          categoryCountMap={categoryCountMap}
-        />
-
-        <div className="border-t border-border pt-6">
-          <PriceFilter
-            priceRange={priceRange}
-            onPriceChange={handlePriceChange}
-          />
+    <div className="hidden lg:block">
+      <div className="w-80 bg-filter-bg border-r border-border p-6 space-y-6 h-fit sticky top-4 pt-8">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-foreground">Filters</h2>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={clearFilters}
+            className="text-muted-foreground hover:text-foreground"
+          >
+            Clear All
+          </Button>
         </div>
 
-        <div className="border-t border-border pt-6">
-          <ColorFilter
-            selectedColors={selectedColors}
-            onColorChange={handleColorChange}
-            availableColors={availableColors}
+        <div className="space-y-6">
+          <CategoryFilter
+            selectedCategory={selectedCategory}
+            onCategoryChange={handleCategoryChange}
+            availableCategories={availableCategories}
+            categories={categories}
+            categoryCountMap={categoryCountMap}
           />
-        </div>
 
-        <div className="border-t border-border pt-6">
-          <TagsFilter
-            selectedTags={selectedTags}
-            onTagToggle={handleTagToggle}
-            availableTags={availableTags}
-          />
+          <div className="border-t border-border pt-6">
+            <PriceFilter
+              priceRange={priceRange}
+              onPriceChange={handlePriceChange}
+            />
+          </div>
+
+          <div className="border-t border-border pt-6">
+            <ColorFilter
+              selectedColors={selectedColors}
+              onColorChange={handleColorChange}
+              availableColors={availableColors}
+            />
+          </div>
+
+          <div className="border-t border-border pt-6">
+            <TagsFilter
+              selectedTags={selectedTags}
+              onTagToggle={handleTagToggle}
+              availableTags={availableTags}
+            />
+          </div>
         </div>
       </div>
     </div>

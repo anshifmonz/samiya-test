@@ -5,15 +5,10 @@ import { type SearchProduct, type ProductFilters } from 'types/product';
 import ProductCard from '../shared/ProductCard';
 import SearchResultsHeader from './SearchResultsHeader';
 import { useInfiniteProductScroll } from 'hooks/search/useInfiniteProductScroll';
+import { useSearchContext } from '../../contexts/SearchContext';
 
-interface ProductsGridProps {
-  products: SearchProduct[];
-  totalCount: number;
-  query?: string;
-  filters: ProductFilters;
-}
-
-const ProductsGrid: React.FC<ProductsGridProps> = ({ products: initialProducts, totalCount: initialTotalCount, query, filters }) => {
+const ProductsGrid: React.FC = () => {
+  const { products: initialProducts, totalCount: initialTotalCount, initialQuery: query, filters } = useSearchContext();
   const router = useRouter();
   const { products, totalCount, loading, hasMore, loaderRef } = useInfiniteProductScroll(initialProducts, initialTotalCount, query, filters);
   return (
