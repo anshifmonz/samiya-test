@@ -1,6 +1,53 @@
 import { supabasePublic } from 'lib/supabasePublic';
 import { type SearchProductRaw, type SearchResult, type ProductFilters, type Size } from 'types/product';
 
+function calculateRelevanceScore(product: any, query: string): number {
+  if (!query || query.trim() === '') return 0;
+
+  const searchTerm = query.toLowerCase().trim();
+  let score = 0;
+
+  if (product.title) {
+    const title = product.title.toLowerCase();
+    if (title === searchTerm) {
+      score += 100;
+    } else if (title.includes(searchTerm)) {
+      score += 80;
+    } else if (title.split(' ').some((word: string) => word.includes(searchTerm))) {
+      score += 60;
+    }
+  }
+
+  if (product.description) {
+    const description = product.description.toLowerCase();
+    if (description.includes(searchTerm)) {
+      score += 50;
+    } else if (description.split(' ').some((word: string) => word.includes(searchTerm))) {
+      score += 30;
+    }
+  }
+
+  if (product.category_name) {
+    const category = product.category_name.toLowerCase();
+    if (category.includes(searchTerm)) {
+      score += 30;
+    }
+  }
+
+  if (product.product_tags && Array.isArray(product.product_tags)) {
+    product.product_tags.forEach((tagObj: any) => {
+      if (tagObj.tag?.name) {
+        const tagName = tagObj.tag.name.toLowerCase();
+        if (tagName.includes(searchTerm)) {
+          score += 20;
+        }
+      }
+    });
+  }
+
+  return score;
+}
+
 async function searchProducts(
   query: string,
   filters?: ProductFilters,
@@ -29,9 +76,25 @@ async function searchProducts(
     }
 
   const totalCount = data.length > 0 ? data[0].total_count || 0 : 0;
-  const removedTotalCount = data.map(({ total_count, ...product }) => product);
+  let rawProducts = data.map(({ total_count, ...product }) => product);
 
-  const products = (removedTotalCount || []).map((row: SearchProductRaw) => {
+  // relevance scoring if there's a search query and sort is by relevance
+  const sortBy = filters?.sortOrder || 'relevance';
+  if (query && query.trim() !== '' && sortBy === 'relevance') {
+    rawProducts = rawProducts.map(product => ({
+      ...product,
+      relevanceScore: calculateRelevanceScore(product, query)
+    }));
+
+    rawProducts.sort((a, b) => {
+      if (a.relevanceScore !== b.relevanceScore) {
+        return b.relevanceScore - a.relevanceScore;
+      }
+      return (a.price || 0) - (b.price || 0);
+    });
+  }
+
+  const products = (rawProducts || []).map((row: SearchProductRaw) => {
     const images: Record<string, { hex: string; images: any[] }> = {};
     if (row.product_images) {
       const sortedImages = [...row.product_images].sort((a: any, b: any) => {
