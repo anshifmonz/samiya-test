@@ -16,14 +16,14 @@ import PriceFilter from './filter/PriceFilter';
 import ColorFilter from './filter/ColorFilter';
 import TagsFilter from './filter/TagsFilter';
 import { useProductFilters } from 'hooks/search/useProductFilters';
-import { type SearchProduct, type ProductFilters } from 'types/product';
+import { type ProductFilters } from 'types/product';
 import { type Category } from 'types/category';
 
 interface MobileFilterPanelProps {
   onFiltersChange: (filters: ProductFilters) => void;
   availableColors?: Array<{ name: string; hex: string }>;
   availableCategories?: string[];
-  availableTags?: string[];
+  availableTags?: Array<{ name: string; count: number }>;
   categories: Category[];
   categoryCountMap?: Map<string, number>;
   filters?: ProductFilters;

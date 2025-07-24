@@ -61,7 +61,7 @@ export default async function SearchPage({ searchParams }: Props) {
   const filters = parseFilters(searchParams);
   const products: SearchProduct[] = await searchProducts(query, filters);
   const categories: Category[] = await getCategories();
-  console.log('products from search page', products);
+
   return (
     <Search
       initialProducts={products}

@@ -35,13 +35,18 @@ const SearchContent: React.FC<SearchContentProps> = ({ products, onFiltersChange
     }
   });
   const availableCategories = Array.from(categoryCountMap.keys()).map(id => categories.find(cat => cat.id === id)?.name || '');
-  const tagSet = new Set<string>();
+
+  const tagCountMap = new Map<string, number>();
   products.forEach(product => {
     if (product.tags) {
-      product.tags.forEach((tag: string) => tagSet.add(tag));
+      product.tags.forEach((tag: string) => {
+        tagCountMap.set(tag, (tagCountMap.get(tag) || 0) + 1);
+      });
     }
   });
-  const availableTags = Array.from(tagSet);
+  const availableTags = Array.from(tagCountMap.entries())
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count);
 
   return (
     <div className="flex">
