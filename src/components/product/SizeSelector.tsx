@@ -7,7 +7,7 @@ interface SizeSelectorProps {
 }
 
 export default function SizeSelector({ sizes, selectedSize, onSizeChange }: SizeSelectorProps) {
-  const standardSizes = ["XS", "S", "M", "L", "XL", "2XL", "3XL"];
+  const standardSizes = ["XS", "S", "M", "L", "XL", "2XL", "3XL", "Free Size"];
   const availableSizes = sizes?.map(size => size.name) || [];
 
   return (
@@ -21,7 +21,7 @@ export default function SizeSelector({ sizes, selectedSize, onSizeChange }: Size
               key={size}
               onClick={() => isAvailable && onSizeChange(selectedSize === size ? '' : size)}
               className={`relative px-4 py-2 text-sm font-medium rounded border transition-all duration-200 ${
-                isAvailable 
+                isAvailable
                   ? selectedSize === size
                     ? 'bg-foreground text-background border-foreground'
                     : 'bg-background text-foreground border-border hover:border-foreground'

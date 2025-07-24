@@ -10,6 +10,7 @@ const sizeIdMap: Record<string, string> = {
   XL: 'xl',
   '2XL': '2xl',
   '3XL': '3xl',
+  'Free Size': 'f',
 };
 
 const standardSizes: Size[] = [
@@ -20,6 +21,7 @@ const standardSizes: Size[] = [
   { id: sizeIdMap.XL, name: 'XL', sort_order: 5 },
   { id: sizeIdMap['2XL'], name: '2XL', sort_order: 6 },
   { id: sizeIdMap['3XL'], name: '3XL', sort_order: 7 },
+  { id: sizeIdMap['Free Size'], name: 'Free Size', sort_order: 8 },
 ];
 
 const SizeSelect: React.FC = () => {
