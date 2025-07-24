@@ -10,6 +10,7 @@ export async function GET(request: NextRequest) {
   const maxPrice = searchParams.get('maxPrice');
   const colors = searchParams.get('colors');
   const tags = searchParams.get('tags');
+  const sortOrder = searchParams.get('sortOrder');
   const limit = searchParams.get('limit');
   const offset = searchParams.get('offset');
 
@@ -26,6 +27,7 @@ export async function GET(request: NextRequest) {
     maxPrice: maxPriceNumber,
     colors: colorsArray,
     tags: tagsArray,
+    sortOrder,
     limit: limitNumber,
     offset: offsetNumber
   });

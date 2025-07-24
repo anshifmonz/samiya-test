@@ -14,7 +14,8 @@ async function searchProducts(
     tags: filters?.tags && filters.tags.length > 0 ? filters.tags : null,
     is_active_param: true,
     limit_count: filters?.limit ?? 16,
-    offset_count: filters?.offset ?? 0
+    offset_count: filters?.offset ?? 0,
+    sort_by: filters?.sortOrder || 'relevance'
   };
 
   const { data, error } = await supabasePublic.rpc('search_products_rpc', rpcArgs);
