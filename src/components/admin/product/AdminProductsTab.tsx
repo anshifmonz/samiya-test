@@ -19,9 +19,9 @@ import { useUrlParam } from 'hooks/ui/useUrlParam';
 interface AdminProductsTabProps {
   initialProducts: Product[];
   categories: Category[];
-  onAddProduct: (product: Omit<Product, 'id'>) => void;
-  onEditProduct: (product: Product) => void;
-  onDeleteProduct: (productId: string, productTitle?: string) => void;
+  onAddProduct: (product: Omit<Product, 'id'>) => Promise<Product | null>;
+  onEditProduct: (product: Product) => Promise<Product | null>;
+  onDeleteProduct: (productId: string, productTitle?: string) => Promise<boolean>;
   isSuperAdmin: boolean;
 }
 

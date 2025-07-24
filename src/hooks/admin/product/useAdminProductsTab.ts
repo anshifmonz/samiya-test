@@ -6,9 +6,9 @@ import { useAdminProductInfiniteScroll } from 'hooks/admin/product/useAdminProdu
 interface UseAdminProductsTabProps {
   initialProducts: Product[];
   categories: Category[];
-  onAddProduct: (product: Omit<Product, 'id'>) => void;
-  onEditProduct: (product: Product) => void;
-  onDeleteProduct: (productId: string, productTitle?: string) => void;
+  onAddProduct: (product: Omit<Product, 'id'>) => Promise<Product | null>;
+  onEditProduct: (product: Product) => Promise<Product | null>;
+  onDeleteProduct: (productId: string, productTitle?: string) => Promise<boolean>;
   sortOption: string;
 }
 
@@ -36,19 +36,22 @@ export const useAdminProductsTab = ({
 
   // Product operation handlers
   const handleAddProduct = async (newProduct: Omit<Product, 'id'>) => {
-    onAddProduct(newProduct);
+    const product = await onAddProduct(newProduct);
+    if (!product) return;
     setShowAddForm(false);
     refreshProducts();
   };
 
   const handleEditProduct = async (updatedProduct: Product) => {
-    onEditProduct(updatedProduct);
+    const product = await onEditProduct(updatedProduct);
+    if (!product) return;
     setEditingProduct(null);
     refreshProducts();
   };
 
   const handleDeleteProduct = async (productId: string, productTitle?: string) => {
-    onDeleteProduct(productId, productTitle);
+    const result = await onDeleteProduct(productId, productTitle);
+    if (!result) return;
     refreshProducts();
   };
 
