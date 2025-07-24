@@ -17,6 +17,7 @@ interface Props {
     colors?: string;
     tags?: string;
     source?: string;
+    sortOrder?: string;
   };
 }
 
@@ -42,6 +43,9 @@ function parseFilters(searchParams: Props['searchParams']): ProductFilters {
 
   if (searchParams.tags)
     filters.tags = searchParams.tags.split(',').filter(Boolean);
+
+  if (searchParams.sortOrder)
+    filters.sortOrder = searchParams.sortOrder;
 
   return filters;
 }

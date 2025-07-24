@@ -3,28 +3,12 @@
 import React, { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import SearchContent from './SearchContent';
-import searchProducts from 'lib/public/search';
 import { useSearchContext } from 'contexts/SearchContext';
 
 export default function SearchPage() {
-  const { initialQuery, filters, updateProducts, source } = useSearchContext();
+  const { initialQuery, filters, source } = useSearchContext();
   const router = useRouter();
-  const isFirstRun = useRef(true);
   const isUrlSyncInitialized = useRef(false);
-
-  // fetch products when filters or query change and not on first run
-  const fetchProducts = async () => {
-    const results = await searchProducts(initialQuery, filters);
-    updateProducts(results.products, results.totalCount);
-  };
-
-  useEffect(() => {
-    if (isFirstRun.current) {
-      isFirstRun.current = false;
-      return;
-    }
-    fetchProducts();
-  }, [filters, initialQuery]);
 
   // sync url with current filters and query
   useEffect(() => {
@@ -51,6 +35,9 @@ export default function SearchPage() {
 
     if (filters.tags && filters.tags.length > 0)
       params.set('tags', filters.tags.join(','));
+
+    if (filters.sortOrder && filters.sortOrder !== 'relevance')
+      params.set('sortOrder', filters.sortOrder);
 
     if (source) params.set('source', source);
 

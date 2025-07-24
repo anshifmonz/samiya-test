@@ -12,6 +12,7 @@ function buildProductSearchParams(query?: string, filters?: ProductFilters, limi
   if (filters?.maxPrice !== undefined) params.set('maxPrice', filters.maxPrice.toString());
   if (filters?.colors && filters.colors.length > 0) params.set('colors', filters.colors.join(','));
   if (filters?.tags && filters.tags.length > 0) params.set('tags', filters.tags.join(','));
+  if (filters?.sortOrder && filters.sortOrder !== 'relevance') params.set('sortOrder', filters.sortOrder);
   params.set('limit', limit.toString());
   params.set('offset', offset.toString());
   return params;

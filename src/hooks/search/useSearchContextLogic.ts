@@ -29,11 +29,11 @@ export default function useSearchContextLogic({
   // Dynamic state
   const [products, setProducts] = useState<SearchProduct[]>(initialProducts);
   const [totalCount, setTotalCount] = useState<number>(initialTotalCount);
-  const [filters, setFilters] = useState<ProductFilters>(initialFilters);
+const [filters, setFilters] = useState<ProductFilters>({ ...initialFilters, sortOrder: initialFilters.sortOrder || 'relevance' });
 
   // Handle filter changes
   const handleFiltersChange = (newFilters: ProductFilters) => {
-    setFilters(newFilters);
+    setFilters({ ...filters, ...newFilters });
   };
 
   // Method to update products externally

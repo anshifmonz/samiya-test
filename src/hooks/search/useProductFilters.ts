@@ -6,6 +6,7 @@ interface UseProductFiltersPropsWithInitial extends UseProductFiltersProps {
   initialPriceRange?: [number, number];
   initialColors?: string[];
   initialTags?: string[];
+  initialSortOrder?: string;
 }
 
 export const useProductFilters = ({
@@ -14,11 +15,13 @@ export const useProductFilters = ({
   initialPriceRange = [20, 3000],
   initialColors = [],
   initialTags = [],
+  initialSortOrder = 'relevance',
 }: UseProductFiltersPropsWithInitial) => {
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory);
   const [priceRange, setPriceRange] = useState<[number, number]>(initialPriceRange);
   const [selectedColors, setSelectedColors] = useState<string[]>(initialColors);
   const [selectedTags, setSelectedTags] = useState<string[]>(initialTags);
+  const [selectedSortOrder, setSelectedSortOrder] = useState<string>(initialSortOrder);
 
   // Debounce timer ref for price changes
   const priceDebounceTimer = useRef<NodeJS.Timeout | null>(null);
@@ -30,6 +33,7 @@ export const useProductFilters = ({
       maxPrice: priceRange[1],
       colors: selectedColors.length > 0 ? selectedColors : undefined,
       tags: selectedTags.length > 0 ? selectedTags : undefined,
+      sortOrder: selectedSortOrder === 'relevance' ? undefined : selectedSortOrder,
       ...partialFilters
     };
 
@@ -38,7 +42,7 @@ export const useProductFilters = ({
     );
 
     onFiltersChange(cleanFilters);
-  }, [selectedCategory, priceRange, selectedColors, selectedTags, onFiltersChange]);
+  }, [selectedCategory, priceRange, selectedColors, selectedTags, selectedSortOrder, onFiltersChange]);
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
@@ -85,6 +89,11 @@ export const useProductFilters = ({
     });
   };
 
+  const handleSortChange = (sortOrder: string) => {
+    setSelectedSortOrder(sortOrder);
+    updateFilters({ sortOrder: sortOrder === 'relevance' ? undefined : sortOrder });
+  };
+
   const clearFilters = () => {
     if (priceDebounceTimer.current) {
       clearTimeout(priceDebounceTimer.current);
@@ -95,6 +104,7 @@ export const useProductFilters = ({
     setPriceRange([20, 3000]);
     setSelectedColors([]);
     setSelectedTags([]);
+    setSelectedSortOrder('relevance');
     onFiltersChange({});
   };
 
@@ -121,12 +131,14 @@ export const useProductFilters = ({
     priceRange,
     selectedColors,
     selectedTags,
+    selectedSortOrder,
 
     // Handlers
     handleCategoryChange,
     handlePriceChange,
     handleColorChange,
     handleTagToggle,
+    handleSortChange,
 
     // Actions
     clearFilters,

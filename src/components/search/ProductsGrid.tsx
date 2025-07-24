@@ -4,15 +4,36 @@ import ProductCard from '../shared/ProductCard';
 import SearchResultsHeader from './SearchResultsHeader';
 import { useInfiniteProductScroll } from 'hooks/search/useInfiniteProductScroll';
 import { useSearchContext } from 'contexts/SearchContext';
+import { useProductFilters } from 'hooks/search/useProductFilters';
 
 const ProductsGrid: React.FC = () => {
   const { products: initialProducts, totalCount: initialTotalCount, initialQuery: query, filters, onFiltersChange } = useSearchContext();
   const { products, totalCount, loading, hasMore, loaderRef } = useInfiniteProductScroll(initialProducts, initialTotalCount, query, filters);
+  
+  const {
+    selectedSortOrder,
+    handleSortChange,
+  } = useProductFilters({
+    onFiltersChange,
+    initialCategory: filters?.category || 'all',
+    initialPriceRange: [
+      filters?.minPrice !== undefined ? filters.minPrice : 20,
+      filters?.maxPrice !== undefined ? filters.maxPrice : 3000,
+    ],
+    initialColors: filters?.colors || [],
+    initialTags: filters?.tags || [],
+    initialSortOrder: filters?.sortOrder || 'relevance',
+  });
   return (
     <div className="flex-1 px-4 sm:px-6 py-6 lg:p-6">
       {products.length > 0 ? (
         <>
-          <SearchResultsHeader productCount={products.length} totalCount={totalCount} />
+          <SearchResultsHeader 
+            productCount={products.length} 
+            totalCount={totalCount} 
+            sortOrder={selectedSortOrder}
+            onSortChange={handleSortChange}
+          />
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} />

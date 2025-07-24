@@ -1,11 +1,15 @@
+'use client';
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui/select';
 
 interface SearchResultsHeaderProps {
   productCount: number;
   totalCount: number;
+  sortOrder: string;
+  onSortChange: (value: string) => void;
 }
 
-const SearchResultsHeader: React.FC<SearchResultsHeaderProps> = ({ productCount, totalCount }) => {
+const SearchResultsHeader: React.FC<SearchResultsHeaderProps> = ({ productCount, totalCount, sortOrder, onSortChange }) => {
   const getDisplayText = () => {
     if (productCount === 0) {
       return "No products found";
@@ -25,7 +29,7 @@ const SearchResultsHeader: React.FC<SearchResultsHeaderProps> = ({ productCount,
         <p className="text-sm sm:text-lg text-muted-foreground">{getDisplayText()}</p>
       </div>
 
-      <Select defaultValue="relevance">
+      <Select value={sortOrder} onValueChange={onSortChange}>
         <SelectTrigger className="w-48">
           <SelectValue placeholder="Sort by" />
         </SelectTrigger>
@@ -33,8 +37,8 @@ const SearchResultsHeader: React.FC<SearchResultsHeaderProps> = ({ productCount,
           <SelectItem value="relevance">Relevance</SelectItem>
           <SelectItem value="price-low">Price: Low to High</SelectItem>
           <SelectItem value="price-high">Price: High to Low</SelectItem>
-          <SelectItem value="rating">Customer Rating</SelectItem>
           <SelectItem value="newest">Newest First</SelectItem>
+          <SelectItem value="oldest">Oldest First</SelectItem>
         </SelectContent>
       </Select>
     </div>
