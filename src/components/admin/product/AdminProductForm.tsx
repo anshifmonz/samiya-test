@@ -40,7 +40,7 @@ const AdminProductFormContent: React.FC = () => {
       <DescriptionTextarea />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <PriceInput label="Price" field="price" />
+        <PriceInput label="Discounted Price" field="price" />
         <PriceInput label="Original Price" field="originalPrice" />
       </div>
 

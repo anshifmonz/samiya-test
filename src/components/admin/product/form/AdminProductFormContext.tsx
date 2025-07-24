@@ -6,8 +6,8 @@ import { type Category } from 'types/category';
 export interface FormData {
   title: string;
   description: string;
-  price: number;
-  originalPrice: number;
+  price: number | null;
+  originalPrice: number | null;
   categoryId: string;
   images: Record<string, ProductColorData>;
   tags: string[];
@@ -50,8 +50,8 @@ interface AdminProductFormContextValue {
   actions: {
     handleTitleChange: (value: string) => void;
     handleDescriptionChange: (value: string) => void;
-    handlePriceChange: (value: number) => void;
-    handleOriginalPriceChange: (value: number) => void;
+    handlePriceChange: (value: number | null) => void;
+    handleOriginalPriceChange: (value: number | null) => void;
     handleCategoryChange: (value: string) => void;
     handleImagesChange: (images: Record<string, ProductColorData>) => void;
     handleTagsChange: (tags: string[]) => void;
@@ -78,8 +78,8 @@ interface AdminProductFormContextValue {
   mounted: boolean;
   handleTitleChange: (value: string) => void;
   handleDescriptionChange: (value: string) => void;
-  handlePriceChange: (value: number) => void;
-  handleOriginalPriceChange: (value: number) => void;
+  handlePriceChange: (value: number | null) => void;
+  handleOriginalPriceChange: (value: number | null) => void;
   handleCategoryChange: (value: string) => void;
   handleImagesChange: (images: Record<string, ProductColorData>) => void;
   handleTagsChange: (tags: string[]) => void;

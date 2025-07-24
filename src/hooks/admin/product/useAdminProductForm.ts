@@ -14,8 +14,8 @@ interface UseAdminProductFormProps {
 interface FormData {
   title: string;
   description: string;
-  price: number;
-  originalPrice: number;
+  price: number | null;
+  originalPrice: number | null;
   categoryId: string;
   images: Record<string, ProductColorData>;
   tags: string[];
@@ -28,8 +28,8 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
   const [formData, setFormData] = useState<FormData>({
     title: '',
     description: '',
-    price: 0,
-    originalPrice: 0,
+    price: null,
+    originalPrice: null,
     categoryId: '',
     images: {},
     tags: [],
@@ -91,8 +91,8 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
 
   const handleTitleChange = (value: string) => updateFormField('title', value);
   const handleDescriptionChange = (value: string) => updateFormField('description', value);
-  const handlePriceChange = (value: number) => updateFormField('price', value);
-  const handleOriginalPriceChange = (value: number) => updateFormField('originalPrice', value);
+  const handlePriceChange = (value: number | null) => updateFormField('price', value);
+  const handleOriginalPriceChange = (value: number | null) => updateFormField('originalPrice', value);
   const handleCategoryChange = (value: string) => updateFormField('categoryId', value);
   const handleImagesChange = (images: Record<string, ProductColorData>) => updateFormField('images', images);
   const handleTagsChange = (tags: string[]) => updateFormField('tags', tags);
@@ -121,17 +121,31 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
       return;
     }
 
+    // Validate that required price fields are not null
+    if (formData.price === null) {
+      setValidationError('Price is required.');
+      setIsSubmitting(false);
+      return;
+    }
+    
     try {
       if (product) {
         const productData = {
           ...formData,
+          price: formData.price,
+          originalPrice: formData.originalPrice || 0, // Default to 0 if null
           id: product.id,
           short_code: product.short_code
         };
         onSave(productData);
       } else {
         const { short_code, ...productDataWithoutShortCode } = formData;
-        onSave(productDataWithoutShortCode);
+        const submissionData = {
+          ...productDataWithoutShortCode,
+          price: formData.price,
+          originalPrice: formData.originalPrice || 0 // Default to 0 if null
+        };
+        onSave(submissionData);
       }
     } catch (error) {
       console.error('Error saving product:', error);
