@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { type Product } from 'types/product';
 import { type Category } from 'types/category';
-import { useAdminProductInfiniteScroll } from '@/hooks/admin/product/useAdminProductInfiniteScroll';
+import { useAdminProductInfiniteScroll } from 'hooks/admin/product/useAdminProductInfiniteScroll';
 
 interface UseAdminProductsTabProps {
   initialProducts: Product[];
@@ -9,6 +9,7 @@ interface UseAdminProductsTabProps {
   onAddProduct: (product: Omit<Product, 'id'>) => void;
   onEditProduct: (product: Product) => void;
   onDeleteProduct: (productId: string, productTitle?: string) => void;
+  sortOption: string;
 }
 
 export const useAdminProductsTab = ({
@@ -16,7 +17,8 @@ export const useAdminProductsTab = ({
   categories,
   onAddProduct,
   onEditProduct,
-  onDeleteProduct
+  onDeleteProduct,
+  sortOption
 }: UseAdminProductsTabProps) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
@@ -30,7 +32,7 @@ export const useAdminProductsTab = ({
     loaderRef,
     refreshProducts,
     isSearching
-  } = useAdminProductInfiniteScroll(initialProducts, searchQuery);
+  } = useAdminProductInfiniteScroll(initialProducts, searchQuery, sortOption);
 
   // Product operation handlers
   const handleAddProduct = async (newProduct: Omit<Product, 'id'>) => {

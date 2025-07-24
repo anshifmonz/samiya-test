@@ -6,15 +6,16 @@ import { useDebounce } from '@/hooks/ui/useDebounce';
 const PAGE_SIZE = 16;
 const DEBOUNCE_DELAY = 500; // 500ms delay
 
-function buildAdminProductSearchParams(query?: string, limit: number = PAGE_SIZE, offset: number = 0) {
+function buildAdminProductSearchParams(query?: string, limit: number = PAGE_SIZE, offset: number = 0, sort?: string) {
   const params = new URLSearchParams();
   if (query) params.set('q', query);
+  if (sort && sort !== 'relevance') params.set('sort_by', sort);
   params.set('limit', limit.toString());
   params.set('offset', offset.toString());
   return params;
 }
 
-export function useAdminProductInfiniteScroll(initialProducts: Product[], searchQuery?: string) {
+export function useAdminProductInfiniteScroll(initialProducts: Product[], searchQuery?: string, sortOption?: string) {
   const [products, setProducts] = useState(initialProducts);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -30,7 +31,7 @@ export function useAdminProductInfiniteScroll(initialProducts: Product[], search
     setError(null);
 
     try {
-      const params = buildAdminProductSearchParams(debouncedQuery, PAGE_SIZE, offset);
+      const params = buildAdminProductSearchParams(debouncedQuery, PAGE_SIZE, offset, sortOption);
       const res = await apiRequest(`/api/admin/product?${params.toString()}`, {
         showLoadingBar: true,
         loadingBarDelay: 200
@@ -47,7 +48,7 @@ export function useAdminProductInfiniteScroll(initialProducts: Product[], search
     } finally {
       setLoading(false);
     }
-  }, [debouncedQuery, offset, loading, hasMore]);
+  }, [debouncedQuery, sortOption, offset, loading, hasMore]);
 
   useEffect(() => {
     let ignore = false;
@@ -59,7 +60,7 @@ export function useAdminProductInfiniteScroll(initialProducts: Product[], search
       setError(null);
 
       try {
-        const params = buildAdminProductSearchParams(debouncedQuery, PAGE_SIZE, 0);
+        const params = buildAdminProductSearchParams(debouncedQuery, PAGE_SIZE, 0, sortOption);
         const res = await apiRequest(`/api/admin/product?${params.toString()}`, {
           showLoadingBar: true,
           loadingBarDelay: 150
@@ -84,7 +85,7 @@ export function useAdminProductInfiniteScroll(initialProducts: Product[], search
 
     fetchFirstPage();
     return () => { ignore = true; };
-  }, [debouncedQuery]);
+  }, [debouncedQuery, sortOption]);
 
   // intersection observer to trigger fetchMoreProducts
   useEffect(() => {
@@ -114,7 +115,7 @@ export function useAdminProductInfiniteScroll(initialProducts: Product[], search
     setError(null);
 
     try {
-      const params = buildAdminProductSearchParams(debouncedQuery, PAGE_SIZE, 0);
+      const params = buildAdminProductSearchParams(debouncedQuery, PAGE_SIZE, 0, sortOption);
       const res = await apiRequest(`/api/admin/product?${params.toString()}`, {
         showLoadingBar: true,
         loadingBarDelay: 150
@@ -131,7 +132,7 @@ export function useAdminProductInfiniteScroll(initialProducts: Product[], search
     } finally {
       setLoading(false);
     }
-  }, [debouncedQuery]);
+  }, [debouncedQuery, sortOption]);
 
   return {
     products,

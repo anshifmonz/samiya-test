@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 import { Plus, Search, Upload } from 'lucide-react';
 import { type Product } from 'types/product';
@@ -11,6 +13,8 @@ import { useSizes } from 'hooks/admin/product/useSizes';
 import { usePersistentBulkImportData } from './bulk/hooks';
 import { apiRequest } from 'utils/apiRequest';
 import { showToast } from 'hooks/ui/use-toast';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui/select';
+import { useUrlParam } from 'hooks/ui/useUrlParam';
 
 interface AdminProductsTabProps {
   initialProducts: Product[];
@@ -33,6 +37,7 @@ const AdminProductsTab: React.FC<AdminProductsTabProps> = ({
   const [showBulkImport, setShowBulkImport] = useState(false);
   const [isBulkImporting, setIsBulkImporting] = useState(false);
 
+  const [sortOption, setSortOption] = useUrlParam('sort', 'last-updated');
   const { persistentData, saveData, clearData, isLoaded } = usePersistentBulkImportData();
 
   const {
@@ -59,7 +64,8 @@ const AdminProductsTab: React.FC<AdminProductsTabProps> = ({
     categories,
     onAddProduct,
     onEditProduct,
-    onDeleteProduct
+    onDeleteProduct,
+    sortOption
   });
 
   const handleBulkImport = async (products: Omit<Product, 'id'>[]) => {
@@ -132,15 +138,32 @@ const { data, error } = await apiRequest('/api/admin/product/bulk', {
 
       <div className="mb-6">
         <div className="flex items-center justify-between">
-          <p className="luxury-subheading text-luxury-gold text-sm tracking-wider">
-            {productsCountText}
-          </p>
-          {isSearching && (
+          {isSearching ? (
             <div className="flex items-center space-x-2 text-luxury-gray">
               <Search size={16} className="animate-pulse" />
               <span className="text-sm">Searching...</span>
             </div>
+          ) : (
+            <p className="luxury-subheading text-luxury-gold text-sm tracking-wider">
+              {productsCountText}
+            </p>
           )}
+          <Select value={sortOption} onValueChange={setSortOption}>
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="relevance">Relevance</SelectItem>
+              <SelectItem value="price-low">Price: Low to High</SelectItem>
+              <SelectItem value="price-high">Price: High to Low</SelectItem>
+              <SelectItem value="newest">Newest First</SelectItem>
+              <SelectItem value="oldest">Oldest First</SelectItem>
+              <SelectItem value="first-created">First Created</SelectItem>
+              <SelectItem value="last-created">Last Created</SelectItem>
+              <SelectItem value="first-updated">First Updated</SelectItem>
+              <SelectItem value="last-updated">Last Updated</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
