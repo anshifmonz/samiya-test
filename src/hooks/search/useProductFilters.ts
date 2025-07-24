@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import type { ProductFilters, UseProductFiltersProps } from '@/types';
 
 interface UseProductFiltersPropsWithInitial extends UseProductFiltersProps {
@@ -20,15 +20,50 @@ export const useProductFilters = ({
   const [selectedColors, setSelectedColors] = useState<string[]>(initialColors);
   const [selectedTags, setSelectedTags] = useState<string[]>(initialTags);
 
+  // Debounce timer ref for price changes
+  const priceDebounceTimer = useRef<NodeJS.Timeout | null>(null);
+
+  const updateFilters = useCallback((partialFilters: Partial<ProductFilters>) => {
+    const newFilters = {
+      category: selectedCategory === 'all' ? undefined : selectedCategory,
+      minPrice: priceRange[0],
+      maxPrice: priceRange[1],
+      colors: selectedColors.length > 0 ? selectedColors : undefined,
+      tags: selectedTags.length > 0 ? selectedTags : undefined,
+      ...partialFilters
+    };
+
+    const cleanFilters = Object.fromEntries(
+      Object.entries(newFilters).filter(([_, value]) => value !== undefined)
+    );
+
+    onFiltersChange(cleanFilters);
+  }, [selectedCategory, priceRange, selectedColors, selectedTags, onFiltersChange]);
+
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
     updateFilters({ category: category === 'all' ? undefined : category });
   };
 
-  const handlePriceChange = (value: [number, number]) => {
+  /**
+   * Handles price range changes with debouncing to prevent excessive API calls.
+   * The UI updates immediately for responsiveness, but the API call is debounced by 400ms.
+   * This ensures smooth slider interaction while minimizing server requests.
+   */
+  const handlePriceChange = useCallback((value: [number, number]) => {
+    // Update UI immediately for responsiveness
     setPriceRange(value);
-    updateFilters({ minPrice: value[0], maxPrice: value[1] });
-  };
+
+    // Clear existing timer to reset debounce
+    if (priceDebounceTimer.current) {
+      clearTimeout(priceDebounceTimer.current);
+    }
+
+    // Set new timer to debounce the API call by 400ms
+    priceDebounceTimer.current = setTimeout(() => {
+      updateFilters({ minPrice: value[0], maxPrice: value[1] });
+    }, 400);
+  }, [updateFilters]);
 
   const handleColorChange = (color: string, checked: boolean) => {
     const newColors = checked
@@ -50,31 +85,26 @@ export const useProductFilters = ({
     });
   };
 
-  const updateFilters = (partialFilters: Partial<ProductFilters>) => {
-    const newFilters = {
-      category: selectedCategory === 'all' ? undefined : selectedCategory,
-      minPrice: priceRange[0],
-      maxPrice: priceRange[1],
-      colors: selectedColors.length > 0 ? selectedColors : undefined,
-      tags: selectedTags.length > 0 ? selectedTags : undefined,
-      ...partialFilters
-    };
-
-    // remove undefined values
-    const cleanFilters = Object.fromEntries(
-      Object.entries(newFilters).filter(([_, value]) => value !== undefined)
-    );
-
-    onFiltersChange(cleanFilters);
-  };
-
   const clearFilters = () => {
+    if (priceDebounceTimer.current) {
+      clearTimeout(priceDebounceTimer.current);
+      priceDebounceTimer.current = null;
+    }
+
     setSelectedCategory('all');
     setPriceRange([20, 3000]);
     setSelectedColors([]);
     setSelectedTags([]);
     onFiltersChange({});
   };
+
+  useEffect(() => {
+    return () => {
+      if (priceDebounceTimer.current) {
+        clearTimeout(priceDebounceTimer.current);
+      }
+    };
+  }, []);
 
   const getActiveFiltersCount = () => {
     let count = 0;
