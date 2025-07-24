@@ -1,15 +1,12 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { type SearchProduct, type ProductFilters } from 'types/product';
 import ProductCard from '../shared/ProductCard';
 import SearchResultsHeader from './SearchResultsHeader';
 import { useInfiniteProductScroll } from 'hooks/search/useInfiniteProductScroll';
-import { useSearchContext } from '../../contexts/SearchContext';
+import { useSearchContext } from 'contexts/SearchContext';
 
 const ProductsGrid: React.FC = () => {
-  const { products: initialProducts, totalCount: initialTotalCount, initialQuery: query, filters } = useSearchContext();
-  const router = useRouter();
+  const { products: initialProducts, totalCount: initialTotalCount, initialQuery: query, filters, onFiltersChange } = useSearchContext();
   const { products, totalCount, loading, hasMore, loaderRef } = useInfiniteProductScroll(initialProducts, initialTotalCount, query, filters);
   return (
     <div className="flex-1 px-4 sm:px-6 py-6 lg:p-6">
@@ -40,10 +37,10 @@ const ProductsGrid: React.FC = () => {
             Try adjusting your search terms or filters to discover more products
           </p>
           <button
-            onClick={() => router.push('/')}
-            className="bg-primary text-primary-foreground px-8 md:px-12 py-4 md:py-6 rounded-lg text-base md:text-lg tracking-wider uppercase shadow-lg hover:bg-primary-hover transition-colors"
+            onClick={() => onFiltersChange({})}
+            className="bg-primary text-primary-foreground px-4 md:px-6 py-4 md:py-4 rounded-lg text-base md:text-lg tracking-wider uppercase shadow-lg hover:bg-primary-hover transition-colors"
           >
-            Browse All Products
+            Clear Filters
           </button>
         </div>
       )}
