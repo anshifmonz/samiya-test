@@ -1,11 +1,11 @@
 import React, { Suspense } from 'react';
 import LoadingSpinner from 'components/shared/LoadingSpinner';
 import SearchPage from './SearchPage';
-import { Product, type ProductFilters } from 'types/product';
+import { type SearchProduct, type ProductFilters } from 'types/product';
 import { type Category } from 'types/category';
 
 interface Props {
-  initialProducts: Omit<Product, 'description'>[];
+  initialProducts: SearchProduct[];
   initialQuery: string;
   initialFilters: ProductFilters;
   initialCategories: Category[];

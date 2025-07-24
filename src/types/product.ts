@@ -86,3 +86,14 @@ export interface SimilarProduct {
     is_primary: boolean;
   }>;
 }
+
+export interface SearchProduct {
+  id: string;
+  title: string;
+  price: number;
+  original_price?: number;
+  tags?: string[];
+  categoryId: string;
+  sizes?: Size[];
+  images: Record<string, ProductColorData>;
+}

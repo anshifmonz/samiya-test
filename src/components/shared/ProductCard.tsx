@@ -2,19 +2,20 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState } from 'react';
 import isCloudinaryUrl from 'utils/isCloudinaryUrls';
-import { type Product } from 'types/product';
+import { type SearchProduct, type Product } from 'types/product';
 import { Badge } from 'ui/badge';
 import { Edit, Trash } from 'lucide-react';
 import ImageFallback from './ImageFallback';
 import CloudinaryWithFallback from './CloudinaryWithFallback';
 
+type ProductCardProduct = SearchProduct | Product;
+
 interface ProductCardProps {
-  product: Omit<Product, 'description'>;
+  product: ProductCardProduct;
   isAdmin?: boolean;
-  onEdit?: (product: Product) => void;
-  onDelete?: (product: Product) => void;
+  onEdit?: (product: ProductCardProduct) => void;
+  onDelete?: (product: ProductCardProduct) => void;
   showTags?: boolean;
 }
 
@@ -69,8 +70,34 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   const handleDelete = () => {
     if (onDelete) {
-      onDelete(product as Product);
+      onDelete(product);
     }
+  };
+
+  // Type guards
+  const isFullProduct = (p: ProductCardProduct): p is Product => 'short_code' in p && 'categoryId' in p;
+  const isSearchProduct = (p: ProductCardProduct): p is SearchProduct => 'category' in p && !('short_code' in p);
+
+  const getShortCode = (p: ProductCardProduct) => {
+    if (isFullProduct(p)) return p.short_code;
+    return undefined;
+  };
+
+  const getOriginalPrice = (p: ProductCardProduct) => {
+    if (isFullProduct(p)) return p.originalPrice;
+    if (isSearchProduct(p)) return p.original_price;
+    return undefined;
+  };
+
+  const getCategory = (p: ProductCardProduct) => {
+    if (isFullProduct(p)) return p.categoryId;
+    if (isSearchProduct(p)) return p.categoryId;
+    return undefined;
+  };
+
+  const getTags = (p: ProductCardProduct) => {
+    if ('tags' in p && Array.isArray(p.tags)) return p.tags;
+    return [];
   };
 
   const CardContent = () => (
@@ -80,7 +107,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           isCloudinaryUrl(firstImage) ? (
             <CloudinaryWithFallback
               src={firstImage}
-              alt={product.categoryId ? `${product.title} (category: ${product.categoryId})` : product.title}
+              alt={getCategory(product) ? `${product.title} (category: ${getCategory(product)})` : product.title}
               width={400}
               height={500}
               sizes="(max-width: 600px) 100vw, 400px"
@@ -105,7 +132,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         {isAdmin && onEdit && (
           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
             <button
-              onClick={() => onEdit(product as Product)}
+              onClick={() => onEdit(product)}
               className="bg-white text-black p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 shadow-lg"
               title="Edit Product"
             >
@@ -124,12 +151,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
         )}
 
         {/* Short Code Badge */}
-        {product.short_code && (
+        {getShortCode(product) && (
           <Badge
-            variant={getBadgeVariant(product.short_code)}
+            variant={getBadgeVariant(getShortCode(product)!)}
             className="absolute top-2 left-2"
           >
-            {product.short_code}
+            {getShortCode(product)}
           </Badge>
         )}
       </div>
@@ -143,7 +170,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <div className="flex items-center space-x-2">
             <span className="font-semibold text-foreground">
               <span className="mr-2">₹{product.price.toFixed(2)}</span>
-              {product?.originalPrice && product?.originalPrice > product?.price && <span className="line-through text-xs">₹{product?.originalPrice?.toFixed(2)}</span>}
+              {getOriginalPrice(product) && getOriginalPrice(product)! > product.price && (
+                <span className="line-through text-xs">₹{getOriginalPrice(product)!.toFixed(2)}</span>
+              )}
             </span>
           </div>
 
@@ -170,9 +199,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </div>
 
         {/* Tags (Admin only) */}
-        {isAdmin && showTags && 'tags' in product && (
+        {isAdmin && showTags && getTags(product).length > 0 && (
           <div className="flex flex-wrap gap-1 pt-1">
-            {(product as Product).tags.slice(0, 3).map(tag => (
+            {getTags(product).slice(0, 3).map(tag => (
               <span
                 key={tag}
                 className="px-2 py-1 bg-muted text-muted-foreground text-xs rounded-full border"
@@ -180,8 +209,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 {tag}
               </span>
             ))}
-            {(product as Product).tags.length > 3 && (
-              <span className="px-2 py-1 text-muted-foreground text-xs">+{(product as Product).tags.length - 3}</span>
+            {getTags(product).length > 3 && (
+              <span className="px-2 py-1 text-muted-foreground text-xs">+{getTags(product).length - 3}</span>
             )}
           </div>
         )}

@@ -1,13 +1,13 @@
 'use client';
 
-import { type Product, type ProductFilters } from 'types/product';
+import { type SearchProduct, type ProductFilters } from 'types/product';
 import { type Category } from 'types/category';
 import FilterPanel from './FilterPanel';
 import ProductsGrid from './ProductsGrid';
 import MobileFilterPanel from './MobileFilterPanel';
 
 interface SearchContentProps {
-  products: Omit<Product, 'description'>[];
+  products: SearchProduct[];
   onFiltersChange: (filters: ProductFilters) => void;
   categories: Category[];
   query?: string;
@@ -34,8 +34,7 @@ const SearchContent: React.FC<SearchContentProps> = ({ products, onFiltersChange
       categoryCountMap.set(product.categoryId, (categoryCountMap.get(product.categoryId) || 0) + 1);
     }
   });
-  const availableCategories = Array.from(categoryCountMap.keys());
-
+  const availableCategories = Array.from(categoryCountMap.keys()).map(id => categories.find(cat => cat.id === id)?.name || '');
   const tagSet = new Set<string>();
   products.forEach(product => {
     if (product.tags) {

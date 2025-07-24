@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { apiRequest } from 'lib/utils/apiRequest';
-import { type Product, type ProductFilters } from 'types/product';
+import { SearchProduct, type ProductFilters } from 'types/product';
 
 const PAGE_SIZE = 16;
 
@@ -17,7 +17,7 @@ function buildProductSearchParams(query?: string, filters?: ProductFilters, limi
   return params;
 }
 
-export function useInfiniteProductScroll(initialProducts: Omit<Product, 'description'>[], query?: string, filters?: ProductFilters) {
+export function useInfiniteProductScroll(initialProducts: SearchProduct[], query?: string, filters?: ProductFilters) {
   const [products, setProducts] = useState(initialProducts);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -32,7 +32,7 @@ export function useInfiniteProductScroll(initialProducts: Omit<Product, 'descrip
       const params = buildProductSearchParams(query, filters, PAGE_SIZE, offset);
       const res = await apiRequest(`/api/search?${params.toString()}`, { showLoadingBar: true, loadingBarDelay: 200 });
       if (res.error) throw new Error(res.error);
-      const newProducts: Omit<Product, 'description'>[] = res.data || [];
+      const newProducts: SearchProduct[] = res.data || [];
       setProducts(prev => [...prev, ...newProducts]);
       setOffset(prev => prev + newProducts.length);
       if (newProducts.length < PAGE_SIZE) setHasMore(false);
@@ -54,7 +54,7 @@ export function useInfiniteProductScroll(initialProducts: Omit<Product, 'descrip
         const params = buildProductSearchParams(query, filters, PAGE_SIZE, 0);
         const res = await apiRequest(`/api/search?${params.toString()}`, { showLoadingBar: true, loadingBarDelay: 200 });
         if (res.error) throw new Error(res.error);
-        const newProducts: Omit<Product, 'description'>[] = res.data || [];
+        const newProducts: SearchProduct[] = res.data || [];
         if (!ignore) {
           setProducts(newProducts);
           setOffset(newProducts.length);

@@ -1,10 +1,10 @@
 import { supabasePublic } from 'lib/supabasePublic';
-import { type Product, type ProductFilters, type Size } from 'types/product';
+import { type SearchProduct, type ProductFilters, type Size } from 'types/product';
 
 async function searchProducts(
   query: string,
   filters?: ProductFilters,
-): Promise<Omit<Product, 'description' | 'active'>[]> {
+): Promise<SearchProduct[]> {
   const rpcArgs: Record<string, any> = {
     query_text: query || null,
     min_price: filters?.minPrice ?? null,
@@ -72,7 +72,7 @@ async function searchProducts(
       price: Number(row.price),
       originalPrice: row.original_price,
       tags,
-      category: row.category || '',
+      categoryId: row.category_id || '',
       sizes
     };
   });

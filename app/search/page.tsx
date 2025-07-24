@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import searchProducts from 'lib/public/search';
 import getCategories from 'lib/public/category';
 import Search from 'components/search';
-import { type Product, type ProductFilters } from 'types/product';
+import { type SearchProduct, type ProductFilters } from 'types/product';
 import { type Category } from 'types/category';
 
 export const revalidate = 180;
@@ -58,11 +58,10 @@ export default async function SearchPage({ searchParams }: Props) {
   ) {
     redirect('/');
   }
-
   const filters = parseFilters(searchParams);
-  const products: Omit<Product, 'description'>[] = await searchProducts(query, filters);
+  const products: SearchProduct[] = await searchProducts(query, filters);
   const categories: Category[] = await getCategories();
-
+  console.log('products from search page', products);
   return (
     <Search
       initialProducts={products}

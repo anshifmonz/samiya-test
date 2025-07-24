@@ -4,11 +4,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import searchProducts from 'lib/public/search';
 import SearchContent from './SearchContent';
-import { type Product, type ProductFilters } from 'types/product';
+import { SearchProduct, type ProductFilters } from 'types/product';
 import { type Category } from 'types/category';
 
 interface Props {
-  initialProducts: Omit<Product, 'description'>[];
+  initialProducts: SearchProduct[];
   initialQuery: string;
   initialFilters: ProductFilters;
   initialCategories: Category[];
@@ -16,7 +16,7 @@ interface Props {
 }
 
 export default function SearchPage({ initialProducts, initialQuery, initialFilters, initialCategories, source }: Props) {
-  const [products, setProducts] = useState<Omit<Product, 'description'>[]>(initialProducts);
+  const [products, setProducts] = useState<SearchProduct[]>(initialProducts);
   const [filters, setFilters] = useState<ProductFilters>(initialFilters);
   const router = useRouter();
   const isFirstRun = useRef(true);

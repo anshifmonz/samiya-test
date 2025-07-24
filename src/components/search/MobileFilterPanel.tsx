@@ -16,7 +16,7 @@ import PriceFilter from './filter/PriceFilter';
 import ColorFilter from './filter/ColorFilter';
 import TagsFilter from './filter/TagsFilter';
 import { useProductFilters } from 'hooks/search/useProductFilters';
-import { type ProductFilters } from 'types/product';
+import { type SearchProduct, type ProductFilters } from 'types/product';
 import { type Category } from 'types/category';
 
 interface MobileFilterPanelProps {
@@ -26,7 +26,7 @@ interface MobileFilterPanelProps {
   availableTags?: string[];
   categories: Category[];
   categoryCountMap?: Map<string, number>;
-  filters?: ProductFilters; // <-- add this
+  filters?: ProductFilters;
 }
 
 const MobileFilterPanel: React.FC<MobileFilterPanelProps> = ({ onFiltersChange, availableColors, availableCategories, availableTags, categories, categoryCountMap, filters }) => {
