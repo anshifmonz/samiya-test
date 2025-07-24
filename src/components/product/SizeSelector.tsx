@@ -7,14 +7,20 @@ interface SizeSelectorProps {
 }
 
 export default function SizeSelector({ sizes, selectedSize, onSizeChange }: SizeSelectorProps) {
-  const standardSizes = ["XS", "S", "M", "L", "XL", "2XL", "3XL", "Free Size"];
+  const standardSizes = ["XS", "S", "M", "L", "XL"];
+  const extraSizes = ["2XL", "3XL", "Free Size"];
   const availableSizes = sizes?.map(size => size.name) || [];
+
+  const filteredSizes = [
+    ...standardSizes,
+    ...extraSizes.filter(size => availableSizes.includes(size))
+  ];
 
   return (
     <div className="space-y-3">
       <span className="text-sm font-medium">Size</span>
       <div className="flex flex-wrap gap-2">
-        {standardSizes.map(size => {
+        {filteredSizes.map(size => {
           const isAvailable = availableSizes.includes(size);
           return (
             <button
