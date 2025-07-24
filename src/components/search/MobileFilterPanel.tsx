@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Filter } from 'lucide-react';
 import { Button } from 'ui/button';
+import { useDebounce } from 'hooks/useDebounce';
 import {
   Sheet,
   SheetContent,
@@ -15,22 +16,32 @@ import CategoryFilter from './filter/CategoryFilter';
 import PriceFilter from './filter/PriceFilter';
 import ColorFilter from './filter/ColorFilter';
 import TagsFilter from './filter/TagsFilter';
-import { useProductFilters } from 'hooks/search/useProductFilters';
-import { useSearchContext } from 'contexts/SearchContext';
+import { useProductResults } from 'contexts/ProductResultsContext';
+import { useSearchFilters } from 'contexts/SearchFiltersContext';
 
 const MobileFilterPanel: React.FC = () => {
   const {
-    onFiltersChange,
     availableColors,
     availableCategories,
     availableTags,
     categoryCountMap,
-    filters,
     initialCategories: categories,
-  } = useSearchContext();
+  } = useProductResults();
+  const { filters, onFiltersChange, clearFilters } = useSearchFilters();
   const [isOpen, setIsOpen] = useState(false);
 
-  // handle browser back button to close sidebar if open
+  const [localPriceRange, setLocalPriceRange] = useState<[number, number]>([
+    filters?.minPrice !== undefined ? filters.minPrice : 20,
+    filters?.maxPrice !== undefined ? filters.maxPrice : 3000,
+  ]);
+
+  useEffect(() => {
+    setLocalPriceRange([
+      filters?.minPrice !== undefined ? filters.minPrice : 20,
+      filters?.maxPrice !== undefined ? filters.maxPrice : 3000,
+    ]);
+  }, [filters?.minPrice, filters?.maxPrice]);
+
   useEffect(() => {
     if (!isOpen) return;
     window.history.pushState({ mobileFilterOpen: true }, '');
@@ -46,27 +57,53 @@ const MobileFilterPanel: React.FC = () => {
     };
   }, [isOpen]);
 
-  const {
-    selectedCategory,
-    priceRange,
-    selectedColors,
-    selectedTags,
-    handleCategoryChange,
-    handlePriceChange,
-    handleColorChange,
-    handleTagToggle,
-    clearFilters,
-    getActiveFiltersCount,
-  } = useProductFilters({
-    onFiltersChange,
-    initialCategory: filters?.category || 'all',
-    initialPriceRange: [
-      filters?.minPrice !== undefined ? filters.minPrice : 20,
-      filters?.maxPrice !== undefined ? filters.maxPrice : 3000,
-    ],
-    initialColors: filters?.colors || [],
-    initialTags: filters?.tags || [],
-  });
+  const selectedCategory = filters?.category || 'all';
+  const selectedColors = filters?.colors || [];
+  const selectedTags = filters?.tags || [];
+
+  const debouncedPriceChange = useDebounce((value: [number, number]) => {
+    onFiltersChange({
+      minPrice: value[0] !== 20 ? value[0] : undefined,
+      maxPrice: value[1] !== 3000 ? value[1] : undefined
+    });
+  }, 400);
+
+  const handleCategoryChange = (category: string) => {
+    if (selectedCategory === category && category !== 'all') {
+      onFiltersChange({ category: undefined });
+    } else {
+      onFiltersChange({ category: category === 'all' ? undefined : category });
+    }
+  };
+
+  const handlePriceChange = (value: [number, number]) => {
+    setLocalPriceRange(value);
+    debouncedPriceChange(value);
+  };
+
+  const handleColorChange = (color: string, checked: boolean) => {
+    const newColors = checked
+      ? [...selectedColors, color]
+      : selectedColors.filter(c => c !== color);
+    onFiltersChange({ colors: newColors.length > 0 ? newColors : undefined });
+  };
+
+  const handleTagToggle = (tag: string) => {
+    const isCurrentlySelected = selectedTags.includes(tag);
+    const newTags = isCurrentlySelected
+      ? selectedTags.filter(t => t !== tag)
+      : [...selectedTags, tag];
+    onFiltersChange({ tags: newTags.length > 0 ? newTags : undefined });
+  };
+
+  const getActiveFiltersCount = () => {
+    let count = 0;
+    if (selectedCategory !== 'all') count++;
+    if (localPriceRange[0] > 20 || localPriceRange[1] < 3000) count++;
+    if (selectedColors.length > 0) count++;
+    if (selectedTags.length > 0) count++;
+    return count;
+  };
 
   return (
     <div className="lg:hidden px-3 sm:px-5 pt-6">
@@ -108,7 +145,7 @@ const MobileFilterPanel: React.FC = () => {
 
                 <div className="border-t border-border pt-6">
                   <PriceFilter
-                    priceRange={priceRange}
+                    priceRange={localPriceRange}
                     onPriceChange={handlePriceChange}
                   />
                 </div>

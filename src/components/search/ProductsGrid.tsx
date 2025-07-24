@@ -3,34 +3,26 @@
 import ProductCard from '../shared/ProductCard';
 import SearchResultsHeader from './SearchResultsHeader';
 import { useInfiniteProductScroll } from 'hooks/search/useInfiniteProductScroll';
-import { useSearchContext } from 'contexts/SearchContext';
-import { useProductFilters } from 'hooks/search/useProductFilters';
+import { useProductResults } from 'contexts/ProductResultsContext';
+import { useSearchFilters } from 'contexts/SearchFiltersContext';
 
 const ProductsGrid: React.FC = () => {
-  const { products: initialProducts, totalCount: initialTotalCount, initialQuery: query, filters, onFiltersChange } = useSearchContext();
+  const { products: initialProducts, totalCount: initialTotalCount } = useProductResults();
+  const { initialQuery: query, filters, onFiltersChange, clearFilters } = useSearchFilters();
   const { products, totalCount, loading, hasMore, loaderRef } = useInfiniteProductScroll(initialProducts, initialTotalCount, query, filters);
-  
-  const {
-    selectedSortOrder,
-    handleSortChange,
-  } = useProductFilters({
-    onFiltersChange,
-    initialCategory: filters?.category || 'all',
-    initialPriceRange: [
-      filters?.minPrice !== undefined ? filters.minPrice : 20,
-      filters?.maxPrice !== undefined ? filters.maxPrice : 3000,
-    ],
-    initialColors: filters?.colors || [],
-    initialTags: filters?.tags || [],
-    initialSortOrder: filters?.sortOrder || 'relevance',
-  });
+
+  const selectedSortOrder = filters?.sortOrder || 'relevance';
+
+  const handleSortChange = (sortOrder: string) => {
+    onFiltersChange({ sortOrder: sortOrder === 'relevance' ? undefined : sortOrder });
+  };
   return (
     <div className="flex-1 px-4 sm:px-6 py-6 lg:p-6">
       {products.length > 0 ? (
         <>
-          <SearchResultsHeader 
-            productCount={products.length} 
-            totalCount={totalCount} 
+          <SearchResultsHeader
+            productCount={products.length}
+            totalCount={totalCount}
             sortOrder={selectedSortOrder}
             onSortChange={handleSortChange}
           />
@@ -58,14 +50,7 @@ const ProductsGrid: React.FC = () => {
             Try adjusting your search terms or filters to discover more products
           </p>
           <button
-            onClick={() => onFiltersChange({
-              category: undefined,
-              minPrice: undefined,
-              maxPrice: undefined,
-              colors: undefined,
-              tags: undefined,
-              sortOrder: undefined,
-            })}
+            onClick={clearFilters}
             className="bg-primary text-primary-foreground px-4 md:px-6 py-4 md:py-4 rounded-lg text-base md:text-lg tracking-wider uppercase shadow-lg hover:bg-primary-hover transition-colors"
           >
             Clear Filters

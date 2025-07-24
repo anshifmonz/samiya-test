@@ -3,10 +3,10 @@
 import React, { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import SearchContent from './SearchContent';
-import { useSearchContext } from 'contexts/SearchContext';
+import { useSearchFilters } from 'contexts/SearchFiltersContext';
 
 export default function SearchPage() {
-  const { initialQuery, filters, source } = useSearchContext();
+  const { initialQuery, filters, source } = useSearchFilters();
   const router = useRouter();
   const isUrlSyncInitialized = useRef(false);
 

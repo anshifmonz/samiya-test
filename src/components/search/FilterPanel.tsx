@@ -5,39 +5,71 @@ import CategoryFilter from './filter/CategoryFilter';
 import PriceFilter from './filter/PriceFilter';
 import ColorFilter from './filter/ColorFilter';
 import TagsFilter from './filter/TagsFilter';
-import { useProductFilters } from 'hooks/search/useProductFilters';
-import { useSearchContext } from 'contexts/SearchContext';
+import { useProductResults } from 'contexts/ProductResultsContext';
+import { useSearchFilters } from 'contexts/SearchFiltersContext';
+import { useDebounce } from 'hooks/useDebounce';
+import { useState, useEffect } from 'react';
 
 const FilterPanel: React.FC = () => {
   const {
-    onFiltersChange,
     availableColors,
     availableCategories,
     availableTags,
     categoryCountMap,
-    filters,
     initialCategories: categories,
-  } = useSearchContext();
-  const {
-    selectedCategory,
-    priceRange,
-    selectedColors,
-    selectedTags,
-    handleCategoryChange,
-    handlePriceChange,
-    handleColorChange,
-    handleTagToggle,
-    clearFilters,
-  } = useProductFilters({
-    onFiltersChange,
-    initialCategory: filters?.category || 'all',
-    initialPriceRange: [
+  } = useProductResults();
+  const { filters, onFiltersChange, clearFilters } = useSearchFilters();
+
+  const [localPriceRange, setLocalPriceRange] = useState<[number, number]>([
+    filters?.minPrice !== undefined ? filters.minPrice : 20,
+    filters?.maxPrice !== undefined ? filters.maxPrice : 3000,
+  ]);
+
+  useEffect(() => {
+    setLocalPriceRange([
       filters?.minPrice !== undefined ? filters.minPrice : 20,
       filters?.maxPrice !== undefined ? filters.maxPrice : 3000,
-    ],
-    initialColors: filters?.colors || [],
-    initialTags: filters?.tags || [],
-  });
+    ]);
+  }, [filters?.minPrice, filters?.maxPrice]);
+
+  const selectedCategory = filters?.category || 'all';
+  const selectedColors = filters?.colors || [];
+  const selectedTags = filters?.tags || [];
+
+  const debouncedPriceChange = useDebounce((value: [number, number]) => {
+    onFiltersChange({
+      minPrice: value[0] !== 20 ? value[0] : undefined,
+      maxPrice: value[1] !== 3000 ? value[1] : undefined
+    });
+  }, 400);
+
+  const handleCategoryChange = (category: string) => {
+    if (selectedCategory === category && category !== 'all') {
+      onFiltersChange({ category: undefined });
+    } else {
+      onFiltersChange({ category: category === 'all' ? undefined : category });
+    }
+  };
+
+  const handlePriceChange = (value: [number, number]) => {
+    setLocalPriceRange(value);
+    debouncedPriceChange(value);
+  };
+
+  const handleColorChange = (color: string, checked: boolean) => {
+    const newColors = checked
+      ? [...selectedColors, color]
+      : selectedColors.filter(c => c !== color);
+    onFiltersChange({ colors: newColors.length > 0 ? newColors : undefined });
+  };
+
+  const handleTagToggle = (tag: string) => {
+    const isCurrentlySelected = selectedTags.includes(tag);
+    const newTags = isCurrentlySelected
+      ? selectedTags.filter(t => t !== tag)
+      : [...selectedTags, tag];
+    onFiltersChange({ tags: newTags.length > 0 ? newTags : undefined });
+  };
 
   return (
     <div className="hidden lg:block">
@@ -65,7 +97,7 @@ const FilterPanel: React.FC = () => {
 
           <div className="border-t border-border pt-6">
             <PriceFilter
-              priceRange={priceRange}
+              priceRange={localPriceRange}
               onPriceChange={handlePriceChange}
             />
           </div>
