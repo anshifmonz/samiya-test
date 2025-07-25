@@ -1,6 +1,32 @@
 import { supabaseAdmin } from 'lib/supabase';
 import { type SectionProduct } from 'types/section';
 
+export async function getProducts(limit: number, offset: number, query?: string | null): Promise<any> {
+  let queryBuilder = supabaseAdmin
+    .from('products')
+    .select('id, title, price, primary_image_url');
+
+  if (query && query.trim())
+    queryBuilder = queryBuilder.ilike('title', `%${query.trim()}%`);
+
+  const { data, error } = await queryBuilder
+    .order('updated_at', { ascending: false })
+    .limit(limit)
+    .range(offset, offset + limit - 1);
+
+  if (error) {
+    console.error('Error fetching section products:', error);
+    throw error;
+  }
+
+  return data.map((product: any) => ({
+    id: product.id,
+    title: product.title,
+    price: product.price,
+    imageUrl: product.primary_image_url
+  }));
+}
+
 export async function addProductToSection(sectionId: string, productId: string, sortOrder?: number): Promise<void> {
   try {
     let nextSortOrder = sortOrder;

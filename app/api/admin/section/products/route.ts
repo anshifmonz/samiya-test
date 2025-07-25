@@ -1,5 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { addProductToSection, removeProductFromSection, reorderSectionProducts } from 'lib/admin/section/products';
+import { addProductToSection, getProducts, removeProductFromSection, reorderSectionProducts } from 'src/lib/admin/section/products';
+
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const limit = searchParams.get('limit');
+    const offset = searchParams.get('offset');
+    const query = searchParams.get('q');
+    const limitNumber = limit ? parseInt(limit) : 16;
+    const offsetNumber = offset ? parseInt(offset) : 0;
+
+    const products = await getProducts(limitNumber, offsetNumber, query);
+    console.log('products', products);
+    return NextResponse.json({ products });
+  } catch (error) {
+    console.error('Error in GET /api/admin/section/products:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch section products' },
+      { status: 500 }
+    );
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
