@@ -17,6 +17,7 @@ export const useAdminProductsTab = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const confirmation = useConfirmation();
 
   const {
     products,
@@ -27,8 +28,7 @@ export const useAdminProductsTab = ({
     refreshProducts,
     isSearching
   } = useAdminProductInfiniteScroll(initialProducts, searchQuery, sortOption);
-  const confirmation = useConfirmation();
-  // Product operation handlers
+
   const handleAddProduct = async (newProduct: Omit<Product, 'id'>) => {
     const { data, error } = await apiRequest('/api/admin/product', { method: 'POST', body: newProduct, showLoadingBar: true });
     if (error) {
@@ -124,6 +124,9 @@ export const useAdminProductsTab = ({
     productsCountText,
 
     // Utility functions
-    refreshProducts
+    refreshProducts,
+
+    // Confirmation dialog state
+    confirmation
   };
 };
