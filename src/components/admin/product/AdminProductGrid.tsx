@@ -1,8 +1,6 @@
 import React from 'react';
-import ProductCard from '../../shared/ProductCard';
+import ProductCard from 'components/shared/ProductCard';
 import { useProductsTab } from 'contexts/admin/ProductsTabContext';
-
-
 
 const AdminProductGrid: React.FC = () => {
   const { products, loading, hasMore, error, isSearching, loaderRef, handleDeleteProduct, isSuperAdmin, handleStartEditing } = useProductsTab();
@@ -28,6 +26,8 @@ const AdminProductGrid: React.FC = () => {
             key={product.id}
             product={product}
             isAdmin={true}
+            onEdit={handleStartEditing}
+            onDelete={isSuperAdmin ? handleDeleteProduct : undefined}
             showTags={true}
           />
         ))}
