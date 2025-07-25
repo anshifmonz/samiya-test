@@ -1,21 +1,18 @@
 import { useState } from 'react';
-import { type Product } from 'types/product';
 import { type Collection } from 'types/collection';
 import { type Category } from 'types/category';
 import { type Section, type SectionWithProducts } from 'types/section';
-import { showToast } from '@/hooks/ui/use-toast';
+import { showToast } from 'hooks/ui/use-toast';
 import { apiRequest } from 'utils/apiRequest';
-import { useConfirmation } from '@/hooks/useConfirmation';
+import { useConfirmation } from 'hooks/useConfirmation';
 
 interface UseAdminDashboardProps {
-  initialProducts: Product[];
   initialCollections: Collection[];
   initialCategories: Category[];
   initialSections: SectionWithProducts[];
 }
 
 export const useAdminDashboard = ({
-  initialProducts,
   initialCollections,
   initialCategories,
   initialSections
@@ -24,48 +21,6 @@ export const useAdminDashboard = ({
   const [categoryList, setCategoryList] = useState<Category[]>(initialCategories);
   const [sectionList, setSectionList] = useState<SectionWithProducts[]>(initialSections);
   const confirmation = useConfirmation();
-
-  // Product handlers with API calls
-  const handleAddProduct = async (newProduct: Omit<Product, 'id'>) => {
-const { data, error } = await apiRequest('/api/admin/product', { method: 'POST', body: newProduct, showLoadingBar: true });
-    if (error) {
-      showToast({ type: 'error', title: 'Error', description: error });
-      return null;
-    }
-    showToast({ title: 'Success', description: 'Product added successfully' });
-    return data;
-  };
-
-  const handleEditProduct = async (updatedProduct: Product) => {
-    console.log('updatedProduct', updatedProduct);
-const { data, error } = await apiRequest('/api/admin/product', { method: 'PUT', body: updatedProduct, showLoadingBar: true });
-    if (error) {
-      showToast({ type: 'error', title: 'Error', description: error });
-      return null;
-    }
-    showToast({ title: 'Success', description: 'Product updated successfully' });
-    return data;
-  };
-
-  const handleDeleteProduct = async (productId: string, productTitle?: string) => {
-    const confirmed = await confirmation.confirm({
-      title: 'Delete Product',
-      message: `Are you sure you want to permanently delete the product${productTitle ? ` "${productTitle}"` : ''}? This action cannot be undone and will remove all associated images and data.`,
-      confirmText: 'Delete Product',
-      cancelText: 'Cancel',
-      variant: 'destructive',
-    });
-    
-    if (!confirmed) return false;
-    
-const { error } = await apiRequest(`/api/admin/product?id=${encodeURIComponent(productId)}`, { method: 'DELETE', showLoadingBar: true });
-    if (error) {
-      showToast({ type: 'error', title: 'Error', description: error });
-      return false;
-    }
-    showToast({ title: 'Success', description: 'Product deleted successfully' });
-    return true;
-  };
 
   // Collection handlers with API calls
   const fetchCollections = async () => {
@@ -103,9 +58,9 @@ const { error } = await apiRequest('/api/admin/collection', { method: 'PUT', bod
       cancelText: 'Cancel',
       variant: 'destructive',
     });
-    
+
     if (!confirmed) return;
-    
+
 const { error } = await apiRequest(`/api/admin/collection?id=${encodeURIComponent(collectionId)}`, { method: 'DELETE', showLoadingBar: true });
     if (!error) {
       await fetchCollections();
@@ -151,9 +106,9 @@ const { error } = await apiRequest('/api/admin/category', { method: 'PUT', body:
       cancelText: 'Cancel',
       variant: 'destructive',
     });
-    
+
     if (!confirmed) return;
-    
+
 const { error } = await apiRequest(`/api/admin/category?id=${encodeURIComponent(categoryId)}`, { method: 'DELETE', showLoadingBar: true });
     if (!error) {
       await fetchCategories();
@@ -199,9 +154,9 @@ const { error } = await apiRequest('/api/admin/section', { method: 'PUT', body: 
       cancelText: 'Cancel',
       variant: 'destructive',
     });
-    
+
     if (!confirmed) return;
-    
+
 const { error } = await apiRequest(`/api/admin/section?id=${encodeURIComponent(sectionId)}`, { method: 'DELETE', showLoadingBar: true });
     if (!error) {
       await fetchSections();
@@ -229,9 +184,9 @@ const { error } = await apiRequest('/api/admin/section/products', { method: 'POS
       cancelText: 'Cancel',
       variant: 'destructive',
     });
-    
+
     if (!confirmed) return;
-    
+
 const { error } = await apiRequest(`/api/admin/section/products?sectionId=${encodeURIComponent(sectionId)}&productId=${encodeURIComponent(productId)}`, { method: 'DELETE', showLoadingBar: true });
     if (!error) {
       await fetchSections();
@@ -265,9 +220,6 @@ const { error } = await apiRequest('/api/admin/section', { method: 'PATCH', body
     collectionList,
     categoryList,
     sectionList,
-    handleAddProduct,
-    handleEditProduct,
-    handleDeleteProduct,
     handleAddCollection,
     handleEditCollection,
     handleDeleteCollection,

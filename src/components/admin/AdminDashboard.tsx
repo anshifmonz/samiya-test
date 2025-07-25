@@ -35,9 +35,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
     collectionList,
     categoryList,
     sectionList,
-    handleAddProduct,
-    handleEditProduct,
-    handleDeleteProduct,
     handleAddCollection,
     handleEditCollection,
     handleDeleteCollection,
@@ -53,7 +50,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
     handleReorderSectionProducts,
     confirmation
   } = useAdminDashboard({
-    initialProducts,
     initialCollections,
     initialCategories,
     initialSections
@@ -140,9 +136,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
           <AdminProductsTab
             initialProducts={initialProducts}
             categories={categoryList}
-            onAddProduct={handleAddProduct}
-            onEditProduct={handleEditProduct}
-            onDeleteProduct={handleDeleteProduct}
             isSuperAdmin={isSuperAdmin}
           />
         </TabsContent>

@@ -19,18 +19,12 @@ import { useUrlParam } from 'hooks/ui/useUrlParam';
 interface AdminProductsTabProps {
   initialProducts: Product[];
   categories: Category[];
-  onAddProduct: (product: Omit<Product, 'id'>) => Promise<Product | null>;
-  onEditProduct: (product: Product) => Promise<Product | null>;
-  onDeleteProduct: (productId: string, productTitle?: string) => Promise<boolean>;
   isSuperAdmin: boolean;
 }
 
 const AdminProductsTab: React.FC<AdminProductsTabProps> = ({
   initialProducts,
   categories,
-  onAddProduct,
-  onEditProduct,
-  onDeleteProduct,
   isSuperAdmin
 }) => {
   const { sizes, loading: sizesLoading } = useSizes();
@@ -61,17 +55,13 @@ const AdminProductsTab: React.FC<AdminProductsTabProps> = ({
     refreshProducts
   } = useAdminProductsTab({
     initialProducts,
-    categories,
-    onAddProduct,
-    onEditProduct,
-    onDeleteProduct,
     sortOption
   });
 
   const handleBulkImport = async (products: Omit<Product, 'id'>[]) => {
     setIsBulkImporting(true);
     try {
-const { data, error } = await apiRequest('/api/admin/product/bulk', {
+      const { data, error } = await apiRequest('/api/admin/product/bulk', {
         method: 'POST',
         body: { products },
         showLoadingBar: true

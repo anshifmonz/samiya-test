@@ -1,23 +1,17 @@
 import { useState } from 'react';
 import { type Product } from 'types/product';
-import { type Category } from 'types/category';
 import { useAdminProductInfiniteScroll } from 'hooks/admin/product/useAdminProductInfiniteScroll';
+import { apiRequest } from 'utils/apiRequest';
+import { showToast } from 'hooks/ui/use-toast';
+import { useConfirmation } from 'hooks/useConfirmation';
 
 interface UseAdminProductsTabProps {
   initialProducts: Product[];
-  categories: Category[];
-  onAddProduct: (product: Omit<Product, 'id'>) => Promise<Product | null>;
-  onEditProduct: (product: Product) => Promise<Product | null>;
-  onDeleteProduct: (productId: string, productTitle?: string) => Promise<boolean>;
   sortOption: string;
 }
 
 export const useAdminProductsTab = ({
   initialProducts,
-  categories,
-  onAddProduct,
-  onEditProduct,
-  onDeleteProduct,
   sortOption
 }: UseAdminProductsTabProps) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -33,26 +27,51 @@ export const useAdminProductsTab = ({
     refreshProducts,
     isSearching
   } = useAdminProductInfiniteScroll(initialProducts, searchQuery, sortOption);
-
+  const confirmation = useConfirmation();
   // Product operation handlers
   const handleAddProduct = async (newProduct: Omit<Product, 'id'>) => {
-    const product = await onAddProduct(newProduct);
-    if (!product) return;
+    const { data, error } = await apiRequest('/api/admin/product', { method: 'POST', body: newProduct, showLoadingBar: true });
+    if (error) {
+      showToast({ type: 'error', title: 'Error', description: error });
+      return null;
+    }
+    showToast({ title: 'Success', description: 'Product added successfully' });
     setShowAddForm(false);
     refreshProducts();
+    return data;
   };
 
   const handleEditProduct = async (updatedProduct: Product) => {
-    const product = await onEditProduct(updatedProduct);
-    if (!product) return;
+    const { data, error } = await apiRequest('/api/admin/product', { method: 'PUT', body: updatedProduct, showLoadingBar: true });
+    if (error) {
+      showToast({ type: 'error', title: 'Error', description: error });
+      return null;
+    }
+    showToast({ title: 'Success', description: 'Product updated successfully' });
     setEditingProduct(null);
     refreshProducts();
+    return data;
   };
 
   const handleDeleteProduct = async (productId: string, productTitle?: string) => {
-    const result = await onDeleteProduct(productId, productTitle);
-    if (!result) return;
+    const confirmed = await confirmation.confirm({
+      title: 'Delete Product',
+      message: `Are you sure you want to permanently delete the product${productTitle ? ` "${productTitle}"` : ''}? This action cannot be undone and will remove all associated images and data.`,
+      confirmText: 'Delete Product',
+      cancelText: 'Cancel',
+      variant: 'destructive',
+    });
+
+    if (!confirmed) return false;
+
+    const { error } = await apiRequest(`/api/admin/product?id=${encodeURIComponent(productId)}`, { method: 'DELETE', showLoadingBar: true });
+    if (error) {
+      showToast({ type: 'error', title: 'Error', description: error });
+      return false;
+    }
+    showToast({ title: 'Success', description: 'Product deleted successfully' });
     refreshProducts();
+    return true;
   };
 
   const handleShowAddForm = () => setShowAddForm(true);
