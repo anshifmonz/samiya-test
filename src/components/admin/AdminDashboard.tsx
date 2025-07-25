@@ -15,6 +15,7 @@ import AdminCollectionsTab from './collection/AdminCollectionsTab';
 import AdminCategoriesTab from './category/AdminCategoriesTab';
 import AdminAdminsTab from './admins/AdminAdminsTab';
 import { ConfirmationDialog } from 'ui/confirmation-dialog';
+import { ProductsTabProvider } from 'contexts/admin/ProductsTabContext';
 
 interface AdminDashboardProps {
   initialProducts: Product[];
@@ -133,11 +134,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </TabsList>
 
         <TabsContent value="products" className="mt-0">
-          <AdminProductsTab
-            initialProducts={initialProducts}
-            categories={categoryList}
-            isSuperAdmin={isSuperAdmin}
-          />
+          <ProductsTabProvider initialProducts={initialProducts} categories={initialCategories} sortOption="last-updated" isSuperAdmin={isSuperAdmin}>
+            <AdminProductsTab />
+          </ProductsTabProvider>
         </TabsContent>
 
         <TabsContent value="collections" className="mt-0">

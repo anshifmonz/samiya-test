@@ -3,30 +3,19 @@
 import { useState } from 'react';
 import { Plus, Search, Upload } from 'lucide-react';
 import { type Product } from 'types/product';
-import { type Category } from 'types/category';
 import AdminTabHeader from '../shared/AdminTabHeader';
 import AdminProductForm from './AdminProductForm';
 import AdminProductGrid from './AdminProductGrid';
 import BulkImportModal from './BulkImportModal';
-import { useAdminProductsTab } from 'hooks/admin/product/useAdminProductsTab';
 import { useSizes } from 'hooks/admin/product/useSizes';
 import { usePersistentBulkImportData } from './bulk/hooks';
 import { apiRequest } from 'utils/apiRequest';
 import { showToast } from 'hooks/ui/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui/select';
 import { useUrlParam } from 'hooks/ui/useUrlParam';
+import { useProductsTab } from 'contexts/admin/ProductsTabContext';
 
-interface AdminProductsTabProps {
-  initialProducts: Product[];
-  categories: Category[];
-  isSuperAdmin: boolean;
-}
-
-const AdminProductsTab: React.FC<AdminProductsTabProps> = ({
-  initialProducts,
-  categories,
-  isSuperAdmin
-}) => {
+const AdminProductsTab: React.FC = () => {
   const { sizes, loading: sizesLoading } = useSizes();
   const [showBulkImport, setShowBulkImport] = useState(false);
   const [isBulkImporting, setIsBulkImporting] = useState(false);
@@ -36,27 +25,13 @@ const AdminProductsTab: React.FC<AdminProductsTabProps> = ({
 
   const {
     searchQuery,
-    products,
-    loading,
-    hasMore,
-    error,
-    isSearching,
-    loaderRef,
     handleSearchChange,
-    handleAddProduct,
-    handleEditProduct,
-    handleDeleteProduct,
     handleShowAddForm,
-    handleStartEditing,
-    handleCancelForm,
+    isSearching,
     isFormVisible,
-    currentProduct,
     productsCountText,
     refreshProducts
-  } = useAdminProductsTab({
-    initialProducts,
-    sortOption
-  });
+  } = useProductsTab();
 
   const handleBulkImport = async (products: Omit<Product, 'id'>[]) => {
     setIsBulkImporting(true);
@@ -155,30 +130,14 @@ const AdminProductsTab: React.FC<AdminProductsTabProps> = ({
         </div>
       </div>
 
-      <AdminProductGrid
-        products={products}
-        onEdit={handleStartEditing}
-        onDelete={handleDeleteProduct}
-        loading={loading}
-        hasMore={hasMore}
-        loaderRef={loaderRef}
-        error={error}
-        isSearching={isSearching}
-        isSuperAdmin={isSuperAdmin}
-      />
+      <AdminProductGrid />
 
       {isFormVisible && (
-        <AdminProductForm
-          product={currentProduct}
-          categories={categories}
-          onSave={currentProduct ? handleEditProduct : handleAddProduct}
-          onCancel={handleCancelForm}
-        />
+        <AdminProductForm />
       )}
 
       {showBulkImport && isLoaded && (
         <BulkImportModal
-          categories={categories}
           sizes={sizes}
           onImport={handleBulkImport}
           onCancel={handleCancelBulkImport}

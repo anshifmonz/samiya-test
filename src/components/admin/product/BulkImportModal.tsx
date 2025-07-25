@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Info, X } from 'lucide-react';
 import { type CreateProductData } from 'types/product';
-import { type Category } from 'types/category';
 import { type Size } from 'types/product';
 import { Textarea } from 'ui/textarea';
 import { Alert, AlertDescription } from 'ui/alert';
@@ -19,9 +18,8 @@ import {
 } from './bulk/components';
 import { useBulkImportModalLogic } from './bulk/hooks';
 import { BulkImportProvider, useBulkImportContext } from './bulk/components/BulkImportContext';
-
+import { useProductsTab } from 'contexts/admin/ProductsTabContext';
 interface BulkImportModalProps {
-  categories: Category[];
   sizes: Size[];
   onImport: (products: CreateProductData[]) => void;
   onCancel: () => void;
@@ -109,7 +107,6 @@ const BulkImportModalContent: React.FC = () => {
 
 
 const BulkImportModal: React.FC<BulkImportModalProps> = ({
-  categories,
   sizes,
   onImport,
   onCancel,
@@ -117,6 +114,7 @@ const BulkImportModal: React.FC<BulkImportModalProps> = ({
   onDataChange,
   onClearData
 }) => {
+  const { categories } = useProductsTab()
   const logic = useBulkImportModalLogic({
     categories,
     sizes,

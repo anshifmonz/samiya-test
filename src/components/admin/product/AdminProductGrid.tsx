@@ -1,33 +1,11 @@
 import React from 'react';
-import { type Product } from 'types/product';
 import ProductCard from '../../shared/ProductCard';
+import { useProductsTab } from 'contexts/admin/ProductsTabContext';
 
-interface AdminProductGridProps {
-  products: Product[];
-  onEdit: (product: Product) => void;
-  onDelete: (productId: string, productTitle: string) => void;
-  loading?: boolean;
-  hasMore?: boolean;
-  loaderRef?: React.RefObject<HTMLDivElement>;
-  error?: string | null;
-  isSearching?: boolean;
-  isSuperAdmin: boolean;
-}
 
-const AdminProductGrid: React.FC<AdminProductGridProps> = ({
-  products,
-  onEdit,
-  onDelete,
-  loading = false,
-  hasMore = false,
-  loaderRef,
-  error,
-  isSearching = false,
-  isSuperAdmin
-}) => {
-  const handleProductDelete = (product: Product) => {
-    onDelete(product.id, product.title);
-  };
+
+const AdminProductGrid: React.FC = () => {
+  const { products, loading, hasMore, error, isSearching, loaderRef, handleDeleteProduct, isSuperAdmin, handleStartEditing } = useProductsTab();
 
   if (products.length === 0 && !loading && !isSearching) {
     return (
@@ -50,8 +28,6 @@ const AdminProductGrid: React.FC<AdminProductGridProps> = ({
             key={product.id}
             product={product}
             isAdmin={true}
-            onEdit={onEdit}
-            onDelete={isSuperAdmin ? handleProductDelete : undefined}
             showTags={true}
           />
         ))}

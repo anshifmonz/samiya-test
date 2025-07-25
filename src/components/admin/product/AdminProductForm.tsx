@@ -17,13 +17,7 @@ import {
 } from './form';
 import { useAdminProductForm } from 'hooks/admin/product/useAdminProductForm';
 import { AdminProductFormProvider, useAdminProductFormContext } from './form/AdminProductFormContext';
-
-interface AdminProductFormProps {
-  product?: Product | null;
-  categories: Category[];
-  onSave: (product: Product | CreateProductData) => void;
-  onCancel: () => void;
-}
+import { useProductsTab } from 'contexts/admin/ProductsTabContext';
 
 const AdminProductFormContent: React.FC = () => {
   const { product, handleSubmit } = useAdminProductFormContext();
@@ -54,8 +48,13 @@ const AdminProductFormContent: React.FC = () => {
   );
 };
 
-const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories, onSave, onCancel }) => {
-  const logic = useAdminProductForm({ product, categories, onSave, onCancel });
+const AdminProductForm: React.FC = () => {
+  const { currentProduct: product, handleEditProduct, handleAddProduct, categories, handleCancelForm } = useProductsTab();
+  const logic = useAdminProductForm({
+    product, categories,
+    onSave: product ? handleEditProduct : handleAddProduct,
+    onCancel: handleCancelForm
+  });
 
   const providerValue = {
     // ===== ORGANIZED CONTEXT STRUCTURE =====

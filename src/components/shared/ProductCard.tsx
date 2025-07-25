@@ -8,24 +8,22 @@ import { Badge } from 'ui/badge';
 import { Edit, Trash } from 'lucide-react';
 import ImageFallback from './ImageFallback';
 import CloudinaryWithFallback from './CloudinaryWithFallback';
+import { useProductsTab } from 'contexts/admin/ProductsTabContext';
 
 type ProductCardProduct = SearchProduct | Product;
 
 interface ProductCardProps {
   product: ProductCardProduct;
   isAdmin?: boolean;
-  onEdit?: (product: ProductCardProduct) => void;
-  onDelete?: (product: ProductCardProduct) => void;
   showTags?: boolean;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
   product,
   isAdmin = false,
-  onEdit,
-  onDelete,
   showTags = false
 }) => {
+  const { isSuperAdmin, handleDeleteProduct, handleStartEditing } = useProductsTab();
   const firstColorData = Object.values(product.images)[0];
   const firstImageRaw = firstColorData?.images?.[0];
   const firstImage = firstImageRaw?.url;
@@ -65,12 +63,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
       case 'black': return '#000000';
       case 'white': return '#FFFFFF';
       default: return color;
-    }
-  };
-
-  const handleDelete = () => {
-    if (onDelete) {
-      onDelete(product);
     }
   };
 
@@ -129,18 +121,18 @@ const ProductCard: React.FC<ProductCardProps> = ({
         )}
 
         {/* Admin Actions Overlay */}
-        {isAdmin && onEdit && (
+        {isAdmin && (
           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
             <button
-              onClick={() => onEdit(product)}
+              onClick={() => handleStartEditing(product as Product)}
               className="bg-white text-black p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 shadow-lg"
               title="Edit Product"
             >
               <Edit size={18} />
             </button>
-            {onDelete && (
+            {isSuperAdmin && (
             <button
-              onClick={handleDelete}
+              onClick={() => handleDeleteProduct(product.id, product.title)}
               className="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 transition-colors duration-200 shadow-lg"
               title="Delete Product"
               >
