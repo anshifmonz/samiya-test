@@ -1,7 +1,7 @@
 import React from 'react';
 import { Upload } from 'lucide-react';
 import { Button } from 'ui/button';
-import { useBulkImportComputed, useBulkImportState, useBulkImportModalActions } from './BulkImportContext';
+import { useBulkImportComputed, useBulkImportState, useBulkImportModalActions } from '../context';
 
 export const ModalActionButtons: React.FC = () => {
   const { validProductsCount } = useBulkImportComputed();

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useCategorySuggestions } from '../hooks/useCategorySuggestions';
 import { SuggestionsDropdown } from './SuggestionsDropdown';
-import { useBulkImportContext } from './BulkImportContext';
+import { useBulkImportState, useBulkImportConfig, useBulkImportCursor, useBulkImportRefs, useBulkImportActions } from '../context';
 
 interface SuggestionPosition {
   top: number;
@@ -13,14 +13,11 @@ interface SuggestionPosition {
 
 // Component that provides inline category suggestions in the textarea
 export const TextareaCategorySuggestions: React.FC = () => {
-  const {
-    pastedData: value,
-    categories,
-    cursorPosition,
-    textareaRef,
-    handleSuggestionSelect: onSuggestionSelect,
-    expectedHeaders
-  } = useBulkImportContext();
+  const { pastedData: value } = useBulkImportState();
+  const { categories, expectedHeaders } = useBulkImportConfig();
+  const { position: cursorPosition } = useBulkImportCursor();
+  const { textarea: textareaRef } = useBulkImportRefs();
+  const { handleSuggestionSelect: onSuggestionSelect } = useBulkImportActions();
   const [suggestionPosition, setSuggestionPosition] = useState<SuggestionPosition | null>(null);
   const [highlightedIndex, setHighlightedIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(false);

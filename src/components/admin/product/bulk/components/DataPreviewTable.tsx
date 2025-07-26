@@ -1,7 +1,7 @@
 import React from 'react';
 import BulkImportCellEditor from '../BulkImportCellEditor';
 import { Edit2 } from 'lucide-react';
-import { useBulkImportTableData } from './BulkImportContext';
+import { useBulkImportTableData } from '../context';
 
 interface DataPreviewTableProps {
   onRowClick?: (rowIndex: number) => void;

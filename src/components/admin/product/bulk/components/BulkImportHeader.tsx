@@ -1,8 +1,8 @@
 import { X } from "lucide-react";
-import { useBulkImportContext } from "./BulkImportContext";
+import { useBulkImportModalActions } from "../context";
 
 const BulkImportModalHeader: React.FC = () => {
-  const { onCancel } = useBulkImportContext();
+  const { handleCancel } = useBulkImportModalActions();
 
   return (
     <div className="sticky top-0 bg-white rounded-t-xl sm:rounded-t-2xl border-b border-luxury-gray/20 p-4 sm:p-6 flex items-center justify-between z-[9999]">
@@ -10,7 +10,7 @@ const BulkImportModalHeader: React.FC = () => {
         Bulk Import Products
       </h2>
       <button
-        onClick={onCancel}
+        onClick={handleCancel}
         className="text-luxury-gray hover:text-luxury-black transition-colors duration-200 flex-shrink-0"
         type="button"
       >

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useBulkImportConfig, useBulkImportCursor } from './BulkImportContext';
+import { useBulkImportConfig, useBulkImportCursor } from '../context';
 
 export const DynamicColumnHeaders: React.FC = () => {
   const { expectedHeaders } = useBulkImportConfig();

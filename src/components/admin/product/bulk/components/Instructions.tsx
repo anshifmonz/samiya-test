@@ -1,5 +1,5 @@
 import React from 'react';
-import { useBulkImportConfig, useBulkImportActions } from './BulkImportContext';
+import { useBulkImportConfig, useBulkImportActions } from '../context';
 
 // Instructions and sample data loader component
 export const Instructions: React.FC = () => {

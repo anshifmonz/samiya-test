@@ -2,7 +2,7 @@ import React from 'react';
 import { CheckCircle, AlertCircle } from 'lucide-react';
 import { Badge } from 'ui/badge';
 import { Separator } from 'ui/separator';
-import { useBulkImportValidation } from './BulkImportContext';
+import { useBulkImportValidation } from '../context';
 
 export const ValidationResults: React.FC = () => {
   const {
