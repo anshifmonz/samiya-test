@@ -20,11 +20,12 @@ const AdminProductsTab: React.FC = () => {
   const [showBulkImport, setShowBulkImport] = useState(false);
   const [isBulkImporting, setIsBulkImporting] = useState(false);
 
-  const [sortOption, setSortOption] = useUrlParam('sort', 'last-updated');
   const { persistentData, saveData, clearData, isLoaded } = usePersistentBulkImportData();
 
   const {
     searchQuery,
+    sortOption,
+    handleSortChange,
     handleSearchChange,
     handleShowAddForm,
     isSearching,
@@ -113,7 +114,7 @@ const AdminProductsTab: React.FC = () => {
               {productsCountText}
             </p>
           )}
-          <Select value={sortOption} onValueChange={setSortOption}>
+          <Select value={sortOption} onValueChange={handleSortChange}>
             <SelectTrigger className="w-48">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>

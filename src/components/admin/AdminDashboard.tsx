@@ -134,7 +134,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </TabsList>
 
         <TabsContent value="products" className="mt-0">
-          <ProductsTabProvider initialProducts={initialProducts} categories={initialCategories} sortOption="last-updated" isSuperAdmin={isSuperAdmin}>
+          <ProductsTabProvider initialProducts={initialProducts} categories={initialCategories} isSuperAdmin={isSuperAdmin}>
             <AdminProductsTab />
           </ProductsTabProvider>
         </TabsContent>

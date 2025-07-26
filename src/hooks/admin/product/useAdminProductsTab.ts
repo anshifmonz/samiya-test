@@ -4,19 +4,19 @@ import { useAdminProductInfiniteScroll } from 'hooks/admin/product/useAdminProdu
 import { apiRequest } from 'utils/apiRequest';
 import { showToast } from 'hooks/ui/use-toast';
 import { useConfirmation } from 'hooks/useConfirmation';
+import { useUrlParam } from 'hooks/ui/useUrlParam';
 
 interface UseAdminProductsTabProps {
   initialProducts: Product[];
-  sortOption: string;
 }
 
 export const useAdminProductsTab = ({
-  initialProducts,
-  sortOption
+  initialProducts
 }: UseAdminProductsTabProps) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [sortOption, setSortOption] = useUrlParam('sort', 'last-updated');
   const confirmation = useConfirmation();
 
   const {
@@ -83,10 +83,11 @@ export const useAdminProductsTab = ({
     setShowAddForm(false);
     setEditingProduct(null);
   };
-
   const handleSearchChange = (query: string) => {
     setSearchQuery(query);
   };
+
+  const handleSortChange = (sort: string) => setSortOption(sort);
 
   const isFormVisible = showAddForm || !!editingProduct;
   const currentProduct = editingProduct;
@@ -103,6 +104,7 @@ export const useAdminProductsTab = ({
     hasMore,
     error,
     isSearching,
+    sortOption,
 
     // Refs
     loaderRef,
@@ -117,6 +119,7 @@ export const useAdminProductsTab = ({
     handleStartEditing,
     handleStopEditing,
     handleCancelForm,
+    handleSortChange,
 
     // Computed values
     isFormVisible,

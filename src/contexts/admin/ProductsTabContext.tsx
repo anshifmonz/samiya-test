@@ -8,13 +8,13 @@ interface ProductsTabProviderProps {
   children: React.ReactNode;
   initialProducts: Product[];
   categories: Category[];
-  sortOption: string;
   isSuperAdmin: boolean;
 }
 
 interface ProductsTabContextType {
     isSuperAdmin: boolean;
     categories: Category[];
+    sortOption: string;
     searchQuery: string;
     showAddForm: boolean;
     editingProduct: Product | null;
@@ -37,6 +37,7 @@ interface ProductsTabContextType {
     handleStartEditing: (product: Product) => void;
     handleStopEditing: () => void;
     handleCancelForm: () => void;
+    handleSortChange: (sort: string) => void;
 
     // Computed values
     isFormVisible: boolean;
@@ -49,8 +50,8 @@ interface ProductsTabContextType {
 
 const ProductsTabContext = createContext<ProductsTabContextType | undefined>(undefined);
 
-export const ProductsTabProvider = ({ children, initialProducts, categories, sortOption, isSuperAdmin }: ProductsTabProviderProps) => {
-  const adminProductsTab = useAdminProductsTab({ initialProducts, sortOption });
+export const ProductsTabProvider = ({ children, initialProducts, categories, isSuperAdmin }: ProductsTabProviderProps) => {
+  const adminProductsTab = useAdminProductsTab({ initialProducts });
   return (
     <ProductsTabContext.Provider value={{isSuperAdmin, categories, ...adminProductsTab}}>
       {children}
