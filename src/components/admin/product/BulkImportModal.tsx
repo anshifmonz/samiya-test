@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { Info, X } from 'lucide-react';
 import { type CreateProductData } from 'types/product';
@@ -16,9 +16,9 @@ import {
   BulkImportImageDialog,
   BulkImportModalHeader
 } from './bulk/components';
-import { useBulkImportModalLogic } from './bulk/hooks';
-import { BulkImportProvider, useBulkImportContext } from './bulk/components/BulkImportContext';
+import { BulkImportProvider, useBulkImportState, useBulkImportRefs, useBulkImportActions } from './bulk/context';
 import { useProductsTab } from 'contexts/admin/ProductsTabContext';
+
 interface BulkImportModalProps {
   sizes: Size[];
   onImport: (products: CreateProductData[]) => void;
@@ -33,14 +33,9 @@ const sampleData = `Casual T-Shirt\tComfortable cotton t-shirt for daily wear\t2
 Elegant Silk Saree\tBeautiful traditional silk saree with golden border\t1499\t1999\tLadies Wear > Saree\tsilk,traditional,wedding\tS,M,L\t\tfalse`;
 
 const BulkImportModalContent: React.FC = () => {
-  const {
-    textareaRef,
-    pastedData,
-    handleInputChange,
-    handleKeyDown,
-    handleCursorChange,
-    handleClearData
-  } = useBulkImportContext();
+  const { pastedData } = useBulkImportState();
+  const { textarea: textareaRef } = useBulkImportRefs();
+  const { handleInputChange, handleKeyDown, handleCursorChange, handleClearData } = useBulkImportActions();
 
   return (
     <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
@@ -105,7 +100,6 @@ const BulkImportModalContent: React.FC = () => {
   );
 };
 
-
 const BulkImportModal: React.FC<BulkImportModalProps> = ({
   sizes,
   onImport,
@@ -114,156 +108,42 @@ const BulkImportModal: React.FC<BulkImportModalProps> = ({
   onDataChange,
   onClearData
 }) => {
-  const { categories } = useProductsTab()
-  const logic = useBulkImportModalLogic({
-    categories,
-    sizes,
-    expectedHeaders,
-    sampleData,
-    onImport,
-    onCancel,
-    persistentData,
-    onDataChange,
-    onClearData
-  });
-
-  const providerValue = {
-    // ===== ORGANIZED CONTEXT STRUCTURE =====
-    config: {
-      categories,
-      sizes,
-      expectedHeaders,
-      sampleData,
-    },
-
-    state: {
-      pastedData: logic.pastedData,
-      parsedProducts: logic.parsedProducts,
-      rawTableData: logic.rawTableData,
-      isValidating: logic.isValidating,
-      mounted: logic.mounted,
-    },
-
-    cursor: {
-      position: logic.cursorPosition,
-      activeColumnIndex: logic.activeColumnIndex,
-    },
-
-    imageDialog: {
-      isOpen: logic.showImageDialog,
-      productTitle: logic.currentImageProductTitle,
-      imageData: logic.currentImageData,
-    },
-
-    computed: {
-      validProductsCount: logic.validProductsCount,
-      totalProductsCount: logic.totalProductsCount,
-      hasErrors: logic.hasErrors,
-      hasWarnings: logic.hasWarnings,
-    },
-
-    refs: {
-      textarea: logic.textareaRef,
-    },
-
-    actions: {
-      updateCellValue: logic.updateCellValue,
-      handleInputChange: logic.handleInputChange,
-      handleKeyDown: logic.handleKeyDown,
-      handleCursorChange: logic.handleCursorChange,
-      handleLoadSample: logic.handleLoadSample,
-      handleSuggestionSelect: logic.handleSuggestionSelect,
-    },
-
-    imageActions: {
-      openImageDialog: logic.handleEditImages,
-      closeImageDialog: logic.handleCloseImageDialog,
-      saveImageChanges: logic.handleSaveImageChanges,
-      updateImageDataRealTime: logic.handleRealTimeImageUpdate,
-    },
-
-    modalActions: {
-      handleImport: logic.handleImport,
-      handleCancel: logic.onCancel,
-    },
-
-    // ===== LEGACY COMPATIBILITY =====
-    // Basic data
-    categories,
-    sizes,
-    expectedHeaders,
-    sampleData,
-
-    // State
-    pastedData: logic.pastedData,
-    parsedProducts: logic.parsedProducts,
-    rawTableData: logic.rawTableData,
-    cursorPosition: logic.cursorPosition,
-    activeColumnIndex: logic.activeColumnIndex,
-    isValidating: logic.isValidating,
-    mounted: logic.mounted,
-
-    // Image dialog state
-    showImageDialog: logic.showImageDialog,
-    currentImageProductTitle: logic.currentImageProductTitle,
-    currentImageData: logic.currentImageData,
-
-    // Computed values
-    validProductsCount: logic.validProductsCount,
-    totalProductsCount: logic.totalProductsCount,
-    hasErrors: logic.hasErrors,
-    hasWarnings: logic.hasWarnings,
-
-    // Refs
-    textareaRef: logic.textareaRef,
-
-    // Actions
-    updateCellValue: logic.updateCellValue,
-    handleInputChange: logic.handleInputChange,
-    handleKeyDown: logic.handleKeyDown,
-    handleCursorChange: logic.handleCursorChange,
-    handleLoadSample: logic.handleLoadSample,
-    handleSuggestionSelect: logic.handleSuggestionSelect,
-    handleEditImages: logic.handleEditImages,
-    handleCloseImageDialog: logic.handleCloseImageDialog,
-    handleSaveImageChanges: logic.handleSaveImageChanges,
-    handleRealTimeImageUpdate: logic.handleRealTimeImageUpdate,
-    handleImport: logic.handleImport,
-    onCancel: logic.onCancel,
-    handleClearData: logic.handleClearData
-  };
-
-  // Prevent accidental modal closing
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        event.stopPropagation();
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, []);
+  const { categories } = useProductsTab();
 
   const modalContent = (
-    <BulkImportProvider value={providerValue}>
-      <div
-        className="fixed inset-0 bg-luxury-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="bg-white rounded-xl sm:rounded-2xl shadow-2xl max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
-          <BulkImportModalHeader />
-          <BulkImportModalContent />
+    <BulkImportProvider
+      categories={categories}
+      sizes={sizes}
+      expectedHeaders={expectedHeaders}
+      sampleData={sampleData}
+      onImport={onImport}
+      onCancel={onCancel}
+      persistentData={persistentData}
+      onDataChange={onDataChange}
+      onClearData={onClearData}
+    >
+      <ModalPortal>
+        <div
+          className="fixed inset-0 bg-luxury-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-2xl max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
+            <BulkImportModalHeader />
+            <BulkImportModalContent />
+          </div>
+          <BulkImportImageDialog />
         </div>
-        <BulkImportImageDialog />
-      </div>
+      </ModalPortal>
     </BulkImportProvider>
   );
 
-  return logic.mounted ? createPortal(modalContent, document.body) : null;
+  return modalContent;
+};
+
+// Component to handle portal and mounting logic
+const ModalPortal: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const { mounted } = useBulkImportState();
+  return mounted ? createPortal(children, document.body) : null;
 };
 
 export default BulkImportModal;
