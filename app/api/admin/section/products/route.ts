@@ -11,7 +11,6 @@ export async function GET(request: NextRequest) {
     const offsetNumber = offset ? parseInt(offset) : 0;
 
     const products = await getProducts(limitNumber, offsetNumber, query);
-    console.log('products', products);
     return NextResponse.json({ products });
   } catch (error) {
     console.error('Error in GET /api/admin/section/products:', error);
