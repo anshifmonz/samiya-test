@@ -97,7 +97,6 @@ export const useAdminSectionsTab = ({
   const handleProductSelect = (productId: string) => {
     if (searchModalOpen) {
       onAddProductToSection(searchModalOpen, productId);
-      setSearchModalOpen(null);
     }
   };
 

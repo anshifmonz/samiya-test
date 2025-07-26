@@ -147,10 +147,7 @@ const ProductSearchModal: React.FC<ProductSearchModalProps> = ({
     };
   }, [fetchMoreProducts, hasMore]);
 
-  const handleProductSelect = (productId: string) => {
-    onProductSelect(productId);
-    onClose();
-  };
+  const handleProductSelect = (productId: string) => onProductSelect(productId);
 
   const modalContent = (
     <div className="fixed inset-0 bg-luxury-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
