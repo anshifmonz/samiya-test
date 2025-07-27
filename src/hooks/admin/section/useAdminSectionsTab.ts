@@ -2,30 +2,18 @@ import { useState, useEffect } from 'react';
 import { DragEndEvent } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
 import { type Section, type SectionWithProducts, type SectionProductItem } from 'types/section';
-import { type Product } from 'types/product';
+import { showToast } from 'hooks/ui/use-toast';
+import { apiRequest } from 'utils/apiRequest';
+import { useConfirmation } from 'hooks/useConfirmation';
 
 interface UseAdminSectionsTabProps {
-  sections: SectionWithProducts[];
-  products: Product[];
-  onAddSection: (section: Omit<Section, 'id' | 'createdAt' | 'updatedAt'>) => void;
-  onEditSection: (section: Section) => void;
-  onDeleteSection: (sectionId: string, sectionTitle?: string) => void;
-  onAddProductToSection: (sectionId: string, productId: string) => void;
-  onRemoveProductFromSection: (sectionId: string, productId: string, productTitle?: string, sectionTitle?: string) => void;
-  onReorderSections: (sectionIds: string[]) => void;
-  onReorderSectionProducts: (sectionId: string, productIds: string[]) => void;
+  initialSections: SectionWithProducts[];
 }
 
 export const useAdminSectionsTab = ({
-  sections,
-  onAddSection,
-  onEditSection,
-  onDeleteSection,
-  onAddProductToSection,
-  onRemoveProductFromSection,
-  onReorderSections,
-  onReorderSectionProducts
+  initialSections
 }: UseAdminSectionsTabProps) => {
+  const [sectionList, setSectionList] = useState<SectionWithProducts[]>(initialSections);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
   const [editingSection, setEditingSection] = useState<string | null>(null);
   const [editingTitle, setEditingTitle] = useState('');
@@ -33,10 +21,109 @@ export const useAdminSectionsTab = ({
   const [newSectionTitle, setNewSectionTitle] = useState('');
   const [searchModalOpen, setSearchModalOpen] = useState<string | null>(null);
   const [localProductOrders, setLocalProductOrders] = useState<Record<string, SectionProductItem[]>>({});
+  const confirmation = useConfirmation();
 
   useEffect(() => {
     setLocalProductOrders({});
-  }, [sections]);
+  }, [sectionList]);
+
+  // Section API functions
+  const fetchSections = async () => {
+    const { data } = await apiRequest('/api/admin/section?withProducts=true', { showLoadingBar: true });
+    if (data) {
+      setSectionList(data.sections);
+    }
+  };
+
+  const handleAddSectionApi = async (newSection: Omit<Section, 'id' | 'createdAt' | 'updatedAt'>) => {
+    const { error } = await apiRequest('/api/admin/section', { method: 'POST', body: newSection, showLoadingBar: true });
+    if (!error) {
+      await fetchSections();
+      showToast({ title: 'Success', description: 'Section added successfully' });
+    } else {
+      showToast({ type: 'error', title: 'Error', description: error });
+    }
+  };
+
+  const handleEditSectionApi = async (updatedSection: Section) => {
+    const { error } = await apiRequest('/api/admin/section', { method: 'PUT', body: updatedSection, showLoadingBar: true });
+    if (!error) {
+      await fetchSections();
+      showToast({ title: 'Success', description: 'Section updated successfully' });
+    } else {
+      showToast({ type: 'error', title: 'Error', description: error });
+    }
+  };
+
+  const handleDeleteSectionApi = async (sectionId: string, sectionTitle?: string) => {
+    const confirmed = await confirmation.confirm({
+      title: 'Delete Section',
+      message: `Are you sure you want to permanently delete the section${sectionTitle ? ` "${sectionTitle}"` : ''}? This will remove all products from this section. This action cannot be undone.`,
+      confirmText: 'Delete Section',
+      cancelText: 'Cancel',
+      variant: 'destructive',
+    });
+
+    if (!confirmed) return;
+
+    const { error } = await apiRequest(`/api/admin/section?id=${encodeURIComponent(sectionId)}`, { method: 'DELETE', showLoadingBar: true });
+    if (!error) {
+      await fetchSections();
+      showToast({ title: 'Success', description: 'Section deleted successfully' });
+    } else {
+      showToast({ type: 'error', title: 'Error', description: error });
+    }
+  };
+
+  const handleAddProductToSectionApi = async (sectionId: string, productId: string) => {
+    const { error } = await apiRequest('/api/admin/section/products', { method: 'POST', body: { sectionId, productId }, showLoadingBar: true });
+    if (!error) {
+      await fetchSections();
+      showToast({ title: 'Success', description: 'Product added to section successfully' });
+    } else {
+      showToast({ type: 'error', title: 'Error', description: error });
+    }
+  };
+
+  const handleRemoveProductFromSectionApi = async (sectionId: string, productId: string, productTitle?: string, sectionTitle?: string) => {
+    const confirmed = await confirmation.confirm({
+      title: 'Remove Product from Section',
+      message: `Are you sure you want to remove${productTitle ? ` "${productTitle}"` : ' this product'} from${sectionTitle ? ` the "${sectionTitle}" section` : ' this section'}? The product will remain in your inventory but will no longer appear in this section.`,
+      confirmText: 'Remove Product',
+      cancelText: 'Cancel',
+      variant: 'destructive',
+    });
+
+    if (!confirmed) return;
+
+    const { error } = await apiRequest(`/api/admin/section/products?sectionId=${encodeURIComponent(sectionId)}&productId=${encodeURIComponent(productId)}`, { method: 'DELETE', showLoadingBar: true });
+    if (!error) {
+      await fetchSections();
+      showToast({ title: 'Success', description: 'Product removed from section successfully' });
+    } else {
+      showToast({ type: 'error', title: 'Error', description: error });
+    }
+  };
+
+  const handleReorderSectionProductsApi = async (sectionId: string, productIds: string[]) => {
+    const { error } = await apiRequest('/api/admin/section/products', { method: 'PATCH', body: { sectionId, productIds }, showLoadingBar: true });
+    if (!error) {
+      await fetchSections();
+      showToast({ title: 'Success', description: 'Section products reordered successfully' });
+    } else {
+      showToast({ type: 'error', title: 'Error', description: error });
+    }
+  };
+
+  const handleReorderSectionsApi = async (sectionIds: string[]) => {
+    const { error } = await apiRequest('/api/admin/section', { method: 'PATCH', body: { sectionIds }, showLoadingBar: true });
+    if (!error) {
+      await fetchSections();
+      showToast({ title: 'Success', description: 'Sections reordered successfully' });
+    } else {
+      showToast({ type: 'error', title: 'Error', description: error });
+    }
+  };
 
   // Section management functions
   const toggleSection = (sectionId: string) => {
@@ -56,9 +143,9 @@ export const useAdminSectionsTab = ({
 
   const saveEdit = () => {
     if (editingSection && editingTitle.trim()) {
-      const section = sections.find(s => s.id === editingSection);
+      const section = sectionList.find(s => s.id === editingSection);
       if (section) {
-        onEditSection({ ...section, title: editingTitle.trim() });
+        handleEditSectionApi({ ...section, title: editingTitle.trim() });
       }
     }
     setEditingSection(null);
@@ -72,7 +159,7 @@ export const useAdminSectionsTab = ({
 
   const handleAddSection = () => {
     if (newSectionTitle.trim()) {
-      onAddSection({
+      handleAddSectionApi({
         title: newSectionTitle.trim(),
         isActive: true,
         sortOrder: 0
@@ -83,7 +170,7 @@ export const useAdminSectionsTab = ({
   };
 
   const handleToggleActive = (section: Section) => {
-    onEditSection({ ...section, isActive: !section.isActive });
+    handleEditSectionApi({ ...section, isActive: !section.isActive });
   };
 
   // Product management functions
@@ -96,17 +183,17 @@ export const useAdminSectionsTab = ({
 
   const handleProductSelect = (productId: string) => {
     if (searchModalOpen) {
-      onAddProductToSection(searchModalOpen, productId);
+      handleAddProductToSectionApi(searchModalOpen, productId);
     }
   };
 
   const getExistingProductIds = (sectionId: string): string[] => {
-    const section = sections.find(s => s.id === sectionId);
+    const section = sectionList.find(s => s.id === sectionId);
     return section ? section.products.map(p => p.id) : [];
   };
 
   const handleRemoveProduct = (sectionId: string, productId: string, productTitle?: string, sectionTitle?: string) => {
-    onRemoveProductFromSection(sectionId, productId, productTitle, sectionTitle);
+    handleRemoveProductFromSectionApi(sectionId, productId, productTitle, sectionTitle);
   };
 
   // Drag and drop handlers
@@ -114,13 +201,13 @@ export const useAdminSectionsTab = ({
     const { active, over } = event;
 
     if (active.id !== over?.id) {
-      const oldIndex = sections.findIndex(section => section.id === active.id);
-      const newIndex = sections.findIndex(section => section.id === over?.id);
+      const oldIndex = sectionList.findIndex(section => section.id === active.id);
+      const newIndex = sectionList.findIndex(section => section.id === over?.id);
 
       if (oldIndex !== -1 && newIndex !== -1) {
-        const newSections = arrayMove(sections, oldIndex, newIndex);
+        const newSections = arrayMove(sectionList, oldIndex, newIndex);
         const sectionIds = newSections.map((section: SectionWithProducts) => section.id);
-        onReorderSections(sectionIds);
+        handleReorderSectionsApi(sectionIds);
       }
     }
   };
@@ -142,7 +229,7 @@ export const useAdminSectionsTab = ({
           [section.id]: newProducts
         }));
 
-        onReorderSectionProducts(section.id, productIds);
+        handleReorderSectionProductsApi(section.id, productIds);
       }
     }
   };
@@ -158,6 +245,9 @@ export const useAdminSectionsTab = ({
   const isSectionEditing = (sectionId: string) => editingSection === sectionId;
 
   return {
+    // Data
+    sectionList,
+
     // State
     editingTitle,
     showAddSection,
@@ -165,6 +255,16 @@ export const useAdminSectionsTab = ({
     searchModalOpen,
     localProductOrders,
     setLocalProductOrders,
+
+    // API functions
+    fetchSections,
+    handleAddSectionApi,
+    handleEditSectionApi,
+    handleDeleteSectionApi,
+    handleAddProductToSectionApi,
+    handleRemoveProductFromSectionApi,
+    handleReorderSectionProductsApi,
+    handleReorderSectionsApi,
 
     // Section management
     toggleSection,
@@ -197,5 +297,8 @@ export const useAdminSectionsTab = ({
     // Setters
     setEditingTitle,
     setNewSectionTitle,
+
+    // Confirmation dialog state
+    confirmation
   };
 };
