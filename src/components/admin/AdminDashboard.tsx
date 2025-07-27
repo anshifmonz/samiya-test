@@ -16,6 +16,7 @@ import AdminAdminsTab from './admins/AdminAdminsTab';
 import { ConfirmationDialog } from 'ui/confirmation-dialog';
 import { ProductsTabProvider } from 'contexts/admin/ProductsTabContext';
 import { SectionsTabProvider } from 'contexts/admin/SectionsTabContext';
+import { CategoriesTabProvider } from 'contexts/admin/CategoriesTabContext';
 import { SectionWithProducts } from 'types/section';
 
 interface AdminDashboardProps {
@@ -35,18 +36,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
   const {
     collectionList,
-    categoryList,
     handleAddCollection,
     handleEditCollection,
     handleDeleteCollection,
-    handleAddCategory,
-    handleEditCategory,
-    handleDeleteCategory,
     confirmation
-  } = useAdminDashboard({
-    initialCollections,
-    initialCategories,
-  });
+  } = useAdminDashboard({ initialCollections });
 
   const [activeTab, setActiveTab] = useState('products');
 
@@ -142,13 +136,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </TabsContent>
 
         <TabsContent value="categories" className="mt-0">
-          <AdminCategoriesTab
-            categories={categoryList}
-            onAddCategory={handleAddCategory}
-            onEditCategory={handleEditCategory}
-            onDeleteCategory={handleDeleteCategory}
-            isSuperAdmin={isSuperAdmin}
-          />
+          <CategoriesTabProvider initialCategories={initialCategories}>
+            <AdminCategoriesTab />
+          </CategoriesTabProvider>
         </TabsContent>
 
         <TabsContent value="sections" className="mt-0">

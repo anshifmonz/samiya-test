@@ -4,6 +4,7 @@ import { Edit, Trash2, ChevronRight, ChevronDown, Folder, FolderOpen } from 'luc
 import { Card, CardContent } from '../../../ui/card';
 import { Button } from '../../../ui/button';
 import { Badge } from '../../../ui/badge';
+import { useCategoriesTab } from 'contexts/admin/CategoriesTabContext';
 
 interface CategoryCardProps {
   category: Category;
@@ -11,9 +12,6 @@ interface CategoryCardProps {
   isExpanded: boolean;
   indentationClass: string;
   onToggleExpanded: () => void;
-  onEdit: (category: Category) => void;
-  onDelete: (categoryId: string, categoryName: string) => void;
-  isSuperAdmin: boolean;
 }
 
 const CategoryCard: React.FC<CategoryCardProps> = ({
@@ -21,11 +19,13 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
   hasChildren,
   isExpanded,
   indentationClass,
-  onToggleExpanded,
-  onEdit,
-  onDelete,
-  isSuperAdmin
+  onToggleExpanded
 }) => {
+  const {
+    handleStartEditing: onEdit,
+    handleDeleteCategory: onDelete,
+    isSuperAdmin
+  } = useCategoriesTab();
   return (
     <Card className={`transition-all duration-200 hover:shadow-md ${indentationClass}`}>
       <CardContent className="p-4 px-2 sm:p-4 ">

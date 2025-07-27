@@ -1,5 +1,4 @@
 import { createPortal } from 'react-dom';
-import { type Category } from 'types/category';
 import {
   CategoryNameInput,
   DescriptionTextarea,
@@ -10,20 +9,18 @@ import {
   ModalHeader
 } from './form';
 import { useAdminCategoryForm } from 'hooks/admin/category/useAdminCategoryForm';
+import { useCategoriesTab } from 'contexts/admin/CategoriesTabContext';
 
-interface AdminCategoryFormProps {
-  category?: Category | null;
-  categories: Category[];
-  onSave: (category: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>) => void;
-  onCancel: () => void;
-}
-
-const AdminCategoryForm: React.FC<AdminCategoryFormProps> = ({
-  category,
-  categories,
-  onSave,
-  onCancel
-}) => {
+const AdminCategoryForm: React.FC = () => {
+  const {
+    currentCategory: category,
+    categoryList: categories,
+    handleAddCategory,
+    handleEditCategory,
+    handleCancelForm: onCancel
+  } = useCategoriesTab();
+  
+  const onSave = category ? handleEditCategory : handleAddCategory;
   const {
     formData,
     mounted,
@@ -59,7 +56,6 @@ const AdminCategoryForm: React.FC<AdminCategoryFormProps> = ({
           <ParentCategorySelect
             value={formData.parentId}
             onChange={handleParentIdChange}
-            categories={categories}
             currentCategory={category}
           />
 
@@ -72,7 +68,6 @@ const AdminCategoryForm: React.FC<AdminCategoryFormProps> = ({
           <CategoryPathPreview
             parentId={formData.parentId}
             categoryName={formData.name}
-            categories={categories}
           />
 
           <ActionButtons

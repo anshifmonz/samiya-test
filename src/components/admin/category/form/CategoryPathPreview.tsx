@@ -1,17 +1,16 @@
 import React from 'react';
-import { type Category } from '@/types/category';
+import { useCategoriesTab } from 'contexts/admin/CategoriesTabContext';
 
 interface CategoryPathPreviewProps {
   parentId: string;
   categoryName: string;
-  categories: Category[];
 }
 
 const CategoryPathPreview: React.FC<CategoryPathPreviewProps> = ({
   parentId,
-  categoryName,
-  categories
+  categoryName
 }) => {
+  const { categoryList: categories } = useCategoriesTab();
   if (!parentId || parentId === 'none') {
     return null;
   }

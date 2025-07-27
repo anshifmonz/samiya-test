@@ -1,28 +1,24 @@
 import React from 'react';
 import { type Category } from '@/types/category';
 import CategoryCard from './CategoryCard';
+import { useCategoriesTab } from 'contexts/admin/CategoriesTabContext';
 
 interface CategoryTreeProps {
-  categories: Category[];
   categoryList: Category[];
   level: number;
   expandedCategories: Set<string>;
   onToggleExpanded: (categoryId: string) => void;
-  onEdit: (category: Category) => void;
-  onDelete: (categoryId: string, categoryName: string) => void;
-  isSuperAdmin: boolean;
 }
 
 const CategoryTree: React.FC<CategoryTreeProps> = ({
-  categories,
   categoryList,
   level,
   expandedCategories,
-  onToggleExpanded,
-  onEdit,
-  onDelete,
-  isSuperAdmin
+  onToggleExpanded
 }) => {
+  const {
+    filteredCategories: categories
+  } = useCategoriesTab();
   return (
     <>
       {categoryList.map(category => {
@@ -39,22 +35,15 @@ const CategoryTree: React.FC<CategoryTreeProps> = ({
               isExpanded={isExpanded}
               indentationClass={indentationClass}
               onToggleExpanded={() => onToggleExpanded(category.id)}
-              onEdit={onEdit}
-              onDelete={onDelete}
-              isSuperAdmin={isSuperAdmin}
             />
 
             {hasChildren && isExpanded && (
               <div className="mt-2">
                 <CategoryTree
-                  categories={categories}
                   categoryList={children}
                   level={level + 1}
                   expandedCategories={expandedCategories}
                   onToggleExpanded={onToggleExpanded}
-                  onEdit={onEdit}
-                  onDelete={onDelete}
-                  isSuperAdmin={isSuperAdmin}
                 />
               </div>
             )}

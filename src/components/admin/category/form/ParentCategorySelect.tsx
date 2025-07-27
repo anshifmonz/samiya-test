@@ -1,20 +1,20 @@
 import React from 'react';
 import { type Category } from '@/types/category';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui/select';
+import { useCategoriesTab } from 'contexts/admin/CategoriesTabContext';
 
 interface ParentCategorySelectProps {
   value: string;
   onChange: (value: string) => void;
-  categories: Category[];
   currentCategory?: Category | null;
 }
 
 const ParentCategorySelect: React.FC<ParentCategorySelectProps> = ({
   value,
   onChange,
-  categories,
   currentCategory
 }) => {
+  const { categoryList: categories } = useCategoriesTab();
   const getAvailableParents = () => {
     // When editing, exclude the category itself and its descendants from parent options
     if (currentCategory) {

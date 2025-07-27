@@ -2,43 +2,16 @@ import AdminCategoryGrid from './AdminCategoryGrid';
 import AdminCategoryForm from './AdminCategoryForm';
 import AdminTabHeader from '../shared/AdminTabHeader';
 import { Plus } from 'lucide-react';
-import { type Category } from 'types/category';
-import { useAdminCategoriesTab } from 'hooks/admin/category/useAdminCategoriesTab';
+import { useCategoriesTab } from 'contexts/admin/CategoriesTabContext';
 
-interface AdminCategoriesTabProps {
-  categories: Category[];
-  onAddCategory: (category: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>) => void;
-  onEditCategory: (category: Category) => void;
-  onDeleteCategory: (categoryId: string, categoryName?: string) => void;
-  isSuperAdmin: boolean;
-}
-
-const AdminCategoriesTab: React.FC<AdminCategoriesTabProps> = ({
-  categories,
-  onAddCategory,
-  onEditCategory,
-  onDeleteCategory,
-  isSuperAdmin
-}) => {
+const AdminCategoriesTab: React.FC = () => {
   const {
     searchQuery,
-    filteredCategories,
     handleSearchChange,
-    handleAddCategory,
-    handleEditCategory,
-    handleDeleteCategory,
     handleShowAddForm,
-    handleStartEditing,
-    handleCancelForm,
     isFormVisible,
-    currentCategory,
     categoriesCountText
-  } = useAdminCategoriesTab({
-    categories,
-    onAddCategory,
-    onEditCategory,
-    onDeleteCategory
-  });
+  } = useCategoriesTab();
 
   return (
     <div>
@@ -57,21 +30,8 @@ const AdminCategoriesTab: React.FC<AdminCategoriesTabProps> = ({
         </p>
       </div>
 
-      <AdminCategoryGrid
-        categories={filteredCategories}
-        onEdit={handleStartEditing}
-        onDelete={handleDeleteCategory}
-        isSuperAdmin={isSuperAdmin}
-      />
-
-      {isFormVisible && (
-        <AdminCategoryForm
-          category={currentCategory}
-          categories={categories}
-          onSave={currentCategory ? handleEditCategory : handleAddCategory}
-          onCancel={handleCancelForm}
-        />
-      )}
+      <AdminCategoryGrid />
+      {isFormVisible && <AdminCategoryForm />}
     </div>
   );
 };

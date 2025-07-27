@@ -1,20 +1,11 @@
 import React from 'react';
-import { type Category } from '@/types/category';
 import { CategoryTree, EmptyState } from './grid';
+import { useCategoriesTab } from 'contexts/admin/CategoriesTabContext';
 
-interface AdminCategoryGridProps {
-  categories: Category[];
-  onEdit: (category: Category) => void;
-  onDelete: (categoryId: string, categoryName: string) => void;
-  isSuperAdmin: boolean;
-}
-
-const AdminCategoryGrid: React.FC<AdminCategoryGridProps> = ({
-  categories,
-  onEdit,
-  onDelete,
-  isSuperAdmin
-}) => {
+const AdminCategoryGrid: React.FC = () => {
+  const {
+    filteredCategories: categories
+  } = useCategoriesTab();
   const [expandedCategories, setExpandedCategories] = React.useState<Set<string>>(new Set());
 
   const toggleExpanded = (categoryId: string) => {
@@ -38,14 +29,10 @@ const AdminCategoryGrid: React.FC<AdminCategoryGridProps> = ({
   return (
     <div className="space-y-4">
       <CategoryTree
-        categories={categories}
         categoryList={sortedCategories}
         level={0}
         expandedCategories={expandedCategories}
         onToggleExpanded={toggleExpanded}
-        onEdit={onEdit}
-        onDelete={onDelete}
-        isSuperAdmin={isSuperAdmin}
       />
     </div>
   );
