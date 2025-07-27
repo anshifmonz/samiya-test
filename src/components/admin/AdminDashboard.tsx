@@ -7,16 +7,15 @@ import { type Category } from 'types/category';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from 'ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui/select';
 import { AdminSectionsTab } from './section';
-import { useAdminDashboard } from 'hooks/admin/useAdminDashboard';
 import { useCurrentAdmin } from 'hooks/admin/useCurrentAdmin';
 import AdminProductsTab from './product/AdminProductsTab';
 import AdminCollectionsTab from './collection/AdminCollectionsTab';
 import AdminCategoriesTab from './category/AdminCategoriesTab';
 import AdminAdminsTab from './admins/AdminAdminsTab';
-import { ConfirmationDialog } from 'ui/confirmation-dialog';
 import { ProductsTabProvider } from 'contexts/admin/ProductsTabContext';
 import { SectionsTabProvider } from 'contexts/admin/SectionsTabContext';
 import { CategoriesTabProvider } from 'contexts/admin/CategoriesTabContext';
+import { CollectionsTabProvider } from 'contexts/admin/CollectionsTabContext';
 import { SectionWithProducts } from 'types/section';
 
 interface AdminDashboardProps {
@@ -33,15 +32,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
   initialSections
 }) => {
   const { isSuperAdmin } = useCurrentAdmin();
-
-  const {
-    collectionList,
-    handleAddCollection,
-    handleEditCollection,
-    handleDeleteCollection,
-    confirmation
-  } = useAdminDashboard({ initialCollections });
-
   const [activeTab, setActiveTab] = useState('products');
 
   const handleTabChange = (value: string) => {
@@ -126,13 +116,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </TabsContent>
 
         <TabsContent value="collections" className="mt-0">
-          <AdminCollectionsTab
-            collections={collectionList}
-            onAddCollection={handleAddCollection}
-            onEditCollection={handleEditCollection}
-            onDeleteCollection={handleDeleteCollection}
-            isSuperAdmin={isSuperAdmin}
-          />
+          <CollectionsTabProvider initialCollections={initialCollections}>
+            <AdminCollectionsTab />
+          </CollectionsTabProvider>
         </TabsContent>
 
         <TabsContent value="categories" className="mt-0">
@@ -151,19 +137,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
           <AdminAdminsTab isSuperAdmin={isSuperAdmin} />
         </TabsContent>
       </Tabs>
-
-      {/* Global Confirmation Dialog */}
-      <ConfirmationDialog
-        isOpen={confirmation.isOpen}
-        onClose={confirmation.hideConfirmation}
-        onConfirm={confirmation.onConfirm || (() => {})}
-        title={confirmation.title}
-        message={confirmation.message}
-        confirmText={confirmation.confirmText}
-        cancelText={confirmation.cancelText}
-        variant={confirmation.variant}
-        isLoading={confirmation.isLoading}
-      />
     </div>
   );
 };

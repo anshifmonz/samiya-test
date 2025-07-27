@@ -1,21 +1,19 @@
-import React from 'react';
 import { Edit, Trash } from 'lucide-react';
 import Image from 'next/image';
-import { type Collection } from '@/types/collection';
+import { type Collection } from 'types/collection';
+import { useCollectionsTab } from 'contexts/admin/CollectionsTabContext';
+import { useCurrentAdmin } from 'hooks/admin/useCurrentAdmin';
 
 interface AdminCollectionCardProps {
   collection: Collection;
-  onEdit: (collection: Collection) => void;
-  onDelete?: (collection: Collection) => void;
 }
 
-const AdminCollectionCard: React.FC<AdminCollectionCardProps> = ({ collection, onEdit, onDelete }) => {
-  const handleDelete = () => {
-    if (onDelete) {
-      onDelete(collection);
-    }
-  };
+const AdminCollectionCard: React.FC<AdminCollectionCardProps> = ({ collection }) => {
+  const { handleStartEditing, handleDeleteCollection } = useCollectionsTab();
+  const { isSuperAdmin } = useCurrentAdmin();
 
+  const handleEdit = () => handleStartEditing(collection);
+  const handleDelete = isSuperAdmin ? async () => await handleDeleteCollection(collection.id, collection.title) : undefined;
   return (
     <div className="luxury-card rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border border-luxury-gray/10 hover:border-luxury-gold/30 bg-white/95 backdrop-blur-md group">
       <div className="relative overflow-hidden aspect-[4/3]">
@@ -29,13 +27,13 @@ const AdminCollectionCard: React.FC<AdminCollectionCardProps> = ({ collection, o
 
         <div className="absolute inset-0 bg-luxury-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
           <button
-            onClick={() => onEdit(collection)}
+            onClick={handleEdit}
             className="bg-white text-luxury-black p-2 rounded-lg hover:bg-luxury-gold-light transition-colors duration-200 shadow-lg"
             title="Edit Collection"
           >
             <Edit size={18} />
           </button>
-          {onDelete && (
+          {handleDelete && (
             <button
               onClick={handleDelete}
               className="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 transition-colors duration-200 shadow-lg"

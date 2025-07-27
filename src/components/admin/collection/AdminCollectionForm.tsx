@@ -1,21 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
-import { type Collection } from '@/types/collection';
-import {
-  CollectionTitleInput,
-  DescriptionTextarea,
-  ImageUrlInput,
-  ActionButtons
-} from './form';
+import CollectionTitleInput from './form/CollectionTitleInput';
+import DescriptionTextarea from './form/DescriptionTextarea';
+import ImageUrlInput from './form/ImageUrlInput';
+import ActionButtons from './form/ActionButtons';
+import { useCollectionsTab } from 'contexts/admin/CollectionsTabContext';
 
-interface AdminCollectionFormProps {
-  collection?: Collection | null;
-  onSave: (collection: Collection | Omit<Collection, 'id'>) => void;
-  onCancel: () => void;
-}
-
-const AdminCollectionForm: React.FC<AdminCollectionFormProps> = ({ collection, onSave, onCancel }) => {
+const AdminCollectionForm: React.FC = () => {
+  const { currentCollection, handleAddCollection, handleEditCollection, handleCancelForm } = useCollectionsTab();
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -35,21 +28,21 @@ const AdminCollectionForm: React.FC<AdminCollectionFormProps> = ({ collection, o
   }, []);
 
   useEffect(() => {
-    if (collection) {
+    if (currentCollection) {
       setFormData({
-        title: collection.title,
-        description: collection.description,
-        image: collection.image
+        title: currentCollection.title,
+        description: currentCollection.description,
+        image: currentCollection.image
       });
     }
-  }, [collection]);
+  }, [currentCollection]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (collection) {
-      onSave({ ...formData, id: collection.id });
+    if (currentCollection) {
+      await handleEditCollection({ ...formData, id: currentCollection.id });
     } else {
-      onSave(formData);
+      await handleAddCollection(formData);
     }
   };
 
@@ -58,10 +51,10 @@ const AdminCollectionForm: React.FC<AdminCollectionFormProps> = ({ collection, o
       <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-white rounded-t-2xl border-b border-luxury-gray/20 p-6 flex items-center justify-between z-[9999]">
           <h2 className="luxury-heading text-2xl text-luxury-black">
-            {collection ? 'Edit Collection' : 'Add New Collection'}
+            {currentCollection ? 'Edit Collection' : 'Add New Collection'}
           </h2>
           <button
-            onClick={onCancel}
+            onClick={handleCancelForm}
             className="text-luxury-gray hover:text-luxury-black transition-colors duration-200"
             type="button"
           >
@@ -86,8 +79,8 @@ const AdminCollectionForm: React.FC<AdminCollectionFormProps> = ({ collection, o
           />
 
           <ActionButtons
-            onCancel={onCancel}
-            isEditing={!!collection}
+            onCancel={handleCancelForm}
+            isEditing={!!currentCollection}
           />
         </form>
       </div>
