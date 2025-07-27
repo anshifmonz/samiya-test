@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { type Product } from 'types/product';
 import { type Collection } from 'types/collection';
 import { type Category } from 'types/category';
-import { type SectionWithProducts } from 'types/section';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from 'ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui/select';
 import { AdminSectionsTab } from './section';
@@ -16,6 +15,8 @@ import AdminCategoriesTab from './category/AdminCategoriesTab';
 import AdminAdminsTab from './admins/AdminAdminsTab';
 import { ConfirmationDialog } from 'ui/confirmation-dialog';
 import { ProductsTabProvider } from 'contexts/admin/ProductsTabContext';
+import { SectionsTabProvider } from 'contexts/admin/SectionsTabContext';
+import { SectionWithProducts } from 'types/section';
 
 interface AdminDashboardProps {
   initialProducts: Product[];
@@ -35,25 +36,16 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const {
     collectionList,
     categoryList,
-    sectionList,
     handleAddCollection,
     handleEditCollection,
     handleDeleteCollection,
     handleAddCategory,
     handleEditCategory,
     handleDeleteCategory,
-    handleAddSection,
-    handleEditSection,
-    handleDeleteSection,
-    handleAddProductToSection,
-    handleRemoveProductFromSection,
-    handleReorderSections,
-    handleReorderSectionProducts,
     confirmation
   } = useAdminDashboard({
     initialCollections,
     initialCategories,
-    initialSections
   });
 
   const [activeTab, setActiveTab] = useState('products');
@@ -160,18 +152,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </TabsContent>
 
         <TabsContent value="sections" className="mt-0">
-          <AdminSectionsTab
-            sections={sectionList}
-            products={initialProducts}
-            onAddSection={handleAddSection}
-            onEditSection={handleEditSection}
-            onDeleteSection={handleDeleteSection}
-            onAddProductToSection={handleAddProductToSection}
-            onRemoveProductFromSection={handleRemoveProductFromSection}
-            onReorderSections={handleReorderSections}
-            onReorderSectionProducts={handleReorderSectionProducts}
-            isSuperAdmin={isSuperAdmin}
-          />
+          <SectionsTabProvider initialSections={initialSections}>
+            <AdminSectionsTab />
+          </SectionsTabProvider>
         </TabsContent>
 
         <TabsContent value="admins" className="mt-0">

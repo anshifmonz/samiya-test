@@ -1,8 +1,7 @@
-import React from 'react';
 import { GripVertical } from 'lucide-react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { CarouselItem } from 'components/ui/carousel';
+import { CarouselItem } from 'ui/carousel';
 import { type SectionProductItem } from 'types/section';
 import SectionProductCard from '../SectionProductCard';
 

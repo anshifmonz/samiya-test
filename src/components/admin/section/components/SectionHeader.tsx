@@ -1,45 +1,36 @@
-import React from 'react';
 import { ChevronDown, ChevronRight, Edit2, Trash2, GripVertical } from 'lucide-react';
-import { Button } from 'components/ui/button';
-import { Input } from 'components/ui/input';
-import { Switch } from 'components/ui/switch';
+import { Button } from 'ui/button';
+import { Input } from 'ui/input';
+import { Switch } from 'ui/switch';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { type Section } from 'types/section';
+import { useSectionsTab } from 'contexts/admin/SectionsTabContext';
 
 interface SectionHeaderProps {
   section: Section;
-  isExpanded: boolean;
-  isEditing: boolean;
-  editingTitle: string;
-  onToggleSection: (sectionId: string) => void;
-  onStartEditing: (section: Section) => void;
-  onSaveEdit: () => void;
-  onCancelEdit: () => void;
-  onEditTitleChange: (title: string) => void;
-  onToggleActive: (section: Section) => void;
-  onDeleteSection: (sectionId: string, sectionTitle?: string) => void;
-  isSuperAdmin: boolean;
 }
 
-const SectionHeader: React.FC<SectionHeaderProps> = ({
-  section,
-  isExpanded,
-  isEditing,
-  editingTitle,
-  onToggleSection,
-  onStartEditing,
-  onSaveEdit,
-  onCancelEdit,
-  onEditTitleChange,
-  onToggleActive,
-  onDeleteSection,
-  isSuperAdmin
-}) => {
+const SectionHeader: React.FC<SectionHeaderProps> = ({ section }) => {
+  const {
+    editingTitle,
+    isSectionExpanded,
+    isSectionEditing,
+    toggleSection,
+    startEditing,
+    saveEdit,
+    cancelEdit,
+    setEditingTitle,
+    handleToggleActive,
+    handleDeleteSectionApi
+  } = useSectionsTab();
+
+  const isExpanded = isSectionExpanded(section.id);
+  const isEditing = isSectionEditing(section.id);
+
   const {
     attributes,
     listeners,
-    setNodeRef,
     transform,
     transition,
     isDragging,
@@ -61,7 +52,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center xs:gap-1 gap-3 flex-1">
           <button
-            onClick={() => onToggleSection(section.id)}
+            onClick={() => toggleSection(section.id)}
             className="text-luxury-gray hover:text-luxury-black transition-colors duration-200 flex-shrink-0"
           >
             {isExpanded ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
@@ -81,23 +72,23 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
             <div className="flex items-center gap-2 flex-1">
               <Input
                 value={editingTitle}
-                onChange={(e) => onEditTitleChange(e.target.value)}
+                onChange={(e) => setEditingTitle(e.target.value)}
                 className="border-luxury-gray/30 focus:border-luxury-gold flex-1"
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') onSaveEdit();
-                  if (e.key === 'Escape') onCancelEdit();
+                  if (e.key === 'Enter') saveEdit();
+                  if (e.key === 'Escape') cancelEdit();
                 }}
                 autoFocus
               />
               <Button
-                onClick={onSaveEdit}
+                onClick={saveEdit}
                 size="sm"
                 className="bg-luxury-gold hover:bg-luxury-gold/90 text-luxury-black"
               >
                 Save
               </Button>
               <Button
-                onClick={onCancelEdit}
+                onClick={cancelEdit}
                 size="sm"
                 variant="outline"
                 className="border-luxury-gray/30"
@@ -118,7 +109,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
             <div className="flex items-center gap-2">
               <Switch
                 checked={section.isActive ?? true}
-                onCheckedChange={() => onToggleActive(section)}
+                onCheckedChange={() => handleToggleActive(section)}
                 className="data-[state=checked]:bg-luxury-gold"
               />
               <span className="luxury-body text-sm text-luxury-gray">
@@ -128,23 +119,21 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
 
             <div className="flex items-center gap-2 sm:gap-0">
               <Button
-                onClick={() => onStartEditing(section)}
+                onClick={() => startEditing(section)}
                 size="sm"
                 variant="ghost"
                 className="text-luxury-gray hover:text-luxury-black xs:w-4 w-6 sm:w-10"
               >
                 <Edit2 size={16} />
               </Button>
-              {isSuperAdmin && (
-                <Button
-                  onClick={() => onDeleteSection(section.id, section.title)}
-                  size="sm"
-                  variant="ghost"
-                  className="text-red-500 hover:text-red-700 xs:w-4 w-6 sm:w-10"
-                >
-                  <Trash2 size={16} />
-                </Button>
-              )}
+              <Button
+                onClick={() => handleDeleteSectionApi(section.id, section.title)}
+                size="sm"
+                variant="ghost"
+                className="text-red-500 hover:text-red-700 xs:w-4 w-6 sm:w-10"
+              >
+                <Trash2 size={16} />
+              </Button>
             </div>
           </div>
         )}

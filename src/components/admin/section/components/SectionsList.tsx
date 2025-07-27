@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   DndContext,
   closestCenter,
@@ -12,21 +11,15 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { type SectionWithProducts } from 'types/section';
-import DraggableSectionItem from './DraggableSectionItem';
+import { useSectionsTab } from 'contexts/admin/SectionsTabContext';
 import EmptySectionsState from './EmptySectionsState';
 
 interface SectionsListProps {
-  sections: SectionWithProducts[];
-  onDragEnd: (event: any) => void;
   children: React.ReactNode;
 }
 
-const SectionsList: React.FC<SectionsListProps> = ({
-  sections,
-  onDragEnd,
-  children
-}) => {
+const SectionsList: React.FC<SectionsListProps> = ({ children }) => {
+  const { sectionList, handleSectionDragEnd } = useSectionsTab();
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -39,7 +32,7 @@ const SectionsList: React.FC<SectionsListProps> = ({
     })
   );
 
-  if (sections.length === 0) {
+  if (sectionList.length === 0) {
     return <EmptySectionsState />;
   }
 
@@ -47,10 +40,10 @@ const SectionsList: React.FC<SectionsListProps> = ({
     <DndContext
       sensors={sensors}
       collisionDetection={closestCenter}
-      onDragEnd={onDragEnd}
+      onDragEnd={handleSectionDragEnd}
     >
       <SortableContext
-        items={sections.map(section => section.id)}
+        items={sectionList.map(section => section.id)}
         strategy={verticalListSortingStrategy}
       >
         <div className="space-y-4">

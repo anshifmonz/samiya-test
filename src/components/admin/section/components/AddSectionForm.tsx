@@ -1,22 +1,9 @@
-import React from 'react';
-import { Button } from 'components/ui/button';
-import { Input } from 'components/ui/input';
+import { Button } from 'ui/button';
+import { Input } from 'ui/input';
+import { useSectionsTab } from 'contexts/admin/SectionsTabContext';
 
-interface AddSectionFormProps {
-  showAddSection: boolean;
-  newSectionTitle: string;
-  onNewSectionTitleChange: (title: string) => void;
-  onAddSection: () => void;
-  onCancel: () => void;
-}
-
-const AddSectionForm: React.FC<AddSectionFormProps> = ({
-  showAddSection,
-  newSectionTitle,
-  onNewSectionTitleChange,
-  onAddSection,
-  onCancel
-}) => {
+const AddSectionForm: React.FC = () => {
+  const { showAddSection, newSectionTitle, setNewSectionTitle, handleAddSection, closeAddSection } = useSectionsTab();
   if (!showAddSection) return null;
 
   return (
@@ -24,23 +11,23 @@ const AddSectionForm: React.FC<AddSectionFormProps> = ({
       <Input
         placeholder="Enter section title..."
         value={newSectionTitle}
-        onChange={(e) => onNewSectionTitleChange(e.target.value)}
+        onChange={(e) => setNewSectionTitle(e.target.value)}
         className="border-luxury-gray/30 focus:border-luxury-gold"
         onKeyDown={(e) => {
-          if (e.key === 'Enter') onAddSection();
-          if (e.key === 'Escape') onCancel();
+          if (e.key === 'Enter') handleAddSection();
+          if (e.key === 'Escape') closeAddSection();
         }}
       />
       <div className="flex gap-2">
         <Button
-          onClick={onAddSection}
+          onClick={handleAddSection}
           disabled={!newSectionTitle.trim()}
           className="bg-luxury-gold hover:bg-luxury-gold/90 text-luxury-black px-4 py-2 rounded-lg"
         >
           Add Section
         </Button>
         <Button
-          onClick={onCancel}
+          onClick={closeAddSection}
           variant="outline"
           className="border-luxury-gray/30 text-luxury-gray hover:text-luxury-black"
         >

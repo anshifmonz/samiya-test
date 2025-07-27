@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback, useEffect } from 'react';
+import { useRef, useState, useCallback, useEffect } from 'react';
 import {
   DndContext,
   closestCenter,
@@ -12,7 +12,8 @@ import {
   sortableKeyboardCoordinates,
   horizontalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { type SectionWithProducts, type SectionProductItem } from 'types/section';
+import { type SectionWithProducts } from 'types/section';
+import { useSectionsTab } from 'contexts/admin/SectionsTabContext';
 import CarouselWrapper from 'components/home/shared/CarouselWrapper';
 import DraggableProductItem from './DraggableProductItem';
 
@@ -25,17 +26,12 @@ function isTouchDevice() {
 
 interface ProductsCarouselProps {
   section: SectionWithProducts;
-  sectionProducts: SectionProductItem[];
-  onDragEnd: (event: any, section: SectionWithProducts) => void;
-  onRemoveProduct: (sectionId: string, productId: string, productTitle?: string, sectionTitle?: string) => void;
 }
 
-const ProductsCarousel: React.FC<ProductsCarouselProps> = ({
-  section,
-  sectionProducts,
-  onDragEnd,
-  onRemoveProduct
-}) => {
+const ProductsCarousel: React.FC<ProductsCarouselProps> = ({ section }) => {
+  const { handleRemoveProduct, handleProductDragEnd, getSectionProducts } = useSectionsTab();
+
+  const sectionProducts = getSectionProducts(section);
   const [isDragging, setIsDragging] = useState(false);
   const [carouselKey, setCarouselKey] = useState(0);
   const carouselContainerRef = useRef<HTMLDivElement>(null);
@@ -119,7 +115,7 @@ const ProductsCarousel: React.FC<ProductsCarouselProps> = ({
           savedIndexRef.current = emblaApiRef.current.selectedScrollSnap();
         }
         setCarouselKey(k => k + 1);
-        onDragEnd(event, section);
+        handleProductDragEnd(event, section);
       }}
       onDragCancel={() => setIsDragging(false)}
       onDragMove={handleDragMove}
@@ -139,7 +135,7 @@ const ProductsCarousel: React.FC<ProductsCarouselProps> = ({
               <DraggableProductItem
                 key={product.id}
                 product={product}
-                onRemove={() => onRemoveProduct(section.id, product.id, product.title, section.title)}
+                onRemove={() => handleRemoveProduct(section.id, product.id, product.title, section.title)}
               />
             ))}
           </CarouselWrapper>

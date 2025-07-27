@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Search, Plus } from 'lucide-react';
-import { Button } from 'components/ui/button';
-import { Input } from 'components/ui/input';
+import { Button } from 'ui/button';
+import { Input } from 'ui/input';
 import Image from 'next/image';
 import { useDebounce } from 'hooks/ui/useDebounce';
+import { useSectionsTab } from 'contexts/admin/SectionsTabContext';
 
 type ModalProduct = {
   id: string;
@@ -12,13 +13,6 @@ type ModalProduct = {
   price: number;
   imageUrl: string;
 };
-
-interface ProductSearchModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onProductSelect: (productId: string) => void;
-  existingProductIds: string[];
-}
 
 const DEBOUNCE_DELAY = 500;
 const PAGE_SIZE = 16;
@@ -31,12 +25,7 @@ function buildProductSearchParams(query?: string, limit: number = PAGE_SIZE, off
   return params;
 }
 
-const ProductSearchModal: React.FC<ProductSearchModalProps> = ({
-  isOpen,
-  onClose,
-  onProductSelect,
-  existingProductIds
-}) => {
+const ProductSearchModal: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [products, setProducts] = useState<ModalProduct[]>([]);
   const [loading, setLoading] = useState(false);
@@ -48,9 +37,16 @@ const ProductSearchModal: React.FC<ProductSearchModalProps> = ({
   const debouncedQuery = useDebounce(searchQuery, DEBOUNCE_DELAY);
   const loaderRef = useRef<HTMLDivElement | null>(null);
 
+  const {
+    searchModalOpen,
+    closeSearchModal,
+    handleProductSelect,
+    getExistingProductIds
+  } = useSectionsTab();
+
   useEffect(() => {
     setMounted(true);
-    if (isOpen) {
+    if (searchModalOpen) {
       document.body.style.overflow = 'hidden';
       fetchFirstPage();
     }
@@ -58,16 +54,16 @@ const ProductSearchModal: React.FC<ProductSearchModalProps> = ({
     return () => {
       document.body.style.overflow = 'unset';
     };
-  }, [isOpen]);
+  }, [searchModalOpen]);
 
   useEffect(() => {
-    if (isOpen) {
+    if (searchModalOpen) {
       setIsSearching(searchQuery !== debouncedQuery);
       if (debouncedQuery !== undefined) {
         fetchFirstPage();
       }
     }
-  }, [debouncedQuery, isOpen]);
+  }, [debouncedQuery, searchModalOpen]);
 
 
   const fetchFirstPage = useCallback(async () => {
@@ -147,8 +143,6 @@ const ProductSearchModal: React.FC<ProductSearchModalProps> = ({
     };
   }, [fetchMoreProducts, hasMore]);
 
-  const handleProductSelect = (productId: string) => onProductSelect(productId);
-
   const modalContent = (
     <div className="fixed inset-0 bg-luxury-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[80vh] flex flex-col">
@@ -158,7 +152,7 @@ const ProductSearchModal: React.FC<ProductSearchModalProps> = ({
             Add Products to Section
           </h2>
           <button
-            onClick={onClose}
+            onClick={closeSearchModal}
             className="text-luxury-gray hover:text-luxury-black transition-colors duration-200"
             type="button"
           >
@@ -194,7 +188,7 @@ const ProductSearchModal: React.FC<ProductSearchModalProps> = ({
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-luxury-gold mx-auto"></div>
                 <p className="luxury-body text-luxury-gray mt-4">Loading products...</p>
               </div>
-            ) : products.filter(product => !existingProductIds.includes(product.id)).length === 0 ? (
+            ) : products.filter(product => !getExistingProductIds(searchModalOpen).includes(product.id)).length === 0 ? (
               <div className="text-center py-12 text-luxury-gray">
                 <p className="luxury-body text-lg">
                   {searchQuery ? 'No products found matching your search.' : 'No products available.'}
@@ -205,7 +199,7 @@ const ProductSearchModal: React.FC<ProductSearchModalProps> = ({
               </div>
             ) : (
               <div className="grid gap-4">
-                {products.filter(product => !existingProductIds.includes(product.id)).map((product) => {
+                {products.filter(product => !getExistingProductIds(searchModalOpen).includes(product.id)).map((product) => {
                   const imageUrl = product.imageUrl;
                   return (
                     <div
@@ -293,7 +287,7 @@ const ProductSearchModal: React.FC<ProductSearchModalProps> = ({
     </div>
   );
 
-  return mounted && isOpen ? createPortal(modalContent, document.body) : null;
+  return mounted && searchModalOpen ? createPortal(modalContent, document.body) : null;
 };
 
 export default ProductSearchModal;

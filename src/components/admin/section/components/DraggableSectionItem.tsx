@@ -1,7 +1,8 @@
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { type SectionWithProducts, type SectionProductItem } from 'types/section';
+import { type SectionWithProducts } from 'types/section';
+import { useSectionsTab } from 'contexts/admin/SectionsTabContext';
 import SectionHeader from './SectionHeader';
 import SectionContent from './SectionContent';
 
@@ -14,45 +15,12 @@ function isTouchDevice() {
 
 interface DraggableSectionItemProps {
   section: SectionWithProducts;
-  isExpanded: boolean;
-  isEditing: boolean;
-  editingTitle: string;
-  onToggleSection: (sectionId: string) => void;
-  onStartEditing: (section: any) => void;
-  onSaveEdit: () => void;
-  onCancelEdit: () => void;
-  onEditTitleChange: (title: string) => void;
-  onToggleActive: (section: any) => void;
-  onDeleteSection: (sectionId: string, sectionTitle?: string) => void;
-  onAddProduct: (sectionId: string) => void;
-  onRemoveProduct: (sectionId: string, productId: string, productTitle?: string, sectionTitle?: string) => void;
-  onReorderProducts: (sectionId: string, productIds: string[]) => void;
-  setLocalProductOrders: React.Dispatch<React.SetStateAction<Record<string, SectionProductItem[]>>>;
-  getSectionProducts: (section: SectionWithProducts) => SectionProductItem[];
-  handleProductDragEnd: (event: any, section: SectionWithProducts) => void;
-  isSuperAdmin: boolean;
 }
 
-const DraggableSectionItem: React.FC<DraggableSectionItemProps> = ({
-  section,
-  isExpanded,
-  isEditing,
-  editingTitle,
-  onToggleSection,
-  onStartEditing,
-  onSaveEdit,
-  onCancelEdit,
-  onEditTitleChange,
-  onToggleActive,
-  onDeleteSection,
-  onAddProduct,
-  onRemoveProduct,
-  onReorderProducts,
-  setLocalProductOrders,
-  getSectionProducts,
-  handleProductDragEnd,
-  isSuperAdmin
-}) => {
+const DraggableSectionItem: React.FC<DraggableSectionItemProps> = ({ section }) => {
+  const { isSectionExpanded, getSectionProducts } = useSectionsTab();
+
+  const isExpanded = isSectionExpanded(section.id);
   const isTouch = isTouchDevice();
   const [showTouchHandle, setShowTouchHandle] = useState(false);
   const longPressTimeout = useRef<NodeJS.Timeout | null>(null);
@@ -129,30 +97,11 @@ const DraggableSectionItem: React.FC<DraggableSectionItemProps> = ({
           </svg>
         </button>
       )}
-      <SectionHeader
-        section={section}
-        isExpanded={isExpanded}
-        isEditing={isEditing}
-        editingTitle={editingTitle}
-        onToggleSection={onToggleSection}
-        onStartEditing={onStartEditing}
-        onSaveEdit={onSaveEdit}
-        onCancelEdit={onCancelEdit}
-        onEditTitleChange={onEditTitleChange}
-        onToggleActive={onToggleActive}
-        onDeleteSection={onDeleteSection}
-        isSuperAdmin={isSuperAdmin}
-      />
+      <SectionHeader section={section} />
 
       {/* Section Content */}
       {isExpanded && (
-        <SectionContent
-          section={section}
-          sectionProducts={sectionProducts}
-          onAddProduct={onAddProduct}
-          onRemoveProduct={onRemoveProduct}
-          onProductDragEnd={handleProductDragEnd}
-        />
+        <SectionContent section={section} />
       )}
     </div>
   );

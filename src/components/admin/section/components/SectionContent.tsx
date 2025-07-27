@@ -1,24 +1,17 @@
-import React from 'react';
 import { Plus } from 'lucide-react';
-import { type SectionWithProducts, type SectionProductItem } from 'types/section';
+import { type SectionWithProducts } from 'types/section';
+import { useSectionsTab } from 'contexts/admin/SectionsTabContext';
 import AdminTabHeaderButton from '../../shared/AdminTabHeaderButton';
 import ProductsCarousel from './ProductsCarousel';
 
 interface SectionContentProps {
   section: SectionWithProducts;
-  sectionProducts: SectionProductItem[];
-  onAddProduct: (sectionId: string) => void;
-  onRemoveProduct: (sectionId: string, productId: string, productTitle?: string, sectionTitle?: string) => void;
-  onProductDragEnd: (event: any, section: SectionWithProducts) => void;
 }
 
-const SectionContent: React.FC<SectionContentProps> = ({
-  section,
-  sectionProducts,
-  onAddProduct,
-  onRemoveProduct,
-  onProductDragEnd
-}) => {
+const SectionContent: React.FC<SectionContentProps> = ({ section }) => {
+  const { openSearchModal, getSectionProducts } = useSectionsTab();
+
+  const sectionProducts = getSectionProducts(section);
   return (
     <div className="p-0 pr-2 sm:p-4 space-y-4">
       {/* Add Product Button */}
@@ -27,7 +20,7 @@ const SectionContent: React.FC<SectionContentProps> = ({
           {sectionProducts.length} product{sectionProducts.length !== 1 ? 's' : ''}
         </span>
         <AdminTabHeaderButton
-          onClick={() => onAddProduct(section.id)}
+          onClick={() => openSearchModal(section.id)}
           label="Add Product"
           className="px-3 py-1 text-xs"
         >
@@ -38,9 +31,6 @@ const SectionContent: React.FC<SectionContentProps> = ({
       {/* Products Carousel */}
       <ProductsCarousel
         section={section}
-        sectionProducts={sectionProducts}
-        onDragEnd={onProductDragEnd}
-        onRemoveProduct={onRemoveProduct}
       />
     </div>
   );

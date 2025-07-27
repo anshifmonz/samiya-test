@@ -1,5 +1,3 @@
-import React from 'react';
-
 const EmptySectionsState: React.FC = () => {
   return (
     <div className="text-center py-12 text-luxury-gray">
