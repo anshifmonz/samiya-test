@@ -1,29 +1,19 @@
 import React from 'react';
 import { Edit, Trash2 } from 'lucide-react';
 import { Button } from '../../ui/button';
-import { AdminUser } from 'types/admin';
+import { useAdminsTab } from 'contexts/admin/AdminsTabContext';
 
-interface AdminsTableProps {
-  loading: boolean;
-  error: string | null;
-  filteredAdmins: AdminUser[];
-  currentAdmin: AdminUser | null;
-  deleteLoading: string | null;
-  onEdit: (admin: AdminUser) => void;
-  onDelete: (admin: AdminUser) => void;
-  isSuperAdmin: boolean;
-}
-
-const AdminsTable: React.FC<AdminsTableProps> = ({
-  loading,
-  error,
-  filteredAdmins,
-  currentAdmin,
-  deleteLoading,
-  onEdit,
-  onDelete,
-  isSuperAdmin,
-}) => {
+const AdminsTable: React.FC = () => {
+  const {
+    loading,
+    error,
+    filteredAdmins,
+    currentAdmin,
+    deleteLoading,
+    openEditDialog,
+    handleDelete,
+    isSuperAdmin,
+  } = useAdminsTab();
   if (error) {
     return (
       <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl">
@@ -99,7 +89,7 @@ const AdminsTable: React.FC<AdminsTableProps> = ({
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => onEdit(admin)}
+                          onClick={() => openEditDialog(admin)}
                           className="text-luxury-gold hover:text-yellow-500 hover:bg-yellow-50"
                         >
                           <Edit size={16} />
@@ -110,7 +100,7 @@ const AdminsTable: React.FC<AdminsTableProps> = ({
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => onDelete(admin)}
+                          onClick={() => handleDelete(admin)}
                           disabled={deleteLoading === admin.id}
                           className="text-red-500 hover:text-red-700 hover:bg-red-50"
                         >

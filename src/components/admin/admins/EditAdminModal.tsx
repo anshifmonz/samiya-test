@@ -1,37 +1,23 @@
 import { UserPlus } from 'lucide-react';
-import { AdminUser } from 'types/admin';
+import { useAdminsTab } from 'contexts/admin/AdminsTabContext';
 
-interface EditAdminModalProps {
-  editDialog: AdminUser | null;
-  editUsername: string;
-  editPassword: string;
-  editSuper: boolean;
-  editError: string | null;
-  editLoading: boolean;
-  currentAdmin: AdminUser | null;
-  admins: AdminUser[];
-  onEditAdmin: (e: React.FormEvent) => void;
-  onCancel: () => void;
-  onUsernameChange: (value: string) => void;
-  onPasswordChange: (value: string) => void;
-  onSuperChange: (value: boolean) => void;
-}
+const EditAdminModal: React.FC = () => {
+  const {
+    editDialog,
+    editUsername,
+    editPassword,
+    editSuper,
+    editError,
+    editLoading,
+    currentAdmin,
+    admins,
+    handleEditAdmin,
+    handleCancelEditForm,
+    setEditUsername,
+    setEditPassword,
+    setEditSuper,
+  } = useAdminsTab();
 
-const EditAdminModal: React.FC<EditAdminModalProps> = ({
-  editDialog,
-  editUsername,
-  editPassword = '',
-  editSuper,
-  editError,
-  editLoading,
-  currentAdmin,
-  admins,
-  onEditAdmin,
-  onCancel,
-  onUsernameChange,
-  onPasswordChange,
-  onSuperChange,
-}) => {
   if (!editDialog) return null;
 
   return (
@@ -46,14 +32,14 @@ const EditAdminModal: React.FC<EditAdminModalProps> = ({
             <p className="text-sm text-luxury-gray">Update admin account settings</p>
           </div>
         </div>
-        <form onSubmit={onEditAdmin} className="p-6 space-y-4">
+        <form onSubmit={handleEditAdmin} className="p-6 space-y-4">
           <div>
             <label className="block text-sm font-medium text-luxury-black mb-2">Username</label>
             <input
               type="text"
               className="w-full px-4 py-3 rounded-lg border border-luxury-gray/20 focus:outline-none focus:ring-2 focus:ring-luxury-gold/50 focus:border-luxury-gold/30 transition-all duration-200"
               value={editUsername}
-              onChange={e => onUsernameChange(e.target.value)}
+              onChange={e => setEditUsername(e.target.value)}
               required
               disabled={!currentAdmin?.is_superuser && editDialog?.id !== currentAdmin?.id}
             />
@@ -67,7 +53,7 @@ const EditAdminModal: React.FC<EditAdminModalProps> = ({
               type="password"
               className="w-full px-4 py-3 rounded-lg border border-luxury-gray/20 focus:outline-none focus:ring-2 focus:ring-luxury-gold/50 focus:border-luxury-gold/30 transition-all duration-200"
               value={editPassword}
-              onChange={e => onPasswordChange(e.target.value)}
+              onChange={e => setEditPassword(e.target.value)}
               disabled={!currentAdmin?.is_superuser && editDialog?.id !== currentAdmin?.id}
             />
             <p className="text-xs text-luxury-gray mt-1">
@@ -83,7 +69,7 @@ const EditAdminModal: React.FC<EditAdminModalProps> = ({
               type="checkbox"
               id="edit-super"
               checked={editSuper}
-              onChange={e => onSuperChange(e.target.checked)}
+              onChange={e => setEditSuper(e.target.checked)}
               disabled={!currentAdmin?.is_superuser || (editDialog?.id === currentAdmin?.id && editSuper && admins.filter(a => a.is_superuser).length === 1)}
               className="h-4 w-4 text-luxury-gold focus:ring-luxury-gold/50 border-luxury-gray/30 rounded"
             />
@@ -104,7 +90,7 @@ const EditAdminModal: React.FC<EditAdminModalProps> = ({
             <button
               type="button"
               className="px-4 py-2 rounded-lg border border-luxury-gray/20 bg-white text-luxury-gray font-medium hover:bg-luxury-gray/5 transition-colors duration-200"
-              onClick={onCancel}
+              onClick={handleCancelEditForm}
               disabled={editLoading}
             >
               Cancel

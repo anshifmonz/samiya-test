@@ -1,23 +1,16 @@
 import React from 'react';
 import { UserPlus } from 'lucide-react';
 import AdminTabHeaderButton from '../shared/AdminTabHeaderButton';
-import { AdminUser } from 'types/admin';
+import { useAdminsTab } from 'contexts/admin/AdminsTabContext';
 
-interface AdminsHeaderProps {
-  onAddClick: () => void;
-  currentAdmin?: AdminUser | null;
-}
-
-const AdminsHeader: React.FC<AdminsHeaderProps> = ({
-  onAddClick,
-  currentAdmin,
-}) => {
+const AdminsHeader: React.FC = () => {
+  const { handleShowAddForm, currentAdmin } = useAdminsTab();
   return (
     <div className="flex justify-between items-center">
       <h3 className="luxury-heading text-xl text-luxury-black">Manage Admins</h3>
       {currentAdmin?.is_superuser && (
         <AdminTabHeaderButton
-          onClick={onAddClick}
+          onClick={handleShowAddForm}
           label="Add Admin"
         >
           <UserPlus size={16} />

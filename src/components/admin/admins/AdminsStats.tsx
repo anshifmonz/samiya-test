@@ -1,12 +1,8 @@
 import React from 'react';
+import { useAdminsTab } from 'contexts/admin/AdminsTabContext';
 
-interface AdminsStatsProps {
-  adminsCountText: string;
-}
-
-const AdminsStats: React.FC<AdminsStatsProps> = ({
-  adminsCountText,
-}) => {
+const AdminsStats: React.FC = () => {
+  const { adminsCountText } = useAdminsTab();
   return (
     <div className="mb-6">
       <div className="flex items-center justify-between">

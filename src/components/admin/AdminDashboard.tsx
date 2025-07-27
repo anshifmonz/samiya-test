@@ -4,19 +4,20 @@ import { useState } from 'react';
 import { type Product } from 'types/product';
 import { type Collection } from 'types/collection';
 import { type Category } from 'types/category';
+import { SectionWithProducts } from 'types/section';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from 'ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui/select';
-import { AdminSectionsTab } from './section';
 import { useCurrentAdmin } from 'hooks/admin/useCurrentAdmin';
 import AdminProductsTab from './product/AdminProductsTab';
 import AdminCollectionsTab from './collection/AdminCollectionsTab';
 import AdminCategoriesTab from './category/AdminCategoriesTab';
+import { AdminSectionsTab } from './section';
 import AdminAdminsTab from './admins/AdminAdminsTab';
 import { ProductsTabProvider } from 'contexts/admin/ProductsTabContext';
 import { SectionsTabProvider } from 'contexts/admin/SectionsTabContext';
 import { CategoriesTabProvider } from 'contexts/admin/CategoriesTabContext';
 import { CollectionsTabProvider } from 'contexts/admin/CollectionsTabContext';
-import { SectionWithProducts } from 'types/section';
+import { AdminsTabProvider } from 'contexts/admin/AdminsTabContext';
 
 interface AdminDashboardProps {
   initialProducts: Product[];
@@ -134,7 +135,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </TabsContent>
 
         <TabsContent value="admins" className="mt-0">
-          <AdminAdminsTab isSuperAdmin={isSuperAdmin} />
+          <AdminsTabProvider isSuperAdmin={isSuperAdmin}>
+            <AdminAdminsTab />
+          </AdminsTabProvider>
         </TabsContent>
       </Tabs>
     </div>

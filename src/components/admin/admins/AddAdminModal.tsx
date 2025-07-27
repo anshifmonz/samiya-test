@@ -1,28 +1,19 @@
 import { UserPlus } from 'lucide-react';
+import { useAdminsTab } from 'contexts/admin/AdminsTabContext';
 
-interface AddAdminModalProps {
-  showAddDialog: boolean;
-  addUsername: string;
-  addPassword: string;
-  addError: string | null;
-  addLoading: boolean;
-  onAddAdmin: (e: React.FormEvent) => void;
-  onCancel: () => void;
-  onUsernameChange: (value: string) => void;
-  onPasswordChange: (value: string) => void;
-}
+const AddAdminModal: React.FC = () => {
+  const {
+    showAddDialog,
+    addUsername,
+    addPassword,
+    addError,
+    addLoading,
+    handleAddAdmin,
+    handleCancelAddForm,
+    setAddUsername,
+    setAddPassword,
+  } = useAdminsTab();
 
-const AddAdminModal: React.FC<AddAdminModalProps> = ({
-  showAddDialog,
-  addUsername = '',
-  addPassword = '',
-  addError,
-  addLoading,
-  onAddAdmin,
-  onCancel,
-  onUsernameChange,
-  onPasswordChange,
-}) => {
   if (!showAddDialog) return null;
 
   return (
@@ -37,14 +28,14 @@ const AddAdminModal: React.FC<AddAdminModalProps> = ({
             <p className="text-sm text-luxury-gray">Create a new admin account</p>
           </div>
         </div>
-        <form onSubmit={onAddAdmin} className="p-6 space-y-4">
+        <form onSubmit={handleAddAdmin} className="p-6 space-y-4">
           <div>
             <label className="block text-sm font-medium text-luxury-black mb-2">Username</label>
             <input
               type="text"
               className="w-full px-4 py-3 rounded-lg border border-luxury-gray/20 focus:outline-none focus:ring-2 focus:ring-luxury-gold/50 focus:border-luxury-gold/30 transition-all duration-200"
               value={addUsername}
-              onChange={e => onUsernameChange(e.target.value)}
+              onChange={e => setAddUsername(e.target.value)}
               required
             />
           </div>
@@ -54,7 +45,7 @@ const AddAdminModal: React.FC<AddAdminModalProps> = ({
               type="password"
               className="w-full px-4 py-3 rounded-lg border border-luxury-gray/20 focus:outline-none focus:ring-2 focus:ring-luxury-gold/50 focus:border-luxury-gold/30 transition-all duration-200"
               value={addPassword}
-              onChange={e => onPasswordChange(e.target.value)}
+              onChange={e => setAddPassword(e.target.value)}
               required
             />
           </div>
@@ -67,7 +58,7 @@ const AddAdminModal: React.FC<AddAdminModalProps> = ({
             <button
               type="button"
               className="px-4 py-2 rounded-lg border border-luxury-gray/20 bg-white text-luxury-gray font-medium hover:bg-luxury-gray/5 transition-colors duration-200"
-              onClick={onCancel}
+              onClick={handleCancelAddForm}
               disabled={addLoading}
             >
               Cancel
