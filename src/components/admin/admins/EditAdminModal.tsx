@@ -1,5 +1,6 @@
 import { UserPlus } from 'lucide-react';
 import { useAdminsTab } from 'contexts/admin/AdminsTabContext';
+import { useCurrentAdmin } from 'contexts/admin/AdminDashboardContext';
 
 const EditAdminModal: React.FC = () => {
   const {
@@ -9,7 +10,6 @@ const EditAdminModal: React.FC = () => {
     editSuper,
     editError,
     editLoading,
-    currentAdmin,
     admins,
     handleEditAdmin,
     handleCancelEditForm,
@@ -17,6 +17,8 @@ const EditAdminModal: React.FC = () => {
     setEditPassword,
     setEditSuper,
   } = useAdminsTab();
+  const { admin } = useCurrentAdmin();
+  const currentAdmin = admin;
 
   if (!editDialog) return null;
 

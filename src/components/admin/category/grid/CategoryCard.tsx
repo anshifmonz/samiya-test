@@ -5,6 +5,7 @@ import { Card, CardContent } from '../../../ui/card';
 import { Button } from '../../../ui/button';
 import { Badge } from '../../../ui/badge';
 import { useCategoriesTab } from 'contexts/admin/CategoriesTabContext';
+import { useCurrentAdmin } from 'contexts/admin/AdminDashboardContext';
 
 interface CategoryCardProps {
   category: Category;
@@ -21,11 +22,9 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
   indentationClass,
   onToggleExpanded
 }) => {
-  const {
-    handleStartEditing: onEdit,
-    handleDeleteCategory: onDelete,
-    isSuperAdmin
-  } = useCategoriesTab();
+  const { handleStartEditing, handleDeleteCategory } = useCategoriesTab();
+  const { isSuperAdmin } = useCurrentAdmin();
+
   return (
     <Card className={`transition-all duration-200 hover:shadow-md ${indentationClass}`}>
       <CardContent className="p-4 px-2 sm:p-4 ">
@@ -88,7 +87,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => onEdit(category)}
+              onClick={() => handleStartEditing(category)}
               className="text-luxury-gold hover:text-luxury-black hover:bg-luxury-gold/10 xs:-mr-2"
             >
               <Edit size={16} />
@@ -97,7 +96,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => onDelete(category.id, category.name)}
+                onClick={() => handleDeleteCategory(category.id, category.name)}
                 className="text-red-500 hover:text-red-700 hover:bg-red-50"
               >
                 <Trash2 size={16} />

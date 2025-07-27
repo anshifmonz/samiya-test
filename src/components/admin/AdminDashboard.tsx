@@ -7,7 +7,6 @@ import { type Category } from 'types/category';
 import { SectionWithProducts } from 'types/section';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from 'ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui/select';
-import { useCurrentAdmin } from 'hooks/admin/useCurrentAdmin';
 import AdminProductsTab from './product/AdminProductsTab';
 import AdminCollectionsTab from './collection/AdminCollectionsTab';
 import AdminCategoriesTab from './category/AdminCategoriesTab';
@@ -18,6 +17,7 @@ import { SectionsTabProvider } from 'contexts/admin/SectionsTabContext';
 import { CategoriesTabProvider } from 'contexts/admin/CategoriesTabContext';
 import { CollectionsTabProvider } from 'contexts/admin/CollectionsTabContext';
 import { AdminsTabProvider } from 'contexts/admin/AdminsTabContext';
+import { AdminDashboardProvider } from 'contexts/admin/AdminDashboardContext';
 
 interface AdminDashboardProps {
   initialProducts: Product[];
@@ -32,7 +32,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
   initialCategories,
   initialSections
 }) => {
-  const { isSuperAdmin } = useCurrentAdmin();
   const [activeTab, setActiveTab] = useState('products');
 
   const handleTabChange = (value: string) => {
@@ -110,35 +109,37 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="products" className="mt-0">
-          <ProductsTabProvider initialProducts={initialProducts} categories={initialCategories} isSuperAdmin={isSuperAdmin}>
-            <AdminProductsTab />
-          </ProductsTabProvider>
-        </TabsContent>
+        <AdminDashboardProvider>
+          <TabsContent value="products" className="mt-0">
+            <ProductsTabProvider initialProducts={initialProducts} categories={initialCategories} >
+              <AdminProductsTab />
+            </ProductsTabProvider>
+          </TabsContent>
 
-        <TabsContent value="collections" className="mt-0">
-          <CollectionsTabProvider initialCollections={initialCollections}>
-            <AdminCollectionsTab />
-          </CollectionsTabProvider>
-        </TabsContent>
+          <TabsContent value="collections" className="mt-0">
+            <CollectionsTabProvider initialCollections={initialCollections}>
+              <AdminCollectionsTab />
+            </CollectionsTabProvider>
+          </TabsContent>
 
-        <TabsContent value="categories" className="mt-0">
-          <CategoriesTabProvider initialCategories={initialCategories}>
-            <AdminCategoriesTab />
-          </CategoriesTabProvider>
-        </TabsContent>
+          <TabsContent value="categories" className="mt-0">
+            <CategoriesTabProvider initialCategories={initialCategories}>
+              <AdminCategoriesTab />
+            </CategoriesTabProvider>
+          </TabsContent>
 
-        <TabsContent value="sections" className="mt-0">
-          <SectionsTabProvider initialSections={initialSections}>
-            <AdminSectionsTab />
-          </SectionsTabProvider>
-        </TabsContent>
+          <TabsContent value="sections" className="mt-0">
+            <SectionsTabProvider initialSections={initialSections}>
+              <AdminSectionsTab />
+            </SectionsTabProvider>
+          </TabsContent>
 
-        <TabsContent value="admins" className="mt-0">
-          <AdminsTabProvider isSuperAdmin={isSuperAdmin}>
-            <AdminAdminsTab />
-          </AdminsTabProvider>
-        </TabsContent>
+          <TabsContent value="admins" className="mt-0">
+            <AdminsTabProvider>
+              <AdminAdminsTab />
+            </AdminsTabProvider>
+          </TabsContent>
+        </AdminDashboardProvider>
       </Tabs>
     </div>
   );

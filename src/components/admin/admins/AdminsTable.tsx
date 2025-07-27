@@ -1,19 +1,20 @@
-import React from 'react';
 import { Edit, Trash2 } from 'lucide-react';
-import { Button } from '../../ui/button';
+import { Button } from 'ui/button';
 import { useAdminsTab } from 'contexts/admin/AdminsTabContext';
+import { useCurrentAdmin } from 'contexts/admin/AdminDashboardContext';
 
 const AdminsTable: React.FC = () => {
   const {
     loading,
     error,
     filteredAdmins,
-    currentAdmin,
     deleteLoading,
     openEditDialog,
     handleDelete,
-    isSuperAdmin,
   } = useAdminsTab();
+  const { admin } = useCurrentAdmin();
+  const currentAdmin = admin;
+
   if (error) {
     return (
       <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl">
@@ -84,8 +85,8 @@ const AdminsTable: React.FC = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex items-center justify-end gap-2">
-                      {/* show edit button for own account or if super admin */}
-                      {currentAdmin && (currentAdmin.id === admin.id || isSuperAdmin) && (
+                      {/* show edit button for own account or if super admin and target is not a super admin */}
+                      {currentAdmin && (currentAdmin.id === admin.id || (currentAdmin.is_superuser && !admin.is_superuser)) && (
                         <Button
                           variant="ghost"
                           size="sm"
@@ -96,7 +97,7 @@ const AdminsTable: React.FC = () => {
                         </Button>
                       )}
                       {/* only show delete if current admin is super admin and target is not a super admin and not current admin */}
-                      {isSuperAdmin && !admin.is_superuser && currentAdmin?.id !== admin.id && (
+                      {currentAdmin.is_superuser && !admin.is_superuser && currentAdmin?.id !== admin.id && (
                         <Button
                           variant="ghost"
                           size="sm"

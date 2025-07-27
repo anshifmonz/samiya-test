@@ -2,7 +2,6 @@ import { createContext, useContext } from 'react';
 import { useAdminCategoriesTab } from 'hooks/admin/category/useAdminCategoriesTab';
 import { type Category } from 'types/category';
 import { ConfirmationDialog } from 'ui/confirmation-dialog';
-import { useCurrentAdmin } from 'hooks/admin/useCurrentAdmin';
 
 interface CategoriesTabProviderProps {
   children: React.ReactNode;
@@ -17,7 +16,6 @@ interface CategoriesTabContextType {
   filteredCategories: Category[];
   categoryList: Category[];
   confirmation: any;
-  isSuperAdmin: boolean;
 
   // Handlers
   handleSearchChange: (query: string) => void;
@@ -40,16 +38,10 @@ interface CategoriesTabContextType {
 const CategoriesTabContext = createContext<CategoriesTabContextType | undefined>(undefined);
 
 export const CategoriesTabProvider = ({ children, initialCategories }: CategoriesTabProviderProps) => {
-  const { isSuperAdmin } = useCurrentAdmin();
   const adminCategoriesTab = useAdminCategoriesTab({ categories: initialCategories });
-  
-  const contextValue = {
-    ...adminCategoriesTab,
-    isSuperAdmin
-  };
-  
+
   return (
-    <CategoriesTabContext.Provider value={contextValue}>
+    <CategoriesTabContext.Provider value={adminCategoriesTab}>
       {children}
       {adminCategoriesTab.confirmation && (
         <ConfirmationDialog

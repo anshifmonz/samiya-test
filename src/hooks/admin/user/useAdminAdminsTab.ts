@@ -13,7 +13,6 @@ interface AdminUser {
 export const useAdminAdminsTab = () => {
   const [admins, setAdmins] = useState<AdminUser[]>([]);
   const confirmation = useConfirmation();
-  const [currentAdmin, setCurrentAdmin] = useState<AdminUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [addUsername, setAddUsername] = useState('');
@@ -36,19 +35,7 @@ export const useAdminAdminsTab = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
-      setError('');
       try {
-        const meRes = await apiRequest('/api/admin/me', {
-          showLoadingBar: true,
-          loadingBarDelay: 150
-        });
-        if (!meRes.error && meRes.data) {
-          setCurrentAdmin(meRes.data.admin);
-        } else {
-          setCurrentAdmin(null);
-        }
-
         const adminsRes = await apiRequest('/api/admin', {
           showLoadingBar: true,
           loadingBarDelay: 150
@@ -195,7 +182,6 @@ export const useAdminAdminsTab = () => {
   return {
     // State
     admins,
-    currentAdmin,
     loading,
     error,
     mounted,

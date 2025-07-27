@@ -12,7 +12,6 @@ import { usePersistentBulkImportData } from './bulk/hooks';
 import { apiRequest } from 'utils/apiRequest';
 import { showToast } from 'hooks/ui/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui/select';
-import { useUrlParam } from 'hooks/ui/useUrlParam';
 import { useProductsTab } from 'contexts/admin/ProductsTabContext';
 
 const AdminProductsTab: React.FC = () => {

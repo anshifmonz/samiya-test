@@ -2,7 +2,7 @@ import { Edit, Trash } from 'lucide-react';
 import Image from 'next/image';
 import { type Collection } from 'types/collection';
 import { useCollectionsTab } from 'contexts/admin/CollectionsTabContext';
-import { useCurrentAdmin } from 'hooks/admin/useCurrentAdmin';
+import { useCurrentAdmin } from 'contexts/admin/AdminDashboardContext';
 
 interface AdminCollectionCardProps {
   collection: Collection;

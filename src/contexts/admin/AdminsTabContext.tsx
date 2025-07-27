@@ -5,13 +5,11 @@ import { ConfirmationDialog } from 'ui/confirmation-dialog';
 
 interface AdminsTabProviderProps {
   children: React.ReactNode;
-  isSuperAdmin: boolean;
 }
 
 interface AdminsTabContextType {
   // State
   admins: AdminUser[];
-  currentAdmin: AdminUser | null;
   loading: boolean;
   error: string;
   mounted: boolean;
@@ -56,23 +54,15 @@ interface AdminsTabContextType {
 
   // Confirmation dialog
   confirmation: any;
-
-  // Props
-  isSuperAdmin: boolean;
 }
 
 const AdminsTabContext = createContext<AdminsTabContextType | undefined>(undefined);
 
-export const AdminsTabProvider = ({ children, isSuperAdmin }: AdminsTabProviderProps) => {
+export const AdminsTabProvider = ({ children }: AdminsTabProviderProps) => {
   const adminAdminsTab = useAdminAdminsTab();
-  
-  const contextValue = {
-    ...adminAdminsTab,
-    isSuperAdmin
-  };
-  
+
   return (
-    <AdminsTabContext.Provider value={contextValue}>
+    <AdminsTabContext.Provider value={adminAdminsTab}>
       {children}
       {adminAdminsTab.confirmation && (
         <ConfirmationDialog
