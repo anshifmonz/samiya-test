@@ -16,7 +16,7 @@ export const useAdminProductsTab = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [sortOption, setSortOption] = useUrlParam('sort', 'last-updated');
+  const [sortOption, setSortOption] = useState<Record<string, string>>({ sort: 'last-updated' });
   const confirmation = useConfirmation();
 
   const {
@@ -87,7 +87,7 @@ export const useAdminProductsTab = ({
     setSearchQuery(query);
   };
 
-  const handleSortChange = (sort: string) => setSortOption(sort);
+  const handleSortChange = (sort: string) => setSortOption({sort: sort});
 
   const isFormVisible = showAddForm || !!editingProduct;
   const currentProduct = editingProduct;

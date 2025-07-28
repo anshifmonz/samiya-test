@@ -1,21 +1,21 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { apiRequest } from 'lib/utils/apiRequest';
 import { type Product } from 'types/product';
-import { useDebounce } from '@/hooks/ui/useDebounce';
+import { useDebounce } from 'hooks/ui/useDebounce';
 
 const PAGE_SIZE = 16;
 const DEBOUNCE_DELAY = 500; // 500ms delay
 
-function buildAdminProductSearchParams(query?: string, limit: number = PAGE_SIZE, offset: number = 0, sort?: string) {
+function buildAdminProductSearchParams(query?: string, limit: number = PAGE_SIZE, offset: number = 0, sort?: Record<string, string>) {
   const params = new URLSearchParams();
   if (query) params.set('q', query);
-  if (sort && sort !== 'relevance') params.set('sort_by', sort);
+  if (sort && sort.sort !== 'relevance') params.set('sort_by', sort.sort);
   params.set('limit', limit.toString());
   params.set('offset', offset.toString());
   return params;
 }
 
-export function useAdminProductInfiniteScroll(initialProducts: Product[], searchQuery?: string, sortOption?: string) {
+export function useAdminProductInfiniteScroll(initialProducts: Product[], searchQuery?: string, sortOption?: Record<string, string>) {
   const [products, setProducts] = useState(initialProducts);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
