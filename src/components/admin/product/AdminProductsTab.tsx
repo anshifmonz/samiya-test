@@ -113,7 +113,7 @@ const AdminProductsTab: React.FC = () => {
               {productsCountText}
             </p>
           )}
-          <Select value={sortOption} onValueChange={handleSortChange}>
+          <Select value={sortOption.sort} onValueChange={handleSortChange}>
             <SelectTrigger className="w-48">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>

@@ -12,7 +12,7 @@ interface ProductsTabProviderProps {
 
 interface ProductsTabContextType {
     categories: Category[];
-    sortOption: string;
+    sortOption: Record<string, string>;
     searchQuery: string;
     showAddForm: boolean;
     editingProduct: Product | null;
