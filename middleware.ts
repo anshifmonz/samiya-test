@@ -5,16 +5,26 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const method = request.method;
 
-  if (pathname === '/admin/login' || pathname === '/api/admin/login')
-    return NextResponse.next();
   if (!pathname.startsWith('/admin') && !pathname.startsWith('/api/admin'))
     return NextResponse.next();
 
+  const cookieSecret = process.env.COOKIE_SIGNING_SECRET;
+  const adminAuthCookie = request.cookies.get('admin_auth');
   const redirectToLogin = () => NextResponse.redirect(new URL('/admin/login', request.url));
 
-  const cookieSecret = process.env.COOKIE_SIGNING_SECRET;
+  if (pathname === '/admin/login' || pathname === '/api/admin/login') {
+    // is admin already logged in?
+    if (pathname === '/admin/login' && cookieSecret && adminAuthCookie) {
+      const sessionId = await unsignSessionId(adminAuthCookie.value, cookieSecret);
+      if (!sessionId) return NextResponse.next();
+      const currentAdmin = await getAdminUserFromSession(sessionId);
+      if (currentAdmin)
+        return NextResponse.redirect(new URL('/admin', request.url));
+    }
+    return NextResponse.next();
+  }
+
   if (!cookieSecret) return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
-  const adminAuthCookie = request.cookies.get('admin_auth');
   if (!adminAuthCookie) return redirectToLogin();
   const sessionId = await unsignSessionId(adminAuthCookie.value, cookieSecret);
   if (!sessionId) return redirectToLogin();
