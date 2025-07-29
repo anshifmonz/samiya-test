@@ -10,23 +10,17 @@ interface SizeSelectorProps {
 
 export default function SizeSelector({ product, selectedColor, selectedSize, onSizeChange }: SizeSelectorProps) {
   const { sizes: allSizes } = useSizes();
-  
-  // Get sizes available for the selected color from product_color_size data
+
   const getAvailableSizes = (): Size[] => {
-    // Check if the selected color has specific sizes from product_color_size data
-    if (product.colorSizes && product.colorSizes[selectedColor] && product.colorSizes[selectedColor].length > 0) {
+    // if the selected color has specific sizes from product_color_size data
+    if (product.colorSizes && product.colorSizes[selectedColor] && product.colorSizes[selectedColor].length > 0)
       return product.colorSizes[selectedColor];
-    }
-    
-    // Check if the color data itself has sizes (from images object)
-    if (product.images[selectedColor]?.sizes && product.images[selectedColor].sizes!.length > 0) {
+
+    // if the color data itself has sizes (from images object)
+    if (product.images[selectedColor]?.sizes && product.images[selectedColor].sizes!.length > 0)
       return product.images[selectedColor].sizes!;
-    }
-    
-    // Fall back to global product sizes
-    return product.sizes || [];
   };
-  
+
   const sizes = getAvailableSizes();
   const standardSizes = ["S", "M", "L", "XL"];
   const availableSizes = sizes?.map(size => size.name) || [];
