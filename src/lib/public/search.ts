@@ -29,21 +29,16 @@ function calculateRelevanceScore(product: any, query: string): number {
 
   if (product.category_name) {
     const category = product.category_name.toLowerCase();
-    if (category.includes(searchTerm)) {
-      score += 30;
-    }
+    if (category.includes(searchTerm)) score += 30;
   }
 
-  if (product.product_tags && Array.isArray(product.product_tags)) {
+  if (product.product_tags && Array.isArray(product.product_tags))
     product.product_tags.forEach((tagObj: any) => {
       if (tagObj.tag?.name) {
         const tagName = tagObj.tag.name.toLowerCase();
-        if (tagName.includes(searchTerm)) {
-          score += 20;
-        }
+        if (tagName.includes(searchTerm)) score += 20;
       }
     });
-  }
 
   return score;
 }
@@ -69,11 +64,8 @@ async function searchProducts(
 
   if (error) {
     console.error('Error fetching products from Supabase RPC:', error);
-    return {
-      products: [],
-      totalCount: 0
-    };
-    }
+    return { products: [], totalCount: 0 };
+  }
 
   const totalCount = data.length > 0 ? data[0].total_count || 0 : 0;
   let rawProducts = data.map(({ total_count, ...product }) => product);
@@ -87,15 +79,16 @@ async function searchProducts(
     }));
 
     rawProducts.sort((a, b) => {
-      if (a.relevanceScore !== b.relevanceScore) {
+      if (a.relevanceScore !== b.relevanceScore)
         return b.relevanceScore - a.relevanceScore;
-      }
       return (a.price || 0) - (b.price || 0);
     });
   }
 
   const products = (rawProducts || []).map((row: SearchProductRaw) => {
     const images: Record<string, { hex: string; images: any[] }> = {};
+    const colorSizes: Record<string, Size[]> = {};
+
     if (row.product_images) {
       const sortedImages = [...row.product_images].sort((a: any, b: any) => {
         if (a.color_name !== b.color_name) {
@@ -106,26 +99,35 @@ async function searchProducts(
         return a.sort_order - b.sort_order;
       });
       sortedImages.forEach((img: any) => {
-        if (!images[img.color_name]) {
+        if (!images[img.color_name])
           images[img.color_name] = {
             hex: img.hex_code || '######', // fallback to legacy support
             images: []
           };
-        }
         images[img.color_name].images.push({ url: img.image_url, publicId: img.public_id });
       });
     }
-    const tags: string[] = [];
-    if (row.product_tags) {
-      row.product_tags.forEach((pt: any) => {
-        if (pt.tag?.name) {
-          tags.push(pt.tag.name);
-        }
+
+    // Process color-specific sizes if available
+    if (row.color_sizes)
+      row.color_sizes.forEach((cs: any) => {
+        if (!colorSizes[cs.color_name]) colorSizes[cs.color_name] = [];
+        colorSizes[cs.color_name].push({
+          id: cs.size_id,
+          name: cs.size_name,
+          description: cs.size_description,
+          sort_order: cs.size_sort_order
+        });
       });
-    }
+
+    const tags: string[] = [];
+    if (row.product_tags)
+      row.product_tags.forEach((pt: any) => {
+        if (pt.tag?.name) tags.push(pt.tag.name);
+      });
 
     const sizes: Size[] = [];
-    if (row.product_sizes) {
+    if (row.product_sizes)
       row.product_sizes.forEach((size: any) => {
         sizes.push({
           id: size.id,
@@ -134,7 +136,7 @@ async function searchProducts(
           sort_order: size.sort_order
         });
       });
-    }
+
     return {
       id: row.id,
       title: row.title,
@@ -143,14 +145,12 @@ async function searchProducts(
       originalPrice: row.original_price,
       tags,
       categoryId: row.category_id || '',
-      sizes
+      sizes,
+      colorSizes
     };
   });
 
-  return {
-    products,
-    totalCount
-  };
+  return { products, totalCount };
 }
 
 export default searchProducts;

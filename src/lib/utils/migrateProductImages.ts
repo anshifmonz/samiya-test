@@ -71,12 +71,33 @@ export function ensureProductImageFormat(product: Product | LegacyProduct | Lega
         ...product,
         short_code: (product as Product).short_code || `LEGACY-${Date.now()}`,
         images: migratedImages,
-        sizes: (product as Product).sizes || []
+        sizes: (product as Product).sizes || [],
+        colorSizes: (product as Product).colorSizes || {}
       };
     }
   }
 
-  return product as Product;
+  // Handle the new format - ensure colorSizes exist and are properly mapped to images
+  const currentProduct = product as Product;
+  if (currentProduct.colorSizes) {
+    const updatedImages = { ...currentProduct.images };
+
+    // Ensure each color in images has its sizes populated from colorSizes
+    Object.keys(updatedImages).forEach(color => {
+      if (currentProduct.colorSizes![color])
+        updatedImages[color] = {
+          ...updatedImages[color],
+          sizes: currentProduct.colorSizes![color]
+        };
+    });
+
+    return {
+      ...currentProduct,
+      images: updatedImages
+    };
+  }
+
+  return currentProduct;
 }
 
 export function convertToLegacyFormat(product: Product): LegacyProduct {

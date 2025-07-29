@@ -6,6 +6,7 @@ export interface ProductImage {
 export interface ProductColorData {
   hex: string;
   images: ProductImage[];
+  sizes?: Size[]; // Optional color-specific sizes
 }
 
 export interface Size {
@@ -25,7 +26,8 @@ export interface Product {
   originalPrice?: number;
   tags: string[];
   categoryId: string;
-  sizes: Size[];
+  sizes?: Size[]; // Global fallback sizes (optional)
+  colorSizes?: Record<string, Size[]>; // Color-specific sizes mapping
   active?: boolean;
 }
 
@@ -67,6 +69,7 @@ export type ProductFilters = {
   maxPrice?: number;
   colors?: string[];
   tags?: string[];
+  sizes?: string[];
   limit?: number;
   offset?: number;
   sortOrder?: string;
@@ -95,7 +98,8 @@ export interface SearchProduct {
   original_price?: number;
   tags?: string[];
   categoryId: string;
-  sizes?: Size[];
+  sizes?: Size[]; // Global fallback sizes
+  colorSizes?: Record<string, Size[]>; // Color-specific sizes mapping
   images: Record<string, ProductColorData>;
   total_count?: number;
 }
@@ -112,6 +116,7 @@ export interface SearchProductRaw {
   product_images: any[];
   product_tags: any[];
   product_sizes: any[];
+  color_sizes?: any[]; // Color-specific sizes from database
   total_count: number;
 }
 

@@ -15,7 +15,9 @@ async function getProduct(limit: number, offset: number, query: string, sortBy: 
   }
 
   return (data || []).map((row: any) => {
-    const images: Record<string, { hex: string; images: any[] }> = {};
+    const images: Record<string, { hex: string; images: any[]; sizes?: Size[] }> = {};
+    const colorSizes: Record<string, Size[]> = {};
+
     if (row.product_images) {
       // sort images by color and then by sort_order
       const sortedImages = row.product_images.sort((a: any, b: any) => {
@@ -29,37 +31,45 @@ async function getProduct(limit: number, offset: number, query: string, sortBy: 
       });
 
       sortedImages.forEach((img: any) => {
-        if (!images[img.color_name]) {
+        if (!images[img.color_name])
           images[img.color_name] = {
             hex: img.hex_code || '######', // fallback to legacy support
             images: []
           };
-        }
         const imageObj = { url: img.image_url, publicId: img.public_id };
         images[img.color_name].images.push(imageObj);
       });
     }
 
-    const tags: string[] = [];
-    if (row.product_tags) {
-      row.product_tags.forEach((pt: any) => {
-        if (pt.tag?.name) {
-          tags.push(pt.tag.name);
-        }
-      });
-    }
-
-    const sizes: Size[] = [];
+    // Process color-specific sizes from product_sizes
     if (row.product_sizes) {
-      row.product_sizes.forEach((size: any) => {
-        sizes.push({
+      row.product_sizes.forEach((colorSizeData: any) => {
+        const colorName = colorSizeData.color_name;
+        const sizes = colorSizeData.sizes || [];
+
+        // Store color-specific sizes
+        colorSizes[colorName] = sizes.map((size: any) => ({
           id: size.id,
           name: size.name,
           description: size.description,
           sort_order: size.sort_order
-        });
+        }));
+
+        // Also store sizes in the color data for the images object
+        if (images[colorName])
+          images[colorName].sizes = colorSizes[colorName];
       });
     }
+
+    const tags: string[] = [];
+    if (row.product_tags)
+      row.product_tags.forEach((pt: any) => {
+        if (pt.tag?.name) tags.push(pt.tag.name);
+      });
+
+    // Global fallback sizes - these are no longer used as the primary sizes
+    // but kept for backward compatibility
+    const globalSizes: Size[] = [];
 
     return {
       id: row.id,
@@ -71,7 +81,8 @@ async function getProduct(limit: number, offset: number, query: string, sortBy: 
       originalPrice: row.original_price,
       tags,
       categoryId: row.category_id || '',
-      sizes,
+      sizes: globalSizes, // Global fallback sizes
+      colorSizes, // Color-specific sizes mapping
       active: row.is_active,
     };
   });

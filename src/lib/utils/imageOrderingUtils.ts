@@ -132,7 +132,7 @@ export function prepareImagesForRPC(product: Product): any {
 
   const orderedColorsArray = originalColorKeys.map((color, colorIndex) => {
     const colorData = product.images[color];
-    return {
+    const colorObj: any = {
       name: color,
       order: colorIndex, // explicit color order
       hex: colorData.hex,
@@ -152,6 +152,15 @@ export function prepareImagesForRPC(product: Product): any {
         }
       })
     };
+
+    // Add color-specific sizes if they exist
+    if (colorData.sizes && colorData.sizes.length > 0) {
+      colorObj.sizes = colorData.sizes.map(size => size.id);
+    } else if (product.colorSizes && product.colorSizes[color]) {
+      colorObj.sizes = product.colorSizes[color].map(size => size.id);
+    }
+
+    return colorObj;
   });
 
   return {
