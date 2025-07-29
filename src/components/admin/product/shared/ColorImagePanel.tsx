@@ -1,5 +1,6 @@
 import React from 'react';
 import DraggableImageList from './DraggableImageList';
+import ColorSizeSelect from '../form/ColorSizeSelect';
 import { Trash, Plus } from 'lucide-react';
 import { type ProductImage } from 'types/product';
 
@@ -51,6 +52,9 @@ const ColorImagePanel: React.FC<ColorImagePanelProps> = ({
         deletingImages={deletingImages}
       />
     </div>
+
+    <ColorSizeSelect color={color} />
+
     <div className="sticky bottom-0 left-0 w-full bg-white pt-2 pb-2 z-20">
       <button
         type="button"

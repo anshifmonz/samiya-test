@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { Suspense, useState } from 'react';
+import { Suspense, useState, useEffect, useCallback } from 'react';
 import { type Product } from 'types/product';
 import ProductImageGallery from './ImageGallery';
 import ProductHeader from './Header';
@@ -22,8 +22,49 @@ export default function ProductPage({ product, initialColor }: Props) {
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [quantity, setQuantity] = useState<number>(1);
 
+  // Helper function to get available sizes for a specific color
+  const getAvailableSizesForColor = useCallback((colorName: string) => {
+    // Check if the selected color has specific sizes in colorSizes
+    if (product.colorSizes && product.colorSizes[colorName] && product.colorSizes[colorName].length > 0)
+      return product.colorSizes[colorName];
+
+    // Check if the color data itself has sizes (from images object)
+    if (product.images[colorName]?.sizes && product.images[colorName].sizes!.length > 0)
+      return product.images[colorName].sizes!;
+
+    // fall back to global product sizes
+    return product.sizes || [];
+  }, [product.colorSizes, product.images, product.sizes]);
+
+  // Initialize size selection for the initial color
+  useEffect(() => {
+    const availableSizes = getAvailableSizesForColor(initialColor);
+    if (availableSizes.length > 0) {
+      // Sort sizes by their sort_order and select the first one
+      const sortedSizes = availableSizes.sort((a, b) => a.sort_order - b.sort_order);
+      const firstAvailableSize = sortedSizes[0]?.name || '';
+      setSelectedSize(firstAvailableSize);
+    }
+  }, [initialColor, getAvailableSizesForColor]);
+
   const handleColorChange = (color: string) => {
     setSelectedColor(color);
+
+    const availableSizes = getAvailableSizesForColor(color);
+    const availableSizeNames = availableSizes.map(size => size.name);
+
+    // if current selected size is not available for the new color, select the first available size
+    if (selectedSize && !availableSizeNames.includes(selectedSize)) {
+      // sort sizes by their sort_order and select the first one
+      const sortedSizes = availableSizes.sort((a, b) => a.sort_order - b.sort_order);
+      const firstAvailableSize = sortedSizes[0]?.name || '';
+      setSelectedSize(firstAvailableSize);
+    } else if (!selectedSize && availableSizes.length > 0) {
+      // if no size is selected and sizes are available, auto-select the first one
+      const sortedSizes = availableSizes.sort((a, b) => a.sort_order - b.sort_order);
+      const firstAvailableSize = sortedSizes[0]?.name || '';
+      setSelectedSize(firstAvailableSize);
+    }
   };
 
   const getColorStyle = (color: string) => {
@@ -100,7 +141,8 @@ export default function ProductPage({ product, initialColor }: Props) {
               />
 
               <SizeSelector
-                sizes={product.sizes}
+                product={product}
+                selectedColor={selectedColor}
                 selectedSize={selectedSize}
                 onSizeChange={setSelectedSize}
               />

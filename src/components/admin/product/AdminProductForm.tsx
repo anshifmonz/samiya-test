@@ -1,6 +1,4 @@
 import { createPortal } from 'react-dom';
-import { type Product, type CreateProductData } from 'types/product';
-import { type Category } from 'types/category';
 import {
   ProductTitleInput,
   ProductIdDisplay,
@@ -9,7 +7,6 @@ import {
   PriceInput,
   ProductImagesSection,
   TagsSection,
-  SizeSelect,
   ActionButtons,
   ActiveStatusSwitch,
   AdminProductFormHeader,
@@ -40,7 +37,6 @@ const AdminProductFormContent: React.FC = () => {
 
       <ProductImagesSection />
       <ValidationFeedback />
-      <SizeSelect />
       <TagsSection />
       <ActiveStatusSwitch />
       <ActionButtons />

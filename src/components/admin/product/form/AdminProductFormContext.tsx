@@ -199,3 +199,30 @@ export function useAdminProductFormActions_Buttons() {
     handleCancel: ctx.formControl.handleCancel,
   };
 }
+
+/** Hook for color-specific size management */
+export function useAdminProductFormColorSizes() {
+  const ctx = useAdminProductFormContext();
+  
+  const handleColorSizesChange = (color: string, sizes: Size[]) => {
+    const currentImages = { ...ctx.state.formData.images };
+    if (currentImages[color]) {
+      currentImages[color] = {
+        ...currentImages[color],
+        sizes
+      };
+      ctx.actions.handleImagesChange(currentImages);
+    }
+  };
+  
+  const getColorSizes = (color: string): Size[] => {
+    return ctx.state.formData.images[color]?.sizes || [];
+  };
+  
+  return {
+    handleColorSizesChange,
+    getColorSizes,
+    images: ctx.state.formData.images,
+    activeColorTab: ctx.state.activeColorTab
+  };
+}
