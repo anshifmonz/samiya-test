@@ -1,44 +1,16 @@
 import { type Size } from 'types/product';
 import React from 'react';
 import { useAdminProductFormColorSizes } from './AdminProductFormContext';
-
-const sizeIdMap: Record<string, string> = {
-  XS: 'xs',
-  S: 's',
-  M: 'm', 
-  L: 'l',
-  XL: 'xl',
-  '2XL': '2xl',
-  '3XL': '3xl',
-  'Free Size': 'f',
-};
-
-const standardSizes: Size[] = [
-  { id: sizeIdMap.XS, name: 'XS', sort_order: 1 },
-  { id: sizeIdMap.S, name: 'S', sort_order: 2 },
-  { id: sizeIdMap.M, name: 'M', sort_order: 3 },
-  { id: sizeIdMap.L, name: 'L', sort_order: 4 },
-  { id: sizeIdMap.XL, name: 'XL', sort_order: 5 },
-  { id: sizeIdMap['2XL'], name: '2XL', sort_order: 6 },
-  { id: sizeIdMap['3XL'], name: '3XL', sort_order: 7 },
-  { id: sizeIdMap['Free Size'], name: 'Free Size', sort_order: 8 },
-];
+import { useProductsTab } from 'contexts/admin/ProductsTabContext';
 
 interface ColorSizeSelectProps {
   color: string;
 }
 
 const ColorSizeSelect: React.FC<ColorSizeSelectProps> = ({ color }) => {
-  const { handleColorSizesChange, getColorSizes, images } = useAdminProductFormColorSizes();
+  const { handleColorSizesChange, getColorSizes } = useAdminProductFormColorSizes();
   const sizes = getColorSizes(color);
-  
-  // Debug logging to help diagnose the issue
-  React.useEffect(() => {
-    console.log(`[ColorSizeSelect] Color: ${color}`);
-    console.log(`[ColorSizeSelect] Sizes:`, sizes);
-    console.log(`[ColorSizeSelect] Image data for color:`, images[color]);
-    console.log(`[ColorSizeSelect] All images:`, images);
-  }, [color, sizes, images]);
+  const { sizes: availableSizes } = useProductsTab();
 
   const handleSizeToggle = (size: Size) => {
     const isSelected = sizes.some(s => s.id === size.id || s.name === size.name);
@@ -59,7 +31,7 @@ const ColorSizeSelect: React.FC<ColorSizeSelectProps> = ({ color }) => {
         Available Sizes for {color.charAt(0).toUpperCase() + color.slice(1)}
       </label>
       <div className="flex gap-2 flex-wrap">
-        {standardSizes.map(size => {
+        {availableSizes.map(size => {
           const isSelected = isSizeSelected(size);
           return (
             <button

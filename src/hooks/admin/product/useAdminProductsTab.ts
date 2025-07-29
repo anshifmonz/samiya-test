@@ -4,7 +4,7 @@ import { useAdminProductInfiniteScroll } from 'hooks/admin/product/useAdminProdu
 import { apiRequest } from 'utils/apiRequest';
 import { showToast } from 'hooks/ui/use-toast';
 import { useConfirmation } from 'hooks/useConfirmation';
-import { useUrlParam } from 'hooks/ui/useUrlParam';
+import { useSizes } from 'hooks/admin/product/useSizes';
 
 interface UseAdminProductsTabProps {
   initialProducts: Product[];
@@ -17,6 +17,7 @@ export const useAdminProductsTab = ({
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [sortOption, setSortOption] = useState<Record<string, string>>({ sort: 'last-updated' });
+  const { sizes } = useSizes();
   const confirmation = useConfirmation();
 
   const {
@@ -105,6 +106,7 @@ export const useAdminProductsTab = ({
     error,
     isSearching,
     sortOption,
+    sizes,
 
     // Refs
     loaderRef,
