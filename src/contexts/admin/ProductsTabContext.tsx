@@ -2,6 +2,7 @@ import { type Product } from 'types/product';
 import { createContext, useContext } from 'react';
 import { useAdminProductsTab } from 'hooks/admin/product/useAdminProductsTab';
 import { type Category } from 'types/category';
+import { type Size } from 'types/product';
 import { ConfirmationDialog } from 'ui/confirmation-dialog';
 
 interface ProductsTabProviderProps {
@@ -21,6 +22,7 @@ interface ProductsTabContextType {
     hasMore: boolean;
     error: string | null;
     isSearching: boolean;
+    sizes: Size[];
 
     // Refs
     loaderRef: React.RefObject<HTMLDivElement>;
