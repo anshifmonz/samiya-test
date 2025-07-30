@@ -17,21 +17,22 @@ const ColorSizeSelect: React.FC<ColorSizeSelectProps> = ({ color }) => {
   const handleSizeToggle = (size: Size) => {
     const isSelected = sizes.some(s => s.id === size.id || s.name === size.name);
     if (isSelected) {
-      handleColorSizesChange(color, sizes.filter(s => s.id !== size.id && s.name !== size.name));
-      // Remove from expanded when deselected
+      const updatedSizes = sizes.filter(s => s.id !== size.id && s.name !== size.name);
+      handleColorSizesChange(color, updatedSizes);
+      // remove from expanded when deselected
       const newExpanded = new Set(expandedSizes);
       newExpanded.delete(size.id);
       setExpandedSizes(newExpanded);
     } else {
-      // Add with default stock values
       const newSize: Size = {
         ...size,
         stock_quantity: 0,
-        low_stock_threshold: 5,
+        low_stock_threshold: 3,
         is_in_stock: false,
         is_low_stock: false
       };
-      handleColorSizesChange(color, [...sizes, newSize]);
+      const updatedSizes = [...sizes, newSize];
+      handleColorSizesChange(color, updatedSizes);
     }
   };
 
@@ -39,7 +40,7 @@ const ColorSizeSelect: React.FC<ColorSizeSelectProps> = ({ color }) => {
     const updatedSizes = sizes.map(size => {
       if (size.id === sizeId) {
         const updatedSize = { ...size, [field]: value };
-        // Auto-calculate stock status
+        // auto-calculate stock status
         if (field === 'stock_quantity') {
           updatedSize.is_in_stock = value > 0;
           updatedSize.is_low_stock = value > 0 && value <= (updatedSize.low_stock_threshold || 5);
@@ -65,10 +66,6 @@ const ColorSizeSelect: React.FC<ColorSizeSelectProps> = ({ color }) => {
 
   const isSizeSelected = (size: Size) => {
     return sizes.some(s => s.id === size.id || s.name === size.name);
-  };
-
-  const getSelectedSize = (sizeId: string): Size | undefined => {
-    return sizes.find(s => s.id === sizeId);
   };
 
   return (

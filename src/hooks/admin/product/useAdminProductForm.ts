@@ -112,12 +112,6 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
     if (!canSubmit) {
       setValidationError(errorMessage || 'Please fix validation errors before submitting.');
       setIsSubmitting(false);
-
-      // Log detailed errors for debugging
-      if (detailedErrors.length > 0) {
-        console.warn('Product validation errors:', detailedErrors);
-      }
-
       return;
     }
 
@@ -127,15 +121,16 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
       setIsSubmitting(false);
       return;
     }
-    
+
     try {
       if (product) {
         const productData = {
           ...formData,
           price: formData.price,
-          originalPrice: formData.originalPrice || 0, // Default to 0 if null
+          originalPrice: formData.originalPrice || 0,
           id: product.id,
-          short_code: product.short_code
+          short_code: product.short_code,
+          images: { ...formData.images }
         };
         onSave(productData);
       } else {
@@ -143,12 +138,12 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
         const submissionData = {
           ...productDataWithoutShortCode,
           price: formData.price,
-          originalPrice: formData.originalPrice || 0 // Default to 0 if null
+          originalPrice: formData.originalPrice || 0,
+          images: { ...formData.images }
         };
         onSave(submissionData);
       }
     } catch (error) {
-      console.error('Error saving product:', error);
       setValidationError('An error occurred while saving the product. Please try again.');
     } finally {
       setIsSubmitting(false);

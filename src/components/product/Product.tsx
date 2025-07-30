@@ -144,11 +144,7 @@ export default function ProductPage({ product, initialColor }: Props) {
 
               <ProductPricing product={product} />
 
-              <StockStatus 
-                selectedSize={selectedSizeData}
-                selectedColor={selectedColor}
-                selectedSizeName={selectedSize}
-              />
+              <StockStatus selectedSize={selectedSizeData} />
 
               <ColorSelector
                 product={product}

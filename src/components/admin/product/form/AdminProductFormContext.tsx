@@ -69,7 +69,7 @@ interface AdminProductFormContextValue {
   };
 
   // ===== LEGACY COMPATIBILITY =====
-  /** 
+  /**
    * @deprecated Use the organized structure above instead.
    * These are maintained for backward compatibility during migration.
    */
@@ -150,7 +150,7 @@ export function useAdminProductFormControl() {
   return ctx.formControl;
 }
 
-/** 
+/**
  * Convenience hooks that combine commonly used context sections
  */
 
@@ -203,7 +203,7 @@ export function useAdminProductFormActions_Buttons() {
 /** Hook for color-specific size management */
 export function useAdminProductFormColorSizes() {
   const ctx = useAdminProductFormContext();
-  
+
   const handleColorSizesChange = (color: string, sizes: Size[]) => {
     const currentImages = { ...ctx.state.formData.images };
     if (currentImages[color]) {
@@ -214,11 +214,11 @@ export function useAdminProductFormColorSizes() {
       ctx.actions.handleImagesChange(currentImages);
     }
   };
-  
+
   const getColorSizes = (color: string): Size[] => {
     return ctx.state.formData.images[color]?.sizes || [];
   };
-  
+
   return {
     handleColorSizesChange,
     getColorSizes,

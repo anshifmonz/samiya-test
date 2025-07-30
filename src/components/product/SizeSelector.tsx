@@ -56,7 +56,7 @@ export default function SizeSelector({ product, selectedColor, selectedSize, onS
           const isAvailable = availableSizes.includes(sizeName);
           const isOutOfStock = sizeData && sizeData.stock_quantity !== undefined && sizeData.stock_quantity === 0;
           const isLowStock = sizeData && sizeData.is_low_stock;
-          
+
           return (
             <button
               key={sizeName}
@@ -78,9 +78,6 @@ export default function SizeSelector({ product, selectedColor, selectedSize, onS
               title={isOutOfStock ? 'Out of stock' : isLowStock ? `Low stock - ${sizeData?.stock_quantity} left` : undefined}
             >
               {sizeName}
-              {isLowStock && sizeData?.stock_quantity && (
-                <span className="ml-1 text-xs text-orange-600">({sizeData.stock_quantity})</span>
-              )}
               {(!isAvailable || isOutOfStock) && (
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                   <div className="w-full h-px bg-muted-foreground/60 rotate-45 transform origin-center"></div>
