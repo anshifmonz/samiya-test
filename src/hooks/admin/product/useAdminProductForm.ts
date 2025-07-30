@@ -41,6 +41,7 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
   const [activeColorTab, setActiveColorTab] = useState<string>('');
   const [mounted, setMounted] = useState(false);
   const [validationError, setValidationError] = useState<string>('');
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -89,22 +90,80 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleTitleChange = (value: string) => updateFormField('title', value);
-  const handleDescriptionChange = (value: string) => updateFormField('description', value);
-  const handlePriceChange = (value: number | null) => updateFormField('price', value);
-  const handleOriginalPriceChange = (value: number | null) => updateFormField('originalPrice', value);
-  const handleCategoryChange = (value: string) => updateFormField('categoryId', value);
+  const clearFieldError = (fieldName: string) => {
+    setFieldErrors(prev => {
+      const newErrors = { ...prev };
+      delete newErrors[fieldName];
+      return newErrors;
+    });
+  };
+
+  const handleTitleChange = (value: string) => {
+    updateFormField('title', value);
+    if (value.trim()) clearFieldError('title');
+  };
+  
+  const handleDescriptionChange = (value: string) => {
+    updateFormField('description', value);
+    if (value.trim()) clearFieldError('description');
+  };
+  
+  const handlePriceChange = (value: number | null) => {
+    updateFormField('price', value);
+    if (value !== null) clearFieldError('price');
+  };
+  
+  const handleOriginalPriceChange = (value: number | null) => {
+    updateFormField('originalPrice', value);
+    if (value !== null) clearFieldError('originalPrice');
+  };
+  
+  const handleCategoryChange = (value: string) => {
+    updateFormField('categoryId', value);
+    if (value) clearFieldError('category');
+  };
   const handleImagesChange = (images: Record<string, ProductColorData>) => updateFormField('images', images);
   const handleTagsChange = (tags: string[]) => updateFormField('tags', tags);
   const handleSizesChange = (sizes: Size[]) => updateFormField('sizes', sizes);
   const handleActiveChange = (active: boolean) => updateFormField('active', active);
 
+  const validateRequiredFields = (): Record<string, string> => {
+    const errors: Record<string, string> = {};
+    if (!formData.title) errors.title = 'Title is required.';
+    if (!formData.categoryId) errors.category = 'Category is required.';
+    if (!formData.description) errors.description = 'Description is required.';
+    if (formData.price === null) errors.price = 'Price is required.';
+    if (formData.originalPrice === null) errors.originalPrice = 'Original price is required.';
+    return errors;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Clear any previous validation errors
     setValidationError('');
+    setFieldErrors({});
     setIsSubmitting(true);
+
+    const requiredFieldErrors = validateRequiredFields();
+    if (Object.keys(requiredFieldErrors).length > 0) {
+      setFieldErrors(requiredFieldErrors);
+      setValidationError('Please fill in all required fields.');
+      setIsSubmitting(false);
+
+      const firstErrorField = Object.keys(requiredFieldErrors)[0];
+      let inputElement: HTMLElement | null = null;
+      
+      if (firstErrorField === 'category') {
+        inputElement = document.querySelector(`[data-name="category"]`) as HTMLElement;
+      } else {
+        inputElement = document.querySelector(`[name="${firstErrorField}"]`) as HTMLElement;
+      }
+      
+      if (inputElement) {
+        inputElement.focus();
+      }
+      return;
+    }
 
     // Validate the form data
     const { canSubmit, errorMessage, detailedErrors } = checkSubmissionErrors(formData.images);
@@ -115,12 +174,6 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
       return;
     }
 
-    // Validate that required price fields are not null
-    if (formData.price === null) {
-      setValidationError('Price is required.');
-      setIsSubmitting(false);
-      return;
-    }
 
     try {
       if (product) {
@@ -160,6 +213,7 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
     activeColorTab,
     mounted,
     validationError,
+    fieldErrors,
     isSubmitting,
 
     // Handlers
@@ -175,7 +229,10 @@ export const useAdminProductForm = ({ product, categories, onSave, onCancel }: U
     handleSubmit,
     handleCancel,
     setActiveColorTab,
-    clearValidationError: () => setValidationError(''),
+    clearValidationError: () => {
+      setValidationError('');
+      setFieldErrors({});
+    },
 
     // Computed values
     isEditing: !!product,

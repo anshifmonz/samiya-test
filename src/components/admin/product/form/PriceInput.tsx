@@ -1,4 +1,3 @@
-import React from 'react';
 import { useAdminProductFormFields } from './AdminProductFormContext';
 
 interface PriceInputProps {
@@ -7,7 +6,8 @@ interface PriceInputProps {
 }
 
 const PriceInput: React.FC<PriceInputProps> = ({ label, field }) => {
-  const { formData, handlePriceChange, handleOriginalPriceChange } = useAdminProductFormFields();
+  const { formData, fieldErrors, handlePriceChange, handleOriginalPriceChange } = useAdminProductFormFields();
+  const hasError = !!fieldErrors[field];
 
   const value = formData[field];
   const onChange = field === 'price' ? handlePriceChange : handleOriginalPriceChange;
@@ -64,16 +64,24 @@ const PriceInput: React.FC<PriceInputProps> = ({ label, field }) => {
       </label>
       <input
         type="text"
+        name={field}
         inputMode="decimal"
         value={value === null ? '' : value.toString()}
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
         onPaste={handlePaste}
-        className="w-full px-4 py-3 luxury-body text-sm rounded-xl bg-luxury-cream/50 text-luxury-black border border-luxury-gray/20 focus:outline-none focus:ring-2 focus:ring-luxury-gold/50 focus:border-luxury-gold/30 transition-all duration-300"
+        className={`w-full px-4 py-3 luxury-body text-sm rounded-xl bg-luxury-cream/50 text-luxury-black border transition-all duration-300 focus:outline-none focus:ring-2 ${
+          hasError
+            ? 'border-red-300 focus:ring-red-200 focus:border-red-400'
+            : 'border-luxury-gray/20 focus:ring-luxury-gold/50 focus:border-luxury-gold/30'
+        }`}
         placeholder="Enter price"
         autoComplete="off"
         required
       />
+      {hasError && (
+        <p className="mt-1 text-sm text-red-600">{fieldErrors[field]}</p>
+      )}
     </div>
   );
 };

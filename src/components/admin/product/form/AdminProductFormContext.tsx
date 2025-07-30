@@ -1,5 +1,5 @@
-import React, { createContext, useContext, ReactNode } from 'react';
-import { type Product, type CreateProductData, type ProductColorData, type Size } from 'types/product';
+import { createContext, useContext, ReactNode } from 'react';
+import { type Product, type ProductColorData, type Size } from 'types/product';
 import { type Category } from 'types/category';
 
 // Common types used across the admin product form context
@@ -35,6 +35,7 @@ interface AdminProductFormContextValue {
     activeColorTab: string;
     mounted: boolean;
     validationError: string;
+    fieldErrors: Record<string, string>;
     isSubmitting: boolean;
   };
 
@@ -159,6 +160,7 @@ export function useAdminProductFormFields() {
   const ctx = useAdminProductFormContext();
   return {
     formData: ctx.state.formData,
+    fieldErrors: ctx.state.fieldErrors,
     handleTitleChange: ctx.actions.handleTitleChange,
     handleDescriptionChange: ctx.actions.handleDescriptionChange,
     handlePriceChange: ctx.actions.handlePriceChange,
@@ -187,6 +189,7 @@ export function useAdminProductFormCategory() {
   return {
     categories: ctx.config.categories,
     categoryId: ctx.state.formData.categoryId,
+    categoryError: ctx.state.fieldErrors.category,
     handleCategoryChange: ctx.actions.handleCategoryChange,
   };
 }

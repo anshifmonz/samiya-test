@@ -64,6 +64,7 @@ const AdminProductForm: React.FC = () => {
       activeColorTab: logic.activeColorTab,
       mounted: logic.mounted,
       validationError: logic.validationError,
+      fieldErrors: logic.fieldErrors,
       isSubmitting: logic.isSubmitting,
     },
 

@@ -1,13 +1,14 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { type Category } from '@/types/category';
+import { useState, useRef, useEffect } from 'react';
+import { type Category } from 'types/category';
 import { ChevronDown, Check, ChevronRight } from 'lucide-react';
-import { buildCategoryTree } from '@/lib/utils/buildCategoryTree';
+import { buildCategoryTree } from 'utils/buildCategoryTree';
 import { useAdminProductFormCategory } from './AdminProductFormContext';
 
 const CategorySelect: React.FC = () => {
-  const { categories, categoryId, handleCategoryChange } = useAdminProductFormCategory();
+  const { categories, categoryId, categoryError, handleCategoryChange } = useAdminProductFormCategory();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const hasError = !!categoryError;
 
   const getSelectedDisplayName = () => {
     if (!categoryId) return "Select a category";
@@ -115,8 +116,20 @@ const CategorySelect: React.FC = () => {
 
       {/* custom select button */}
       <div
-        className="w-full px-4 py-3 luxury-body text-sm rounded-xl bg-luxury-cream/50 text-luxury-black border border-luxury-gray/20 focus:outline-none focus:ring-2 focus:ring-luxury-gold/50 focus:border-luxury-gold/30 transition-all duration-300 cursor-pointer flex items-center justify-between"
+        data-name="category"
+        tabIndex={0}
+        className={`w-full px-4 py-3 luxury-body text-sm rounded-xl bg-luxury-cream/50 text-luxury-black border transition-all duration-300 cursor-pointer flex items-center justify-between focus:outline-none focus:ring-2 ${
+          hasError
+            ? 'border-red-300 focus:ring-red-200 focus:border-red-400'
+            : 'border-luxury-gray/20 focus:ring-luxury-gold/50 focus:border-luxury-gold/30'
+        }`}
         onClick={() => setIsOpen(!isOpen)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setIsOpen(!isOpen);
+          }
+        }}
       >
         <span className={categoryId ? 'text-luxury-black' : 'text-luxury-gray'}>
           {getSelectedDisplayName()}
@@ -133,6 +146,9 @@ const CategorySelect: React.FC = () => {
         <div className="absolute z-50 w-full mt-1 bg-white border border-luxury-gray/20 rounded-xl shadow-lg max-h-60 overflow-y-auto">
           {renderCategoryTree(categoryTree)}
         </div>
+      )}
+      {hasError && (
+        <p className="mt-1 text-sm text-red-600">{categoryError}</p>
       )}
     </div>
   );
