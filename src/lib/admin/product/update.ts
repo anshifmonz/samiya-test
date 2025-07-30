@@ -12,7 +12,27 @@ export default async function updateProduct(product: Product): Promise<Product |
       return size.id.trim();
     }).filter(id => id !== null) || [];
 
-    const { ordered_colors } = prepareImagesForRPC(product);
+    let ordered_colors = prepareImagesForRPC(product).ordered_colors;
+
+    // ordered_colors with color-specific stock info in stock_data
+    ordered_colors = ordered_colors.map((color: any) => {
+      const colorKey = color.name;
+      const colorData = product.images[colorKey];
+      if (colorData?.sizes && colorData.sizes.length > 0) {
+        const colorSizes = colorData.sizes.map(size => ({
+          id: size.id,
+          name: size.name,
+          stock_quantity: size.stock_quantity || 0,
+          low_stock_threshold: size.low_stock_threshold || 5
+        }));
+        return {
+          ...color,
+          sizes: colorSizes.map(size => size.id),
+          stock_data: colorSizes
+        };
+      }
+      return color;
+    });
 
     const { data, error } = await supabaseAdmin.rpc('update_product', {
       p_product_id: product.id,
@@ -24,10 +44,11 @@ export default async function updateProduct(product: Product): Promise<Product |
       p_original_price: product.originalPrice || null,
       p_sizes: sizeIds,
       p_tags: product.tags || [],
-      p_is_active: product.active ?? true
+      p_is_active: product.active ?? true,
+      p_preserve_stock: true
     });
 
-    if (error) throw new Error(`Error updating product: ${error}`);
+    if (error) throw new Error(`Error updating product: ${error.message}`);
     if (data && data.status === 'error') throw new Error(`RPC Error: ${data.message}`);
 
     return product;

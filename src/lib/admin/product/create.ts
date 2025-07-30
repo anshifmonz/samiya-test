@@ -20,7 +20,6 @@ export default async function createProduct(newProduct: CreateProductData): Prom
     }).filter(id => id !== null) || [];
 
     let ordered_colors = [];
-    let hasColorSpecificSizes = false;
 
     if (newProduct.images && Object.keys(newProduct.images).length > 0) {
       const preparedData = prepareImagesForRPC({
@@ -30,11 +29,32 @@ export default async function createProduct(newProduct: CreateProductData): Prom
       } as Product);
       ordered_colors = preparedData.ordered_colors;
 
-      // Check if any colors have specific sizes defined
-      hasColorSpecificSizes = ordered_colors.some((color: any) => color.sizes && color.sizes.length > 0);
+      // ordered_colors with color-specific stock info in stock_data
+      ordered_colors = ordered_colors.map((color: any, _: number) => {
+        const colorKey = color.name;
+        const colorData = newProduct.images[colorKey];
+
+        if (colorData?.sizes && colorData.sizes.length > 0) {
+          // color-specific sizes with stock information
+          const colorSizes = colorData.sizes.map(size => ({
+            id: size.id,
+            name: size.name,
+            stock_quantity: size.stock_quantity || 0,
+            low_stock_threshold: size.low_stock_threshold || 5
+          }));
+
+          return {
+            ...color,
+            sizes: colorSizes.map(size => size.id),
+            stock_data: colorSizes
+          };
+        }
+
+        return color;
+      });
     }
 
-    const { data, error } = await supabaseAdmin.rpc('create_product_rpc', {
+    const dbParams = {
       p_title: newProduct.title,
       p_description: newProduct.description,
       p_price: newProduct.price,
@@ -44,9 +64,10 @@ export default async function createProduct(newProduct: CreateProductData): Prom
       p_sizes: sizeIds,
       p_tags: newProduct.tags || [],
       p_is_active: newProduct.active ?? true
-    });
+    };
 
-    if (error) throw new Error(`Error calling create_product_rpc: ${error}`);
+    const { data, error } = await supabaseAdmin.rpc('create_product_rpc', dbParams);
+    if (error) throw new Error(`Error calling create_product_rpc: ${error.message}`);
     if (data && data.status === 'error') throw new Error(`RPC Error: ${data.message}`);
     if (!data || data.status !== 'success' || !data.product_id) throw new Error(`Unexpected RPC response: ${data}`);
 

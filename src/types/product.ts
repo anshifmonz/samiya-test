@@ -14,6 +14,11 @@ export interface Size {
   name: string;
   description?: string;
   sort_order: number;
+  // Stock information (available when fetched from product_color_sizes)
+  stock_quantity?: number;
+  low_stock_threshold?: number;
+  is_in_stock?: boolean;
+  is_low_stock?: boolean;
 }
 
 export interface Product {
@@ -124,4 +129,58 @@ export interface SearchProductRaw {
 export interface SearchResult {
   products: SearchProduct[];
   totalCount: number;
+}
+
+// Stock management types
+export interface StockUpdate {
+  product_id: string;
+  color_name: string;
+  size_id: string;
+  stock_quantity: number;
+  low_stock_threshold?: number;
+}
+
+export interface StockSummary {
+  product_id: string;
+  product_title: string;
+  total_stock: number;
+  total_variants: number;
+  in_stock_variants: number;
+  out_of_stock_variants: number;
+  low_stock_variants: number;
+  stock_by_color: StockByColor[];
+}
+
+export interface StockByColor {
+  color_name: string;
+  total_stock: number;
+  variants_count: number;
+  sizes: StockBySize[];
+}
+
+export interface StockBySize {
+  size_id: string;
+  size_name: string;
+  stock_quantity: number;
+  low_stock_threshold: number;
+  is_in_stock: boolean;
+  is_low_stock: boolean;
+}
+
+export interface LowStockItem {
+  product_id: string;
+  product_title: string;
+  color_name: string;
+  size_id: string;
+  size_name: string;
+  stock_quantity: number;
+  low_stock_threshold: number;
+  is_out_of_stock: boolean;
+}
+
+// Stock management options for create/update operations
+export interface StockOptions {
+  preserve_stock?: boolean;
+  default_stock_quantity?: number;
+  default_low_stock_threshold?: number;
 }

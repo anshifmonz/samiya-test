@@ -153,11 +153,19 @@ export function prepareImagesForRPC(product: Product): any {
       })
     };
 
-    // Add color-specific sizes if they exist
+    // Add color-specific sizes with stock information if they exist
     if (colorData.sizes && colorData.sizes.length > 0) {
-      colorObj.sizes = colorData.sizes.map(size => size.id);
+      colorObj.sizes = colorData.sizes.map(size => ({
+        size_id: size.id,
+        stock_quantity: size.stock_quantity || 0,
+        low_stock_threshold: size.low_stock_threshold || 5
+      }));
     } else if (product.colorSizes && product.colorSizes[color]) {
-      colorObj.sizes = product.colorSizes[color].map(size => size.id);
+      colorObj.sizes = product.colorSizes[color].map(size => ({
+        size_id: size.id,
+        stock_quantity: size.stock_quantity || 0,
+        low_stock_threshold: size.low_stock_threshold || 5
+      }));
     }
 
     return colorObj;

@@ -34,12 +34,16 @@ const getProduct = async (id: string): Promise<Product | null> => {
         const colorName = colorSizeData.color_name;
         const sizes = colorSizeData.sizes || [];
 
-        // Store color-specific sizes
+        // Store color-specific sizes with stock information
         colorSizes[colorName] = sizes.map((size: any) => ({
           id: size.id,
           name: size.name,
           description: size.description,
-          sort_order: size.sort_order
+          sort_order: size.sort_order,
+          stock_quantity: size.stock_quantity,
+          low_stock_threshold: size.low_stock_threshold,
+          is_in_stock: size.is_in_stock,
+          is_low_stock: size.is_low_stock
         }));
 
         // store sizes in the color data for the images object

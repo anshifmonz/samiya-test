@@ -1,9 +1,57 @@
-export default function StockStatus() {
-  return null;
+import { type Size } from 'types/product';
+
+interface StockStatusProps {
+  selectedSize?: Size;
+  selectedColor?: string;
+  selectedSizeName?: string;
+}
+
+export default function StockStatus({ selectedSize, selectedColor, selectedSizeName }: StockStatusProps) {
+  if (!selectedSize || selectedSize.stock_quantity === undefined) {
+    return null;
+  }
+
+  const { stock_quantity, low_stock_threshold, is_in_stock, is_low_stock } = selectedSize;
+
+  if (!is_in_stock) {
+    return (
+      <div className="flex items-center space-x-2">
+        <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+        <span className="text-sm font-medium text-red-600">
+          Out of stock {selectedSizeName && `(${selectedSizeName})`}
+        </span>
+      </div>
+    );
+  }
+
+  if (is_low_stock) {
+    return (
+      <div className="flex items-center space-x-2">
+        <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+        <span className="text-sm font-medium text-orange-600">
+          Low stock - {stock_quantity} left {selectedSizeName && `(${selectedSizeName})`}
+        </span>
+      </div>
+    );
+  }
+
+  if (stock_quantity !== undefined && stock_quantity <= 10) {
+    return (
+      <div className="flex items-center space-x-2">
+        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+        <span className="text-sm font-medium text-green-600">
+          {stock_quantity} in stock {selectedSizeName && `(${selectedSizeName})`}
+        </span>
+      </div>
+    );
+  }
+
   return (
     <div className="flex items-center space-x-2">
-      <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-      <span className="text-sm font-medium text-orange-600">Low stock</span>
+      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+      <span className="text-sm font-medium text-green-600">
+        In stock {selectedSizeName && `(${selectedSizeName})`}
+      </span>
     </div>
   );
 }

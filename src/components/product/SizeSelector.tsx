@@ -5,7 +5,7 @@ interface SizeSelectorProps {
   product: Product;
   selectedColor: string;
   selectedSize: string;
-  onSizeChange: (size: string) => void;
+  onSizeChange: (size: string, sizeData?: Size) => void;
 }
 
 export default function SizeSelector({ product, selectedColor, selectedSize, onSizeChange }: SizeSelectorProps) {
@@ -51,23 +51,37 @@ export default function SizeSelector({ product, selectedColor, selectedSize, onS
     <div className="space-y-3">
       <span className="text-sm font-medium">Size</span>
       <div className="flex flex-wrap gap-2">
-        {sizesToDisplay.map(size => {
-          const isAvailable = availableSizes.includes(size);
+        {sizesToDisplay.map(sizeName => {
+          const sizeData = sizes?.find(s => s.name === sizeName);
+          const isAvailable = availableSizes.includes(sizeName);
+          const isOutOfStock = sizeData && sizeData.stock_quantity !== undefined && sizeData.stock_quantity === 0;
+          const isLowStock = sizeData && sizeData.is_low_stock;
+          
           return (
             <button
-              key={size}
-              onClick={() => isAvailable && onSizeChange(selectedSize === size ? '' : size)}
+              key={sizeName}
+              onClick={() => {
+                if (isAvailable && !isOutOfStock) {
+                  onSizeChange(selectedSize === sizeName ? '' : sizeName, sizeData);
+                }
+              }}
               className={`relative px-4 py-2 text-sm font-medium rounded border transition-all duration-200 ${
-                isAvailable
-                  ? selectedSize === size
+                !isAvailable || isOutOfStock
+                  ? 'bg-muted/50 text-muted-foreground/50 border-muted cursor-not-allowed'
+                  : selectedSize === sizeName
                     ? 'bg-foreground text-background border-foreground'
-                    : 'bg-background text-foreground border-border hover:border-foreground'
-                  : 'bg-muted/50 text-muted-foreground/50 border-muted cursor-not-allowed'
+                    : isLowStock
+                      ? 'bg-background text-foreground border-orange-300 hover:border-orange-400'
+                      : 'bg-background text-foreground border-border hover:border-foreground'
               }`}
-              disabled={!isAvailable}
+              disabled={!isAvailable || isOutOfStock}
+              title={isOutOfStock ? 'Out of stock' : isLowStock ? `Low stock - ${sizeData?.stock_quantity} left` : undefined}
             >
-              {size}
-              {!isAvailable && (
+              {sizeName}
+              {isLowStock && sizeData?.stock_quantity && (
+                <span className="ml-1 text-xs text-orange-600">({sizeData.stock_quantity})</span>
+              )}
+              {(!isAvailable || isOutOfStock) && (
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                   <div className="w-full h-px bg-muted-foreground/60 rotate-45 transform origin-center"></div>
                 </div>

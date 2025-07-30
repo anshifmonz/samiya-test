@@ -116,7 +116,11 @@ async function searchProducts(
           id: cs.size_id,
           name: cs.size_name,
           description: cs.size_description,
-          sort_order: cs.size_sort_order
+          sort_order: cs.size_sort_order,
+          stock_quantity: cs.stock_quantity,
+          low_stock_threshold: cs.low_stock_threshold,
+          is_in_stock: cs.is_in_stock,
+          is_low_stock: cs.is_low_stock
         });
       });
 
