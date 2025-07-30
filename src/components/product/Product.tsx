@@ -1,6 +1,7 @@
 'use client';
 
 import { Suspense, useState, useEffect, useCallback } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { type Product, type Size } from 'types/product';
 import ProductImageGallery from './ImageGallery';
 import ProductHeader from './Header';
@@ -14,14 +15,42 @@ import LoadingSpinner from 'components/shared/LoadingSpinner';
 
 interface Props {
   product: Product;
-  initialColor: string;
 }
 
-export default function ProductPage({ product, initialColor }: Props) {
-  const [selectedColor, setSelectedColor] = useState<string>(initialColor);
-  const [selectedSize, setSelectedSize] = useState<string>('');
+export default function ProductPage({ product }: Props) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const firstColor = Object.keys(product.images)[0];
+
+  const [selectedColor, setSelectedColor] = useState<string>(() => {
+    return searchParams?.get('color') || firstColor;
+  });
+  const [selectedSize, setSelectedSize] = useState<string>(() => {
+    return searchParams?.get('size') || '';
+  });
+
   const [selectedSizeData, setSelectedSizeData] = useState<Size | undefined>(undefined);
   const [quantity, setQuantity] = useState<number>(1);
+
+  const updateUrlParams = useCallback((color: string, size: string = '') => {
+    const current = new URLSearchParams(Array.from(searchParams?.entries() || []));
+
+    current.set('color', color);
+    if (size) {
+      current.set('size', size);
+    } else {
+      current.delete('size');
+    }
+
+    const search = current.toString();
+    const query = search ? `?${search}` : '';
+
+    router.replace(`${window.location.pathname}${query}`, { scroll: false });
+  }, [router, searchParams]);
+
+  const isSizeOutOfStock = useCallback((sizeData?: Size) => {
+    return sizeData && sizeData.stock_quantity !== undefined && sizeData.stock_quantity === 0;
+  }, []);
 
   // Helper function to get available sizes for a specific color
   const getAvailableSizesForColor = useCallback((colorName: string) => {
@@ -37,47 +66,62 @@ export default function ProductPage({ product, initialColor }: Props) {
     return product.sizes || [];
   }, [product.colorSizes, product.images, product.sizes]);
 
-  // Initialize size selection for the initial color
   useEffect(() => {
-    const availableSizes = getAvailableSizesForColor(initialColor);
-    if (availableSizes.length > 0) {
-      // Sort sizes by their sort_order and select the first one
-      const sortedSizes = availableSizes.sort((a, b) => a.sort_order - b.sort_order);
-      const firstAvailableSize = sortedSizes[0];
-      setSelectedSize(firstAvailableSize?.name || '');
-      setSelectedSizeData(firstAvailableSize);
+    // Initialize and sync state from URL
+    const colorFromUrl = searchParams?.get('color');
+    const sizeFromUrl = searchParams?.get('size') || '';
+
+    // If no color parameter in URL, use first color and sync to URL
+    if (!colorFromUrl) {
+      setSelectedColor(firstColor);
+
+      // Auto-select first valid size for the first color
+      const availableSizes = getAvailableSizesForColor(firstColor);
+      const firstValidSize = availableSizes.find(size => !isSizeOutOfStock(size));
+      const initialSize = firstValidSize ? firstValidSize.name : '';
+
+      setSelectedSize(initialSize);
+      setSelectedSizeData(firstValidSize);
+
+      updateUrlParams(firstColor, initialSize);
+    } else {
+      // Color parameter exists in URL
+      setSelectedColor(colorFromUrl);
+      setSelectedSize(sizeFromUrl);
+
+      // Update size data based on the selected color and size
+      const availableSizes = getAvailableSizesForColor(colorFromUrl);
+      const currentSizeData = availableSizes.find(size => size.name === sizeFromUrl);
+
+      setSelectedSizeData(currentSizeData);
+
+      // If size is out of stock, remove from URL
+      if (currentSizeData && isSizeOutOfStock(currentSizeData)) {
+        updateUrlParams(colorFromUrl, '');
+      }
     }
-  }, [initialColor, getAvailableSizesForColor]);
+  }, [searchParams, firstColor, getAvailableSizesForColor, isSizeOutOfStock, updateUrlParams]);
 
   const handleColorChange = (color: string) => {
     setSelectedColor(color);
 
+    // Reset size when color changes
     const availableSizes = getAvailableSizesForColor(color);
-    const availableSizeNames = availableSizes.map(size => size.name);
+    const firstValidSize = availableSizes.find(size => !isSizeOutOfStock(size));
+    const newSize = firstValidSize ? firstValidSize.name : '';
 
-    // if current selected size is not available for the new color, select the first available size
-    if (selectedSize && !availableSizeNames.includes(selectedSize)) {
-      // sort sizes by their sort_order and select the first one
-      const sortedSizes = availableSizes.sort((a, b) => a.sort_order - b.sort_order);
-      const firstAvailableSize = sortedSizes[0];
-      setSelectedSize(firstAvailableSize?.name || '');
-      setSelectedSizeData(firstAvailableSize);
-    } else if (!selectedSize && availableSizes.length > 0) {
-      // if no size is selected and sizes are available, auto-select the first one
-      const sortedSizes = availableSizes.sort((a, b) => a.sort_order - b.sort_order);
-      const firstAvailableSize = sortedSizes[0];
-      setSelectedSize(firstAvailableSize?.name || '');
-      setSelectedSizeData(firstAvailableSize);
-    } else if (selectedSize) {
-      // Update the size data for the current size in the new color
-      const currentSizeData = availableSizes.find(size => size.name === selectedSize);
-      setSelectedSizeData(currentSizeData);
-    }
+    setSelectedSize(newSize);
+    updateUrlParams(color, newSize);
   };
 
   const handleSizeChange = (sizeName: string, sizeData?: Size) => {
-    setSelectedSize(sizeName);
-    setSelectedSizeData(sizeData);
+    if (sizeData && !isSizeOutOfStock(sizeData)) {
+      setSelectedSize(sizeName);
+      updateUrlParams(selectedColor, sizeName);
+    } else {
+      setSelectedSize('');
+      updateUrlParams(selectedColor, '');
+    }
   };
 
   const getColorStyle = (color: string) => {
