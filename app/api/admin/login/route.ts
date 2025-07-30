@@ -5,6 +5,8 @@ import {
 } from 'lib/adminSession';
 import login from 'lib/admin/auth/login';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     const cookieSecret = process.env.COOKIE_SIGNING_SECRET;

@@ -4,6 +4,8 @@ import { POST as handlePOST } from './create'
 import { PUT as handlePUT } from './update'
 import { DELETE as handleDELETE } from './delete'
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   return handleGET()
 }

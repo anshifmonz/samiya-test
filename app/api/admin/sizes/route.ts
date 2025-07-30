@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
+import { supabaseAdmin } from 'lib/supabase';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 3600; // 60m
 
 export async function GET() {
   try {

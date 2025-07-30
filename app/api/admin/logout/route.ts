@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { removeSession, unsignSessionId } from '@/lib/adminSession';
+import { removeSession, unsignSessionId } from 'lib/adminSession';
+
+export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   try {

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import createProduct from 'lib/admin/product/create';
 import { type CreateProductData } from 'types/product';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();

@@ -5,6 +5,8 @@ import { PUT as handlePUT } from './update'
 import { PATCH as handlePATCH } from './update'
 import { DELETE as handleDELETE } from './delete'
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   return handleGET(request)
 }

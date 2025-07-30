@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { uploadFileToCloudinary } from '@/lib/upload/cloudinary-server';
+import { uploadFileToCloudinary } from 'lib/upload/cloudinary-server';
+
+export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
   try {

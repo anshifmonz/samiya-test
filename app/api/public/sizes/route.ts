@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
-import { supabasePublic } from '@/lib/supabasePublic';
+import { supabasePublic } from 'lib/supabasePublic';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {

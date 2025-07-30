@@ -4,6 +4,8 @@ import {POST as handlePOST} from './users/register';
 import {PATCH as handlePATCH} from './users/edit';
 import {DELETE as handleDELETE} from './users/delete';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   return handleGET()
 }
