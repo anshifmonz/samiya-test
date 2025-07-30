@@ -6,13 +6,10 @@ import isCloudinaryUrl from 'utils/isCloudinaryUrls';
 import CloudinaryWithFallback from 'components/shared/CloudinaryWithFallback';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { type Product } from 'types/product';
+import { useProductContext } from 'contexts/ProductContext';
 
-interface ProductImageGalleryProps {
-  product: Product;
-  selectedColor: string;
-}
-
-const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({ product, selectedColor }) => {
+const ProductImageGallery: React.FC = () => {
+  const { product, selectedColor } = useProductContext();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStartX, setDragStartX] = useState(0);

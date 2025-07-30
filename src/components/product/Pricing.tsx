@@ -1,10 +1,7 @@
-import { type Product } from 'types/product';
+import { useProductContext } from 'contexts/ProductContext';
 
-interface ProductPricingProps {
-  product: Product;
-}
-
-export default function ProductPricing({ product }: ProductPricingProps) {
+export default function ProductPricing() {
+  const { product } = useProductContext();
   return (
     <>
       <div className="flex items-center space-x-3">

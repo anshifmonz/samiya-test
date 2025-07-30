@@ -1,10 +1,9 @@
 import { type Size } from 'types/product';
 
-interface StockStatusProps {
-  selectedSize?: Size;
-}
+import { useProductContext } from 'contexts/ProductContext';
 
-export default function StockStatus({ selectedSize }: StockStatusProps) {
+export default function StockStatus() {
+  const { selectedSizeData: selectedSize } = useProductContext();
   if (!selectedSize || selectedSize.stock_quantity === undefined) return null;
 
   const { stock_quantity, is_in_stock, is_low_stock } = selectedSize;

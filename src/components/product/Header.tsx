@@ -1,10 +1,7 @@
-import { type Product } from 'types/product';
+import { useProductContext } from 'contexts/ProductContext';
 
-interface ProductHeaderProps {
-  product: Product;
-}
-
-export default function ProductHeader({ product }: ProductHeaderProps) {
+export default function ProductHeader() {
+  const { product } = useProductContext();
   return (
     <div>
       <h1 className="text-3xl font-semibold text-foreground">{product.title} <span className="text-muted-foreground text-sm">{product.short_code}</span></h1>

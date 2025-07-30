@@ -1,14 +1,9 @@
-import { type Product, type Size } from 'types/product';
+import { type Size } from 'types/product';
 import { useSizes } from 'hooks/public/useSizes';
+import { useProductContext } from 'contexts/ProductContext';
 
-interface SizeSelectorProps {
-  product: Product;
-  selectedColor: string;
-  selectedSize: string;
-  onSizeChange: (size: string, sizeData?: Size) => void;
-}
-
-export default function SizeSelector({ product, selectedColor, selectedSize, onSizeChange }: SizeSelectorProps) {
+export default function SizeSelector() {
+  const { product, selectedColor, selectedSize, handleSizeChange } = useProductContext();
   const { sizes: allSizes } = useSizes();
 
   const getAvailableSizes = (): Size[] => {
@@ -62,7 +57,7 @@ export default function SizeSelector({ product, selectedColor, selectedSize, onS
               key={sizeName}
               onClick={() => {
                 if (isAvailable && !isOutOfStock) {
-                  onSizeChange(selectedSize === sizeName ? '' : sizeName, sizeData);
+                  handleSizeChange(selectedSize === sizeName ? '' : sizeName, sizeData);
                 }
               }}
               className={`relative px-4 py-2 text-sm font-medium rounded border transition-all duration-200 ${

@@ -1,13 +1,7 @@
-import { type Product } from 'types/product';
+import { useProductContext } from 'contexts/ProductContext';
 
-interface ColorSelectorProps {
-  product: Product;
-  selectedColor: string;
-  onColorChange: (color: string) => void;
-  getColorStyle: (color: string) => string;
-}
-
-export default function ColorSelector({ product, selectedColor, onColorChange, getColorStyle }: ColorSelectorProps) {
+export default function ColorSelector() {
+  const { product, selectedColor, handleColorChange, getColorStyle } = useProductContext();
   return (
     <div className="space-y-3">
       <div className="flex items-center space-x-2">
@@ -18,7 +12,7 @@ export default function ColorSelector({ product, selectedColor, onColorChange, g
         {Object.keys(product.images).map((color) => (
           <button
             key={color}
-            onClick={() => onColorChange(color)}
+            onClick={() => handleColorChange(color)}
             className={`w-8 h-8 rounded-full ${
               selectedColor === color
                 ? 'border-foreground ring-2 ring-offset-2'
