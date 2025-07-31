@@ -4,6 +4,7 @@ import {
   signSessionId
 } from 'lib/adminSession';
 import login from 'lib/admin/auth/login';
+import { getAdminContext } from 'utils/adminApiHelpers';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,7 +18,8 @@ export async function POST(request: NextRequest) {
     if (!username || !password)
       return NextResponse.json({ error: 'Username and password are required' }, { status: 400 });
 
-    const { adminUser, error } = await login(username, password);
+    const { requestInfo } = getAdminContext(request, '/api/admin/login');
+    const { adminUser, error } = await login(username, password, requestInfo);
     if (error) return NextResponse.json({ error }, { status: 401 });
 
     const { sessionId } = await createSession(adminUser);

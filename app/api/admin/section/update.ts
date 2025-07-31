@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { type Section } from '@/types/section';
-import updateSection, { reorderSections } from '@/lib/admin/section/update';
+import { type Section } from 'types/section';
+import updateSection, { reorderSections } from 'lib/admin/section/update';
+import { getAdminContext } from 'utils/adminApiHelpers';
 
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const section = await updateSection(body as Section);
+    const { adminUserId, requestInfo } = getAdminContext(request, '/api/admin/section/update');
+    const section = await updateSection(body as Section, adminUserId, requestInfo);
     return NextResponse.json({ section });
   } catch (error) {
     console.error('Error in PUT /api/admin/section:', error);
@@ -21,14 +23,14 @@ export async function PATCH(request: NextRequest) {
     const body = await request.json();
     const { sectionIds } = body;
 
-    if (!sectionIds || !Array.isArray(sectionIds)) {
+    if (!sectionIds || !Array.isArray(sectionIds))
       return NextResponse.json(
         { error: 'sectionIds array is required' },
         { status: 400 }
       );
-    }
 
-    await reorderSections(sectionIds);
+    const { adminUserId, requestInfo } = getAdminContext(request, '/api/admin/section/reorder');
+    await reorderSections(sectionIds, adminUserId, requestInfo);
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error in PATCH /api/admin/section:', error);

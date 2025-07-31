@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { addProductToSection, getProducts, removeProductFromSection, reorderSectionProducts } from 'src/lib/admin/section/products';
+import { getAdminContext } from 'utils/adminApiHelpers';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,7 +35,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    await addProductToSection(sectionId, productId, sortOrder);
+    const { adminUserId, requestInfo } = getAdminContext(request, '/api/admin/section/products');
+    await addProductToSection(sectionId, productId, sortOrder, adminUserId, requestInfo);
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error in POST /api/admin/section/products:', error);
@@ -58,7 +60,8 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    await removeProductFromSection(sectionId, productId);
+    const { adminUserId, requestInfo } = getAdminContext(request, '/api/admin/section/products');
+    await removeProductFromSection(sectionId, productId, adminUserId, requestInfo);
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error in DELETE /api/admin/section/products:', error);
@@ -80,7 +83,8 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    await reorderSectionProducts(sectionId, productIds);
+    const { adminUserId, requestInfo } = getAdminContext(request, '/api/admin/section/products');
+    await reorderSectionProducts(sectionId, productIds, adminUserId, requestInfo);
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error in PATCH /api/admin/section/products:', error);
