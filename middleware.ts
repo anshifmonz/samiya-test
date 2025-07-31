@@ -4,13 +4,19 @@ import { unsignSessionId, getAdminUserFromSession } from 'lib/adminSession';
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const method = request.method;
+  const response = NextResponse.next();
 
   if (!pathname.startsWith('/admin') && !pathname.startsWith('/api/admin'))
-    return NextResponse.next();
+    return response;
 
   const cookieSecret = process.env.COOKIE_SIGNING_SECRET;
   const adminAuthCookie = request.cookies.get('admin_auth');
+  const ip = request.ip || request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || request.headers.get('cf-connecting-ip') || 'unknown';
+  const userAgent = request.headers.get('user-agent') || 'unknown';
   const redirectToLogin = () => NextResponse.redirect(new URL('/admin/login', request.url));
+
+  response.headers.set('x-client-ip', ip);
+  response.headers.set('x-user-agent', userAgent);
 
   if (pathname === '/admin/login' || pathname === '/api/admin/login') {
     // is admin already logged in?
@@ -21,7 +27,7 @@ export async function middleware(request: NextRequest) {
       if (currentAdmin)
         return NextResponse.redirect(new URL('/admin', request.url));
     }
-    return NextResponse.next();
+    return response;
   }
 
   if (!cookieSecret) return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
@@ -31,7 +37,6 @@ export async function middleware(request: NextRequest) {
   const currentAdmin = await getAdminUserFromSession(sessionId);
   if (!currentAdmin) return redirectToLogin();
 
-  const response = NextResponse.next();
   response.headers.set('x-admin-id', currentAdmin.id);
   response.headers.set('x-admin-username', currentAdmin.username);
   response.headers.set('x-admin-superuser', String(currentAdmin.is_superuser));
