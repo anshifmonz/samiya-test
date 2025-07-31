@@ -1,8 +1,9 @@
-import { supabaseAdmin } from 'lib/supabase';
 import bcrypt from 'bcryptjs';
+import { supabaseAdmin } from 'lib/supabase';
 import { AdminUser } from 'types/admin';
+import { logAdminActivity, createAdminUserMessage } from 'utils/adminActivityLogger';
 
-const login = async (username: string, password: string): Promise<{ adminUser: AdminUser, error: string }> => {
+const login = async (username: string, password: string, requestInfo = {}): Promise<{ adminUser: AdminUser, error: string }> => {
   try {
     const { data, error } = await supabaseAdmin
       .from('admin_users')
@@ -16,17 +17,30 @@ const login = async (username: string, password: string): Promise<{ adminUser: A
     if (!isValid) return { adminUser: null, error: 'Invalid username or password' };
 
     const { id, username: uname, is_superuser, created_at, updated_at } = data;
+    const adminUser = {
+      id,
+      username: uname,
+      is_superuser,
+      created_at,
+      updated_at
+    };
+
+    // Log successful login
+    await logAdminActivity({
+      admin_id: id,
+      action: 'login',
+      entity_type: 'auth',
+      message: createAdminUserMessage('login', uname),
+      status: 'success',
+      ...requestInfo,
+    });
+
     return {
-      adminUser: {
-        id,
-        username: uname,
-        is_superuser,
-        created_at,
-        updated_at
-      },
+      adminUser,
       error: null
     };
   } catch (error) {
+    console.error('Login error:', error);
     return { adminUser: null, error: 'Server error' };
   }
 };

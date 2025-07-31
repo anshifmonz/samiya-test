@@ -1,7 +1,8 @@
-import { supabaseAdmin } from '@/lib/supabase';
+import { supabaseAdmin } from 'lib/supabase';
 import type { Category, NewCategoryInput } from '@/types';
+import { logAdminActivity, createCategoryMessage } from 'utils/adminActivityLogger';
 
-export default async function createCategory(newCategory: NewCategoryInput): Promise<Category | null> {
+export default async function createCategory(newCategory: NewCategoryInput, adminUserId?: string, requestInfo = {}): Promise<Category | null> {
   const { data, error } = await supabaseAdmin
     .from('categories')
     .insert({
@@ -14,6 +15,19 @@ export default async function createCategory(newCategory: NewCategoryInput): Pro
     })
     .select()
     .single();
+
+  if (adminUserId) {
+    await logAdminActivity({
+      admin_id: adminUserId,
+      action: 'create',
+      entity_type: 'category',
+      entity_id: data?.id,
+      table_name: 'categories',
+      message: createCategoryMessage('create', newCategory.name),
+      status: error != null || data == null ? 'failed' : 'success',
+      ...requestInfo,
+    });
+  }
 
   if (error || !data) {
     console.error('Error creating category:', error);

@@ -1,5 +1,6 @@
-import { supabaseAdmin } from 'lib/supabase';
 import bcrypt from 'bcryptjs';
+import { supabaseAdmin } from 'lib/supabase';
+import { logAdminActivity, createAdminUserMessage } from 'utils/adminActivityLogger';
 
 export async function editUser({
   id,
@@ -8,6 +9,7 @@ export async function editUser({
   is_superuser,
   adminId,
   isSuperuser: currentIsSuperuser,
+  requestInfo,
 }: {
   id: string;
   username?: string;
@@ -15,6 +17,7 @@ export async function editUser({
   is_superuser?: boolean;
   adminId: string;
   isSuperuser: boolean;
+  requestInfo?: any;
 }) {
   if (!id) {
     const err: any = new Error('Admin ID is required');
@@ -75,6 +78,7 @@ export async function editUser({
       .from('admin_users')
       .select('id')
       .eq('is_superuser', true);
+
     if (superAdmins && superAdmins.length === 1) {
       const err: any = new Error('You cannot demote yourself as the only super admin');
       err.status = 403;
@@ -91,12 +95,26 @@ export async function editUser({
     err.status = 400;
     throw err;
   }
+
   const { data, error } = await supabaseAdmin
     .from('admin_users')
     .update(update)
     .eq('id', id)
     .select('id, username, is_superuser, created_at, updated_at')
     .single();
+
+  await logAdminActivity({
+    admin_id: adminId,
+    action: 'update',
+    entity_type: 'admin_user',
+    entity_id: id,
+    table_name: 'admin_users',
+    message: createAdminUserMessage('update', targetAdmin.username, Object.keys(update).join(', ')),
+    status: error ? 'failed' : 'success',
+    metadata: { updatedFields: Object.keys(update) },
+    ...(requestInfo || {}),
+  });
+
   if (error) throw new Error('Failed to update admin');
   return data;
 }

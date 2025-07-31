@@ -1,9 +1,19 @@
 import { supabaseAdmin } from 'lib/supabase';
 import { deleteMultipleImagesFromCloudinary } from 'lib/upload/cloudinary-server';
 import isValidPublicId from 'utils/isValidPublicId';
+import { logAdminActivity, createProductMessage } from 'utils/adminActivityLogger';
 
-export default async function deleteProduct(productId: string): Promise<boolean> {
+export default async function deleteProduct(productId: string, adminUserId?: string, requestInfo = {}): Promise<boolean> {
   try {
+    // First get product title for logging
+    const { data: product } = await supabaseAdmin
+      .from('products')
+      .select('title')
+      .eq('id', productId)
+      .single();
+
+    const productTitle = product?.title || 'Unknown Product';
+
     const { data: productImages, error: fetchError } = await supabaseAdmin
       .from('product_images')
       .select('public_id')
@@ -50,6 +60,20 @@ export default async function deleteProduct(productId: string): Promise<boolean>
       .from('products')
       .delete()
       .eq('id', productId);
+
+    if (adminUserId) {
+      await logAdminActivity({
+        admin_id: adminUserId,
+        action: 'delete',
+        entity_type: 'product',
+        entity_id: productId,
+        table_name: 'products',
+        message: createProductMessage('delete', productTitle),
+        status: prodError ? 'failed' : 'success',
+        ...requestInfo,
+      });
+    }
+
     if (prodError) {
       console.error('Error deleting product:', prodError);
       return false;

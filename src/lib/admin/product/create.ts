@@ -1,8 +1,9 @@
 import { supabaseAdmin } from 'lib/supabase';
 import type { Product, CreateProductData } from 'types/product';
-import { prepareImagesForRPC, validateProductImagesOrder } from 'lib/utils/imageOrderingUtils';
+import { prepareImagesForRPC, validateProductImagesOrder } from 'utils/imageOrderingUtils';
+import { logAdminActivity, createProductMessage } from 'utils/adminActivityLogger';
 
-export default async function createProduct(newProduct: CreateProductData): Promise<Product | null> {
+export default async function createProduct(newProduct: CreateProductData, adminUserId?: string, requestInfo = {}): Promise<Product | null> {
   try {
     if (newProduct.images && Object.keys(newProduct.images).length > 0) {
       const { isValid, errors } = validateProductImagesOrder({
@@ -67,6 +68,19 @@ export default async function createProduct(newProduct: CreateProductData): Prom
     };
 
     const { data, error } = await supabaseAdmin.rpc('create_product_rpc', dbParams);
+    if (adminUserId) {
+      await logAdminActivity({
+        admin_id: adminUserId,
+        action: 'create',
+        entity_type: 'product',
+        entity_id: data.product_id,
+        table_name: 'products',
+        message: createProductMessage('create', newProduct.title),
+        status: error != null || data == null ? 'failed' : 'success',
+        ...requestInfo,
+      });
+    }
+
     if (error) throw new Error(`Error calling create_product_rpc: ${error.message}`);
     if (data && data.status === 'error') throw new Error(`RPC Error: ${data.message}`);
     if (!data || data.status !== 'success' || !data.product_id) throw new Error(`Unexpected RPC response: ${data}`);

@@ -1,5 +1,6 @@
 import { supabaseAdmin } from 'lib/supabase';
 import { type SectionProduct } from 'types/section';
+import { logAdminActivity } from 'utils/adminActivityLogger';
 
 export async function getProducts(limit: number, offset: number, query?: string | null): Promise<any> {
   let queryBuilder = supabaseAdmin
@@ -27,7 +28,7 @@ export async function getProducts(limit: number, offset: number, query?: string 
   }));
 }
 
-export async function addProductToSection(sectionId: string, productId: string, sortOrder?: number): Promise<void> {
+export async function addProductToSection(sectionId: string, productId: string, sortOrder?: number, adminUserId?: string, requestInfo = {}): Promise<void> {
   try {
     let nextSortOrder = sortOrder;
     if (nextSortOrder === undefined) {
@@ -51,6 +52,20 @@ export async function addProductToSection(sectionId: string, productId: string, 
         sort_order: nextSortOrder
       });
 
+    if (adminUserId) {
+      await logAdminActivity({
+        admin_id: adminUserId,
+        action: 'create',
+        entity_type: 'section',
+        entity_id: sectionId,
+        table_name: 'sections_products',
+        message: `Added product ${productId} to section`,
+        status: error ? 'failed' : 'success',
+        metadata: { productId, sortOrder: nextSortOrder },
+        ...requestInfo,
+      });
+    }
+
     if (error) {
       console.error('Error adding product to section:', error);
       throw error;
@@ -61,13 +76,27 @@ export async function addProductToSection(sectionId: string, productId: string, 
   }
 }
 
-export async function removeProductFromSection(sectionId: string, productId: string): Promise<void> {
+export async function removeProductFromSection(sectionId: string, productId: string, adminUserId?: string, requestInfo = {}): Promise<void> {
   try {
     const { error } = await supabaseAdmin
       .from('sections_products')
       .delete()
       .eq('section_id', sectionId)
       .eq('product_id', productId);
+
+    if (adminUserId) {
+      await logAdminActivity({
+        admin_id: adminUserId,
+        action: 'delete',
+        entity_type: 'section',
+        entity_id: sectionId,
+        table_name: 'sections_products',
+        message: `Removed product ${productId} from section`,
+        status: error ? 'failed' : 'success',
+        metadata: { productId },
+        ...requestInfo,
+      });
+    }
 
     if (error) {
       console.error('Error removing product from section:', error);
@@ -123,12 +152,26 @@ export async function getSectionProducts(sectionId: string): Promise<SectionProd
   }
 }
 
-export async function reorderSectionProducts(sectionId: string, productIds: string[]): Promise<void> {
+export async function reorderSectionProducts(sectionId: string, productIds: string[], adminUserId?: string, requestInfo = {}): Promise<void> {
   try {
     const { error } = await supabaseAdmin.rpc('reorder_section_products', {
       section_uuid: sectionId,
       product_ids_array: productIds
     });
+
+    if (adminUserId) {
+      await logAdminActivity({
+        admin_id: adminUserId,
+        action: 'update',
+        entity_type: 'section',
+        entity_id: sectionId,
+        table_name: 'sections_products',
+        message: `Reordered ${productIds.length} products in section`,
+        status: error ? 'failed' : 'success',
+        metadata: { productIds },
+        ...requestInfo,
+      });
+    }
 
     if (error) {
       console.error('Error reordering section products:', error);

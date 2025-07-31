@@ -1,7 +1,8 @@
-import { supabaseAdmin } from '@/lib/supabase';
+import { supabaseAdmin } from 'lib/supabase';
 import type { Collection, NewCollectionInput } from '@/types';
+import { logAdminActivity, createCollectionMessage } from 'utils/adminActivityLogger';
 
-export default async function createCollection(newCollection: NewCollectionInput): Promise<Collection | null> {
+export default async function createCollection(newCollection: NewCollectionInput, adminUserId?: string, requestInfo = {}): Promise<Collection | null> {
   const { data, error } = await supabaseAdmin
     .from('collections')
     .insert({
@@ -12,6 +13,19 @@ export default async function createCollection(newCollection: NewCollectionInput
     })
     .select()
     .single();
+
+  if (adminUserId) {
+    await logAdminActivity({
+      admin_id: adminUserId,
+      action: 'create',
+      entity_type: 'collection',
+      entity_id: data?.id,
+      table_name: 'collections',
+      message: createCollectionMessage('create', newCollection.title),
+      status: error != null || data == null ? 'failed' : 'success',
+      ...requestInfo,
+    });
+  }
 
   if (error || !data) {
     console.error('Error creating collection:', error);

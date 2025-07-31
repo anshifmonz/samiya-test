@@ -1,8 +1,9 @@
 import { supabaseAdmin } from 'lib/supabase';
 import { Product } from 'types/product';
 import { prepareImagesForRPC, validateProductImagesOrder } from 'utils/imageOrderingUtils';
+import { logAdminActivity, createProductMessage } from 'utils/adminActivityLogger';
 
-export default async function updateProduct(product: Product): Promise<Product | null> {
+export default async function updateProduct(product: Product, adminUserId?: string, requestInfo = {}): Promise<Product | null> {
   try {
     const { isValid, errors } = validateProductImagesOrder(product);
     if (!isValid) throw new Error(`Product images validation failed: ${errors}`);
@@ -47,6 +48,19 @@ export default async function updateProduct(product: Product): Promise<Product |
       p_is_active: product.active ?? true,
       p_preserve_stock: true
     });
+
+    if (adminUserId) {
+      await logAdminActivity({
+        admin_id: adminUserId,
+        action: 'update',
+        entity_type: 'product',
+        entity_id: product.id,
+        table_name: 'products',
+        message: createProductMessage('update', product.title),
+        status: error != null || data == null ? 'failed' : 'success',
+        ...requestInfo,
+      });
+    }
 
     if (error) throw new Error(`Error updating product: ${error.message}`);
     if (data && data.status === 'error') throw new Error(`RPC Error: ${data.message}`);
