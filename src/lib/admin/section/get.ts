@@ -1,7 +1,7 @@
 import { supabaseAdmin } from '@/lib/supabase';
 import { type Section, type SectionWithProducts } from '@/types/section';
 
-export default async function getSections(): Promise<Section[]> {
+export default async function getSections(): Promise<{ sections: Section[] | null, error: string | null, status?: number }> {
   try {
     const { data, error } = await supabaseAdmin
       .from('sections')
@@ -11,7 +11,7 @@ export default async function getSections(): Promise<Section[]> {
 
     if (error) {
       console.error('Error fetching sections:', error);
-      throw error;
+      return { sections: null, error: 'Failed to fetch sections', status: 500 };
     }
 
     const transformedData: Section[] = (data || []).map((section: any) => ({
@@ -23,14 +23,14 @@ export default async function getSections(): Promise<Section[]> {
       updatedAt: section.updated_at
     }));
 
-    return transformedData;
+    return { sections: transformedData, error: null, status: 200 };
   } catch (error) {
     console.error('Error fetching sections:', error);
-    return [];
+    return { sections: null, error: 'Internal server error', status: 500 };
   }
 }
 
-export async function getSectionsWithProducts(): Promise<SectionWithProducts[]> {
+export async function getSectionsWithProducts(): Promise<{ sections: SectionWithProducts[] | null, error: string | null, status?: number }> {
   try {
     const { data, error } = await supabaseAdmin
       .from('sections_with_products')
@@ -40,7 +40,7 @@ export async function getSectionsWithProducts(): Promise<SectionWithProducts[]> 
 
     if (error) {
       console.error('Error fetching sections with products from view:', error);
-      return [];
+      return { sections: null, error: 'Failed to fetch sections with products', status: 500 };
     }
 
     const sectionsWithProducts: SectionWithProducts[] = (data || []).map((section: any) => {
@@ -61,9 +61,9 @@ export async function getSectionsWithProducts(): Promise<SectionWithProducts[]> 
       };
     });
 
-    return sectionsWithProducts;
+    return { sections: sectionsWithProducts, error: null, status: 200 };
   } catch (error) {
     console.error('Error fetching sections with products:', error);
-    return [];
+    return { sections: null, error: 'Internal server error', status: 500 };
   }
 }

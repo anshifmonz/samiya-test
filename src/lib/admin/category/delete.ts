@@ -1,8 +1,10 @@
 import { supabaseAdmin } from 'lib/supabase';
 import { logAdminActivity, createCategoryMessage } from 'utils/adminActivityLogger';
 
-export default async function deleteCategory(categoryId: string, adminUserId?: string, requestInfo = {}): Promise<boolean> {
-  // First get category name for logging
+export default async function deleteCategory(categoryId: string, adminUserId?: string, requestInfo = {}): Promise<{ success: boolean, error: string | null, status?: number }> {
+  if (!categoryId || typeof categoryId !== 'string')
+    return { success: false, error: 'Category ID is required and must be a string', status: 400 };
+
   const { data: category } = await supabaseAdmin
     .from('categories')
     .select('name')
@@ -31,7 +33,7 @@ export default async function deleteCategory(categoryId: string, adminUserId?: s
 
   if (error) {
     console.error('Error deleting category:', error);
-    return false;
+    return { success: false, error: 'Failed to delete category', status: 500 };
   }
-  return true;
+  return { success: true, error: null, status: 200 };
 }

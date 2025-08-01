@@ -2,7 +2,14 @@ import { supabaseAdmin } from 'lib/supabase';
 import type { Category, NewCategoryInput } from '@/types';
 import { logAdminActivity, createCategoryMessage } from 'utils/adminActivityLogger';
 
-export default async function createCategory(newCategory: NewCategoryInput, adminUserId?: string, requestInfo = {}): Promise<Category | null> {
+export default async function createCategory(newCategory: NewCategoryInput, adminUserId?: string, requestInfo = {}): Promise<{ category: Category | null, error: string | null, status?: number }> {
+  if (!newCategory.name || typeof newCategory.name !== 'string')
+    return { category: null, error: 'Name is required and must be a string', status: 400 };
+  if (newCategory.level === undefined || typeof newCategory.level !== 'number')
+    return { category: null, error: 'Level is required and must be a number', status: 400 };
+  if (!newCategory.path || !Array.isArray(newCategory.path))
+    return { category: null, error: 'Path is required and must be an array', status: 400 };
+
   const { data, error } = await supabaseAdmin
     .from('categories')
     .insert({
@@ -31,10 +38,10 @@ export default async function createCategory(newCategory: NewCategoryInput, admi
 
   if (error || !data) {
     console.error('Error creating category:', error);
-    return null;
+    return { category: null, error: 'Failed to create category', status: 500 };
   }
 
-  return {
+  const category = {
     id: data.id,
     name: data.name,
     description: data.description,
@@ -46,4 +53,6 @@ export default async function createCategory(newCategory: NewCategoryInput, admi
     updatedAt: data.updated_at,
     children: [],
   };
+
+  return { category, error: null, status: 201 };
 }

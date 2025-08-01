@@ -1,7 +1,7 @@
 import { supabaseAdmin } from '@/lib/supabase';
 import { type Category } from '@/types/category';
 
-export default async function getCategories(): Promise<Category[]> {
+export default async function getCategories(): Promise<{ categories: Category[] | null, error: string | null, status?: number }> {
   const { data, error } = await supabaseAdmin
     .from('categories')
     .select('*')
@@ -10,7 +10,7 @@ export default async function getCategories(): Promise<Category[]> {
 
   if (error) {
     console.error('Error fetching categories:', error);
-    return [];
+    return { categories: null, error: 'Failed to fetch categories', status: 500 };
   }
 
   // build a lookup from id to name
@@ -32,5 +32,5 @@ export default async function getCategories(): Promise<Category[]> {
     children: [],
   }));
 
-  return mapped;
+  return { categories: mapped, error: null, status: 200 };
 }

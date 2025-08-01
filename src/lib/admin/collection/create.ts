@@ -2,7 +2,14 @@ import { supabaseAdmin } from 'lib/supabase';
 import type { Collection, NewCollectionInput } from '@/types';
 import { logAdminActivity, createCollectionMessage } from 'utils/adminActivityLogger';
 
-export default async function createCollection(newCollection: NewCollectionInput, adminUserId?: string, requestInfo = {}): Promise<Collection | null> {
+export default async function createCollection(newCollection: NewCollectionInput, adminUserId?: string, requestInfo = {}): Promise<{ collection: Collection | null, error: string | null, status?: number }> {
+  if (!newCollection.title || typeof newCollection.title !== 'string')
+    return { collection: null, error: 'Title is required and must be a string', status: 400 };
+  if (!newCollection.description || typeof newCollection.description !== 'string')
+    return { collection: null, error: 'Description is required and must be a string', status: 400 };
+  if (!newCollection.image || typeof newCollection.image !== 'string')
+    return { collection: null, error: 'Image is required and must be a string', status: 400 };
+
   const { data, error } = await supabaseAdmin
     .from('collections')
     .insert({
@@ -29,13 +36,14 @@ export default async function createCollection(newCollection: NewCollectionInput
 
   if (error || !data) {
     console.error('Error creating collection:', error);
-    return null;
+    return { collection: null, error: 'Failed to create collection', status: 500 };
   }
 
-  return {
+  const collection = {
     id: data.id,
     title: data.title,
     description: data.description,
     image: data.image_url,
   };
+  return { collection, error: null, status: 201 };
 }

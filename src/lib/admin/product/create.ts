@@ -3,8 +3,15 @@ import type { Product, CreateProductData } from 'types/product';
 import { prepareImagesForRPC, validateProductImagesOrder } from 'utils/imageOrderingUtils';
 import { logAdminActivity, createProductMessage } from 'utils/adminActivityLogger';
 
-export default async function createProduct(newProduct: CreateProductData, adminUserId?: string, requestInfo = {}): Promise<Product | null> {
+export default async function createProduct(newProduct: CreateProductData, adminUserId?: string, requestInfo = {}): Promise<{ product: Product | null, error: string | null, status?: number }> {
   try {
+    if (!newProduct.title || typeof newProduct.title !== 'string')
+      return { product: null, error: 'Title is required and must be a string', status: 400 };
+    if (!newProduct.price || typeof newProduct.price !== 'number')
+      return { product: null, error: 'Price is required and must be a number', status: 400 };
+    if (!newProduct.categoryId || typeof newProduct.categoryId !== 'string')
+      return { product: null, error: 'Category ID is required and must be a string', status: 400 };
+
     if (newProduct.images && Object.keys(newProduct.images).length > 0) {
       const { isValid, errors } = validateProductImagesOrder({
         ...newProduct,
@@ -12,13 +19,16 @@ export default async function createProduct(newProduct: CreateProductData, admin
         short_code: 'temp'
       } as Product);
 
-      if (!isValid) throw new Error(`Product images validation failed: ${errors}`);
+      if (!isValid) return { product: null, error: `Product images validation failed: ${errors}`, status: 400 };
     }
 
-    const sizeIds = newProduct.sizes?.map(size => {
-      if (!size.id || typeof size.id !== 'string') throw new Error(`Invalid size ID: ${size.id}`);
-      return size.id.trim();
-    }).filter(id => id !== null) || [];
+    if (newProduct.sizes)
+      for (const size of newProduct.sizes) {
+        if (!size.id || typeof size.id !== 'string')
+          return { product: null, error: `Invalid size ID: ${size.id}`, status: 400 };
+      }
+
+    const sizeIds = newProduct.sizes?.map(size => size.id.trim()).filter(id => id !== null) || [];
 
     let ordered_colors = [];
 
@@ -81,11 +91,11 @@ export default async function createProduct(newProduct: CreateProductData, admin
       });
     }
 
-    if (error) throw new Error(`Error calling create_product_rpc: ${error.message}`);
-    if (data && data.status === 'error') throw new Error(`RPC Error: ${data.message}`);
-    if (!data || data.status !== 'success' || !data.product_id) throw new Error(`Unexpected RPC response: ${data}`);
+    if (error) return { product: null, error: `Error calling create_product_rpc: ${error.message}`, status: 500 };
+    if (data && data.status === 'error') return { product: null, error: `RPC Error: ${data.message}`, status: 500 };
+    if (!data || data.status !== 'success' || !data.product_id) return { product: null, error: `Unexpected RPC response: ${data}`, status: 500 };
 
-    return {
+    const product = {
       id: data.product_id,
       short_code: data.short_code,
       title: newProduct.title,
@@ -98,8 +108,9 @@ export default async function createProduct(newProduct: CreateProductData, admin
       sizes: newProduct.sizes || [],
       active: newProduct.active ?? true
     };
+    return { product, error: null, status: 201 };
   } catch (error) {
     console.error(`Error creating product: ${error}`);
-    return null;
+    return { product: null, error: 'Internal server error', status: 500 };
   }
 }

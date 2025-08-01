@@ -1,7 +1,10 @@
 import { supabaseAdmin } from 'lib/supabase';
 import { logAdminActivity, createCollectionMessage } from 'utils/adminActivityLogger';
 
-export default async function deleteCollection(collectionId: string, adminUserId?: string, requestInfo = {}): Promise<boolean> {
+export default async function deleteCollection(collectionId: string, adminUserId?: string, requestInfo = {}): Promise<{ success: boolean, error: string | null, status?: number }> {
+  if (!collectionId || typeof collectionId !== 'string')
+    return { success: false, error: 'Collection ID is required and must be a string', status: 400 };
+
   // First get collection title for logging
   const { data: collection } = await supabaseAdmin
     .from('collections')
@@ -31,7 +34,7 @@ export default async function deleteCollection(collectionId: string, adminUserId
 
   if (error) {
     console.error('Error deleting collection:', error);
-    return false;
+    return { success: false, error: 'Failed to delete collection', status: 500 };
   }
-  return true;
+  return { success: true, error: null, status: 200 };
 }

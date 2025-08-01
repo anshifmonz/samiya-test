@@ -18,59 +18,35 @@ export async function editUser({
   adminId: string;
   isSuperuser: boolean;
   requestInfo?: any;
-}) {
-  if (!id) {
-    const err: any = new Error('Admin ID is required');
-    err.status = 400;
-    throw err;
-  }
+}): Promise<{ user: any | null, error: string | null, status?: number }> {
+  if (!id) return { user: null, error: 'Admin ID is required', status: 400 };
 
   const { data: targetAdmin, error: fetchError } = await supabaseAdmin
     .from('admin_users')
     .select('id, username, is_superuser')
     .eq('id', id)
     .single();
-  if (fetchError || !targetAdmin) {
-    const err: any = new Error('Admin not found');
-    err.status = 404;
-    throw err;
-  }
+  if (fetchError || !targetAdmin)
+    return { user: null, error: 'Admin not found', status: 404 };
+
   const isEditingSelf = adminId === id;
-  if (!currentIsSuperuser && !isEditingSelf) {
-    const err: any = new Error('Forbidden');
-    err.status = 403;
-    throw err;
-  }
+  if (!currentIsSuperuser && !isEditingSelf)
+    return { user: null, error: 'Forbidden', status: 403 };
 
-  if (typeof is_superuser === 'boolean' && !currentIsSuperuser) {
-    const err: any = new Error('Only super admins can change super admin status');
-    err.status = 403;
-    throw err;
-  }
+  if (typeof is_superuser === 'boolean' && !currentIsSuperuser)
+    return { user: null, error: 'Only super admins can change super admin status', status: 403 };
 
-  if (username && !currentIsSuperuser && !isEditingSelf) {
-    const err: any = new Error('Only super admins can change usernames');
-    err.status = 403;
-    throw err;
-  }
+  if (username && !currentIsSuperuser && !isEditingSelf)
+    return { user: null, error: 'Only super admins can change usernames', status: 403 };
 
-  if (password && !currentIsSuperuser && !isEditingSelf) {
-    const err: any = new Error('You can only change your own password');
-    err.status = 403;
-    throw err;
-  }
+  if (password && !currentIsSuperuser && !isEditingSelf)
+    return { user: null, error: 'You can only change your own password', status: 403 };
 
   if (currentIsSuperuser && !isEditingSelf && targetAdmin.is_superuser) {
-    if (username) {
-      const err: any = new Error("Super admins cannot change other super admins' usernames");
-      err.status = 403;
-      throw err;
-    }
-    if (password) {
-      const err: any = new Error("Super admins cannot change other super admins' passwords");
-      err.status = 403;
-      throw err;
-    }
+    if (username)
+      return { user: null, error: "Super admins cannot change other super admins' usernames", status: 403 };
+    if (password)
+      return { user: null, error: "Super admins cannot change other super admins' passwords", status: 403 };
   }
 
   if (typeof is_superuser === 'boolean' && currentIsSuperuser && isEditingSelf && !is_superuser) {
@@ -79,22 +55,16 @@ export async function editUser({
       .select('id')
       .eq('is_superuser', true);
 
-    if (superAdmins && superAdmins.length === 1) {
-      const err: any = new Error('You cannot demote yourself as the only super admin');
-      err.status = 403;
-      throw err;
-    }
+    if (superAdmins && superAdmins.length === 1)
+      return { user: null, error: 'You cannot demote yourself as the only super admin', status: 403 };
   }
 
   const update: any = {};
   if (username) update.username = username;
   if (password) update.password = await bcrypt.hash(password, 10);
   if (typeof is_superuser === 'boolean') update.is_superuser = is_superuser;
-  if (Object.keys(update).length === 0) {
-    const err: any = new Error('No fields to update');
-    err.status = 400;
-    throw err;
-  }
+  if (Object.keys(update).length === 0)
+    return { user: null, error: 'No fields to update', status: 400 };
 
   const { data, error } = await supabaseAdmin
     .from('admin_users')
@@ -115,6 +85,7 @@ export async function editUser({
     ...(requestInfo || {}),
   });
 
-  if (error) throw new Error('Failed to update admin');
-  return data;
+  if (error) return { user: null, error: 'Failed to update admin', status: 500 };
+
+  return { user: data, error: null, status: 200 };
 }

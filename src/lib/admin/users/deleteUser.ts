@@ -1,12 +1,9 @@
 import { supabaseAdmin } from 'lib/supabase';
 import { logAdminActivity, createAdminUserMessage } from 'utils/adminActivityLogger';
 
-export async function deleteUser(id: string, adminUserId?: string, requestInfo = {}) {
-  if (!id) {
-    const err: any = new Error('Admin ID is required');
-    err.status = 400;
-    throw err;
-  }
+export async function deleteUser(id: string, adminUserId?: string, requestInfo = {}): Promise<{ success: boolean, error: string | null, status?: number }> {
+  if (!id || typeof id !== 'string')
+    return { success: false, error: 'Admin ID is required and must be a string', status: 400 };
 
   const { data: adminToDelete, error: fetchError } = await supabaseAdmin
     .from('admin_users')
@@ -14,17 +11,11 @@ export async function deleteUser(id: string, adminUserId?: string, requestInfo =
     .eq('id', id)
     .single();
 
-  if (fetchError || !adminToDelete) {
-    const err: any = new Error('Admin not found');
-    err.status = 404;
-    throw err;
-  }
+  if (fetchError || !adminToDelete)
+    return { success: false, error: 'Admin not found', status: 404 };
 
-  if (adminToDelete.is_superuser) {
-    const err: any = new Error('Super admins can only delete non-super admins');
-    err.status = 403;
-    throw err;
-  }
+  if (adminToDelete.is_superuser)
+    return { success: false, error: 'Super admins can only delete non-super admins', status: 403 };
 
   const { error } = await supabaseAdmin
     .from('admin_users')
@@ -44,6 +35,9 @@ export async function deleteUser(id: string, adminUserId?: string, requestInfo =
     });
   }
 
-  if (error) throw new Error('Failed to delete admin');
-  return { success: true };
+  if (error) {
+    console.error('Error deleting admin user:', error);
+    return { success: false, error: 'Failed to delete admin', status: 500 };
+  }
+  return { success: true, error: null, status: 200 };
 }

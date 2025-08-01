@@ -3,7 +3,14 @@ import bcrypt from 'bcryptjs';
 import { logAdminActivity, createAdminUserMessage } from 'utils/adminActivityLogger';
 
 export async function registerUser(username: string, password: string, adminUserId?: string, requestInfo = {}) {
-  if (!username || !password) throw new Error('Username and password are required');
+  if (!username || typeof username !== 'string')
+    return { user: null, error: 'Username is required and must be a string', status: 400 };
+  if (!password || typeof password !== 'string')
+    return { user: null, error: 'Password is required and must be a string', status: 400 };
+  if (username.trim().length === 0)
+    return { user: null, error: 'Username cannot be empty', status: 400 };
+  if (password.length < 6)
+    return { user: null, error: 'Password must be at least 6 characters long', status: 400 };
 
   const { data: existing } = await supabaseAdmin
     .from('admin_users')
@@ -11,11 +18,8 @@ export async function registerUser(username: string, password: string, adminUser
     .eq('username', username)
     .maybeSingle();
 
-  if (existing) {
-    const err: any = new Error('Username already exists');
-    err.status = 409;
-    throw err;
-  }
+  if (existing)
+    return { user: null, error: 'Username already exists', status: 409 };
 
   const hashed = await bcrypt.hash(password, 10);
   const { data, error } = await supabaseAdmin
@@ -37,6 +41,9 @@ export async function registerUser(username: string, password: string, adminUser
     });
   }
 
-  if (error) throw new Error('Failed to create admin');
-  return data;
+  if (error) {
+    console.error('Error creating admin user:', error);
+    return { user: null, error: 'Failed to create admin', status: 500 };
+  }
+  return { user: data, error: null, status: 201 };
 }

@@ -1,7 +1,14 @@
 import { supabaseAdmin } from 'lib/supabase';
 import { type Product, type Size } from 'types/product';
 
-async function getProduct(limit: number, offset: number, query: string, sortBy: string): Promise<Product[]> {
+async function getProduct(limit: number, offset: number, query: string, sortBy: string): Promise<{ products: Product[], error: string | null, status: number }> {
+  if (limit === undefined || typeof limit !== 'number' || limit <= 0)
+    return { products: [], error: 'Limit is required and must be a positive number', status: 400 };
+  if (offset === undefined || typeof offset !== 'number' || offset < 0)
+    return { products: [], error: 'Offset is required and must be a non-negative number', status: 400 };
+  if (sortBy === undefined || typeof sortBy !== 'string')
+    return { products: [], error: 'Sort by is required and must be a string', status: 400 };
+
   const { data, error } = await supabaseAdmin.rpc('get_products_rpc', {
     limit_count: limit,
     offset_count: offset,
@@ -11,10 +18,10 @@ async function getProduct(limit: number, offset: number, query: string, sortBy: 
 
   if (error) {
     console.error('Error fetching products from Supabase:', error);
-    return [];
+    return { products: [], error: 'Failed to fetch products', status: 500 };
   }
 
-  return (data || []).map((row: any) => {
+  const products = (data || []).map((row: any) => {
     const images: Record<string, { hex: string; images: any[]; sizes?: Size[] }> = {};
     const colorSizes: Record<string, Size[]> = {};
 
@@ -90,6 +97,8 @@ async function getProduct(limit: number, offset: number, query: string, sortBy: 
       active: row.is_active,
     };
   });
+
+  return { products, error: null, status: 200 };
 }
 
 export default getProduct;
