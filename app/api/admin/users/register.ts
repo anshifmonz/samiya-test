@@ -3,13 +3,15 @@ import { registerUser } from 'lib/admin/users/registerUser';
 import { AdminUser } from 'types/admin';
 import { getAdminContext } from 'utils/adminApiHelpers';
 
-export async function POST(request: NextRequest): Promise<NextResponse<{ error: string | null; admins: AdminUser[] }>> {
+export async function POST(request: NextRequest) : Promise<NextResponse<{ error: string | null; admin: AdminUser | null }>> {
   try {
     const { username, password } = await request.json();
     const { adminUserId, requestInfo } = getAdminContext(request, '/api/admin/users/register');
-    const data = await registerUser(username, password, adminUserId, requestInfo);
-    return NextResponse.json({ error: null, admins: [data] });
+    const { user: admin, error, status } = await registerUser(username, password, adminUserId, requestInfo);
+    if (error) return NextResponse.json({ error, admin }, { status: status || 500 });
+    return NextResponse.json({ error: null, admin: admin as AdminUser }, { status: status || 201 });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Internal server error', admins: [] });
+    console.error('Error registering user:', error);
+    return NextResponse.json({ error: 'Internal server error', admin: null }, { status: 500 });
   }
 }

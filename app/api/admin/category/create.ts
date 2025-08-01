@@ -6,10 +6,13 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { adminUserId, requestInfo } = getAdminContext(request, '/api/admin/category/create');
-    const category = await createCategory(body, adminUserId, requestInfo);
-    if (!category) return NextResponse.json({ error: 'Failed to create category' }, { status: 500 });
-    return NextResponse.json({ category }, { status: 201 });
-  } catch (error) {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    const { category, error, status } = await createCategory(body, adminUserId, requestInfo);
+    if (error) return NextResponse.json({ error }, { status: status || 500 });
+    return NextResponse.json({ category }, { status: status || 201 });
+  } catch (error: any) {
+    console.error('Error creating category:', error);
+    return NextResponse.json({ 
+      error: 'Internal server error' 
+    }, { status: 500 });
   }
 }

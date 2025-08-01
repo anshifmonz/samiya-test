@@ -29,12 +29,12 @@ export async function POST(request: NextRequest) {
     for (let i = 0; i < products.length; i++) {
       try {
         const product = products[i];
-        const createdProduct = await createProduct(product, adminUserId, requestInfo);
-        if (!createdProduct) throw new Error('Failed to create product');
+        const { product: data, error } = await createProduct(product, adminUserId, requestInfo);
+        if (error) throw new Error(error);
         results.push({
           index: i,
           success: true,
-          product: createdProduct
+          product: data
         });
       } catch (error) {
         errors.push({
@@ -61,10 +61,10 @@ export async function POST(request: NextRequest) {
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Bulk import error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: error.message || 'Internal server error' },
       { status: 500 }
     );
   }

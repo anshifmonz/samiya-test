@@ -6,13 +6,13 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { adminUserId, requestInfo } = getAdminContext(request, '/api/admin/section/create');
-    const section = await createSection(body, adminUserId, requestInfo);
+    const {section, error, status } = await createSection(body, adminUserId, requestInfo);
+    if (error) return NextResponse.json({ error }, { status: status || 500 });
     return NextResponse.json({ section });
-  } catch (error) {
-    console.error('Error in POST /api/admin/section:', error);
-    return NextResponse.json(
-      { error: 'Failed to create section' },
-      { status: 500 }
-    );
+  } catch (error: any) {
+    console.error('Error creating section:', error);
+    return NextResponse.json({
+      error: error.message || 'Internal server error'
+    }, { status: 500 });
   }
 }

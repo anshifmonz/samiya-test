@@ -15,12 +15,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
 
     const { username, password } = await request.json();
-    if (!username || !password)
-      return NextResponse.json({ error: 'Username and password are required' }, { status: 400 });
-
+    
     const { requestInfo } = getAdminContext(request, '/api/admin/login');
-    const { adminUser, error } = await login(username, password, requestInfo);
-    if (error) return NextResponse.json({ error }, { status: 401 });
+    const { adminUser, error, status } = await login(username, password, requestInfo);
+    if (error) return NextResponse.json({ error }, { status: status || 500 });
 
     const { sessionId } = await createSession(adminUser);
     const signedSession = await signSessionId(sessionId, cookieSecret);

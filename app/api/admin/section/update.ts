@@ -7,14 +7,15 @@ export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
     const { adminUserId, requestInfo } = getAdminContext(request, '/api/admin/section/update');
-    const section = await updateSection(body as Section, adminUserId, requestInfo);
+    const { section, error, status } = await updateSection(body as Section, adminUserId, requestInfo);
+    if (error) return NextResponse.json({ error }, { status: status || 500 });
     return NextResponse.json({ section });
-  } catch (error) {
-    console.error('Error in PUT /api/admin/section:', error);
-    return NextResponse.json(
-      { error: 'Failed to update section' },
-      { status: 500 }
-    );
+  } catch (error: any) {
+    console.error('Error updating section:', error);
+    const statusCode = error.message?.includes('required') || error.message?.includes('must be') || error.message?.includes('cannot be empty') ? 400 : 500;
+    return NextResponse.json({
+      error: error.message || 'Internal server error'
+    }, { status: statusCode });
   }
 }
 
@@ -30,13 +31,14 @@ export async function PATCH(request: NextRequest) {
       );
 
     const { adminUserId, requestInfo } = getAdminContext(request, '/api/admin/section/reorder');
-    await reorderSections(sectionIds, adminUserId, requestInfo);
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error('Error in PATCH /api/admin/section:', error);
-    return NextResponse.json(
-      { error: 'Failed to reorder sections' },
-      { status: 500 }
-    );
+    const { success, error, status } = await reorderSections(sectionIds, adminUserId, requestInfo);
+    if (error) return NextResponse.json({ error }, { status: status || 500 });
+    return NextResponse.json({ success }, { status: status || 200 });
+  } catch (error: any) {
+    console.error('Error reordering sections:', error);
+    const statusCode = error.message?.includes('required') || error.message?.includes('must be') ? 400 : 500;
+    return NextResponse.json({
+      error: error.message || 'Internal server error'
+    }, { status: statusCode });
   }
 }

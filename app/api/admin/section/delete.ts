@@ -6,7 +6,6 @@ export async function DELETE(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
-
     if (!id)
       return NextResponse.json(
         { error: 'Section ID is required' },
@@ -14,13 +13,14 @@ export async function DELETE(request: NextRequest) {
       );
 
     const { adminUserId, requestInfo } = getAdminContext(request, '/api/admin/section/delete');
-    await deleteSection(id, adminUserId, requestInfo);
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error('Error in DELETE /api/admin/section:', error);
-    return NextResponse.json(
-      { error: 'Failed to delete section' },
-      { status: 500 }
-    );
+    const { success, error, status } = await deleteSection(id, adminUserId, requestInfo);
+    if (error) return NextResponse.json({ error }, { status: status || 500 });
+    return NextResponse.json({ success }, { status: status || 200 });
+  } catch (error: any) {
+    console.error('Error deleting section:', error);
+    const statusCode = error.message?.includes('required') || error.message?.includes('must be') ? 400 : 500;
+    return NextResponse.json({
+      error: error.message || 'Internal server error'
+    }, { status: statusCode });
   }
 }

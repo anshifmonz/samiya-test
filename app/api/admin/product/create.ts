@@ -6,10 +6,13 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { adminUserId, requestInfo } = getAdminContext(request, '/api/admin/product/create');
-    const product = await createProduct(body, adminUserId, requestInfo);
-    if (!product) return NextResponse.json({ error: 'Failed to create product' }, { status: 500 });
-    return NextResponse.json({ product }, { status: 201 });
-  } catch (error) {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    const { product, error, status } = await createProduct(body, adminUserId, requestInfo);
+    if (error) return NextResponse.json({ error }, { status: status || 500 });
+    return NextResponse.json({ product }, { status: status || 201 });
+  } catch (error: any) {
+    console.error('Error creating product:', error);
+    return NextResponse.json({ 
+      error: 'Internal server error' 
+    }, { status: 500 });
   }
 }

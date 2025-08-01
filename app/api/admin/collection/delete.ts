@@ -9,10 +9,13 @@ export async function DELETE(request: NextRequest) {
     if (!id) return NextResponse.json({ error: 'Collection ID is required' }, { status: 400 });
 
     const { adminUserId, requestInfo } = getAdminContext(request, '/api/admin/collection/delete');
-    const success = await deleteCollection(id, adminUserId, requestInfo);
-    if (!success) return NextResponse.json({ error: 'Failed to delete collection' }, { status: 500 });
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    const { success, error, status } = await deleteCollection(id, adminUserId, requestInfo);
+    if (error) return NextResponse.json({ error }, { status: status || 500 });
+    return NextResponse.json({ success }, { status: status || 200 });
+  } catch (error: any) {
+    console.error('Error deleting collection:', error);
+    return NextResponse.json({
+      error: error.message || 'Internal server error'
+    }, { status: 500 });
   }
 }
