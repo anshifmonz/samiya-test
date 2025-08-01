@@ -15,6 +15,11 @@ export default function NextLoadingBar({
   const pathname = usePathname();
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -104,7 +109,8 @@ export default function NextLoadingBar({
     completeLoading();
   }, [pathname]);
 
-  if (!isLoading && progress === 0) {
+  // Prevent hydration mismatch by not rendering until mounted
+  if (!isMounted || (!isLoading && progress === 0)) {
     return null;
   }
 
@@ -131,11 +137,15 @@ export default function NextLoadingBar({
 // for manual control
 export const useNextLoadingBar = () => {
   const startLoading = () => {
-    window.dispatchEvent(new CustomEvent('start-loading'));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('start-loading'));
+    }
   };
 
   const stopLoading = () => {
-    window.dispatchEvent(new CustomEvent('stop-loading'));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('stop-loading'));
+    }
   };
 
   return { startLoading, stopLoading };
