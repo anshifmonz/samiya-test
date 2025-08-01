@@ -10,10 +10,10 @@ import LogoutButton from 'components/admin/LogoutButton';
 export const revalidate = 0;
 
 async function getAdminData() {
-  const products = await getProducts(16, 0, null, 'last-updated');
-  const collections = await getCollections();
-  const categories = await getCategories();
-  const sections = await getSectionsWithProducts();
+  const { products } = await getProducts(16, 0, null, 'last-updated');
+  const { collections } = await getCollections();
+  const { categories } = await getCategories();
+  const { sections } = await getSectionsWithProducts();
 
   return {
     products,

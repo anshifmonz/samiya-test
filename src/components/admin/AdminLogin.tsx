@@ -27,7 +27,7 @@ const AdminLogin: React.FC = () => {
     setError('');
 
     try {
-      const { data, error: apiError } = await apiRequest('/api/admin/login', {
+      const { error: apiError } = await apiRequest('/api/admin/login', {
         method: 'POST',
         body: { username, password },
         showLoadingBar: true,

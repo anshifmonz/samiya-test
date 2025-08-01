@@ -28,7 +28,7 @@ export const useAdminCollectionsTab = ({
 
   const fetchCollections = async () => {
     const { data } = await apiRequest('/api/admin/collection', { showLoadingBar: true });
-    if (data) setCollections(data.collections);
+    if (data && data.collections) setCollections(data.collections);
   };
 
   const handleAddCollection = async (newCollection: Omit<Collection, 'id'>) => {

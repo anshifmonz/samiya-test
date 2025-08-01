@@ -30,9 +30,7 @@ export const useAdminSectionsTab = ({
   // Section API functions
   const fetchSections = async () => {
     const { data } = await apiRequest('/api/admin/section?withProducts=true', { showLoadingBar: true });
-    if (data) {
-      setSectionList(data.sections);
-    }
+    if (data && data.sections) setSectionList(data.sections);
   };
 
   const handleAddSectionApi = async (newSection: Omit<Section, 'id' | 'createdAt' | 'updatedAt'>) => {

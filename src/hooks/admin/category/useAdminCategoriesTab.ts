@@ -27,7 +27,7 @@ export const useAdminCategoriesTab = ({categories}: UseAdminCategoriesTabProps) 
 
   const fetchCategories = async () => {
     const { data } = await apiRequest('/api/admin/category', { showLoadingBar: true });
-    if (data) setCategoryList(data.categories);
+    if (data && data.categories) setCategoryList(data.categories);
   };
 
   const handleAddCategory = async (newCategory: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>) => {

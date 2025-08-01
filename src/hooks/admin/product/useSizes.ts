@@ -13,13 +13,10 @@ export const useSizes = () => {
         setLoading(true);
         setError(null);
 
-const { data, error: apiError } = await apiRequest('/api/admin/sizes', { showLoadingBar: true });
+        const { data, error: apiError } = await apiRequest('/api/admin/sizes', { showLoadingBar: true });
+        if (apiError) throw new Error(apiError);
 
-        if (apiError) {
-          throw new Error(apiError);
-        }
-
-        setSizes(data.sizes || []);
+        setSizes(data?.sizes || []);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to fetch sizes');
       } finally {

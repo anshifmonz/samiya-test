@@ -31,7 +31,7 @@ export const useAdminProductsTab = ({
   } = useAdminProductInfiniteScroll(initialProducts, searchQuery, sortOption);
 
   const handleAddProduct = async (newProduct: Omit<Product, 'id'>) => {
-    const { data, error } = await apiRequest('/api/admin/product', { method: 'POST', body: newProduct, showLoadingBar: true });
+    const { error } = await apiRequest('/api/admin/product', { method: 'POST', body: newProduct, showLoadingBar: true });
     if (error) {
       showToast({ type: 'error', title: 'Error', description: error });
       return null;
@@ -39,11 +39,11 @@ export const useAdminProductsTab = ({
     showToast({ title: 'Success', description: 'Product added successfully' });
     setShowAddForm(false);
     refreshProducts();
-    return data;
+    return true;
   };
 
   const handleEditProduct = async (updatedProduct: Product) => {
-    const { data, error } = await apiRequest('/api/admin/product', { method: 'PUT', body: updatedProduct, showLoadingBar: true });
+    const { error } = await apiRequest('/api/admin/product', { method: 'PUT', body: updatedProduct, showLoadingBar: true });
     if (error) {
       showToast({ type: 'error', title: 'Error', description: error });
       return null;
@@ -51,7 +51,7 @@ export const useAdminProductsTab = ({
     showToast({ title: 'Success', description: 'Product updated successfully' });
     setEditingProduct(null);
     refreshProducts();
-    return data;
+    return true;
   };
 
   const handleDeleteProduct = async (productId: string, productTitle?: string) => {
