@@ -68,6 +68,18 @@
     --luxury-gold-light: 45 80% 70%;
     --luxury-gold-dark: 45 60% 40%;
     --luxury-accent: 0 0% 12%;
+
+    /* Action badges */
+    --create: 142 76% 36%;
+    --create-foreground: 355.7 100% 97.3%;
+    --update: 221 83% 53%;
+    --update-foreground: 210 40% 98%;
+    --delete: 0 84.2% 60.2%;
+    --delete-foreground: 210 40% 98%;
+    --login: 48 96% 53%;
+    --login-foreground: 26 83% 14%;
+    --logout: 240 5% 64.9%;
+    --logout-foreground: 0 0% 98%;
   }
 
   .dark {
@@ -94,6 +106,9 @@
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
+
+    --error: 0 62.8% 30.6%;
+    --error-foreground: 210 40% 98%;
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;

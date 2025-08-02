@@ -73,6 +73,27 @@ export default {
 				warning: {
 					DEFAULT: 'hsl(var(--warning))',
 					foreground: 'hsl(var(--warning-foreground))'
+				},
+				// Action colors
+				create: {
+					DEFAULT: 'hsl(var(--create))',
+					foreground: 'hsl(var(--create-foreground))'
+				},
+				update: {
+					DEFAULT: 'hsl(var(--update))',
+					foreground: 'hsl(var(--update-foreground))'
+				},
+				delete: {
+					DEFAULT: 'hsl(var(--delete))',
+					foreground: 'hsl(var(--delete-foreground))'
+				},
+				login: {
+					DEFAULT: 'hsl(var(--login))',
+					foreground: 'hsl(var(--login-foreground))'
+				},
+				logout: {
+					DEFAULT: 'hsl(var(--logout))',
+					foreground: 'hsl(var(--logout-foreground))'
 				}
 			},
 			borderRadius: {
