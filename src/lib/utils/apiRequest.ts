@@ -11,6 +11,7 @@ export interface ApiRequestOptions {
   showErrorToast?: boolean;
   showLoadingBar?: boolean; // New option to control loading bar
   loadingBarDelay?: number; // Minimum time to show loading bar
+  bustCache?: boolean; // Add cache-busting query parameter
 }
 
 export async function apiRequest<T = any>(
@@ -27,7 +28,14 @@ export async function apiRequest<T = any>(
     showErrorToast = true,
     showLoadingBar = false,
     loadingBarDelay = 200,
+    bustCache = false,
   } = options;
+
+  let finalUrl = url;
+  if (bustCache) {
+    const separator = url.includes('?') ? '&' : '?';
+    finalUrl = `${url}${separator}_t=${Date.now()}`;
+  }
 
   // Start loading bar if requested using global tracker
   const startTime = Date.now();
@@ -39,7 +47,14 @@ export async function apiRequest<T = any>(
   try {
     const fetchOptions: RequestInit = {
       method,
-      headers: { ...headers },
+      headers: {
+        ...headers,
+        ...(bustCache && {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        })
+      },
     };
     if (body !== undefined) {
       fetchOptions.body = typeof body === 'string' ? body : JSON.stringify(body);
@@ -50,7 +65,7 @@ export async function apiRequest<T = any>(
         };
       }
     }
-    const response = await fetch(url, fetchOptions);
+    const response = await fetch(finalUrl, fetchOptions);
     let data: any = null;
     let error: string | null = null;
     try {
@@ -64,40 +79,40 @@ export async function apiRequest<T = any>(
       if (showErrorToast) {
         showToast({ type: 'error', title: 'Error', description: error });
       }
-      
+
       // Stop loading bar on error using global tracker
       if (showLoadingBar && requestId) {
         globalLoadingTracker.completeRequest(requestId);
       }
-      
+
       return { data: null, error, response };
     }
     if (showSuccessToast && successMessage) {
       showToast({ title: 'Success', description: successMessage });
     }
-    
+
     // Stop loading bar with minimum delay if requested using global tracker
     if (showLoadingBar && requestId) {
       const elapsed = Date.now() - startTime;
       const remainingDelay = Math.max(0, loadingBarDelay - elapsed);
-      
+
       setTimeout(() => {
         globalLoadingTracker.completeRequest(requestId!);
       }, remainingDelay);
     }
-    
+
     return { data, error: null, response };
   } catch (err: any) {
     const error = err?.message || errorMessage || 'Network error';
     if (showErrorToast) {
       showToast({ type: 'error', title: 'Error', description: error });
     }
-    
+
     // Stop loading bar on exception using global tracker
     if (showLoadingBar && requestId) {
       globalLoadingTracker.completeRequest(requestId);
     }
-    
+
     return { data: null, error, response: null };
   }
 }
