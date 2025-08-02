@@ -8,9 +8,8 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "ui/table";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "ui/tooltip";
 import { ScrollArea } from "ui/scroll-area";
-import { ActivityStatsData } from "@/lib/admin/activity-stats/getActivityStats";
 import { ActivityDetection } from "./ActivityDetection";
-import { cn } from "@/lib/utils";
+import { cn } from "lib/utils";
 import { useActivityLogsContext } from "contexts/ActivityLogsContext";
 
 const getActionBadgeVariant = (action: string) => {
@@ -48,19 +47,19 @@ const truncateText = (text: string, maxLength: number = 50) => {
 
 const EntityIdDisplay = ({ entityId }: { entityId: string | null }) => {
   const [isRevealed, setIsRevealed] = useState(false);
-  
+
   if (!entityId || entityId === 'N/A') {
     return <span className="text-luxury-black font-mono">N/A</span>;
   }
-  
+
   const lastFourChars = entityId.slice(-4);
-  
+
   const handleToggle = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setIsRevealed(!isRevealed);
   };
-  
+
   return (
     <div className="flex items-center gap-2">
       <span className="text-luxury-black font-mono">
@@ -249,8 +248,19 @@ export const ActivityTable = () => {
                               <div className="space-y-2">
                                 <h4 className="text-sm font-semibold text-luxury-black">Metadata</h4>
                                 <ScrollArea className="h-auto bg-[#e8e8e8] rounded-md">
-                                  <pre className="text-xs text-luxury-black bg-admin-muted/30 p-3 rounded-md overflow-x-auto">
+                                  <pre className="text-xs text-[#6e6e6e] bg-admin-muted/30 p-3 rounded-md overflow-x-auto">
                                     {JSON.stringify(activity.metadata, null, 2)}
+                                  </pre>
+                                </ScrollArea>
+                              </div>
+                            )}
+
+                            {activity.error && (
+                              <div className="space-y-2">
+                                <h4 className="text-sm font-semibold text-luxury-black">Error</h4>
+                                <ScrollArea className="h-auto bg-[#e8e8e8] rounded-md">
+                                  <pre className="text-xs text-[#6e6e6e] bg-admin-muted/30 p-3 rounded-md overflow-x-auto">
+                                    {JSON.stringify(activity.error, null, 2)}
                                   </pre>
                                 </ScrollArea>
                               </div>

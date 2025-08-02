@@ -17,6 +17,7 @@ export interface ActivityStatsData {
   table_name: string | null;
   message: string;
   metadata: Record<string, any> | null;
+  error: any | null;
   status: string;
   request_path: string | null;
   ip_address: string | null;
@@ -122,6 +123,7 @@ export async function getActivityStats(params: ActivityStatsParams = {}): Promis
         table_name: activity.table_name,
         message: activity.message,
         metadata: activity.metadata,
+        error: activity.error,
         status: activity.status,
         request_path: activity.request_path,
         ip_address: activity.ip_address,
@@ -198,4 +200,3 @@ export async function getActivityStats(params: ActivityStatsParams = {}): Promis
       allActivities: activities
     };
 }
-
