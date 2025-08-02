@@ -20,13 +20,14 @@ export default async function deleteCollection(collectionId: string, adminUserId
     .eq('id', collectionId);
 
   if (adminUserId) {
-    await logAdminActivity({
+    logAdminActivity({
       admin_id: adminUserId,
       action: 'delete',
       entity_type: 'collection',
       entity_id: collectionId,
       table_name: 'collections',
       message: createCollectionMessage('delete', collectionTitle),
+      error: error || null,
       status: error ? 'failed' : 'success',
       ...requestInfo,
     });

@@ -19,13 +19,14 @@ export default async function deleteSection(sectionId: string, adminUserId?: str
     .eq('id', sectionId);
 
   if (adminUserId) {
-    await logAdminActivity({
+    logAdminActivity({
       admin_id: adminUserId,
       action: 'delete',
       entity_type: 'section',
       entity_id: sectionId,
       table_name: 'sections',
       message: createSectionMessage('delete', sectionTitle),
+      error: error || null,
       status: error ? 'failed' : 'success',
       ...requestInfo,
     });

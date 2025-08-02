@@ -9,6 +9,7 @@ export interface AdminActivityLogParams {
   message: string;
   metadata?: Record<string, any>;
   status?: 'success' | 'failed';
+  error?: any;
   request_path?: string;
   ip_address?: string;
   user_agent?: string;
@@ -27,6 +28,7 @@ export async function logAdminActivity(params: AdminActivityLogParams): Promise<
         message: params.message,
         metadata: params.metadata || null,
         status: params.status || 'success',
+        error: params.error || null,
         request_path: params.request_path || null,
         ip_address: params.ip_address || null,
         user_agent: params.user_agent || null,

@@ -61,13 +61,14 @@ export default async function updateProduct(product: Product, adminUserId?: stri
   });
 
   if (adminUserId) {
-    await logAdminActivity({
+    logAdminActivity({
       admin_id: adminUserId,
       action: 'update',
       entity_type: 'product',
       entity_id: product.id,
       table_name: 'products',
       message: createProductMessage('update', product.title),
+      error: error || null,
       status: error != null || data == null ? 'failed' : 'success',
       ...requestInfo,
     });

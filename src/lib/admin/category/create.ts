@@ -24,13 +24,14 @@ export default async function createCategory(newCategory: NewCategoryInput, admi
     .single();
 
   if (adminUserId) {
-    await logAdminActivity({
+    logAdminActivity({
       admin_id: adminUserId,
       action: 'create',
       entity_type: 'category',
       entity_id: data?.id,
       table_name: 'categories',
       message: createCategoryMessage('create', newCategory.name),
+      error: error || null,
       status: error != null || data == null ? 'failed' : 'success',
       ...requestInfo,
     });

@@ -62,13 +62,14 @@ export async function addProductToSection(sectionId: string, productId: string, 
   const success = !error;
 
   if (adminUserId) {
-    await logAdminActivity({
+    logAdminActivity({
       admin_id: adminUserId,
       action: 'create',
       entity_type: 'section',
       entity_id: sectionId,
       table_name: 'sections_products',
       message: `Added product ${productId} to section`,
+      error: error || null,
       status: success ? 'success' : 'failed',
       metadata: { productId, sortOrder: nextSortOrder },
       ...requestInfo,
@@ -98,7 +99,7 @@ export async function removeProductFromSection(sectionId: string, productId: str
   const success = !error;
 
   if (adminUserId) {
-    await logAdminActivity({
+    logAdminActivity({
       admin_id: adminUserId,
       action: 'delete',
       entity_type: 'section',
@@ -181,7 +182,7 @@ export async function reorderSectionProducts(sectionId: string, productIds: stri
   const success = !error;
 
   if (adminUserId) {
-    await logAdminActivity({
+    logAdminActivity({
       admin_id: adminUserId,
       action: 'update',
       entity_type: 'section',

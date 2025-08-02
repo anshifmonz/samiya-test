@@ -25,13 +25,14 @@ export default async function updateCategory(category: Category, adminUserId?: s
     .eq('id', category.id);
 
   if (adminUserId) {
-    await logAdminActivity({
+    logAdminActivity({
       admin_id: adminUserId,
       action: 'update',
       entity_type: 'category',
       entity_id: category.id,
       table_name: 'categories',
       message: createCategoryMessage('update', category.name),
+      error: error || null,
       status: error ? 'failed' : 'success',
       ...requestInfo,
     });

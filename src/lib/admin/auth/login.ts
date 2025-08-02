@@ -31,7 +31,7 @@ const login = async (username: string, password: string, requestInfo = {}): Prom
     };
 
     // Log successful login
-    await logAdminActivity({
+    logAdminActivity({
       admin_id: id,
       action: 'login',
       entity_type: 'auth',

@@ -79,13 +79,14 @@ export default async function createProduct(newProduct: CreateProductData, admin
 
     const { data, error } = await supabaseAdmin.rpc('create_product_rpc', dbParams);
     if (adminUserId) {
-      await logAdminActivity({
+      logAdminActivity({
         admin_id: adminUserId,
         action: 'create',
         entity_type: 'product',
         entity_id: data.product_id,
         table_name: 'products',
         message: createProductMessage('create', newProduct.title),
+        error: error || null,
         status: error != null || data == null ? 'failed' : 'success',
         ...requestInfo,
       });

@@ -58,13 +58,14 @@ export default async function deleteProduct(productId: string, adminUserId?: str
     .eq('id', productId);
 
   if (adminUserId) {
-    await logAdminActivity({
+    logAdminActivity({
       admin_id: adminUserId,
       action: 'delete',
       entity_type: 'product',
       entity_id: productId,
       table_name: 'products',
       message: createProductMessage('delete', productTitle),
+      error: prodError || null,
       status: prodError ? 'failed' : 'success',
       ...requestInfo,
     });

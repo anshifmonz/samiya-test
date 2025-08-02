@@ -19,13 +19,14 @@ export default async function deleteCategory(categoryId: string, adminUserId?: s
     .eq('id', categoryId);
 
   if (adminUserId) {
-    await logAdminActivity({
+    logAdminActivity({
       admin_id: adminUserId,
       action: 'delete',
       entity_type: 'category',
       entity_id: categoryId,
       table_name: 'categories',
       message: createCategoryMessage('delete', categoryName),
+      error: error || null,
       status: error ? 'failed' : 'success',
       ...requestInfo,
     });

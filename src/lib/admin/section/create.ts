@@ -19,13 +19,14 @@ export default async function createSection(section: Omit<Section, 'id' | 'creat
     .single();
 
   if (adminUserId) {
-    await logAdminActivity({
+    logAdminActivity({
       admin_id: adminUserId,
       action: 'create',
       entity_type: 'section',
       entity_id: data?.id,
       table_name: 'sections',
       message: createSectionMessage('create', section.title),
+      error: error || null,
       status: error != null || data == null ? 'failed' : 'success',
       ...requestInfo,
     });

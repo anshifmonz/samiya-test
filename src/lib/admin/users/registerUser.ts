@@ -29,13 +29,14 @@ export async function registerUser(username: string, password: string, adminUser
     .single();
 
   if (adminUserId) {
-    await logAdminActivity({
+    logAdminActivity({
       admin_id: adminUserId,
       action: 'create',
       entity_type: 'admin_user',
       entity_id: data?.id,
       table_name: 'admin_users',
       message: createAdminUserMessage('create', username),
+      error: error || null,
       status: error ? 'failed' : 'success',
       ...requestInfo,
     });

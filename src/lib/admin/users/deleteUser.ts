@@ -23,13 +23,14 @@ export async function deleteUser(id: string, adminUserId?: string, requestInfo =
     .eq('id', id);
 
   if (adminUserId) {
-    await logAdminActivity({
+    logAdminActivity({
       admin_id: adminUserId,
       action: 'delete',
       entity_type: 'admin_user',
       entity_id: id,
       table_name: 'admin_users',
       message: createAdminUserMessage('delete', adminToDelete.username || 'Unknown User'),
+      error: error || null,
       status: error ? 'failed' : 'success',
       ...requestInfo,
     });

@@ -23,13 +23,14 @@ export default async function updateSection(section: Section, adminUserId?: stri
     .single();
 
   if (adminUserId) {
-    await logAdminActivity({
+    logAdminActivity({
       admin_id: adminUserId,
       action: 'update',
       entity_type: 'section',
       entity_id: section.id,
       table_name: 'sections',
       message: createSectionMessage('update', section.title),
+      error: error || null,
       status: error != null || data == null ? 'failed' : 'success',
       ...requestInfo,
     });
@@ -63,7 +64,7 @@ export async function reorderSections(sectionIds: string[], adminUserId?: string
   const success = !error;
 
   if (adminUserId) {
-    await logAdminActivity({
+    logAdminActivity({
       admin_id: adminUserId,
       action: 'update',
       entity_type: 'section',

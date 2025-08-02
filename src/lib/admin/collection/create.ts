@@ -22,13 +22,14 @@ export default async function createCollection(newCollection: NewCollectionInput
     .single();
 
   if (adminUserId) {
-    await logAdminActivity({
+    logAdminActivity({
       admin_id: adminUserId,
       action: 'create',
       entity_type: 'collection',
       entity_id: data?.id,
       table_name: 'collections',
       message: createCollectionMessage('create', newCollection.title),
+      error: error || null,
       status: error != null || data == null ? 'failed' : 'success',
       ...requestInfo,
     });

@@ -22,13 +22,14 @@ export default async function updateCollection(collection: Collection, adminUser
     .eq('id', collection.id);
 
   if (adminUserId) {
-    await logAdminActivity({
+    logAdminActivity({
       admin_id: adminUserId,
       action: 'update',
       entity_type: 'collection',
       entity_id: collection.id,
       table_name: 'collections',
       message: createCollectionMessage('update', collection.title),
+      error: error || null,
       status: error ? 'failed' : 'success',
       ...requestInfo,
     });

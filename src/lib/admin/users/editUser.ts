@@ -73,13 +73,14 @@ export async function editUser({
     .select('id, username, is_superuser, created_at, updated_at')
     .single();
 
-  await logAdminActivity({
+  logAdminActivity({
     admin_id: adminId,
     action: 'update',
     entity_type: 'admin_user',
     entity_id: id,
     table_name: 'admin_users',
     message: createAdminUserMessage('update', targetAdmin.username, Object.keys(update).join(', ')),
+    error: error || null,
     status: error ? 'failed' : 'success',
     metadata: { updatedFields: Object.keys(update) },
     ...(requestInfo || {}),

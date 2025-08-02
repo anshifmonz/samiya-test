@@ -38,13 +38,14 @@ export async function updateStock(stockUpdate: StockUpdate, adminUserId: string,
 
   const success = data && data.status === 'success';
 
-  await logAdminActivity({
+  logAdminActivity({
     admin_id: adminUserId,
     action: 'update',
     entity_type: 'stock',
     entity_id: stockUpdate.product_id,
     table_name: 'product_color_sizes',
     message: `Updated stock for product ${stockUpdate.product_id} - ${stockUpdate.color_name} (${stockUpdate.size_id}): ${stockUpdate.stock_quantity}`,
+    error: error || null,
     status: success ? 'success' : 'failed',
     metadata: { stockUpdate },
     ...requestInfo,
@@ -99,12 +100,13 @@ export async function bulkUpdateStock(stockUpdates: StockUpdate[], adminUserId: 
     status: data.status === 'success' ? 200 : 500,
   };
 
-  await logAdminActivity({
+  logAdminActivity({
     admin_id: adminUserId,
     action: 'update',
     entity_type: 'stock',
     table_name: 'product_color_sizes',
     message: `Bulk updated stock for ${stockUpdates.length} items - ${result.updated_count} successful, ${result.error_count} failed`,
+    error: error || null,
     status: result.success ? 'success' : 'failed',
     metadata: { totalItems: stockUpdates.length, ...result },
     ...requestInfo,
