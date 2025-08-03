@@ -6,23 +6,25 @@ import { Label } from 'ui/label';
 import { Calendar as CalendarComponent } from 'ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from 'ui/popover';
 import { cn } from 'lib/utils';
-import { useActivityLogsContext } from 'contexts/ActivityLogsContext';
 
 interface DateRange {
-  from: Date;
-  to: Date;
+  from: Date | undefined;
+  to: Date | undefined;
 }
 
 interface DateRangeFilterProps {
   value: DateRange;
   label?: string;
+  className?: string;
+  onChange?: (range: DateRange) => void;
 }
 
 export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
   value,
-  label = 'Date Range'
+  className,
+  label = 'Date Range',
+  onChange
 }) => {
-  const { updateFilter } = useActivityLogsContext();
   const [selectedRange, setSelectedRange] = useState<{ from?: Date; to?: Date }>({ from: value.from, to: value.to });
   const [isOpen, setIsOpen] = useState(false);
 
@@ -33,7 +35,8 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
   const handleApply = () => {
     if (selectedRange.from && selectedRange.to) {
       // inclusive dates by using startOfDay and endOfDay
-      updateFilter('dateRange', { from: startOfDay(selectedRange.from), to: endOfDay(selectedRange.to) });
+      const range = { from: startOfDay(selectedRange.from), to: endOfDay(selectedRange.to) };
+      if (onChange) onChange(range);
       setIsOpen(false);
     }
   };
@@ -47,7 +50,7 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
                     selectedRange.to?.getTime() !== value.to?.getTime();
 
   return (
-    <div className="sm:col-span-1 lg:col-span-1">
+    <div className={`sm:col-span-1 lg:col-span-1 ${className}`}>
       <Label className="text-admin-foreground text-xs font-medium">
         {label}
       </Label>
