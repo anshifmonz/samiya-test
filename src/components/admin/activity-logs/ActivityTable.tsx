@@ -121,7 +121,7 @@ export const ActivityTable = () => {
                     className="border-admin-muted hover:bg-admin-muted/30 transition-colors"
                   >
                   <TableCell className="text-luxury-black font-mono text-sm">
-                    {format(new Date(activity.created_at), 'MMM dd, HH:mm')}
+                    {format(new Date(activity.created_at), 'MMM dd hh:mm a')}
                   </TableCell>
                   <TableCell>
                     <div className="space-y-2">
@@ -205,7 +205,7 @@ export const ActivityTable = () => {
                                   <div className="flex justify-between">
                                     <span className="text-[#6e6e6e]">Timestamp:</span>
                                     <span className="text-luxury-black font-mono">
-                                      {format(new Date(activity.created_at), 'yyyy-MM-dd HH:mm:ss')}
+                                      {format(new Date(activity.created_at), 'dd MMM yyyy hh:mm a')}
                                     </span>
                                   </div>
                                   <div className="flex justify-between">
