@@ -21,14 +21,14 @@ export const ActivityFilters = () => {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Filter className="h-5 w-5 text-admin-muted-foreground" />
-            <Label className="text-admin-foreground font-semibold">Filters</Label>
+            <Filter className="h-5 w-5 text-muted-foreground" />
+            <Label className="text-luxury-black font-semibold">Filters</Label>
           </div>
           <Button
             variant="ghost"
             size="sm"
             onClick={clearFilters}
-            className="text-admin-muted-foreground hover:text-admin-foreground"
+            className="text-luxury-black hover:text-luxury-black"
           >
             <X className="h-4 w-4 mr-1" />
             Clear All

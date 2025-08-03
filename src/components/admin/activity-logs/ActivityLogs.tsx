@@ -22,25 +22,25 @@ const ActivityLogsContent = () => {
   } = useActivityLogsContext();
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-admin-background to-admin-muted p-6 pt-24">
+    <main className="min-h-screen bg-gradient-to-br from-admin-background to-muted p-6 pt-24">
       <div className="mx-auto max-w-7xl space-y-6">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <Activity className="h-8 w-8 text-primary" />
-              <h1 className="text-3xl font-bold text-admin-foreground">Activity Logs</h1>
+              <h1 className="text-3xl font-bold text-luxury-black">Activity Logs</h1>
             </div>
-            <p className="text-admin-muted-foreground">
+            <p className="text-muted-foreground">
               Monitor and analyze admin activities across the platform
             </p>
           </div>
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 text-sm text-admin-muted-foreground">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <div className={`h-2 w-2 rounded-full ${isLoading ? 'bg-yellow-500 animate-pulse' : error ? 'bg-red-500' : 'bg-success animate-pulse'}`} />
               <span>{isLoading ? 'Loading...' : error ? 'Error' : 'Live monitoring'}</span>
             </div>
             <div className="flex items-center gap-4">
-              <Badge variant="outline" className="text-admin-foreground border-admin-muted">
+              <Badge variant="outline" className="text-luxury-black border-muted">
                 {filteredActivities.length} activities
               </Badge>
               <Button
@@ -48,7 +48,7 @@ const ActivityLogsContent = () => {
                 size="sm"
                 onClick={refetch}
                 disabled={isLoading}
-                className="bg-admin-background border-admin-muted text-admin-foreground hover:bg-admin-muted/30"
+                className="border-muted text-luxury-black hover:bg-muted/30"
               >
                 <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
                 Refresh
@@ -58,7 +58,7 @@ const ActivityLogsContent = () => {
                   variant="outline"
                   size="sm"
                   onClick={clearFilters}
-                  className="bg-admin-background border-admin-muted text-admin-foreground hover:bg-admin-muted/30"
+                  className="border-muted text-luxury-black hover:bg-muted/30"
                 >
                   Clear All Filters
                 </Button>
@@ -73,7 +73,7 @@ const ActivityLogsContent = () => {
                     description: "The shareable link has been copied to your clipboard.",
                   });
                 }}
-                className="text-admin-muted-foreground hover:text-admin-foreground"
+                className="text-luxury-black hover:text-luxury-black"
               >
                 Share View
               </Button>

@@ -24,17 +24,17 @@ export const SelectFilter: React.FC<SelectFilterProps> = ({
 }) => {
   return (
     <div>
-      <Label htmlFor={id} className="text-admin-foreground text-xs font-medium">
+      <Label htmlFor={id} className="text-luxury-black text-xs font-medium">
         {label}
       </Label>
       <Select
         value={value}
         onValueChange={onChange}
       >
-        <SelectTrigger className="mt-1 bg-admin-background border-admin-muted text-luxury-black">
+        <SelectTrigger className="mt-1 bg-admin-background border-muted text-luxury-black">
           <SelectValue placeholder={placeholder || `Select ${label.toLowerCase()}`} />
         </SelectTrigger>
-        <SelectContent className="bg-luxury-white border-admin-muted">
+        <SelectContent className="bg-luxury-white border-muted">
           <SelectItem value="all" className="hover:bg-[#fcfafa] data-[highlighted]:bg-[#fcfafa] hover:cursor-pointer">
             {allLabel}
           </SelectItem>

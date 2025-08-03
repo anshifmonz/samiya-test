@@ -117,9 +117,9 @@ export const SummaryCards = () => {
       {summaryCards.map((card, i) => {
         const IconComponent = card.icon;
         return (
-          <Card key={i} className="border-admin-muted bg-admin-card">
+          <Card key={i} className="border-muted">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-admin-muted-foreground">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
                 {card.title}
               </CardTitle>
               <div className={`p-2 rounded-md ${card.bgColor}`}>
@@ -127,11 +127,11 @@ export const SummaryCards = () => {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-admin-foreground">
+              <div className="text-2xl font-bold text-luxury-black">
                 {card.value}
               </div>
               {card.subtitle && (
-                <p className="text-xs text-admin-muted-foreground mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   {card.subtitle}
                 </p>
               )}

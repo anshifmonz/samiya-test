@@ -128,19 +128,19 @@ export const ActivityCharts = () => {
       {/* Top Row - Key Metrics and Main Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Key Metrics */}
-        <Card className="bg-admin-card border-admin-muted">
+        <Card className="border-muted">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-admin-foreground">
+            <CardTitle className="text-sm font-medium text-luxury-black">
               Total Activities
             </CardTitle>
-            <TrendingUp className="h-4 w-4 text-admin-muted-foreground" />
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-admin-foreground">{totalActivities}</div>
-            <p className="text-xs text-admin-muted-foreground">
+            <div className="text-2xl font-bold text-luxury-black">{totalActivities}</div>
+            <p className="text-xs text-muted-foreground">
               {successRate.toFixed(1)}% success rate
             </p>
-            <div className="mt-2 h-2 w-full bg-admin-muted rounded-full overflow-hidden">
+            <div className="mt-2 h-2 w-full bg-muted rounded-full overflow-hidden">
               <div
                 className="h-full bg-success transition-all duration-300"
                 style={{ width: `${successRate}%` }}
@@ -150,12 +150,12 @@ export const ActivityCharts = () => {
         </Card>
 
         {/* Action Distribution - Pie Chart */}
-        <Card className="bg-admin-card border-admin-muted">
+        <Card className="border-muted">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-admin-foreground">
+            <CardTitle className="text-sm font-medium text-luxury-black">
               Action Distribution
             </CardTitle>
-            <PieChartIcon className="h-4 w-4 text-admin-muted-foreground" />
+            <PieChartIcon className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent className="pt-4">
             <ResponsiveContainer width="100%" height={180}>
@@ -175,10 +175,10 @@ export const ActivityCharts = () => {
                 </Pie>
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "hsl(var(--admin-card))",
-                    border: "1px solid hsl(var(--admin-muted))",
+                    backgroundColor: "hsl(var(--card))",
+                    border: "1px solid hsl(var(--muted))",
                     borderRadius: "6px",
-                    color: "hsl(var(--admin-foreground))"
+                    color: "hsl(var(--foreground))"
                   }}
                 />
               </PieChart>
@@ -190,7 +190,7 @@ export const ActivityCharts = () => {
                     className="h-2 w-2 rounded-full"
                     style={{ backgroundColor: item.color }}
                   />
-                  <span className="text-admin-muted-foreground">
+                  <span className="text-muted-foreground">
                     {item.name}: {item.value}
                   </span>
                 </div>
@@ -200,34 +200,34 @@ export const ActivityCharts = () => {
         </Card>
 
         {/* Activity Over Time - Bar Chart */}
-        <Card className="bg-admin-card border-admin-muted">
+        <Card className="border-muted">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-admin-foreground">
+            <CardTitle className="text-sm font-medium text-luxury-black">
               Activity Timeline
             </CardTitle>
-            <BarChart3 className="h-4 w-4 text-admin-muted-foreground" />
+            <BarChart3 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent className="pt-4">
             <ResponsiveContainer width="100%" height={180}>
               <BarChart data={chartData.timeData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--admin-muted))" />
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" />
                 <XAxis
                   dataKey="date"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "hsl(var(--admin-muted-foreground))", fontSize: 12 }}
+                  tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
                 />
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "hsl(var(--admin-muted-foreground))", fontSize: 12 }}
+                  tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "hsl(var(--admin-card))",
-                    border: "1px solid hsl(var(--admin-muted))",
+                    backgroundColor: "hsl(var(--card))",
+                    border: "1px solid hsl(var(--muted))",
                     borderRadius: "6px",
-                    color: "hsl(var(--admin-foreground))"
+                    color: "hsl(var(--foreground))"
                   }}
                 />
                 <Bar
@@ -244,34 +244,34 @@ export const ActivityCharts = () => {
       {/* Bottom Row - New Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Admin Activity Trends - Line Chart */}
-        <Card className="bg-admin-card border-admin-muted">
+        <Card className="border-muted">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-admin-foreground">
+            <CardTitle className="text-sm font-medium text-luxury-black">
               Admin Activity Trends
             </CardTitle>
-            <Users className="h-4 w-4 text-admin-muted-foreground" />
+            <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent className="pt-4">
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={chartData.adminTrendData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--admin-muted))" />
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" />
                 <XAxis
                   dataKey="date"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "hsl(var(--admin-muted-foreground))", fontSize: 12 }}
+                  tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
                 />
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "hsl(var(--admin-muted-foreground))", fontSize: 12 }}
+                  tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "hsl(var(--admin-card))",
-                    border: "1px solid hsl(var(--admin-muted))",
+                    backgroundColor: "hsl(var(--card))",
+                    border: "1px solid hsl(var(--muted))",
                     borderRadius: "6px",
-                    color: "hsl(var(--admin-foreground))"
+                    color: "hsl(var(--foreground))"
                   }}
                 />
                 {chartData.uniqueAdmins.map(admin => (
@@ -294,7 +294,7 @@ export const ActivityCharts = () => {
                     className="h-2 w-2 rounded-full"
                     style={{ backgroundColor: generateAdminColor(admin) }}
                   />
-                  <span className="text-admin-muted-foreground">{admin}</span>
+                  <span className="text-muted-foreground">{admin}</span>
                 </div>
               ))}
             </div>
@@ -302,18 +302,18 @@ export const ActivityCharts = () => {
         </Card>
 
         {/* Activity Heatmap */}
-        <Card className="bg-admin-card border-admin-muted">
+        <Card className="border-muted">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-admin-foreground">
+            <CardTitle className="text-sm font-medium text-luxury-black">
               Activity Heatmap
             </CardTitle>
-            <Clock className="h-4 w-4 text-admin-muted-foreground" />
+            <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent className="pt-4">
             <div className="w-full overflow-x-auto">
               <div className="min-w-[600px] space-y-1">
                 {/* Hours header */}
-                <div className="flex gap-1 text-xs text-admin-muted-foreground mb-2 pl-10">
+                <div className="flex gap-1 text-xs text-muted-foreground mb-2 pl-10">
                   {Array.from({ length: 24 }, (_, i) => (
                     <div key={i} className="w-4 h-4 text-center text-[10px] flex items-center justify-center">
                       {i % 6 === 0 ? i : ''}
@@ -324,7 +324,7 @@ export const ActivityCharts = () => {
                 {/* Heatmap grid */}
                 {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, dayIndex) => (
                   <div key={day} className="flex gap-1 items-center">
-                    <div className="text-xs text-admin-muted-foreground w-8 text-right pr-2">
+                    <div className="text-xs text-muted-foreground w-8 text-right pr-2">
                       {day}
                     </div>
                     <div className="flex gap-1">
@@ -338,11 +338,11 @@ export const ActivityCharts = () => {
                         return (
                           <div
                             key={hour}
-                            className="w-4 h-4 rounded-sm border border-admin-muted/50 hover:border-admin-foreground transition-colors cursor-pointer"
+                            className="w-4 h-4 rounded-sm border border-muted/50 hover:border-foreground transition-colors cursor-pointer"
                             style={{
                               backgroundColor: intensity > 0
                                 ? `hsl(var(--primary) / ${0.2 + intensity * 0.8})`
-                                : 'hsl(var(--admin-muted) / 0.3)'
+                                : 'hsl(var(--muted) / 0.3)'
                             }}
                             title={`${day} ${hour}:00 - ${cell?.value || 0} activities`}
                           />
@@ -353,17 +353,17 @@ export const ActivityCharts = () => {
                 ))}
 
                 {/* Legend */}
-                <div className="flex items-center justify-between text-xs text-admin-muted-foreground mt-4 pl-10">
+                <div className="flex items-center justify-between text-xs text-muted-foreground mt-4 pl-10">
                   <span>Less</span>
                   <div className="flex gap-1">
                     {[0, 0.2, 0.4, 0.6, 0.8, 1].map((intensity, i) => (
                       <div
                         key={i}
-                        className="w-3 h-3 rounded-sm border border-admin-muted/50"
+                        className="w-3 h-3 rounded-sm border border-muted/50"
                         style={{
                           backgroundColor: intensity > 0
                             ? `hsl(var(--primary) / ${0.2 + intensity * 0.8})`
-                            : 'hsl(var(--admin-muted) / 0.3)'
+                            : 'hsl(var(--muted) / 0.3)'
                         }}
                       />
                     ))}

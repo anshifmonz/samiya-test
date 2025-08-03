@@ -67,7 +67,7 @@ const EntityIdDisplay = ({ entityId }: { entityId: string | null }) => {
       </span>
       <button
         onClick={handleToggle}
-        className="h-7 w-7 p-1 text-[#6e6e6e] hover:text-luxury-black hover:bg-gray-100 rounded flex items-center justify-center transition-colors"
+        className="h-7 w-7 p-1 text-muted-foreground hover:text-luxury-black hover:bg-gray-100 rounded flex items-center justify-center transition-colors"
         type="button"
         title={isRevealed ? "Hide entity ID" : "Show full entity ID"}
       >
@@ -129,7 +129,7 @@ export const ActivityTable = () => {
                         <Tooltip>
                           <TooltipTrigger>
                             <div className="flex items-center gap-2">
-                              <User className="h-4 w-4 text-[#6e6e6e]" />
+                              <User className="h-4 w-4 text-muted-foreground" />
                               <span className="text-luxury-black font-medium">
                                 {activity.admin_username}
                               </span>
@@ -165,7 +165,7 @@ export const ActivityTable = () => {
                   <TableCell className="text-luxury-black capitalize">
                     {activity.entity_type}
                   </TableCell>
-                  <TableCell className="text-[#6e6e6e] text-sm font-mono">
+                  <TableCell className="text-muted-foreground text-sm font-mono">
                     {activity.table_name || '-'}
                   </TableCell>
                   <TableCell>
@@ -173,7 +173,7 @@ export const ActivityTable = () => {
                       {activity.status.toUpperCase()}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-[#6e6e6e] text-sm font-mono">
+                  <TableCell className="text-muted-foreground text-sm font-mono">
                     {activity.request_path ? truncateText(activity.request_path, 30) : '-'}
                   </TableCell>
                   <TableCell>
@@ -182,7 +182,7 @@ export const ActivityTable = () => {
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="text-[#6e6e6e] hover:text-luxury-black"
+                          className="text-muted-foreground hover:text-luxury-black"
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
@@ -192,7 +192,7 @@ export const ActivityTable = () => {
                           <DialogTitle className="text-luxury-black">
                             Activity Details
                           </DialogTitle>
-                          <DialogDescription className="text-[#6e6e6e]">
+                          <DialogDescription className="text-muted-foreground">
                             Full details for activity {activity.id}
                           </DialogDescription>
                         </DialogHeader>
@@ -203,17 +203,17 @@ export const ActivityTable = () => {
                                 <h4 className="text-sm font-semibold text-luxury-black">Basic Info</h4>
                                 <div className="space-y-1 text-sm">
                                   <div className="flex justify-between">
-                                    <span className="text-[#6e6e6e]">Timestamp:</span>
+                                    <span className="text-muted-foreground">Timestamp:</span>
                                     <span className="text-luxury-black font-mono">
                                       {format(new Date(activity.created_at), 'dd MMM yyyy hh:mm a')}
                                     </span>
                                   </div>
                                   <div className="flex justify-between">
-                                    <span className="text-[#6e6e6e]">Admin:</span>
+                                    <span className="text-muted-foreground">Admin:</span>
                                     <span className="text-luxury-black">{activity.admin_username}</span>
                                   </div>
                                   <div className="flex justify-between">
-                                    <span className="text-[#6e6e6e]">Entity ID:</span>
+                                    <span className="text-muted-foreground">Entity ID:</span>
                                     <EntityIdDisplay entityId={activity.entity_id} />
                                   </div>
                                 </div>
@@ -222,13 +222,13 @@ export const ActivityTable = () => {
                                 <h4 className="text-sm font-semibold text-luxury-black">Technical Info</h4>
                                 <div className="space-y-1 text-sm">
                                   <div className="flex justify-between">
-                                    <span className="text-[#6e6e6e]">IP Address:</span>
+                                    <span className="text-muted-foreground">IP Address:</span>
                                     <span className="text-luxury-black font-mono">
                                       {activity.ip_address || 'N/A'}
                                     </span>
                                   </div>
                                   <div className="flex justify-between">
-                                    <span className="text-[#6e6e6e]">Request Path:</span>
+                                    <span className="text-muted-foreground">Request Path:</span>
                                     <span className="text-luxury-black font-mono text-xs">
                                       {activity.request_path || 'N/A'}
                                     </span>
@@ -239,7 +239,7 @@ export const ActivityTable = () => {
 
                             <div className="space-y-2">
                               <h4 className="text-sm font-semibold text-luxury-black">Message</h4>
-                              <p className="bg-[#e8e8e8] text-sm text-[#6e6e6e] bg-admin-muted/30 p-3 rounded-md">
+                              <p className="bg-[#e8e8e8] text-sm text-muted-foreground bg-admin-muted/30 p-3 rounded-md">
                                 {activity.message}
                               </p>
                             </div>
@@ -248,7 +248,7 @@ export const ActivityTable = () => {
                               <div className="space-y-2">
                                 <h4 className="text-sm font-semibold text-luxury-black">Metadata</h4>
                                 <ScrollArea className="h-auto bg-[#e8e8e8] rounded-md">
-                                  <pre className="text-xs text-[#6e6e6e] bg-admin-muted/30 p-3 rounded-md overflow-x-auto">
+                                  <pre className="text-xs text-muted-foreground bg-admin-muted/30 p-3 rounded-md overflow-x-auto">
                                     {JSON.stringify(activity.metadata, null, 2)}
                                   </pre>
                                 </ScrollArea>
@@ -259,7 +259,7 @@ export const ActivityTable = () => {
                               <div className="space-y-2">
                                 <h4 className="text-sm font-semibold text-luxury-black">Error</h4>
                                 <ScrollArea className="h-auto bg-[#e8e8e8] rounded-md">
-                                  <pre className="text-xs text-[#6e6e6e] bg-admin-muted/30 p-3 rounded-md overflow-x-auto">
+                                  <pre className="text-xs text-muted-foreground bg-admin-muted/30 p-3 rounded-md overflow-x-auto">
                                     {JSON.stringify(activity.error, null, 2)}
                                   </pre>
                                 </ScrollArea>
@@ -269,7 +269,7 @@ export const ActivityTable = () => {
                             {activity.user_agent && (
                               <div className="space-y-2">
                                 <h4 className="text-sm font-semibold text-luxury-black">User Agent</h4>
-                                <p className="bg-[#e8e8e8] text-xs text-[#6e6e6e] bg-admin-muted/30 p-3 rounded-md break-all">
+                                <p className="bg-[#e8e8e8] text-xs text-muted-foreground bg-admin-muted/30 p-3 rounded-md break-all">
                                   {activity.user_agent}
                                 </p>
                               </div>

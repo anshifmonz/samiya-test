@@ -38,7 +38,7 @@ export const AdvancedQueryBuilder = () => {
   const [showRawQuery, setShowRawQuery] = useState(false);
   const [idCounter, setIdCounter] = useState(0);
   const { toast } = useToast();
-  
+
   const onQueryChange = (query: QueryCondition[]) => {
     updateFilter('advancedQuery', query);
   };
@@ -46,7 +46,7 @@ export const AdvancedQueryBuilder = () => {
   const addCondition = () => {
     const newId = `condition-${idCounter}`;
     setIdCounter(prev => prev + 1);
-    
+
     const newCondition: QueryCondition = {
       id: newId,
       field: availableFields[0]?.value || 'action',
@@ -103,10 +103,10 @@ export const AdvancedQueryBuilder = () => {
   };
 
   return (
-    <Card className="bg-admin-card border-admin-muted">
+    <Card className="border-muted">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="text-admin-foreground flex items-center gap-2">
+          <CardTitle className="text-luxury-black flex items-center gap-2">
             <Code className="h-5 w-5" />
             Advanced Query Builder
           </CardTitle>
@@ -115,7 +115,7 @@ export const AdvancedQueryBuilder = () => {
               variant="ghost"
               size="sm"
               onClick={() => setShowRawQuery(!showRawQuery)}
-              className="text-admin-muted-foreground hover:text-admin-foreground"
+              className="text-luxury-black hover:text-luxury-black"
             >
               {showRawQuery ? 'Hide' : 'Show'} Query
             </Button>
@@ -124,7 +124,7 @@ export const AdvancedQueryBuilder = () => {
                 variant="ghost"
                 size="sm"
                 onClick={clearAll}
-                className="text-admin-muted-foreground hover:text-admin-foreground"
+                className="text-luxury-black hover:text-luxury-black"
               >
                 Clear All
               </Button>
@@ -142,12 +142,12 @@ export const AdvancedQueryBuilder = () => {
                   value={condition.logic}
                   onValueChange={(value: 'AND' | 'OR') => updateCondition(condition.id, { logic: value })}
                 >
-                  <SelectTrigger className="w-20 h-8 bg-admin-background border-admin-muted text-admin-foreground">
+                  <SelectTrigger className="w-20 h-8  border-muted text-luxury-black">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-admin-card border-admin-muted">
-                    <SelectItem value="AND" className="text-admin-foreground">AND</SelectItem>
-                    <SelectItem value="OR" className="text-admin-foreground">OR</SelectItem>
+                  <SelectContent className="border-muted">
+                    <SelectItem value="AND" className="text-luxury-black hover:bg-[#fcfafa] data-[highlighted]:bg-[#fcfafa] hover:cursor-pointer">AND</SelectItem>
+                    <SelectItem value="OR" className="text-luxury-black hover:bg-[#fcfafa] data-[highlighted]:bg-[#fcfafa] hover:cursor-pointer">OR</SelectItem>
                   </SelectContent>
                 </Select>
               )}
@@ -156,12 +156,12 @@ export const AdvancedQueryBuilder = () => {
                 value={condition.field}
                 onValueChange={(value) => updateCondition(condition.id, { field: value })}
               >
-                <SelectTrigger className="w-40 h-8 bg-admin-background border-admin-muted text-admin-foreground">
+                <SelectTrigger className="w-40 h-8  border-muted text-luxury-black">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-admin-card border-admin-muted">
+                <SelectContent className="border-muted">
                   {availableFields.map((field) => (
-                    <SelectItem key={field.value} value={field.value} className="text-admin-foreground">
+                    <SelectItem key={field.value} value={field.value} className="text-luxury-black hover:bg-[#fcfafa] data-[highlighted]:bg-[#fcfafa] hover:cursor-pointer">
                       {field.label}
                     </SelectItem>
                   ))}
@@ -172,12 +172,12 @@ export const AdvancedQueryBuilder = () => {
                 value={condition.operator}
                 onValueChange={(value) => updateCondition(condition.id, { operator: value })}
               >
-                <SelectTrigger className="w-40 h-8 bg-admin-background border-admin-muted text-admin-foreground">
+                <SelectTrigger className="w-40 h-8  border-muted text-luxury-black">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-admin-card border-admin-muted">
+                <SelectContent className="border-muted">
                   {operators.map((op) => (
-                    <SelectItem key={op.value} value={op.value} className="text-admin-foreground">
+                    <SelectItem key={op.value} value={op.value} className="text-luxury-black hover:bg-[#fcfafa] data-[highlighted]:bg-[#fcfafa] hover:cursor-pointer">
                       {op.label}
                     </SelectItem>
                   ))}
@@ -188,14 +188,14 @@ export const AdvancedQueryBuilder = () => {
                 placeholder="Value"
                 value={condition.value}
                 onChange={(e) => updateCondition(condition.id, { value: e.target.value })}
-                className="flex-1 h-8 bg-admin-background border-admin-muted text-admin-foreground"
+                className="flex-1 h-8 border-muted text-luxury-black"
               />
 
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => removeCondition(condition.id)}
-                className="h-8 w-8 p-0 text-admin-muted-foreground hover:text-error"
+                className="h-8 w-8 p-0 text-muted-foreground hover:text-error"
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
@@ -208,7 +208,7 @@ export const AdvancedQueryBuilder = () => {
           variant="outline"
           size="sm"
           onClick={addCondition}
-          className="bg-admin-background border-admin-muted text-admin-foreground hover:bg-admin-muted/30"
+          className=" border-muted text-luxury-black hover:bg-admin-muted/30"
         >
           <Plus className="h-4 w-4 mr-2" />
           Add Condition
@@ -218,14 +218,14 @@ export const AdvancedQueryBuilder = () => {
         {showRawQuery && conditions.length > 0 && (
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Badge variant="outline" className="text-admin-foreground border-admin-muted">
+              <Badge variant="outline" className="text-luxury-black border-muted">
                 Generated Query
               </Badge>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={copyQuery}
-                className="h-6 text-admin-muted-foreground hover:text-admin-foreground"
+                className="h-6 text-muted-foreground hover:text-luxury-black"
               >
                 <Copy className="h-3 w-3 mr-1" />
                 Copy
@@ -234,7 +234,7 @@ export const AdvancedQueryBuilder = () => {
             <Textarea
               value={generateQueryString()}
               readOnly
-              className="h-20 bg-admin-muted/20 border-admin-muted text-admin-foreground font-mono text-sm resize-none"
+              className="h-20 bg-admin-muted/20 border-muted text-luxury-black font-mono text-sm resize-none"
             />
           </div>
         )}
