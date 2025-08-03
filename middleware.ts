@@ -1,10 +1,35 @@
+import { createServerClient } from '@supabase/ssr';
 import { NextRequest, NextResponse } from 'next/server';
 import { unsignSessionId, getAdminUserFromSession } from 'lib/adminSession';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const method = request.method;
-  const response = NextResponse.next();
+  let response = NextResponse.next();
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll()
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
+          response = NextResponse.next({
+            request,
+          })
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options)
+          )
+        },
+      },
+    }
+  )
+
+  // ensure Supabase refreshes session cookies if needed
+  await supabase.auth.getUser()
 
   if (!pathname.startsWith('/admin') && !pathname.startsWith('/api/admin'))
     return response;
@@ -55,9 +80,8 @@ export async function middleware(request: NextRequest) {
         return NextResponse.json({ error: 'Only super admin can delete admins' }, { status: 403 });
       const url = new URL(request.url);
       const id = url.searchParams.get('id');
-      if (id === currentAdmin.id) {
+      if (id === currentAdmin.id)
         return NextResponse.json({ error: 'You cannot delete your own account' }, { status: 403 });
-      }
       return response;
     }
 
