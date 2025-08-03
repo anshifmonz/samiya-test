@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
-import { TooltipProvider } from "components/ui/tooltip";
-import { QueryProvider } from "./providers/QueryProvider";
-import { ToasterProvider } from "./providers/ToasterProvider";
-import "./globals.css";
+import { TooltipProvider } from "ui/tooltip";
+import { QueryProvider } from "components/providers/QueryProvider";
+import { ToasterProvider } from "components/providers/ToasterProvider";
 import Footer from "components/shared/Footer";
 import NavBar from "components/shared/NavBar";
 import NextLoadingBar from "components/shared/NextLoadingBar";
+import "./globals.css";
 
 const inter = Inter({
   subsets: ["latin"],
