@@ -1,8 +1,10 @@
 import { useMemo } from "react";
-import { Shield, AlertTriangle, Globe } from "lucide-react";
+import { Shield, AlertTriangle, Globe, ExternalLink } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "ui/card";
 import { Badge } from "ui/badge";
+import { Button } from "ui/button";
 import { Progress } from "ui/progress";
+import Link from 'next/link';
 import { ActivityStatsData } from "lib/admin/activity-stats/getActivityStats";
 import { useActivityLogsContext } from "contexts/ActivityLogsContext";
 
@@ -58,9 +60,21 @@ export const IpAnalytics = () => {
       {/* IP Overview */}
       <Card className="bg-admin-card border-admin-muted">
         <CardHeader>
-          <CardTitle className="text-luxury-black flex items-center gap-2">
-            <Globe className="h-5 w-5" />
-            IP Address Overview
+          <CardTitle className="text-luxury-black flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <Globe className="h-5 w-5" />
+              IP Address Overview
+            </div>
+            <Link href="/admin/activity-logs/ip">
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-admin-background border-admin-muted text-admin-foreground hover:bg-admin-muted/30"
+              >
+                <ExternalLink className="h-4 w-4 mr-2" />
+                Detailed Analysis
+              </Button>
+            </Link>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
