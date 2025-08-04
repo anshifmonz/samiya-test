@@ -86,7 +86,7 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
         <PopoverContent className="w-auto p-0 bg-admin-background/95 backdrop-blur-sm border-admin-muted shadow-xl" align="start">
           <div className="bg-admin-card/95 backdrop-blur-sm border border-admin-muted/50 rounded-lg p-2">
             <CalendarComponent
-              autoFocus
+              initialFocus
               mode="range"
               defaultMonth={value.from}
               selected={{
