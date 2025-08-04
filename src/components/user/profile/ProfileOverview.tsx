@@ -1,17 +1,28 @@
-'use client';
-
 import { Button } from 'ui/button';
 import { Card } from 'ui/card';
 import { Edit2 } from 'lucide-react';
 import Image from 'next/image';
+import { UserProfile } from 'types/user';
 
-const ProfileOverview = () => {
+interface ProfileOverviewProps {
+  profile: UserProfile;
+}
+
+const ProfileOverview = ({ profile }: ProfileOverviewProps) => {
+  const formatMemberSince = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long'
+    });
+  };
+
   return (
     <Card className="p-8 bg-profile-card border-profile-border shadow-card mt-20">
       <div className="flex items-center gap-6">
         <div className="relative">
           <Image
-            src="/images/user-avatar.jpg"
+            src={profile.profile_picture || "/images/user-avatar.jpg"}
             alt="User Avatar"
             width={96}
             height={96}
@@ -21,9 +32,11 @@ const ProfileOverview = () => {
         </div>
 
         <div className="flex-1">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Sarah Johnson</h1>
-          <p className="text-muted-foreground text-lg mb-3">sarah.johnson@email.com</p>
-          <p className="text-sm text-muted-foreground">Member since: January 2022</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2">{profile.name}</h1>
+          <p className="text-muted-foreground text-lg mb-3">{profile.email}</p>
+          <p className="text-sm text-muted-foreground">
+            Member since: {formatMemberSince(profile.signup_date)}
+          </p>
         </div>
 
         <Button variant="outline" size="sm" className="gap-2">
