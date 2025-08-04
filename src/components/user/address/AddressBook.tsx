@@ -6,79 +6,115 @@ import { MapPin, Plus } from 'lucide-react';
 import { toast } from 'hooks/ui/use-toast';
 import AddressForm from './AddressForm';
 import AddressList from './AddressList';
-import { Address, AddressFormData } from 'types/address';
+import { AddressDisplay, AddressFormData } from 'types/address';
+import { apiRequest } from 'utils/apiRequest';
+import { mapAddressToDisplay } from 'utils/addressMapper';
 
-const AddressBook = () => {
-  const [addresses, setAddresses] = useState<Address[]>([
-    {
-      id: "1",
-      label: "Home",
-      fullName: "John Doe",
-      phone: "+1 234 567 8900",
-      secondaryPhone: "+1 234 567 8901",
-      email: "john@example.com",
-      pincode: "12345",
-      landmark: "Near Central Park",
-      street: "123 Main Street",
-      city: "New York",
-      state: "NY",
-      isDefault: true
-    },
-    {
-      id: "2",
-      label: "Work",
-      fullName: "John Doe",
-      phone: "+1 234 567 8900",
-      pincode: "54321",
-      landmark: "Business District",
-      street: "456 Corporate Ave",
-      city: "Manhattan",
-      state: "NY",
-      isDefault: false
-    }
-  ]);
+interface AddressBookProps {
+  initialAddresses: AddressDisplay[];
+}
 
+const AddressBook = ({ initialAddresses }: AddressBookProps) => {
+  const [addresses, setAddresses] = useState<AddressDisplay[]>(initialAddresses);
   const [showAddForm, setShowAddForm] = useState(false);
 
-  const onSubmit = (data: AddressFormData) => {
-    const newAddress: Address = {
-      id: Date.now().toString(),
-      ...data,
-      isDefault: addresses.length === 0
-    };
+  const onSubmit = async (data: AddressFormData) => {
+    try {
+      const { data: response, error } = await apiRequest('/api/user/profile/addresses', {
+        method: 'POST',
+        body: data,
+        showErrorToast: false
+      });
 
-    setAddresses([...addresses, newAddress]);
-    setShowAddForm(false);
-    toast({
-      title: "Address Added",
-      description: "Your new address has been saved successfully."
-    });
-  };
+      if (error) {
+        toast({
+          title: "Error Adding Address",
+          description: error
+        });
+        return;
+      }
 
-  const setAsDefault = (id: string) => {
-    setAddresses(addresses.map(addr => ({
-      ...addr,
-      isDefault: addr.id === id
-    })));
-    toast({
-      title: "Default Address Updated",
-      description: "This address has been set as your default."
-    });
-  };
-
-  const deleteAddress = (id: string) => {
-    const addressToDelete = addresses.find(addr => addr.id === id);
-    const filteredAddresses = addresses.filter(addr => addr.id !== id);
-
-    if (addressToDelete?.isDefault && filteredAddresses.length > 0) {
-      filteredAddresses[0].isDefault = true;
+      if (response?.address) {
+        const displayAddress = mapAddressToDisplay(response.address);
+        setAddresses([...addresses, displayAddress]);
+        setShowAddForm(false);
+        toast({
+          title: "Address Added",
+          description: "Your new address has been saved successfully."
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: "Error Adding Address",
+        description: error?.message || "An error occurred."
+      });
     }
+  };
 
-    setAddresses(filteredAddresses);
-    toast({
-      title: "Address Deleted",
-      description: "The address has been removed from your address book."
-    });
+  const setAsDefault = async (id: string) => {
+    try {
+      const { error } = await apiRequest(`/api/user/profile/addresses?id=${id}&action=set-default`, {
+        method: 'PUT',
+        showErrorToast: false
+      });
+
+      if (error) {
+        toast({
+          title: "Error Setting Default",
+          description: error
+        });
+        return;
+      }
+
+      setAddresses(addresses.map((addr) => ({
+        ...addr,
+        isDefault: addr.id === id
+      })));
+
+      toast({
+        title: "Default Address Updated",
+        description: "This address has been set as your default."
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error Setting Default",
+        description: error?.message || "An error occurred."
+      });
+    }
+  };
+
+  const deleteAddress = async (id: string) => {
+    try {
+      const { error } = await apiRequest(`/api/user/profile/addresses?id=${id}`, {
+        method: 'DELETE',
+        showErrorToast: false
+      });
+
+      if (error) {
+        toast({
+          title: "Error Deleting Address",
+          description: error
+        });
+        return;
+      }
+
+      const filteredAddresses = addresses.filter((addr) => addr.id !== id);
+
+      if (addresses.find((addr) => addr.id === id)?.isDefault && filteredAddresses.length > 0)
+        filteredAddresses[0].isDefault = true;
+
+      setAddresses(filteredAddresses);
+
+      toast({
+        title: "Address Deleted",
+        description: "The address has been removed from your address book."
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error Deleting Address",
+        description: error?.message || "An error occurred."
+      });
+    }
   };
 
   return (
@@ -99,7 +135,6 @@ const AddressBook = () => {
             </Button>
           </div>
 
-          {/* Add Address Form */}
           {showAddForm && (
             <AddressForm
               onSubmit={onSubmit}
@@ -107,7 +142,6 @@ const AddressBook = () => {
             />
           )}
 
-          {/* Address List */}
           <AddressList
             addresses={addresses}
             onSetDefault={setAsDefault}

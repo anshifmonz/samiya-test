@@ -3,10 +3,10 @@
 import { Button } from 'ui/button';
 import { Card, CardContent } from 'ui/card';
 import { MapPin, Home, Building, Star, Edit, Trash2 } from 'lucide-react';
-import { Address } from 'types/address';
+import { AddressDisplay } from 'types/address';
 
 interface AddressListProps {
-  addresses: Address[];
+  addresses: AddressDisplay[];
   onSetDefault: (id: string) => void;
   onDelete: (id: string) => void;
 }
@@ -52,7 +52,7 @@ const AddressList = ({ addresses, onSetDefault, onDelete }: AddressListProps) =>
                   <p className="font-medium text-foreground">{address.fullName}</p>
                   <p>{address.street}</p>
                   <p>{address.landmark}</p>
-                  <p>{address.city}, {address.state} - {address.pincode}</p>
+                  <p>{address.city}, {address.state} - {address.postalCode}</p>
                   <p>Phone: {address.phone}</p>
                   {address.secondaryPhone && <p>Alt Phone: {address.secondaryPhone}</p>}
                   {address.email && <p>Email: {address.email}</p>}

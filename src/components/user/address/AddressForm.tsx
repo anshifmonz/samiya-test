@@ -6,8 +6,8 @@ import { Textarea } from 'ui/textarea';
 import { useForm } from 'react-hook-form';
 import { AddressFormData } from 'types/address';
 import { Card, CardContent, CardHeader, CardTitle } from 'ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from 'ui/form';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui/select';
 
 interface AddressFormProps {
   onSubmit: (data: AddressFormData) => void;
@@ -18,15 +18,18 @@ const AddressForm = ({ onSubmit, onCancel }: AddressFormProps) => {
   const form = useForm<AddressFormData>({
     defaultValues: {
       label: "Home",
-      fullName: "",
+      full_name: "",
       phone: "",
-      secondaryPhone: "",
+      phone_secondary: "",
       email: "",
-      pincode: "",
+      postal_code: "",
       landmark: "",
       street: "",
       city: "",
-      state: ""
+      district: "",
+      state: "",
+      country: "IN",
+      type: "shipping"
     }
   });
 
@@ -68,7 +71,7 @@ const AddressForm = ({ onSubmit, onCancel }: AddressFormProps) => {
 
               <FormField
                 control={form.control}
-                name="fullName"
+                name="full_name"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Full Name</FormLabel>
@@ -98,7 +101,7 @@ const AddressForm = ({ onSubmit, onCancel }: AddressFormProps) => {
 
               <FormField
                 control={form.control}
-                name="secondaryPhone"
+                name="phone_secondary"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Secondary Phone (Optional)</FormLabel>
@@ -128,12 +131,12 @@ const AddressForm = ({ onSubmit, onCancel }: AddressFormProps) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="pincode"
+                name="postal_code"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Pincode</FormLabel>
+                    <FormLabel>Postal Code</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Enter pincode" />
+                      <Input {...field} placeholder="Enter postal code" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -186,12 +189,42 @@ const AddressForm = ({ onSubmit, onCancel }: AddressFormProps) => {
 
               <FormField
                 control={form.control}
+                name="district"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>District (Optional)</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Enter district" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
                 name="state"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>State</FormLabel>
                     <FormControl>
                       <Input {...field} placeholder="Enter state" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="country"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Country</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Enter country" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
