@@ -1,5 +1,6 @@
 import { ActivityStatsData } from "lib/admin/activity-stats/getActivityStats";
 import { IpIntelligenceData } from "lib/services/ipIntelligence";
+import { subDays, startOfDay, endOfDay } from 'date-fns';
 
 export interface IpGeoData {
   country?: string;
@@ -37,7 +38,7 @@ export interface IpAnalysisCardsData {
 }
 
 export const defaultIpFilters: IpFilters = {
-  dateRange: { from: undefined, to: undefined },
+  dateRange: { from: startOfDay(subDays(new Date(), 7)), to: endOfDay(new Date()) },
   severity: "all",
   minActions: "0"
 };
