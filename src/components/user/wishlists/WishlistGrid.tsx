@@ -1,13 +1,13 @@
 'use client';
 
 import WishlistCard from './WishlistCard';
-import { WishlistItem } from 'types/wishlist';
+import { WishlistWithProduct } from 'types/wishlist';
 
 interface WishlistGridProps {
-  items: WishlistItem[];
+  items: WishlistWithProduct[];
   onRemove: (itemId: string) => void;
-  onAddToCart: (item: WishlistItem) => void;
-  onPurchaseNow: (item: WishlistItem) => void;
+  onAddToCart: (item: WishlistWithProduct) => void;
+  onPurchaseNow: (item: WishlistWithProduct) => void;
 }
 
 const WishlistGrid = ({ items, onRemove, onAddToCart, onPurchaseNow }: WishlistGridProps) => {
@@ -15,7 +15,7 @@ const WishlistGrid = ({ items, onRemove, onAddToCart, onPurchaseNow }: WishlistG
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {items.map((item) => (
         <WishlistCard
-          key={item.id}
+          key={item.product_id}
           item={item}
           onRemove={onRemove}
           onAddToCart={onAddToCart}

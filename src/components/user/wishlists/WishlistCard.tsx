@@ -4,13 +4,13 @@ import { Badge } from 'ui/badge';
 import { Button } from 'ui/button';
 import { Card, CardContent } from 'ui/card';
 import { Heart, ShoppingCart, Zap } from 'lucide-react';
-import { WishlistItem } from 'types/wishlist';
+import { WishlistWithProduct } from 'types/wishlist';
 
 interface WishlistCardProps {
-  item: WishlistItem;
+  item: WishlistWithProduct;
   onRemove: (itemId: string) => void;
-  onAddToCart: (item: WishlistItem) => void;
-  onPurchaseNow: (item: WishlistItem) => void;
+  onAddToCart: (item: WishlistWithProduct) => void;
+  onPurchaseNow: (item: WishlistWithProduct) => void;
 }
 
 const WishlistCard = ({ item, onRemove, onAddToCart, onPurchaseNow }: WishlistCardProps) => {
@@ -23,8 +23,8 @@ const WishlistCard = ({ item, onRemove, onAddToCart, onPurchaseNow }: WishlistCa
       <CardContent className="p-0">
         <div className="relative">
           <img
-            src={item.image}
-            alt={item.title}
+            src={item.product.primary_image_url || '/placeholder-image.jpg'}
+            alt={item.product.title}
             className="w-full h-48 object-cover rounded-t-lg"
           />
           <Button
@@ -35,31 +35,35 @@ const WishlistCard = ({ item, onRemove, onAddToCart, onPurchaseNow }: WishlistCa
           >
             <Heart className="w-4 h-4 text-destructive fill-destructive" />
           </Button>
-          <Badge className="absolute top-2 left-2 bg-primary text-primary-foreground">
-            {calculateDiscount(item.price, item.originalPrice)}% OFF
-          </Badge>
+          {item.product.original_price && item.product.original_price > item.product.price && (
+            <Badge className="absolute top-2 left-2 bg-primary text-primary-foreground">
+              {calculateDiscount(item.product.price, item.product.original_price)}% OFF
+            </Badge>
+          )}
         </div>
 
         <div className="p-4 space-y-4">
           <div>
-            <h3 className="font-semibold text-foreground text-lg mb-2">{item.title}</h3>
-            <p className="text-sm text-muted-foreground line-clamp-2">{item.description}</p>
+            <h3 className="font-semibold text-foreground text-lg mb-2">{item.product.title}</h3>
+            <p className="text-sm text-muted-foreground line-clamp-2">{item.product.description}</p>
           </div>
 
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">Size:</span>
-              <Badge variant="outline">{item.selectedSize}</Badge>
+              <Badge variant="outline">{item.size.name}</Badge>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">Color:</span>
-              <Badge variant="outline">{item.selectedColor}</Badge>
+              <Badge variant="outline">{item.color.color_name}</Badge>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-2xl font-bold text-foreground">${item.price}</span>
-            <span className="text-lg text-muted-foreground line-through">${item.originalPrice}</span>
+            <span className="text-2xl font-bold text-foreground">${item.product.price}</span>
+            {item.product.original_price && item.product.original_price > item.product.price && (
+              <span className="text-lg text-muted-foreground line-through">${item.product.original_price}</span>
+            )}
           </div>
 
           <div className="space-y-2">
