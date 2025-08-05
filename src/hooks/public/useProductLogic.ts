@@ -14,6 +14,7 @@ export function useProductLogic(product: Product) {
 
   const [isWishlist, setIsWishlist] = useState(false);
   const [isLoadingWishlist, setIsLoadingWishlist] = useState(false);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
 
   const [selectedColor, setSelectedColor] = useState<string>(() => searchParams?.get('color') || firstColor);
   const [selectedSize, setSelectedSize] = useState<string>(() => searchParams?.get('size') || '');
@@ -139,7 +140,6 @@ export function useProductLogic(product: Product) {
       });
 
       if (error) return;
-
       setIsWishlist(!isWishlist);
 
       // update the selectedSizeData to include/remove the wishlist_id
@@ -191,6 +191,34 @@ export function useProductLogic(product: Product) {
     return colorMap[color] || color;
   };
 
+  const handleAddToCart = async () => {
+    if (!user) return;
+
+    if (!selectedColor || !selectedSize || !selectedSizeData) return;
+    setIsAddingToCart(true);
+
+    const colorId = product.colorIdMapping?.[selectedColor] || selectedColor;
+    const sizeId = selectedSizeData.id;
+
+    try {
+      await apiRequest('/api/user/cart', {
+        method: 'POST',
+        body: {
+          productId: product.id,
+          colorId,
+          sizeId,
+          quantity
+        },
+        successMessage: 'Item added to cart successfully!',
+        errorMessage: 'Failed to add item to cart',
+        showSuccessToast: true,
+        showLoadingBar: true
+      });
+    } finally {
+      setIsAddingToCart(false);
+    }
+  };
+
   return {
     selectedColor,
     selectedSize,
@@ -201,8 +229,10 @@ export function useProductLogic(product: Product) {
     setQuantity,
     handleWhatsApp,
     handleWishlistToggle,
+    handleAddToCart,
     isWishlist,
     isLoadingWishlist,
+    isAddingToCart,
     getColorStyle
   };
 }

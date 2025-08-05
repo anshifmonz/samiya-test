@@ -12,11 +12,13 @@ interface ProductContextType {
   quantity: number;
   isWishlist: boolean;
   isLoadingWishlist: boolean;
+  isAddingToCart: boolean;
   handleColorChange: (color: string) => void;
   handleSizeChange: (sizeName: string, sizeData?: Size) => void;
   setQuantity: (quantity: number) => void;
   handleWhatsApp: () => void;
   handleWishlistToggle: () => Promise<void>;
+  handleAddToCart: () => Promise<void>;
   getColorStyle: (color: string) => string;
 }
 
