@@ -3,27 +3,19 @@
 import { Button } from 'ui/button';
 import { Separator } from 'ui/separator';
 import { Card, CardContent, CardHeader, CardTitle } from 'ui/card';
-import { CartItem } from 'types/cart';
+import { useCartContext } from 'contexts/CartContext';
 
-interface CartSummaryProps {
-  selectedItems: CartItem[];
-  subtotal: number;
-  totalDiscount: number;
-  deliveryCharges: number;
-  totalAmount: number;
-  onProceedToCheckout: () => void;
-  onContinueShopping: () => void;
-}
+const CartSummary = () => {
+  const {
+    selectedItems,
+    subtotal,
+    totalDiscount,
+    deliveryCharges,
+    totalAmount,
+    handleProceedToCheckout,
+    handleContinueShopping
+  } = useCartContext();
 
-const CartSummary = ({
-  selectedItems,
-  subtotal,
-  totalDiscount,
-  deliveryCharges,
-  totalAmount,
-  onProceedToCheckout,
-  onContinueShopping
-}: CartSummaryProps) => {
   return (
     <div className="space-y-4">
       <Card>
@@ -69,7 +61,7 @@ const CartSummary = ({
         <Button
           variant="outline"
           className="w-full"
-          onClick={onContinueShopping}
+          onClick={handleContinueShopping}
         >
           Continue Shopping
         </Button>
@@ -77,7 +69,7 @@ const CartSummary = ({
           className="w-full"
           size="lg"
           disabled={selectedItems.length === 0}
-          onClick={onProceedToCheckout}
+          onClick={handleProceedToCheckout}
         >
           Proceed to Checkout ({selectedItems.length} items)
         </Button>

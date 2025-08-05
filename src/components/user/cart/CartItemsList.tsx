@@ -1,44 +1,18 @@
 'use client';
 
-import { CartItem } from 'types/cart';
 import CartItemCard from './CartItemCard';
 import SelectAllControls from './SelectAllControls';
+import { useCartContext } from 'contexts/CartContext';
 
-interface CartItemsListProps {
-  cartItems: CartItem[];
-  selectedItems: CartItem[];
-  onSelectItem: (itemId: string, selected: boolean) => void;
-  onSelectAll: () => void;
-  onDeselectAll: () => void;
-  onQuantityChange: (itemId: string, newQuantity: number) => void;
-  onRemoveItem: (itemId: string) => void;
-}
+const CartItemsList = () => {
+  const { cartItems } = useCartContext();
 
-const CartItemsList = ({
-  cartItems,
-  selectedItems,
-  onSelectItem,
-  onSelectAll,
-  onDeselectAll,
-  onQuantityChange,
-  onRemoveItem
-}: CartItemsListProps) => {
   return (
     <div className="lg:col-span-2 space-y-4">
-      <SelectAllControls
-        allSelected={selectedItems.length === cartItems.length}
-        onSelectAll={onSelectAll}
-        onDeselectAll={onDeselectAll}
-      />
+      <SelectAllControls />
 
       {cartItems.map((item) => (
-        <CartItemCard
-          key={item.id}
-          item={item}
-          onSelectItem={onSelectItem}
-          onQuantityChange={onQuantityChange}
-          onRemoveItem={onRemoveItem}
-        />
+        <CartItemCard key={item.id} item={item} />
       ))}
     </div>
   );

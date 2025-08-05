@@ -3,33 +3,35 @@
 import { Button } from 'ui/button';
 import { Checkbox } from 'ui/checkbox';
 import { Card, CardContent } from 'ui/card';
+import { useCartContext } from 'contexts/CartContext';
 
-interface SelectAllControlsProps {
-  allSelected: boolean;
-  onSelectAll: () => void;
-  onDeselectAll: () => void;
-}
+const SelectAllControls = () => {
+  const {
+    cartItems,
+    selectedItems,
+    handleSelectAll,
+    handleDeselectAll,
+  } = useCartContext();
 
-const SelectAllControls = ({ allSelected, onSelectAll, onDeselectAll }: SelectAllControlsProps) => {
   return (
     <Card>
       <CardContent className="p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Checkbox
-              checked={allSelected}
+              checked={selectedItems.length === cartItems.length}
               onCheckedChange={(checked) => {
-                if (checked) onSelectAll();
-                else onDeselectAll();
+                if (checked) handleSelectAll();
+                else handleDeselectAll();
               }}
             />
             <span className="font-medium">Select All Items</span>
           </div>
           <div className="flex gap-2">
-            <Button variant="ghost" size="sm" onClick={onSelectAll}>
+            <Button variant="ghost" size="sm" onClick={handleSelectAll}>
               Select All
             </Button>
-            <Button variant="ghost" size="sm" onClick={onDeselectAll}>
+            <Button variant="ghost" size="sm" onClick={handleDeselectAll}>
               Deselect All
             </Button>
           </div>

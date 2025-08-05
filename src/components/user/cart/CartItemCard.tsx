@@ -6,15 +6,19 @@ import { Checkbox } from 'ui/checkbox';
 import { Card, CardContent } from 'ui/card';
 import { Minus, Plus, Trash2 } from 'lucide-react';
 import { CartItem } from 'types/cart';
+import { useCartContext } from 'contexts/CartContext';
 
 interface CartItemCardProps {
   item: CartItem;
-  onSelectItem: (itemId: string, selected: boolean) => void;
-  onQuantityChange: (itemId: string, newQuantity: number) => void;
-  onRemoveItem: (itemId: string) => void;
 }
 
-const CartItemCard = ({ item, onSelectItem, onQuantityChange, onRemoveItem }: CartItemCardProps) => {
+const CartItemCard = ({ item }: CartItemCardProps) => {
+  const {
+    handleSelectItem,
+    handleQuantityChange,
+    handleRemoveItem
+  } = useCartContext();
+
   const calculateDiscount = (price: number, originalPrice?: number) => {
     if (!originalPrice) return 0;
     return Math.round(((originalPrice - price) / originalPrice) * 100);
@@ -26,7 +30,7 @@ const CartItemCard = ({ item, onSelectItem, onQuantityChange, onRemoveItem }: Ca
         <div className="flex gap-4">
           <Checkbox
             checked={item.selected}
-            onCheckedChange={(checked) => onSelectItem(item.id, checked as boolean)}
+            onCheckedChange={(checked) => handleSelectItem(item.id, checked as boolean)}
           />
           <img
             src={item.image}
@@ -42,7 +46,7 @@ const CartItemCard = ({ item, onSelectItem, onQuantityChange, onRemoveItem }: Ca
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => onRemoveItem(item.id)}
+                onClick={() => handleRemoveItem(item.id)}
                 className="text-destructive hover:text-destructive"
               >
                 <Trash2 className="h-4 w-4" />
@@ -74,7 +78,7 @@ const CartItemCard = ({ item, onSelectItem, onQuantityChange, onRemoveItem }: Ca
                   variant="outline"
                   size="icon"
                   className="h-8 w-8"
-                  onClick={() => onQuantityChange(item.id, item.quantity - 1)}
+                  onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
                   disabled={item.quantity <= 1}
                 >
                   <Minus className="h-4 w-4" />
@@ -84,7 +88,7 @@ const CartItemCard = ({ item, onSelectItem, onQuantityChange, onRemoveItem }: Ca
                   variant="outline"
                   size="icon"
                   className="h-8 w-8"
-                  onClick={() => onQuantityChange(item.id, item.quantity + 1)}
+                  onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
                 >
                   <Plus className="h-4 w-4" />
                 </Button>
