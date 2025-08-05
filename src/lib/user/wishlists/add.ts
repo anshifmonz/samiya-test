@@ -52,7 +52,7 @@ export async function addToWishlists(userId: string, productId: string, colorId:
     }
 
     const { data: existingWishlist, error: fetchError } = await supabaseAdmin
-      .from('whislists')
+      .from('wishlists')
       .select('product_id')
       .eq('user_id', userId)
       .eq('product_id', productId)
