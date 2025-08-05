@@ -3,11 +3,17 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { type Product, type Size } from 'types/product';
+import { apiRequest } from 'lib/utils/apiRequest';
+import { useAuth } from 'hooks/useAuth';
 
 export function useProductLogic(product: Product) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { user } = useAuth();
   const firstColor = Object.keys(product.images)[0];
+
+  const [isWishlist, setIsWishlist] = useState(false);
+  const [isLoadingWishlist, setIsLoadingWishlist] = useState(false);
 
   const [selectedColor, setSelectedColor] = useState<string>(() => searchParams?.get('color') || firstColor);
   const [selectedSize, setSelectedSize] = useState<string>(() => searchParams?.get('size') || '');
@@ -58,21 +64,36 @@ export function useProductLogic(product: Product) {
     }
   }, [searchParams, firstColor, product, getAvailableSizesForColor, isSizeOutOfStock, updateUrlParams]);
 
+  // update wishlist status based on selected color and size combination
+  useEffect(() => {
+    if (!user || !selectedSizeData?.id || !selectedColor) {
+      setIsWishlist(false);
+      return;
+    }
+
+    // check if current color/size combination has a wishlist_id
+    const currentWishlistId = selectedSizeData.wishlist_id;
+    setIsWishlist(!!currentWishlistId);
+  }, [user, selectedColor, selectedSizeData]);
+
   const handleColorChange = (color: string) => {
     const availableSizes = getAvailableSizesForColor(color);
     const firstValidSize = availableSizes.find(size => !isSizeOutOfStock(size));
     const newSize = firstValidSize ? firstValidSize.name : '';
     setSelectedColor(color);
     setSelectedSize(newSize);
+    setSelectedSizeData(firstValidSize);
     updateUrlParams(color, newSize);
   };
 
   const handleSizeChange = (sizeName: string, sizeData?: Size) => {
     if (sizeData && !isSizeOutOfStock(sizeData)) {
       setSelectedSize(sizeName);
+      setSelectedSizeData(sizeData);
       updateUrlParams(selectedColor, sizeName);
     } else {
       setSelectedSize('');
+      setSelectedSizeData(undefined);
       updateUrlParams(selectedColor, '');
     }
   };
@@ -90,6 +111,70 @@ export function useProductLogic(product: Product) {
       (url ? `*Link:* ${url}` : '');
     const whatsappUrl = `https://wa.me/+919562700999?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
+  };
+
+  const handleWishlistToggle = async () => {
+    if (!user) return;
+    if (!selectedSizeData?.id) return;
+    setIsLoadingWishlist(true);
+
+    try {
+      const colorId = product.colorIdMapping?.[selectedColor] || selectedColor;
+      const sizeId = selectedSizeData.id;
+
+      const method = isWishlist ? 'DELETE' : 'POST';
+      const action = isWishlist ? 'remove from' : 'add to';
+
+      const { error } = await apiRequest('/api/user/wishlists', {
+        method,
+        body: {
+          productId: product.id,
+          colorId,
+          sizeId
+        },
+        successMessage: `Successfully ${isWishlist ? 'removed from' : 'added to'} wishlist`,
+        errorMessage: `Failed to ${action} wishlist`,
+        showSuccessToast: true,
+        showLoadingBar: true
+      });
+
+      if (error) return;
+
+      setIsWishlist(!isWishlist);
+
+      // update the selectedSizeData to include/remove the wishlist_id
+      if (selectedSizeData) {
+        const updatedSizeData = {
+          ...selectedSizeData,
+          wishlist_id: isWishlist ? null : 'temp-wishlist-id' // temporary ID until get real id
+        };
+        setSelectedSizeData(updatedSizeData);
+
+        // update the colorSizes data to maintain consistency
+        if (product.colorSizes && product.colorSizes[selectedColor]) {
+          const updatedColorSizes = product.colorSizes[selectedColor].map(size =>
+            size.id === selectedSizeData.id
+              ? updatedSizeData
+              : size
+          );
+          product.colorSizes[selectedColor] = updatedColorSizes;
+        }
+
+        // update the images colorSizes data if it exists
+        if (product.images[selectedColor]?.sizes) {
+          const updatedImageSizes = product.images[selectedColor].sizes!.map(size =>
+            size.id === selectedSizeData.id
+              ? updatedSizeData
+              : size
+          );
+          product.images[selectedColor].sizes = updatedImageSizes;
+        }
+      }
+    } catch (error) {
+      console.error('Failed to toggle wishlist:', error);
+    } finally {
+      setIsLoadingWishlist(false);
+    }
   };
 
   const getColorStyle = (color: string) => {
@@ -115,6 +200,9 @@ export function useProductLogic(product: Product) {
     handleSizeChange,
     setQuantity,
     handleWhatsApp,
+    handleWishlistToggle,
+    isWishlist,
+    isLoadingWishlist,
     getColorStyle
   };
 }

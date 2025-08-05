@@ -10,10 +10,13 @@ interface ProductContextType {
   selectedSize: string;
   selectedSizeData: Size | undefined;
   quantity: number;
+  isWishlist: boolean;
+  isLoadingWishlist: boolean;
   handleColorChange: (color: string) => void;
   handleSizeChange: (sizeName: string, sizeData?: Size) => void;
   setQuantity: (quantity: number) => void;
   handleWhatsApp: () => void;
+  handleWishlistToggle: () => Promise<void>;
   getColorStyle: (color: string) => string;
 }
 

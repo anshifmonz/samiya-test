@@ -19,6 +19,8 @@ export interface Size {
   low_stock_threshold?: number;
   is_in_stock?: boolean;
   is_low_stock?: boolean;
+  // Favorite information (available when user is authenticated)
+  wishlist_id?: string | null;
 }
 
 export interface Product {
@@ -33,6 +35,7 @@ export interface Product {
   categoryId: string;
   sizes?: Size[]; // Global fallback sizes (optional)
   colorSizes?: Record<string, Size[]>; // Color-specific sizes mapping
+  colorIdMapping?: Record<string, string>; // Map color names to color IDs
   active?: boolean;
 }
 

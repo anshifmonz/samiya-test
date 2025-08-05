@@ -1,13 +1,17 @@
 import { supabasePublic } from 'lib/supabasePublic';
 import { type Product, type ProductColorData, type Size } from 'types/product';
 
-const getProduct = async (id: string): Promise<Product | null> => {
+const getProduct = async (id: string, userId?: string): Promise<Product | null> => {
   try {
-    const { data, error } = await supabasePublic.rpc('get_product_details_rpc', { product_id: id });
-    if (error) throw new Error(`Error fetching products from Supabase: ${error}`);
+    const { data, error } = await supabasePublic.rpc('get_product_details_rpc', {
+      product_id: id,
+      user_id: userId || null
+    });
+    if (error) throw new Error(`Error fetching products from Supabase: ${error.message}`);
 
     const images: Record<string, ProductColorData> = {};
     const colorSizes: Record<string, Size[]> = {};
+    const colorIdMapping: Record<string, string> = {}; // Map color names to color IDs
 
     if (data.product_images) {
       const sortedImages = data.product_images.sort((a: any, b: any) => {
@@ -32,9 +36,13 @@ const getProduct = async (id: string): Promise<Product | null> => {
     if (data.product_sizes)
       data.product_sizes.forEach((colorSizeData: any) => {
         const colorName = colorSizeData.color_name;
+        const colorId = colorSizeData.color_id;
         const sizes = colorSizeData.sizes || [];
 
-        // Store color-specific sizes with stock information
+        // Store color ID mapping
+        if (colorId) colorIdMapping[colorName] = colorId;
+
+        // Store color-specific sizes with stock information and wishlist_id
         colorSizes[colorName] = sizes.map((size: any) => ({
           id: size.id,
           name: size.name,
@@ -43,7 +51,8 @@ const getProduct = async (id: string): Promise<Product | null> => {
           stock_quantity: size.stock_quantity,
           low_stock_threshold: size.low_stock_threshold,
           is_in_stock: size.is_in_stock,
-          is_low_stock: size.is_low_stock
+          is_low_stock: size.is_low_stock,
+          wishlist_id: size.wishlist_id || null
         }));
 
         // store sizes in the color data for the images object
@@ -68,7 +77,8 @@ const getProduct = async (id: string): Promise<Product | null> => {
       tags,
       categoryId: data.category_id || '',
       active: data.is_active,
-      colorSizes
+      colorSizes,
+      colorIdMapping
     };
   } catch (error) {
     console.error('Error fetching product:', error);

@@ -5,6 +5,7 @@ import ProductPage from 'components/product/Product';
 import getProduct from 'lib/public/product';
 import { type Product } from 'types/product';
 import similarProducts from 'lib/public/similarProducts';
+import { getServerUser } from 'lib/auth/getServerUser';
 
 export const revalidate = 600;
 
@@ -14,7 +15,8 @@ interface Props {
 
 export default async function ProductDetailPage({ params }: Props) {
   const { id } = params;
-  const product: Product | null = await getProduct(id);
+  const user = await getServerUser();
+  const product: Product | null = await getProduct(id, user?.id);
   const similarProductsData = await similarProducts(id, 8, 0);
   if (!product) notFound();
 
