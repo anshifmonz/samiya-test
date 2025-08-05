@@ -61,9 +61,7 @@ function Calendar({
           day_hidden: "invisible",
           ...classNames,
         }}
-        components={{
-          Chevron: ({ ..._props }) => <ChevronRight className="h-4 w-4" />,
-        }}
+        components={{}}
         {...props}
       />
       <div className="flex justify-center gap-2">
