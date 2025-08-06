@@ -87,7 +87,6 @@ export async function addToCart(userId: string, productId: string, colorId: stri
         .from('cart_items')
         .update({
           quantity: newTotalQuantity,
-          updated_at: new Date().toISOString()
         })
         .eq('cart_id', cart.id)
         .eq('product_id', productId)

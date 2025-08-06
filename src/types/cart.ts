@@ -12,5 +12,5 @@ export interface CartItem {
   selectedColor: string;
   colorHex?: string;
   quantity: number;
-  selected: boolean;
+  isSelected: boolean;
 }

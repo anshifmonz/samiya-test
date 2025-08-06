@@ -22,7 +22,7 @@ export async function getUserCart(userId: string): Promise<{ success: boolean | 
         color_id,
         size_id,
         quantity,
-        price,
+        is_selected,
         products (
           id,
           title,
@@ -53,7 +53,7 @@ export async function getUserCart(userId: string): Promise<{ success: boolean | 
 
     if (imagesError) throw new Error(`Error fetching product images: ${imagesError.message}`);
 
-    const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const total = cartItems.reduce((sum, item) => sum + ((item.products as any)?.price * item.quantity), 0);
 
     const enhancedCartItems = cartItems.map(item => {
       const colorName = (item.product_colors as any)?.color_name;
@@ -87,14 +87,14 @@ export async function getUserCart(userId: string): Promise<{ success: boolean | 
         sizeId: item.size_id,
         title: (item.products as any)?.title,
         description: (item.products as any)?.description,
-        price: item.price,
+        price: (item.products as any)?.price,
         originalPrice: (item.products as any)?.original_price,
         selectedSize: (item.sizes as any)?.name || 'Unknown',
         selectedColor: (item.product_colors as any)?.color_name || 'Unknown',
         colorHex: (item.product_colors as any)?.hex_code,
         quantity: item.quantity,
         image: finalImage,
-        selected: true
+        isSelected: item.is_selected
       };
     });
 
