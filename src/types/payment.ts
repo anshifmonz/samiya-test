@@ -4,11 +4,15 @@ export interface PaymentMethod {
   name: string;
   details: string;
   isDefault: boolean;
-  icon: React.ReactNode;
 }
 
-export interface WalletOption {
-  id: string;
-  name: string;
-  icon: React.ReactNode;
+export interface PaymentFormData {
+  type: 'card' | 'upi' | 'netbanking' | 'wallet';
+  cardNumber?: string;
+  expiryDate?: string;
+  cvv?: string;
+  cardholderName?: string;
+  upiId?: string;
+  bankName?: string;
+  walletProvider?: string;
 }
