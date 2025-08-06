@@ -130,12 +130,13 @@ export const useCart = ({ initialCartItems }: { initialCartItems: CartItem[] }) 
     setCartItems(items => items.filter(item => item.id !== itemId));
   };
 
-  const handleProceedToCheckout = () => {
-    const selectedItems = cartItems.filter(item => item.isSelected);
-    toast({
-      title: "Proceeding to checkout",
-      description: `Processing ${selectedItems.length} items`,
+  const handleProceedToCheckout = async () => {
+    const { error } = await apiRequest('/api/user/checkout', {
+      method: 'POST',
+      showLoadingBar: true,
     });
+    if (error) return;
+    router.push("/user/checkout");
   };
 
   const handleContinueShopping = () => {
