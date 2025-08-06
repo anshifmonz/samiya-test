@@ -5,8 +5,8 @@ import { Button } from 'ui/button';
 import { Checkbox } from 'ui/checkbox';
 import { Card, CardContent } from 'ui/card';
 import { Minus, Plus, Trash2 } from 'lucide-react';
-import { CartItem } from 'types/cart';
 import { useCartContext } from 'contexts/CartContext';
+import { CartItem } from 'types/cart';
 
 interface CartItemCardProps {
   item: CartItem;
@@ -25,11 +25,11 @@ const CartItemCard = ({ item }: CartItemCardProps) => {
   };
 
   return (
-    <Card className={`transition-all ${item.selected ? 'ring-2 ring-primary/20 bg-primary/5' : ''}`}>
+    <Card className={`transition-all ${item.isSelected ? 'ring-2 ring-primary/20 bg-primary/5' : ''}`}>
       <CardContent className="p-4">
         <div className="flex gap-4">
           <Checkbox
-            checked={item.selected}
+            checked={item.isSelected}
             onCheckedChange={(checked) => handleSelectItem(item.id, checked as boolean)}
           />
           <img

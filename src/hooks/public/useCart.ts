@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { apiRequest } from 'lib/utils/apiRequest';
-import { useAuth } from 'hooks/useAuth';
-import { useRouter } from 'next/navigation';
-import { useDebounce } from 'hooks/useDebounce';
-import { toast } from 'hooks/ui/use-toast';
 import { CartItem } from 'types/cart';
+import { useAuth } from 'hooks/useAuth';
+import { toast } from 'hooks/ui/use-toast';
+import { useRouter } from 'next/navigation';
+import { apiRequest } from 'utils/apiRequest';
+import { useDebounce } from 'hooks/useDebounce';
 
 export const useCart = ({ initialCartItems }: { initialCartItems: CartItem[] }) => {
   const { user } = useAuth();
@@ -17,7 +17,7 @@ export const useCart = ({ initialCartItems }: { initialCartItems: CartItem[] }) 
 
     setIsAddingToCart(true);
     try {
-      await apiRequest('/api/user/cart', {
+      apiRequest('/api/user/cart', {
         method: 'POST',
         body: {
           productId,
@@ -49,26 +49,57 @@ export const useCart = ({ initialCartItems }: { initialCartItems: CartItem[] }) 
     }
   };
 
-  const debouncedUpdateCartQuantity = useDebounce(updateCartQuantity, 800);
+  const updateCartSelection = async (cartItemId: string, isSelected: boolean) => {
+    try {
+      apiRequest('/api/user/cart', {
+        method: 'PATCH',
+        body: {
+          cartItemId,
+          isSelected
+        }
+      });
+    } catch (error) {
+      return;
+    }
+  };
 
-  const handleSelectItem = (itemId: string, selected: boolean) => {
+  const bulkUpdateCartSelection = async (isSelected: boolean) => {
+    try {
+      apiRequest('/api/user/cart/bulk-select', {
+        method: 'PATCH',
+        body: { isSelected }
+      });
+    } catch (error) {
+      return;
+    }
+  };
+
+  const debouncedUpdateCartQuantity = useDebounce(updateCartQuantity, 1000);
+  const debouncedUpdateCartSelection = useDebounce(updateCartSelection, 1000);
+  const debouncedUpdateCartBulkSelection = useDebounce(bulkUpdateCartSelection, 1000);
+
+  const handleSelectItem = (itemId: string, isSelected: boolean) => {
     setCartItems(items =>
       items.map(item =>
-        item.id === itemId ? { ...item, selected } : item
+        item.id === itemId ? { ...item, isSelected } : item
       )
     );
+
+    debouncedUpdateCartSelection(itemId, isSelected);
   };
 
   const handleSelectAll = () => {
     setCartItems(items =>
-      items.map(item => ({ ...item, selected: true }))
+      items.map(item => ({ ...item, isSelected: true }))
     );
+    debouncedUpdateCartBulkSelection(true);
   };
 
   const handleDeselectAll = () => {
     setCartItems(items =>
-      items.map(item => ({ ...item, selected: false }))
+      items.map(item => ({ ...item, isSelected: false }))
     );
+    debouncedUpdateCartBulkSelection(false);
   };
 
   const handleQuantityChange = (itemId: string, newQuantity: number) => {
@@ -100,7 +131,7 @@ export const useCart = ({ initialCartItems }: { initialCartItems: CartItem[] }) 
   };
 
   const handleProceedToCheckout = () => {
-    const selectedItems = cartItems.filter(item => item.selected);
+    const selectedItems = cartItems.filter(item => item.isSelected);
     toast({
       title: "Proceeding to checkout",
       description: `Processing ${selectedItems.length} items`,
@@ -116,7 +147,7 @@ export const useCart = ({ initialCartItems }: { initialCartItems: CartItem[] }) 
   };
 
   // Computed values
-  const selectedItems = cartItems.filter(item => item.selected);
+  const selectedItems = cartItems.filter(item => item.isSelected);
   const subtotal = selectedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const totalDiscount = selectedItems.reduce((sum, item) => {
     if (item.originalPrice)
