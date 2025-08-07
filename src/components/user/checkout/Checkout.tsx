@@ -5,6 +5,7 @@ import { Button } from 'ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { toast } from 'hooks/ui/use-toast';
 import { useRouter } from 'next/navigation';
+import { apiRequest } from 'lib/utils/apiRequest';
 import OrderSummary from './OrderSummary';
 import PaymentMethod from './PaymentMethod';
 import DeliveryMethod from './DeliveryMethod';
@@ -151,21 +152,50 @@ const Checkout = ({ checkoutData, addresses: initialAddresses }: CheckoutProps) 
       return;
     }
 
+    if (!checkoutData?.checkout?.id) {
+      toast({
+        title: "Checkout Error",
+        description: "Invalid checkout session. Please try again.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsPlacingOrder(true);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const selectedPaymentMethod = mockPaymentMethods.find(method => method.id === selectedPayment);
+
+      const { data, error } = await apiRequest('/api/user/order', {
+        method: 'POST',
+        body: {
+          checkoutId: checkoutData.checkout.id,
+          shippingAddressId: selectedAddress,
+          paymentMethod: selectedPaymentMethod?.type || 'card'
+        },
+        showLoadingBar: true,
+        showErrorToast: false
+      });
+
+      if (error) {
+        toast({
+          title: "Order Failed",
+          description: error,
+          variant: "destructive",
+        });
+        return;
+      }
 
       toast({
         title: "Order Placed Successfully!",
-        description: "You will receive a confirmation email shortly.",
+        description: `Order ${data?.data?.orderSummary?.orderId ? `#${data.data.orderSummary.orderId.slice(-8)}` : ''} has been created. You will receive a confirmation email shortly.`,
       });
 
       router.push('/user/orders');
     } catch (error) {
       toast({
         title: "Order Failed",
-        description: "There was an error placing your order. Please try again.",
+        description: "There was an unexpected error placing your order. Please try again.",
         variant: "destructive",
       });
     } finally {
