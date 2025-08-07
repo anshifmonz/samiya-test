@@ -7,6 +7,7 @@ import { toast } from 'hooks/ui/use-toast';
 import { useRouter } from 'next/navigation';
 import { apiRequest } from 'lib/utils/apiRequest';
 import OrderSummary from './OrderSummary';
+import EmptyCheckout from './EmptyCheckout';
 import PaymentMethod from './PaymentMethod';
 import DeliveryMethod from './DeliveryMethod';
 import PriceBreakdown from './PriceBreakdown';
@@ -92,25 +93,7 @@ const Checkout = ({ checkoutData, addresses: initialAddresses }: CheckoutProps) 
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
   if (!checkoutData || !checkoutData.items || checkoutData.items.length === 0) {
-    return (
-      <div className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center gap-3 mb-6">
-            <Button variant="ghost" size="icon" onClick={() => router.push('/user/cart')}>
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-            <h1 className="text-2xl font-bold">Checkout</h1>
-          </div>
-          <div className="text-center py-12">
-            <h2 className="text-xl font-semibold mb-2">No items to checkout</h2>
-            <p className="text-muted-foreground mb-4">Your cart is empty or checkout session has expired.</p>
-            <Button onClick={() => router.push('/user/cart')}>
-              Go to Cart
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
+    return <EmptyCheckout />
   }
 
   const subtotal = checkoutData.total;
