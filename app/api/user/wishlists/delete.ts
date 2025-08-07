@@ -8,9 +8,9 @@ export async function DELETE(request: NextRequest) {
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const body = await request.json();
-    const { favoriteId, colorId, sizeId } = body;
+    const { wishlistId, colorId, sizeId } = body;
 
-    const result = await deleteWishlistItem(user.id, favoriteId, colorId, sizeId);
+    const result = await deleteWishlistItem(user.id, wishlistId, colorId, sizeId);
     if (result.error) return NextResponse.json({ error: result.error }, { status: result.status || 500 });
 
     return NextResponse.json({ message: 'Product removed from favorites successfully' }, { status: result.status || 200 });
