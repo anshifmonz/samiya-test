@@ -1,14 +1,14 @@
 'use client';
 
 import { Card, CardContent } from 'ui/card'
-import { Order } from 'types/order';
+import { OrderHistory } from 'types/order';
 
 interface OrderSummaryProps {
-  orders: Order[];
+  orders: OrderHistory[];
 }
 
 const OrderSummary = ({ orders }: OrderSummaryProps) => {
-  const totalSpent = orders.reduce((sum, order) => sum + order.total, 0);
+  const totalSpent = orders.reduce((sum, order) => sum + order.total_amount, 0);
   const deliveredOrders = orders.filter(order => order.status === "delivered").length;
 
   return (
@@ -21,7 +21,7 @@ const OrderSummary = ({ orders }: OrderSummaryProps) => {
           </div>
           <div>
             <p className="text-2xl font-bold text-foreground">
-              ${totalSpent.toFixed(2)}
+              ₹{totalSpent.toFixed(2)}
             </p>
             <p className="text-sm text-muted-foreground">Total Spent</p>
           </div>

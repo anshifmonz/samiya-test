@@ -3,10 +3,10 @@
 import { Card } from 'ui/card';
 import { ShoppingBag } from 'lucide-react';
 import OrderCard from './OrderCard';
-import { Order } from 'types/order';
+import { OrderHistory } from 'types/order';
 
 interface OrderListProps {
-  orders: Order[];
+  orders: OrderHistory[];
   selectedFilter: string;
 }
 

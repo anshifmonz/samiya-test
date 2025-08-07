@@ -4,14 +4,31 @@ import { Badge } from 'ui/badge';
 import { Button } from 'ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from 'ui/card';
 import { Package, Clock, CheckCircle, XCircle } from 'lucide-react';
-import { Order } from 'types/order';
+import { OrderHistory } from 'types/order';
 import OrderItems from './OrderItems';
 
 interface OrderCardProps {
-  order: Order;
+  order: OrderHistory;
 }
 
 const OrderCard = ({ order }: OrderCardProps) => {
+  const formatShippingAddress = (address: any) => {
+    if (!address) return 'No shipping address';
+
+    const parts = [
+      address.full_name,
+      address.street,
+      address.landmark,
+      address.city,
+      address.district,
+      address.state,
+      address.postal_code,
+      address.country
+    ].filter(Boolean);
+
+    return parts.join(', ');
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "pending":
@@ -59,18 +76,18 @@ const OrderCard = ({ order }: OrderCardProps) => {
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-lg">{order.orderNumber}</CardTitle>
+            <CardTitle className="text-lg">{order.order_number}</CardTitle>
             <p className="text-sm text-muted-foreground">
-              Placed on {formatDate(order.date)}
+              Placed on {formatDate(order.created_at)}
             </p>
           </div>
           <div className="text-right">
-            <Badge className={`${getStatusColor(order.status)} capitalize gap-1`}>
+            <Badge className={`₹{getStatusColor(order.status)} capitalize gap-1`}>
               {getStatusIcon(order.status)}
               {order.status}
             </Badge>
             <p className="text-lg font-semibold text-foreground mt-1">
-              ${order.total.toFixed(2)}
+              ₹{order.total_amount.toFixed(2)}
             </p>
           </div>
         </div>
@@ -83,7 +100,7 @@ const OrderCard = ({ order }: OrderCardProps) => {
         <div>
           <h4 className="font-medium text-foreground mb-2">Shipping Address</h4>
           <p className="text-sm text-muted-foreground bg-muted/30 p-3 rounded-lg">
-            {order.shippingAddress}
+            {formatShippingAddress(order.shipping_address)}
           </p>
         </div>
 
