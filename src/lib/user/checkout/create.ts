@@ -43,16 +43,35 @@ export async function createCheckout(userId: string): Promise<{
           title,
           price,
           is_active
+        ),
+        product_color_sizes (
+          stock_quantity
         )
       `)
       .eq('cart_id', cart.id)
       .eq('is_selected', true);
 
-    if (itemsError) throw new Error(`Database error: ${itemsError.message}`);
+    if (itemsError) {
+      console.error('Error fetching cart items:', itemsError);
+      throw new Error(`Database error: ${itemsError.message}`);
+    }
     if (!cartItems || cartItems.length === 0) return { success: null, error: 'No items selected for checkout', status: 400 };
 
+    // is all products are still active?
     const inactiveProducts = cartItems.filter(item => !(item.products as any)?.is_active);
     if (inactiveProducts.length > 0) return { success: null, error: 'Some selected products are no longer available', status: 400 };
+
+    // is all products stock available?
+    const outOfStockItems = cartItems.filter(item => {
+      const stock = Array.isArray(item.product_color_sizes) ? item.product_color_sizes[0] : item.product_color_sizes;
+      return stock?.stock_quantity < item.quantity;
+    });
+    if (outOfStockItems.length > 0)
+      return {
+        success: false,
+        error: 'Some products in your checkout are out of stock',
+        status: 400
+      };
 
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
 
@@ -93,7 +112,6 @@ export async function createCheckout(userId: string): Promise<{
       checkoutId: checkout.id,
       expiresAt
     };
-
   } catch (error) {
     console.error('Error in createCheckout:', error);
     return { success: null, error: 'Internal server error', status: 500 };
