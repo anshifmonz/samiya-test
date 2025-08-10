@@ -9,9 +9,11 @@ export interface ApiRequestOptions {
   errorMessage?: string;
   showSuccessToast?: boolean;
   showErrorToast?: boolean;
-  showLoadingBar?: boolean; // New option to control loading bar
+  showLoadingBar?: boolean; // Control loading bar
   loadingBarDelay?: number; // Minimum time to show loading bar
   bustCache?: boolean; // Add cache-busting query parameter
+  retry?: boolean; // Whether to retry on failure (network errors or 5xx/429)
+  retryAttempts?: number; // Number of attempts when retry is enabled (e.g., 3)
 }
 
 export async function apiRequest<T = any>(
@@ -29,13 +31,9 @@ export async function apiRequest<T = any>(
     showLoadingBar = false,
     loadingBarDelay = 200,
     bustCache = false,
+    retry = false,
+    retryAttempts = 3,
   } = options;
-
-  let finalUrl = url;
-  if (bustCache) {
-    const separator = url.includes('?') ? '&' : '?';
-    finalUrl = `${url}${separator}_t=${Date.now()}`;
-  }
 
   // Start loading bar if requested using global tracker
   const startTime = Date.now();
@@ -44,75 +42,100 @@ export async function apiRequest<T = any>(
     requestId = globalLoadingTracker.startRequest();
   }
 
-  try {
-    const fetchOptions: RequestInit = {
-      method,
-      headers: {
-        ...headers,
-        ...(bustCache && {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
-        })
-      },
-    };
-    if (body !== undefined) {
-      fetchOptions.body = typeof body === 'string' ? body : JSON.stringify(body);
-      if (!headers['Content-Type']) {
-        fetchOptions.headers = {
-          ...fetchOptions.headers,
-          'Content-Type': 'application/json',
-        };
-      }
+  const isRetryableStatus = (status: number) => status === 429 || (status >= 500 && status < 600);
+  const totalAttempts = retry ? Math.max(1, retryAttempts ?? 3) : 1;
+
+  let lastError: string | null = null;
+  let lastResponse: Response | null = null;
+
+  for (let attempt = 1; attempt <= totalAttempts; attempt++) {
+    // Recompute URL if cache-busting is enabled so each attempt is unique
+    let finalUrl = url;
+    if (bustCache) {
+      const separator = url.includes('?') ? '&' : '?';
+      finalUrl = `${url}${separator}_t=${Date.now()}_${attempt}`;
     }
-    const response = await fetch(finalUrl, fetchOptions);
-    let data: any = null;
-    let error: string | null = null;
+
     try {
-      data = await response.json();
-    } catch (e) {
-      // Not a JSON response
-      data = null;
-    }
-    if (!response.ok) {
-      error = (data && data.error) || errorMessage || 'Request failed';
-      if (showErrorToast) {
-        showToast({ type: 'error', title: 'Error', description: error });
+      const fetchOptions: RequestInit = {
+        method,
+        headers: {
+          ...headers,
+          ...(bustCache && {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          })
+        },
+      };
+      if (body !== undefined) {
+        fetchOptions.body = typeof body === 'string' ? body : JSON.stringify(body);
+        if (!headers['Content-Type']) {
+          fetchOptions.headers = {
+            ...fetchOptions.headers,
+            'Content-Type': 'application/json',
+          };
+        }
       }
 
-      // Stop loading bar on error using global tracker
-      if (showLoadingBar && requestId) {
-        globalLoadingTracker.completeRequest(requestId);
+      const response = await fetch(finalUrl, fetchOptions);
+      let data: any = null;
+      try {
+        data = await response.json();
+      } catch (e) {
+        // Not a JSON response
+        data = null;
       }
 
-      return { data: null, error, response };
-    }
-    if (showSuccessToast && successMessage) {
-      showToast({ title: 'Success', description: successMessage });
-    }
+      if (response.ok) {
+        if (showSuccessToast && successMessage)
+          showToast({ title: 'Success', description: successMessage });
 
-    // Stop loading bar with minimum delay if requested using global tracker
-    if (showLoadingBar && requestId) {
-      const elapsed = Date.now() - startTime;
-      const remainingDelay = Math.max(0, loadingBarDelay - elapsed);
+        // Stop loading bar with minimum delay if requested using global tracker
+        if (showLoadingBar && requestId) {
+          const elapsed = Date.now() - startTime;
+          const remainingDelay = Math.max(0, loadingBarDelay - elapsed);
 
-      setTimeout(() => {
-        globalLoadingTracker.completeRequest(requestId!);
-      }, remainingDelay);
+          setTimeout(() => {
+            globalLoadingTracker.completeRequest(requestId!);
+          }, remainingDelay);
+        }
+
+        return { data, error: null, response };
+      }
+
+      // Handle non-OK responses
+      const errMsg = (data && data.error) || errorMessage || 'Request failed';
+      lastError = errMsg;
+      lastResponse = response;
+
+      // Decide whether to retry based on status code
+      if (attempt < totalAttempts && isRetryableStatus(response.status)) {
+        continue;
+      } else {
+        break;
+      }
+    } catch (err: any) {
+      // Network or fetch error
+      const errMsg = err?.message || errorMessage || 'Network error';
+      lastError = errMsg;
+      lastResponse = null;
+
+      if (attempt < totalAttempts) {
+        continue;
+      } else {
+        break;
+      }
     }
-
-    return { data, error: null, response };
-  } catch (err: any) {
-    const error = err?.message || errorMessage || 'Network error';
-    if (showErrorToast) {
-      showToast({ type: 'error', title: 'Error', description: error });
-    }
-
-    // Stop loading bar on exception using global tracker
-    if (showLoadingBar && requestId) {
-      globalLoadingTracker.completeRequest(requestId);
-    }
-
-    return { data: null, error, response: null };
   }
+
+  // If we reach here, all attempts failed
+  if (showErrorToast && lastError)
+    showToast({ type: 'error', title: 'Error', description: lastError });
+
+  // Stop loading bar on error using global tracker
+  if (showLoadingBar && requestId)
+    globalLoadingTracker.completeRequest(requestId);
+
+  return { data: null, error: lastError || errorMessage || 'Request failed', response: lastResponse };
 }
