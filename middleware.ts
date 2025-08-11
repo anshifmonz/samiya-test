@@ -7,6 +7,12 @@ export async function middleware(request: NextRequest) {
   const method = request.method;
   let response = NextResponse.next();
 
+  const ip = request.ip || request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || request.headers.get('cf-connecting-ip') || 'unknown';
+  const userAgent = request.headers.get('user-agent') || 'unknown';
+
+  response.headers.set('x-client-ip', ip);
+  response.headers.set('x-user-agent', userAgent);
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -29,19 +35,15 @@ export async function middleware(request: NextRequest) {
   )
 
   // ensure Supabase refreshes session cookies if needed
-  await supabase.auth.getUser()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (user) response.headers.set('x-user-id', user?.id);
 
   if (!pathname.startsWith('/admin') && !pathname.startsWith('/api/admin'))
     return response;
 
   const cookieSecret = process.env.COOKIE_SIGNING_SECRET;
   const adminAuthCookie = request.cookies.get('admin_auth');
-  const ip = request.ip || request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || request.headers.get('cf-connecting-ip') || 'unknown';
-  const userAgent = request.headers.get('user-agent') || 'unknown';
   const redirectToLogin = () => NextResponse.redirect(new URL('/admin/login', request.url));
-
-  response.headers.set('x-client-ip', ip);
-  response.headers.set('x-user-agent', userAgent);
 
   if (pathname === '/admin/login' || pathname === '/api/admin/login') {
     // is admin already logged in?
