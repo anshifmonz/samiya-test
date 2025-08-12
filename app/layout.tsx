@@ -19,12 +19,14 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Samiya Online - Luxury Wedding Collection",
-  description: "Discover exquisite wedding attire and traditional wear crafted for life's most precious moments. Premium bridal collection, sherwanis, and festive wear.",
+  title: "Samiya Online - Elegant Wedding & Party Dresses",
+  description:
+    "Discover exquisite wedding attire and traditional wear crafted for life's most precious moments. Elegant bridal collection, sherwanis, kurtis, salwar suits, and festive wear.",
   authors: [{ name: "Samiya Online" }],
   openGraph: {
-    title: "Samiya Online - Luxury Wedding Collection",
-    description: "Discover exquisite wedding attire and traditional wear crafted for life's most precious moments.",
+    title: "Samiya Online - Elegant Wedding & Party Dresses",
+    description:
+      "Discover exquisite wedding attire and traditional wear crafted for life's most precious moments.",
     type: "website",
     images: ["https://lovable.dev/opengraph-image-p98pqg.png"],
   },
