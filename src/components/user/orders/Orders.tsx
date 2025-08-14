@@ -5,6 +5,7 @@ import { ShoppingBag } from 'lucide-react';
 import OrderList from './OrderList';
 import OrderFilter from './OrderFilter';
 import OrderSummary from './OrderSummary';
+import OrderDetailsDialog from './OrderDetailsDialog';
 import { OrderHistory } from 'types/order';
 
 interface OrdersProps {
@@ -14,6 +15,8 @@ interface OrdersProps {
 const Orders = ({ initialOrders }: OrdersProps) => {
   const [selectedFilter, setSelectedFilter] = useState<string>("all");
   const [orders] = useState<OrderHistory[]>(initialOrders);
+  const [selectedOrder, setSelectedOrder] = useState<OrderHistory | null>(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
 
   const filterOrders = (orders: OrderHistory[], filter: string) => {
     const now = new Date();
@@ -64,6 +67,7 @@ const Orders = ({ initialOrders }: OrdersProps) => {
           <OrderList
             orders={filteredOrders}
             selectedFilter={selectedFilter}
+            onViewDetails={(order) => { setSelectedOrder(order); setDetailsOpen(true); }}
           />
 
           {/* Order Summary */}
@@ -72,6 +76,13 @@ const Orders = ({ initialOrders }: OrdersProps) => {
           )}
         </div>
       </div>
+
+      {/* Details Dialog */}
+      <OrderDetailsDialog
+        open={detailsOpen}
+        onOpenChange={(o) => setDetailsOpen(o)}
+        order={selectedOrder}
+      />
     </div>
   );
 };

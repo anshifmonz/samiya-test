@@ -1,19 +1,21 @@
-"use client";
+'use client';
 
 import { Badge } from 'ui/badge';
 import { Button } from 'ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from 'ui/card';
-import { Package, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { Package, Clock, CheckCircle, XCircle, CreditCard } from 'lucide-react';
 import { OrderHistory } from 'types/order';
 import OrderItems from './OrderItems';
+import PaymentStatus from '../payment/PaymentStatus';
 
 interface OrderCardProps {
   order: OrderHistory;
+  onViewDetails?: (order: OrderHistory) => void;
 }
 
-const OrderCard = ({ order }: OrderCardProps) => {
+const OrderCard = ({ order, onViewDetails }: OrderCardProps) => {
   const formatShippingAddress = (address: any) => {
-    if (!address) return 'No shipping address';
+    if (!address) return "No shipping address";
 
     const parts = [
       address.full_name,
@@ -23,10 +25,10 @@ const OrderCard = ({ order }: OrderCardProps) => {
       address.district,
       address.state,
       address.postal_code,
-      address.country
+      address.country,
     ].filter(Boolean);
 
-    return parts.join(', ');
+    return parts.join(", ");
   };
 
   const getStatusColor = (status: string) => {
@@ -64,10 +66,10 @@ const OrderCard = ({ order }: OrderCardProps) => {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
@@ -81,12 +83,19 @@ const OrderCard = ({ order }: OrderCardProps) => {
               Placed on {formatDate(order.created_at)}
             </p>
           </div>
-          <div className="text-right">
-            <Badge className={`₹{getStatusColor(order.status)} capitalize gap-1`}>
-              {getStatusIcon(order.status)}
-              {order.status}
-            </Badge>
-            <p className="text-lg font-semibold text-foreground mt-1">
+          <div className="text-right space-y-2">
+            <div className="flex flex-col gap-1">
+              <Badge
+                className={`${getStatusColor(order.status)} capitalize gap-1`}
+              >
+                {getStatusIcon(order.status)}
+                {order.status}
+              </Badge>
+              {order.payment_status && (
+                <PaymentStatus status={order.payment_status} size="sm" />
+              )}
+            </div>
+            <p className="text-lg font-semibold text-foreground">
               ₹{order.total_amount.toFixed(2)}
             </p>
           </div>
@@ -106,7 +115,11 @@ const OrderCard = ({ order }: OrderCardProps) => {
 
         {/* Order Actions */}
         <div className="flex gap-3 pt-4 border-t border-border">
-          <Button variant="outline" size="sm">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onViewDetails?.(order)}
+          >
             View Details
           </Button>
           {order.status === "delivered" && (
@@ -114,11 +127,26 @@ const OrderCard = ({ order }: OrderCardProps) => {
               Reorder
             </Button>
           )}
-          {(order.status === "pending" || order.status === "processing") && (
-            <Button variant="outline" size="sm" className="text-destructive hover:text-destructive">
-              Cancel Order
+          {order.payment_status === "failed" && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <CreditCard className="h-4 w-4" />
+              Retry Payment
             </Button>
           )}
+          {(order.status === "pending" || order.status === "processing") &&
+            order.payment_status !== "failed" && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-destructive hover:text-destructive"
+              >
+                Cancel Order
+              </Button>
+            )}
         </div>
       </CardContent>
     </Card>

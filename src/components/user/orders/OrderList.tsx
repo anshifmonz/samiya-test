@@ -8,9 +8,10 @@ import { OrderHistory } from 'types/order';
 interface OrderListProps {
   orders: OrderHistory[];
   selectedFilter: string;
+  onViewDetails?: (order: OrderHistory) => void;
 }
 
-const OrderList = ({ orders, selectedFilter }: OrderListProps) => {
+const OrderList = ({ orders, selectedFilter, onViewDetails }: OrderListProps) => {
   if (orders.length === 0) {
     return (
       <Card className="bg-profile-card border-profile-border p-8 text-center">
@@ -29,7 +30,7 @@ const OrderList = ({ orders, selectedFilter }: OrderListProps) => {
   return (
     <div className="space-y-4">
       {orders.map((order) => (
-        <OrderCard key={order.id} order={order} />
+        <OrderCard key={order.id} order={order} onViewDetails={onViewDetails} />
       ))}
     </div>
   );
