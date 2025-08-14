@@ -32,6 +32,9 @@ export async function getUserOrders(
         payment_status,
         created_at,
         updated_at,
+        shiprocket_order_id,
+        shiprocket_tracking_url,
+        shiprocket_awb_code,
         addresses:shipping_address_id (
           id,
           label,
@@ -123,6 +126,9 @@ export async function getUserOrders(
         payment_status: order.payment_status,
         created_at: order.created_at,
         updated_at: order.updated_at,
+        shiprocket_order_id: (order as any).shiprocket_order_id || null,
+        shiprocket_tracking_url: (order as any).shiprocket_tracking_url || null,
+        shiprocket_awb_code: (order as any).shiprocket_awb_code || null,
         items: itemsByOrderId[order.id] || [],
         shipping_address: Array.isArray(order.addresses) ? order.addresses[0] : order.addresses
       };
@@ -164,6 +170,9 @@ export async function getUserOrderById(
         payment_status,
         created_at,
         updated_at,
+        shiprocket_order_id,
+        shiprocket_tracking_url,
+        shiprocket_awb_code,
         addresses:shipping_address_id (
           id,
           label,
@@ -225,6 +234,9 @@ export async function getUserOrderById(
       payment_status: order.payment_status,
       created_at: order.created_at,
       updated_at: order.updated_at,
+      shiprocket_order_id: (order as any).shiprocket_order_id || null,
+      shiprocket_tracking_url: (order as any).shiprocket_tracking_url || null,
+      shiprocket_awb_code: (order as any).shiprocket_awb_code || null,
       items: (orderItems || []).map(item => ({
         id: item.id,
         order_id: item.order_id,

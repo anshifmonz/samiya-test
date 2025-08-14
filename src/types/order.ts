@@ -56,12 +56,19 @@ export interface CreateOrderRequest {
 }
 
 export interface CreateOrderResponse {
-  success: boolean;
+  success?: boolean;
   error?: string;
   status?: number;
   data?: {
     orderId: string;
-    orderSummary: OrderSummary;
+    payment_required?: boolean;
+    payment?: {
+      payment_session_id: string;
+      cf_order_id: string;
+      order_id: string;
+      payment_url?: string;
+    } | null;
+    payment_error?: string;
   };
 }
 
@@ -94,6 +101,10 @@ export interface OrderHistory {
   payment_status: string;
   created_at: string;
   updated_at: string;
+  // Tracking (optional)
+  shiprocket_order_id?: string | null;
+  shiprocket_tracking_url?: string | null;
+  shiprocket_awb_code?: string | null;
   // Related data
   items: OrderHistoryItem[];
   shipping_address?: {
