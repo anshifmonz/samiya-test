@@ -19,6 +19,7 @@ import { DeliveryOption } from 'types/delivery';
 import { Address, AddressDisplay } from 'types/address';
 import { PaymentMethod as PaymentMethodType } from 'types/payment';
 import { mapAddressToDisplay } from 'utils/addressMapper';
+import { useCashfreeCheckout } from 'hooks/useCashfreeCheckout';
 
 interface CheckoutProps {
   checkoutData?: CheckoutData;
@@ -75,6 +76,7 @@ const deliveryOptions: DeliveryOption[] = [
 
 const Checkout = ({ checkoutData, addresses: initialAddresses }: CheckoutProps) => {
   const router = useRouter();
+  const { startCheckout, isLoading } = useCashfreeCheckout();
 
   // Convert Address[] to AddressDisplay[] for consistency
   const [addresses, setAddresses] = useState<AddressDisplay[]>(
@@ -149,6 +151,7 @@ const Checkout = ({ checkoutData, addresses: initialAddresses }: CheckoutProps) 
     try {
       const selectedPaymentMethod = mockPaymentMethods.find(method => method.id === selectedPayment);
 
+      // Create the order first
       const { data, error } = await apiRequest('/api/user/order', {
         method: 'POST',
         body: {
@@ -169,12 +172,53 @@ const Checkout = ({ checkoutData, addresses: initialAddresses }: CheckoutProps) 
         return;
       }
 
-      toast({
-        title: "Order Placed Successfully!",
-        description: `Order ${data?.data?.orderSummary?.orderId ? `#${data.data.orderSummary.orderId.slice(-8)}` : ''} has been created. You will receive a confirmation email shortly.`,
+      // If payment is not required (COD), redirect to orders
+      if (!data?.data?.payment_required) {
+        toast({
+          title: "Order Placed Successfully!",
+          description: `Your order has been created. You will receive a confirmation email shortly.`,
+        });
+        router.push('/user/orders');
+        return;
+      }
+
+      // For online payments, use payment details bundled in response
+      const orderId = data.data.orderId;
+      const payment = data.data.payment;
+      if (!orderId || !payment || !payment.payment_session_id) {
+        toast({
+          title: "Payment Initiation Failed",
+          description: data?.data?.payment_error || 'Order was created but payment initiation failed. Please contact support.',
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const { success } = await startCheckout(payment.payment_session_id, 'modal');
+      if (!success) {
+        toast({
+          title: "Payment Failed",
+          description: 'Payment failed. Please try again.',
+          variant: "destructive",
+        });
+        return;
+      }
+
+      await apiRequest('/api/user/order/complete', {
+        method: 'POST',
+        body: {
+          checkoutId: checkoutData.checkout.id,
+          orderId,
+          paymentId: payment.id
+        },
+        showLoadingBar: true,
+        showErrorToast: false,
+        retry: true
       });
 
-      router.push('/user/orders');
+      router.push(`/user/orders`);
+      // const paymentUrl = `https://sandbox.cashfree.com/pg/orders/${payment.cf_order_id}/payments`;
+      // window.location.href = paymentUrl;
     } catch (error) {
       toast({
         title: "Order Failed",

@@ -1,5 +1,6 @@
 'use client';
 
+import React, { useState } from 'react';
 import { Label } from 'ui/label';
 import { Badge } from 'ui/badge';
 import { Button } from 'ui/button';
@@ -7,14 +8,18 @@ import { CreditCard, Plus } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from 'ui/radio-group';
 import { Card, CardContent, CardHeader, CardTitle } from 'ui/card';
 import { PaymentMethod as PaymentMethodType } from 'types/payment';
+import AddPaymentMethodDialog, { type AddPaymentMethodPayload } from './AddPaymentMethodDialog';
 
 interface PaymentMethodProps {
   paymentMethods: PaymentMethodType[];
   selectedPayment: string;
   onPaymentChange: (paymentId: string) => void;
+  onAddNewPaymentMethod?: (payload: AddPaymentMethodPayload) => void;
 }
 
-const PaymentMethod = ({ paymentMethods, selectedPayment, onPaymentChange }: PaymentMethodProps) => {
+const PaymentMethod = ({ paymentMethods, selectedPayment, onPaymentChange, onAddNewPaymentMethod }: PaymentMethodProps) => {
+  const [showAddModal, setShowAddModal] = useState(false);
+
   return (
     <Card>
       <CardHeader>
@@ -40,11 +45,20 @@ const PaymentMethod = ({ paymentMethods, selectedPayment, onPaymentChange }: Pay
             </div>
           ))}
         </RadioGroup>
-        <Button variant="outline" className="w-full">
+        <Button variant="outline" className="w-full" onClick={() => setShowAddModal(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Add New Payment Method
         </Button>
       </CardContent>
+
+      <AddPaymentMethodDialog
+        open={showAddModal}
+        onOpenChange={setShowAddModal}
+        onAdded={(payload) => {
+          // Bubble up to parent to actually add and persist if desired
+          onAddNewPaymentMethod?.(payload);
+        }}
+      />
     </Card>
   );
 };
