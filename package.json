@@ -10,6 +10,8 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@cashfreepayments/cashfree-js": "^1.0.5",
+    "@cashfreepayments/pg-react": "^1.0.3",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
@@ -48,6 +50,7 @@
     "bcryptjs": "^3.0.2",
     "browser-image-compression": "^2.0.2",
     "caniuse-lite": "^1.0.30001726",
+    "cashfree-pg": "^5.0.8",
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.7.0",
     "clsx": "^2.1.1",
@@ -55,6 +58,7 @@
     "color-namer": "^1.4.0",
     "date-fns": "^3.6.0",
     "embla-carousel-react": "^8.3.0",
+    "framer-motion": "^12.23.12",
     "input-otp": "^1.2.4",
     "lucide-react": "^0.462.0",
     "next": "^14.2.5",
