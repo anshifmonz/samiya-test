@@ -35,9 +35,10 @@ const Footer = () => {
           <div className="text-center sm:text-left sm:flex-1 sm:min-w-[150px] sm:max-w-[200px] sm:pl-16">
             <h4 className="luxury-body font-medium mb-4 text-sm sm:text-base tracking-wide text-red-500 uppercase">Support</h4>
             <ul className="space-y-2 sm:space-y-3 text-sm sm:text-base text-luxury-black/70">
-              <li><Link href="#navbar" className="hover:text-red-400 transition-colors">Size Guide</Link></li>
-              <li><Link href="/cancellation-and-refund-policy" className="hover:text-red-400 transition-colors">Cancellation & Refund Policy</Link></li>
+              <li><Link href="/privacy-policy" className="hover:text-red-400 transition-colors">Privacy Policy</Link></li>
               <li><Link href="/terms-and-conditions" className="hover:text-red-400 transition-colors">Terms & Conditions</Link></li>
+              <li><Link href="/cancellation-and-refund-policy" className="hover:text-red-400 transition-colors">Cancellation & Refund Policy</Link></li>
+              <li><Link href="/shipping-policy" className="hover:text-red-400 transition-colors">Shipping Policy</Link></li>
               <li><Link href="/contact" className="hover:text-red-400 transition-colors">Contact Us</Link></li>
             </ul>
           </div>
