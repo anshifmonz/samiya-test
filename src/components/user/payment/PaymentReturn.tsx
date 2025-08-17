@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from 'ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from 'ui/card';
@@ -14,7 +14,6 @@ import {
 
 interface PaymentReturnProps {
   orderId?: string;
-  cfOrderId?: string;
   status?: string;
 }
 
@@ -26,15 +25,18 @@ interface PaymentStatus {
   transaction_details?: any;
 }
 
-const PaymentReturn = ({ orderId, cfOrderId, status }: PaymentReturnProps) => {
+const PaymentReturn = ({ orderId, status }: PaymentReturnProps) => {
   const router = useRouter();
   const [paymentStatus, setPaymentStatus] = useState<PaymentStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [verifying, setVerifying] = useState(false);
+  const isFirstLoad = useRef(true);
 
   useEffect(() => {
+    if (!isFirstLoad.current) return;
+    isFirstLoad.current = false;
     verifyPaymentStatus();
-  }, [orderId, cfOrderId]);
+  }, [orderId]);
 
   const verifyPaymentStatus = async () => {
     try {
@@ -42,8 +44,7 @@ const PaymentReturn = ({ orderId, cfOrderId, status }: PaymentReturnProps) => {
 
       // First try to verify the payment status
       const requestBody: PaymentVerificationRequest = {
-        orderId,
-        cfOrderId
+        orderId
       };
 
       const { data: verifyData, error: verifyError } =
@@ -72,7 +73,6 @@ const PaymentReturn = ({ orderId, cfOrderId, status }: PaymentReturnProps) => {
     try {
       const params = new URLSearchParams();
       if (orderId) params.append('orderId', orderId);
-      if (cfOrderId) params.append('cfOrderId', cfOrderId);
 
       const { data, error } = await apiRequest<PaymentStatusResponse>(
         `/api/payment/verify?${params.toString()}`,

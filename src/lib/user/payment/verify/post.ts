@@ -1,10 +1,7 @@
-import { supabaseAdmin } from "lib/supabase";
-import { fetchCashfreeOrder, mapCashfreeStatus } from "utils/payment/cashfree";
-import {
-  type PaymentVerificationRequest,
-  type PaymentVerificationResponse,
-} from "types/payment";
-import { consumeStockForUser, releaseStockForUser } from "lib/inventory";
+import { supabaseAdmin } from 'lib/supabase';
+import { fetchCashfreeOrder, mapCashfreeStatus } from 'utils/payment/cashfree';
+import { type PaymentVerificationRequest, type PaymentVerificationResponse } from 'types/payment';
+import { consumeStockForUser, releaseStockForUser } from 'lib/inventory';
 
 // Types for query results
 interface PaymentWithOrder {
@@ -35,12 +32,12 @@ export async function verifyPayment(
 
     if (!orderId && !cfOrderId)
       return {
-        body: { error: "Either orderId or cfOrderId is required" },
-        status: 400,
+        body: { error: 'Either orderId or cfOrderId is required' },
+        status: 400
       };
 
     // Find payment record
-    let paymentQuery = supabaseAdmin.from("payments").select(`
+    let paymentQuery = supabaseAdmin.from('payments').select(`
         id,
         order_id,
         cf_order_id,
@@ -52,19 +49,19 @@ export async function verifyPayment(
       `);
 
     if (orderId) {
-      paymentQuery = paymentQuery.eq("order_id", orderId);
+      paymentQuery = paymentQuery.eq('order_id', orderId);
     } else {
-      paymentQuery = paymentQuery.eq("cf_order_id", cfOrderId);
+      paymentQuery = paymentQuery.eq('cf_order_id', cfOrderId);
     }
 
     const { data: payment, error: paymentError } = (await paymentQuery
-      .eq("orders.user_id", userId)
+      .eq('orders.user_id', userId)
       .single()) as { data: PaymentWithOrder | null; error: any };
 
     if (paymentError || !payment || !payment.orders)
-      return { body: { error: "Payment record not found" }, status: 404 };
+      return { body: { error: 'Payment record not found' }, status: 404 };
 
-    if (payment.status === "completed") {
+    if (payment.status === 'completed') {
       // Ensure stock is consumed if not already done (based on user's processing checkout)
       await consumeStockForUser(userId);
 
@@ -72,32 +69,32 @@ export async function verifyPayment(
         body: {
           success: true,
           data: {
-            payment_status: "completed",
+            payment_status: 'completed',
             order_status: payment.status,
             cf_order_id: payment.cf_order_id,
-            payment_amount: payment.payment_amount,
-          },
+            payment_amount: payment.payment_amount
+          }
         },
-        status: 200,
+        status: 200
       };
     }
 
     // Fetch latest status from Cashfree
-    const cashfreeResult = await fetchCashfreeOrder(payment.cf_order_id);
+    const cashfreeResult = await fetchCashfreeOrder(payment.order_id);
 
     if (!cashfreeResult.success)
       return {
-        body: { error: "Failed to verify payment status" },
-        status: 500,
+        body: { error: 'Failed to verify payment status' },
+        status: 500
       };
 
     const cfOrder = cashfreeResult.data;
     const newPaymentStatus = mapCashfreeStatus(cfOrder?.order_status);
 
     // Side effects based on final status
-    if (newPaymentStatus === "completed") {
+    if (newPaymentStatus === 'completed') {
       await consumeStockForUser(userId);
-    } else if (newPaymentStatus === "failed") {
+    } else if (newPaymentStatus === 'failed') {
       await releaseStockForUser(userId);
     }
 
@@ -105,28 +102,28 @@ export async function verifyPayment(
     const updateData: any = {
       status: newPaymentStatus,
       gateway_response: cfOrder,
-      updated_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     };
 
     const { error: updateError } = await supabaseAdmin
-      .from("payments")
+      .from('payments')
       .update(updateData)
-      .eq("id", payment.id);
+      .eq('id', payment.id);
 
     if (updateError) {
-      console.error("Failed to update payment record:", updateError);
+      console.error('Failed to update payment record:', updateError);
     }
 
     // Update order status based on payment status
     let orderStatus = payment.orders.status;
     let orderPaymentStatus = payment.orders.payment_status;
 
-    if (newPaymentStatus === "completed") {
-      orderStatus = "confirmed";
-      orderPaymentStatus = "paid";
-    } else if (newPaymentStatus === "failed") {
-      orderStatus = "cancelled";
-      orderPaymentStatus = "failed";
+    if (newPaymentStatus === 'completed') {
+      orderStatus = 'confirmed';
+      orderPaymentStatus = 'paid';
+    } else if (newPaymentStatus === 'failed') {
+      orderStatus = 'cancelled';
+      orderPaymentStatus = 'failed';
     }
 
     // Update order if status changed
@@ -135,16 +132,15 @@ export async function verifyPayment(
       orderPaymentStatus !== payment.orders.payment_status
     ) {
       const { error: orderUpdateError } = await supabaseAdmin
-        .from("orders")
+        .from('orders')
         .update({
           status: orderStatus,
           payment_status: orderPaymentStatus,
-          updated_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
         })
-        .eq("id", payment.order_id);
+        .eq('id', payment.order_id);
 
-      if (orderUpdateError)
-        console.error("Failed to update order status:", orderUpdateError);
+      if (orderUpdateError) console.error('Failed to update order status:', orderUpdateError);
     }
 
     return {
@@ -155,13 +151,13 @@ export async function verifyPayment(
           order_status: orderStatus,
           payment_amount: payment.payment_amount,
           cf_order_id: payment.cf_order_id,
-          transaction_details: cfOrder,
-        },
+          transaction_details: cfOrder
+        }
       },
-      status: 200,
+      status: 200
     };
   } catch (error) {
-    console.error("Payment verification error:", error);
-    return { body: { error: "Internal server error" }, status: 500 };
+    console.error('Payment verification error:', error);
+    return { body: { error: 'Internal server error' }, status: 500 };
   }
 }
