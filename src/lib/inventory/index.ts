@@ -1,203 +1,149 @@
 import { supabaseAdmin } from 'lib/supabase';
-import { StockReservation } from 'types/order';
+import { type StockReservation } from 'types/order';
 
-// Types aligned with previous reserveStock.ts
-interface ReserveStockItem {
+type ReserveStockRPCRequestItem = {
   product_id: string;
   color_id: string;
   size_id: string;
   quantity: number;
-}
+};
 
-interface ReserveStockResponse {
+async function reserveStock(
+  items: ReserveStockRPCRequestItem[],
+  checkoutId: string,
+  minutes: number = 15
+): Promise<{
   success: boolean;
   error?: string;
-  status?: number;
   reservations?: StockReservation[];
-}
-
-export type InventoryItem = ReserveStockItem;
-
-/** Reserve stock for multiple items using logical reservations */
-export async function reserveStock(
-  items: ReserveStockItem[],
-  checkoutId: string,
-  reservationDurationMinutes: number = 15
-): Promise<ReserveStockResponse> {
+  status?: number;
+}> {
   try {
-    if (!items || !Array.isArray(items) || items.length === 0) return { success: false, error: 'Items array is required and cannot be empty', status: 400 };
+    if (!Array.isArray(items) || items.length === 0)
+      return { success: false, error: 'Items array is required and cannot be empty', status: 400 };
+    if (!checkoutId)
+      return { success: false, error: 'Checkout session ID is required', status: 400 };
 
-    // Validate each item
-    for (let i = 0; i < items.length; i++) {
-      const item = items[i];
-      if (!item.product_id || typeof item.product_id !== 'string')
-        return { success: false, error: `Item ${i}: Product ID is required and must be a string`, status: 400 };
-      if (!item.color_id || typeof item.color_id !== 'string')
-        return { success: false, error: `Item ${i}: Color ID is required and must be a string`, status: 400 };
-      if (!item.size_id || typeof item.size_id !== 'string')
-        return { success: false, error: `Item ${i}: Size ID is required and must be a string`, status: 400 };
-      if (!item.quantity || typeof item.quantity !== 'number' || item.quantity <= 0)
-        return { success: false, error: `Item ${i}: Quantity must be a positive number`, status: 400 };
+    const { data, error } = await supabaseAdmin.rpc('reserve_stock_rpc', {
+      p_checkout_session_id: checkoutId,
+      p_items: items,
+      p_reservation_minutes: minutes
+    });
+
+    if (error) {
+      console.error('reserve_stock_rpc error:', error);
+      return { success: false, error: 'Failed to reserve stock', status: 500 };
     }
 
-    const reservedUntil = new Date(Date.now() + reservationDurationMinutes * 60 * 1000).toISOString();
-    const reservations: StockReservation[] = [];
+    const resp = data as any;
+    console.log('reserve_stock_rpc response:', resp?.error);
+    if (!resp?.success)
+      return { success: false, error: resp?.error || 'Reservation failed', status: 400 };
 
-    // Check stock availability considering existing reservations
-    const stockChecks = await Promise.all(
-      items.map(async (item) => {
-        // Get actual stock quantity
-        const { data: stockData, error: stockError } = await supabaseAdmin
-          .from('product_color_sizes')
-          .select('stock_quantity')
-          .eq('product_id', item.product_id)
-          .eq('color_id', item.color_id)
-          .eq('size_id', item.size_id)
-          .single();
-
-        if (stockError) {
-          if ((stockError as any).code === 'PGRST116')
-            return { success: false, error: `Product variant not found: ${item.product_id}-${item.color_id}-${item.size_id}` };
-          throw new Error(`Database error checking stock: ${(stockError as any).message}`);
-        }
-
-        // Get currently reserved quantities for this variant
-        const { data: reservedData, error: reservedError } = await supabaseAdmin
-          .from('reserved_stock')
-          .select('quantity')
-          .eq('product_id', item.product_id)
-          .eq('color_id', item.color_id)
-          .eq('size_id', item.size_id)
-          .eq('status', 'active')
-          .gt('expires_at', new Date().toISOString());
-
-        if (reservedError) {
-          throw new Error(`Database error checking reservations: ${(reservedError as any).message}`);
-        }
-
-        // Calculate total reserved quantity
-        const totalReserved = reservedData?.reduce((sum, res) => sum + res.quantity, 0) || 0;
-        const availableStock = (stockData as any).stock_quantity - totalReserved;
-
-        // Check if enough stock is available after considering reservations
-        if (availableStock < item.quantity) {
-          return {
-            success: false,
-            error: `Insufficient stock for product variant ${item.product_id}-${item.color_id}-${item.size_id}. Available: ${availableStock}, Requested: ${item.quantity}`
-          };
-        }
-
-        return { success: true, availableStock } as any;
-      })
-    );
-
-    // Check if any stock checks failed
-    const failedCheck = stockChecks.find((check: any) => !check.success);
-    if (failedCheck) return { success: false, error: failedCheck.error, status: 400 };
-
-    // Create logical reservations in the database
-    for (const item of items) {
-      const sessionId = checkoutId;
-
-      if (!sessionId) {
-        await rollbackReservations(reservations);
-        return { success: false, error: 'Checkout session ID is required for reservation', status: 400 };
-      }
-
-      // Create reservation record in database
-      const reservationData = {
-        product_id: item.product_id,
-        color_id: item.color_id,
-        size_id: item.size_id,
-        checkout_session_id: sessionId,
-        quantity: item.quantity,
-        expires_at: reservedUntil,
-        status: 'active'
-      } as any;
-
-      const { error: reservationError } = await supabaseAdmin
-        .from('reserved_stock')
-        .insert(reservationData);
-
-      if (reservationError) {
-        await rollbackReservations(reservations);
-        if ((reservationError as any).code === '23505') // unique constraint violation
-          return { success: false, error: 'This item is already reserved for this checkout session', status: 409 };
-        throw new Error(`Database error creating reservation: ${(reservationError as any).message}`);
-      }
-
-      // Create reservation object for response
-      const reservation: StockReservation = {
-        product_id: item.product_id,
-        color_id: item.color_id,
-        size_id: item.size_id,
-        quantity: item.quantity,
-        reserved_until: reservedUntil
-      };
-
-      reservations.push(reservation);
-    }
+    const reservations: StockReservation[] = (resp.reservations || []).map((r: any) => ({
+      product_id: r.product_id,
+      color_id: r.color_id,
+      size_id: r.size_id,
+      quantity: r.quantity,
+      reserved_until: r.reserved_until
+    }));
 
     return { success: true, reservations };
-
-  } catch (error) {
-    console.error('Error in reserveStock:', error);
+  } catch (e) {
+    console.error('reserveStockRPC exception:', e);
     return { success: false, error: 'Internal server error', status: 500 };
   }
 }
 
-// Release reserved stock by marking reservations as released (by items)
-export async function releaseStockReservations(reservations: StockReservation[]): Promise<{ success: boolean; error?: string }> {
+async function releaseStockReservations(
+  reservations: StockReservation[]
+): Promise<{ success: boolean; released?: number; error?: string; status?: number }> {
   try {
-    if (!reservations || !Array.isArray(reservations) || reservations.length === 0)
-      return { success: true }; // Nothing to release
+    if (!Array.isArray(reservations) || reservations.length === 0)
+      return { success: true, released: 0 };
 
-    for (const reservation of reservations) {
-      const { error: updateError } = await supabaseAdmin
-        .from('reserved_stock')
-        .update({ status: 'released', updated_at: new Date().toISOString() })
-        .eq('product_id', reservation.product_id)
-        .eq('color_id', reservation.color_id)
-        .eq('size_id', reservation.size_id)
-        .eq('quantity', reservation.quantity)
-        .eq('status', 'active');
+    const { data, error } = await supabaseAdmin.rpc('release_reservations_rpc', {
+      p_reservations: reservations
+    });
 
-      if (updateError) console.error('Error releasing stock reservation:', updateError);
+    if (error) {
+      console.error('release_reservations_rpc error:', error);
+      return { success: false, error: 'Failed to release reservations', status: 500 };
     }
 
-    return { success: true };
-  } catch (error) {
-    console.error('Error in releaseStockReservations:', error);
-    return { success: false, error: 'Internal server error' };
+    const resp = data as any;
+    if (!resp?.success)
+      return { success: false, error: resp?.error || 'Release failed', status: 400 };
+
+    return { success: true, released: Number(resp.released || 0) };
+  } catch (e) {
+    console.error('releaseStockReservationsRPC exception:', e);
+    return { success: false, error: 'Internal server error', status: 500 };
   }
 }
 
-// Release reservations by checkout session ID
-export async function releaseStock(checkoutSessionId: string): Promise<{ success: boolean; error?: string }> {
+async function releaseStock(
+  checkoutId: string
+): Promise<{ success: boolean; released?: number; error?: string; status?: number }> {
   try {
-    if (!checkoutSessionId) return { success: false, error: 'Checkout session ID is required' };
+    if (!checkoutId)
+      return { success: false, error: 'Checkout session ID is required', status: 400 };
 
-    const { error: updateError } = await supabaseAdmin
-      .from('reserved_stock')
-      .update({ status: 'released', updated_at: new Date().toISOString() })
-      .eq('checkout_session_id', checkoutSessionId)
-      .eq('status', 'active');
+    const { data, error } = await supabaseAdmin.rpc('release_stock_rpc', {
+      p_checkout_session_id: checkoutId
+    });
 
-    if (updateError) return { success: false, error: 'Failed to release reservations' };
+    if (error) {
+      console.error('release_stock error:', error);
+      return { success: false, error: 'Failed to release reservations', status: 500 };
+    }
+
+    const resp = data as any;
+    if (!resp?.success)
+      return { success: false, error: resp?.error || 'Release failed', status: 400 };
+
+    return { success: true, released: Number(resp.released || 0) };
+  } catch (e) {
+    console.error('releaseStockByCheckoutRPC exception:', e);
+    return { success: false, error: 'Internal server error', status: 500 };
+  }
+}
+
+async function consumeStock(
+  checkoutId: string
+): Promise<{ success: boolean; error?: string; status?: number }> {
+  try {
+    if (!checkoutId) return { success: false, error: 'Checkout ID is required', status: 400 };
+
+    const { data, error } = await supabaseAdmin.rpc('consume_stock_rpc', {
+      p_checkout_id: checkoutId
+    });
+
+    if (error) {
+      console.error('consume_stock_rpc error:', error);
+      return { success: false, error: 'Failed to consume stock', status: 500 };
+    }
+
+    const resp = data as any;
+    if (!resp?.success)
+      return { success: false, error: resp?.error || 'Consume stock failed', status: 400 };
 
     return { success: true };
-  } catch (error) {
-    console.error('Error in releaseStock:', error);
-    return { success: false, error: 'Internal server error' };
+  } catch (e) {
+    console.error('consumeStock exception:', e);
+    return { success: false, error: 'Internal server error', status: 500 };
   }
 }
 
 // Helper: rollback reservations when failing reservation flow
 async function rollbackReservations(reservations: StockReservation[]): Promise<void> {
   if (reservations.length === 0) return;
-  try { await releaseStockReservations(reservations); } catch (e) { console.error('Error during rollback:', e); }
+  try {
+    await releaseStockReservations(reservations);
+  } catch (e) {
+    console.error('Error during rollback:', e);
+  }
 }
-
 
 /** Locate the current processing checkout for a user (latest). */
 async function findProcessingCheckoutId(userId: string): Promise<string | null> {
@@ -213,125 +159,9 @@ async function findProcessingCheckoutId(userId: string): Promise<string | null> 
 }
 
 /**
- * Consume stock for a checkout by:
- * 1) Verifying reservations are still active and not expired
- * 2) Decrementing product_color_sizes stock quantities per checkout_items
- * 3) Marking reservations as consumed
- *
- * NOTE: For full concurrency safety, this should be implemented as a single transactional SQL RPC
- * that uses row-level locking. This function implements an optimistic concurrency approach with
- * compare-and-swap updates per variant and limited retries.
- */
-export async function consumeStock(checkoutId: string): Promise<{ success: boolean; error?: string }> {
-  try {
-    if (!checkoutId) return { success: false, error: 'Checkout ID is required' };
-
-    // 1) Ensure checkout exists and not expired
-    const { data: checkout, error: checkoutError } = await supabaseAdmin
-      .from('checkout')
-      .select('id, status')
-      .eq('id', checkoutId)
-      .single();
-
-    if (checkoutError || !checkout) return { success: false, error: 'Checkout not found' };
-
-    // 2) Fetch active reservations for this checkout; if none, treat as idempotent success
-    const { data: reservations, error: resErr } = await supabaseAdmin
-      .from('reserved_stock')
-      .select('product_id, color_id, size_id, quantity, expires_at, status')
-      .eq('checkout_session_id', checkoutId)
-      .eq('status', 'active');
-
-    if (resErr) return { success: false, error: 'Failed to load reservations' };
-    if (!reservations || reservations.length === 0) return { success: true };
-
-    // 3) Get checkout items to know per-variant quantities to deduct
-    const { data: items, error: itemsErr } = await supabaseAdmin
-      .from('checkout_items')
-      .select('product_id, color_id, size_id, quantity')
-      .eq('checkout_id', checkoutId);
-
-    if (itemsErr) return { success: false, error: 'Failed to load checkout items' };
-    if (!items || items.length === 0) return { success: false, error: 'No items found in checkout' };
-
-    // Optional: verify quantities against reservations (sum by variant)
-    const sumByKey: Record<string, number> = {};
-    for (const r of reservations) {
-      const key = `${r.product_id}|${r.color_id}|${r.size_id}`;
-      sumByKey[key] = (sumByKey[key] || 0) + (r.quantity as number);
-    }
-    for (const it of items) {
-      const key = `${it.product_id}|${it.color_id}|${it.size_id}`;
-      const reservedQty = sumByKey[key] || 0;
-      if (reservedQty < it.quantity) {
-        return { success: false, error: 'Reserved quantity mismatch; cannot consume' };
-      }
-    }
-
-    // 4) Decrement stock per item using optimistic concurrency (3 retries per item)
-    for (const it of items) {
-      const needed = it.quantity as number;
-      let attempt = 0;
-      let success = false;
-
-      while (attempt < 3 && !success) {
-        attempt++;
-        // Read current stock
-        const { data: pcs, error: pcsErr } = await supabaseAdmin
-          .from('product_color_sizes')
-          .select('stock_quantity')
-          .eq('product_id', it.product_id)
-          .eq('color_id', it.color_id)
-          .eq('size_id', it.size_id)
-          .single();
-
-        if (pcsErr || !pcs) return { success: false, error: 'Product variant not found while consuming stock' };
-
-        const currentQty: number = pcs.stock_quantity as number;
-        if (currentQty < needed) return { success: false, error: 'Insufficient stock at consume time' };
-
-        const newQty = currentQty - needed;
-        const { error: updErr, data: updData } = await supabaseAdmin
-          .from('product_color_sizes')
-          .update({ stock_quantity: newQty, updated_at: new Date().toISOString() as any })
-          .eq('product_id', it.product_id)
-          .eq('color_id', it.color_id)
-          .eq('size_id', it.size_id)
-          // CAS: only apply if the row has not changed since we read it
-          .eq('stock_quantity', currentQty)
-          .select('product_id');
-
-        if (!updErr && updData && updData.length > 0) {
-          success = true;
-        } else {
-          // concurrent modification; retry
-          continue;
-        }
-      }
-
-      if (!success) return { success: false, error: 'Failed to decrement stock due to concurrent updates' };
-    }
-
-    // 5) Mark reservations as consumed
-    const { error: consErr } = await supabaseAdmin
-      .from('reserved_stock')
-      .update({ status: 'consumed', updated_at: new Date().toISOString() })
-      .eq('checkout_session_id', checkoutId)
-      .eq('status', 'active');
-
-    if (consErr) return { success: false, error: 'Stock decremented but failed to finalize reservations' };
-
-    return { success: true };
-  } catch (err) {
-    console.error('consumeStock error:', err);
-    return { success: false, error: 'Internal server error' };
-  }
-}
-
-/**
  * Convenience: Consume stock for the currently processing checkout of a user
  */
-export async function consumeStockForUser(userId: string): Promise<{ success: boolean; error?: string }> {
+async function consumeStockForUser(userId: string): Promise<{ success: boolean; error?: string }> {
   const checkoutId = await findProcessingCheckoutId(userId);
   if (!checkoutId) return { success: false, error: 'No processing checkout found for user' };
   return consumeStock(checkoutId);
@@ -340,16 +170,17 @@ export async function consumeStockForUser(userId: string): Promise<{ success: bo
 /**
  * Convenience: Release stock for the currently processing checkout of a user
  */
-export async function releaseStockForUser(userId: string): Promise<{ success: boolean; error?: string }> {
+async function releaseStockForUser(userId: string): Promise<{ success: boolean; error?: string }> {
   const checkoutId = await findProcessingCheckoutId(userId);
   if (!checkoutId) return { success: false, error: 'No processing checkout found for user' };
   return releaseStock(checkoutId);
 }
 
-/**
- * Clean up expired reservations by marking them as expired.
- */
-export async function cleanupExpiredReservations(): Promise<{ success: boolean; error?: string; cleanedCount?: number }> {
+async function cleanupExpiredReservations(): Promise<{
+  success: boolean;
+  error?: string;
+  cleanedCount?: number;
+}> {
   try {
     const { data: expiredReservations, error: updateError } = await supabaseAdmin
       .from('reserved_stock')
@@ -366,3 +197,16 @@ export async function cleanupExpiredReservations(): Promise<{ success: boolean; 
     return { success: false, error: 'Internal server error' };
   }
 }
+
+export {
+  reserveStock,
+  releaseStockReservations,
+  releaseStock,
+  consumeStock,
+  rollbackReservations,
+  findProcessingCheckoutId,
+  consumeStockForUser,
+  releaseStockForUser,
+  cleanupExpiredReservations
+};
+export type { ReserveStockRPCRequestItem, StockReservation };
