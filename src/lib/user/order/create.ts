@@ -10,10 +10,14 @@ export async function createOrder(
   paymentMethod?: string
 ): Promise<CreateOrderResponse> {
   try {
-    if (!userId || typeof userId !== 'string') return { success: false, error: 'User ID is required and must be a string', status: 400 };
-    if (!checkoutId || typeof checkoutId !== 'string') return { success: false, error: 'Checkout ID is required and must be a string', status: 400 };
-    if (paymentMethod && typeof paymentMethod !== 'string') return { success: false, error: 'Payment method must be a string', status: 400 };
-    if (paymentMethod && !['card', 'upi', 'netbanking', 'wallet'].includes(paymentMethod)) return { success: false, error: 'Invalid payment method', status: 400 };
+    if (!userId || typeof userId !== 'string')
+      return { success: false, error: 'User ID is required and must be a string', status: 400 };
+    if (!checkoutId || typeof checkoutId !== 'string')
+      return { success: false, error: 'Checkout ID is required and must be a string', status: 400 };
+    if (paymentMethod && typeof paymentMethod !== 'string')
+      return { success: false, error: 'Payment method must be a string', status: 400 };
+    if (paymentMethod && !['card', 'upi', 'netbanking', 'wallet'].includes(paymentMethod))
+      return { success: false, error: 'Invalid payment method', status: 400 };
 
     // get checkout data
     // verify it belongs to the user
@@ -27,7 +31,11 @@ export async function createOrder(
 
     if (checkoutError) {
       if (checkoutError.code === 'PGRST116')
-        return { success: false, error: 'Checkout session not found or already processed', status: 404 };
+        return {
+          success: false,
+          error: 'Checkout session not found or already processed',
+          status: 404
+        };
       throw new Error(`Database error: ${checkoutError.message}`);
     }
 
@@ -36,7 +44,8 @@ export async function createOrder(
 
     const { data: checkoutItems, error: itemsError } = await supabaseAdmin
       .from('checkout_items')
-      .select(`
+      .select(
+        `
         id,
         product_id,
         color_id,
@@ -47,10 +56,11 @@ export async function createOrder(
         products:product_id (
           is_active
         ),
-        product_color_sizes:product_id, color_id, size_id (
+        product_color_sizes (
           stock_quantity
         )
-      `)
+      `
+      )
       .eq('checkout_id', checkoutId);
 
     if (itemsError) throw new Error(`Database error: ${itemsError.message}`);
@@ -72,7 +82,9 @@ export async function createOrder(
 
     // is all products stock available?
     const outOfStockItems = checkoutItems.filter(item => {
-      const stock = Array.isArray(item.product_color_sizes) ? item.product_color_sizes[0] : item.product_color_sizes;
+      const stock = Array.isArray(item.product_color_sizes)
+        ? item.product_color_sizes[0]
+        : item.product_color_sizes;
       return stock?.stock_quantity < item.quantity;
     });
     if (outOfStockItems.length > 0)
@@ -82,7 +94,10 @@ export async function createOrder(
         status: 400
       };
 
-    const totalAmount = checkoutItems.reduce((sum, item) => sum + (item.product_price * item.quantity), 0);
+    const totalAmount = checkoutItems.reduce(
+      (sum, item) => sum + item.product_price * item.quantity,
+      0
+    );
 
     const stockItems = checkoutItems.map(item => ({
       product_id: item.product_id,
@@ -114,8 +129,7 @@ export async function createOrder(
       .select('id, created_at')
       .single();
 
-    if (orderError)
-      return { success: false, error: 'Failed to create order', status: 500 };
+    if (orderError) return { success: false, error: 'Failed to create order', status: 500 };
 
     const orderItemsData = checkoutItems.map(item => ({
       order_id: order.id,
@@ -141,23 +155,36 @@ export async function createOrder(
       .update({ status: 'processing' })
       .eq('id', checkoutId);
 
-    if (updateCheckoutError)
-      console.error('Error updating checkout status:', updateCheckoutError);
+    if (updateCheckoutError) console.error('Error updating checkout status:', updateCheckoutError);
 
     // Attempt payment initiation if online payment (block if reservation has expired)
-    let paymentDetails: { payment_session_id: string; cf_order_id: string; order_id: string; payment_url?: string } | null = null;
+    let paymentDetails: {
+      payment_session_id: string;
+      cf_order_id: string;
+      order_id: string;
+      payment_url?: string;
+    } | null = null;
     let paymentError: string | undefined;
 
     if (paymentMethod && paymentMethod !== 'cod') {
       const maxAttempts = 3;
       for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-        const { body, status } = await initiatePaymentSession(userId, order.id, (paymentMethod as any));
+        const { body, status } = await initiatePaymentSession(
+          userId,
+          order.id,
+          paymentMethod as any
+        );
         if (status !== 200) {
           const errMsg = (body as any)?.error || 'Failed to initiate payment';
           if (attempt === maxAttempts) paymentError = errMsg;
           continue;
         }
-        const data = (body as any).data as { payment_session_id: string; cf_order_id: string; order_id: string; payment_url?: string };
+        const data = (body as any).data as {
+          payment_session_id: string;
+          cf_order_id: string;
+          order_id: string;
+          payment_url?: string;
+        };
         paymentDetails = data;
         break;
       }
