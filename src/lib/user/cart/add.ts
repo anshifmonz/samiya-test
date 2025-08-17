@@ -102,8 +102,7 @@ export async function addToCart(userId: string, productId: string, colorId: stri
           product_id: productId,
           color_id: colorId,
           size_id: sizeId,
-          quantity,
-          price: product.price
+          quantity
         });
 
       if (insertError) throw new Error(`Database error: ${insertError.message}`);
