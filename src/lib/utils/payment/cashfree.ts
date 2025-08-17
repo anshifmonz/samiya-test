@@ -1,10 +1,18 @@
-import { Cashfree, CFEnvironment, CreateOrderRequest, OrderEntity, CustomerDetails, OrderMeta } from 'cashfree-pg';
+import {
+  Cashfree,
+  CFEnvironment,
+  CreateOrderRequest,
+  OrderEntity,
+  CustomerDetails,
+  OrderMeta
+} from 'cashfree-pg';
 
 // Cashfree configuration
 export const cashfreeConfig = {
   clientId: process.env.CASHFREE_CLIENT_ID!,
   clientSecret: process.env.CASHFREE_CLIENT_SECRET!,
-  environment: process.env.NODE_ENV === 'production' ? CFEnvironment.PRODUCTION : CFEnvironment.SANDBOX,
+  environment:
+    process.env.NODE_ENV === 'production' ? CFEnvironment.PRODUCTION : CFEnvironment.SANDBOX,
   apiVersion: '2025-01-01'
 };
 
@@ -14,7 +22,9 @@ let cashfreeInstance: Cashfree | null = null;
 export const getCashfreeInstance = (): Cashfree => {
   if (!cashfreeInstance) {
     if (!cashfreeConfig.clientId || !cashfreeConfig.clientSecret) {
-      throw new Error('Cashfree credentials not configured. Please set CASHFREE_CLIENT_ID and CASHFREE_CLIENT_SECRET environment variables.');
+      throw new Error(
+        'Cashfree credentials not configured. Please set CASHFREE_CLIENT_ID and CASHFREE_CLIENT_SECRET environment variables.'
+      );
     }
 
     cashfreeInstance = new Cashfree(
@@ -110,10 +120,10 @@ export interface CashfreeOrderFetchResult {
 export const fetchCashfreeOrder = async (orderId: string): Promise<CashfreeOrderFetchResult> => {
   try {
     const cashfree = getCashfreeInstance();
-    const response = await cashfree.PGFetchOrder(orderId);
+    const { data } = await cashfree.PGFetchOrder(orderId);
     return {
       success: true,
-      data: response.data
+      data
     };
   } catch (error: any) {
     console.error('Cashfree order fetch error:', error);
@@ -159,7 +169,7 @@ export const mapCashfreeStatus = (cfStatus: string): string => {
 // Generate return URL for the application
 export const generateReturnUrl = (orderId: string): string => {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-  return `${baseUrl}/payment/return?order_id=${orderId}`;
+  return `${baseUrl}/user/payment/status?order_id=${orderId}`;
 };
 
 // Generate webhook URL for payment notifications
