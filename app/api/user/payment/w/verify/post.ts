@@ -9,4 +9,3 @@ export async function POST(request: NextRequest) {
   const { body, status } = await processWebhook(signature, timestamp, rawBody);
   return NextResponse.json(body, { status });
 }
-
