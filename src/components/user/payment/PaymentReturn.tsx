@@ -75,7 +75,7 @@ const PaymentReturn = ({ orderId, status }: PaymentReturnProps) => {
       if (orderId) params.append('orderId', orderId);
 
       const { data, error } = await apiRequest<PaymentStatusResponse>(
-        `/api/payment/verify?${params.toString()}`,
+        `/api/user/payment/verify?${params.toString()}`,
         {
           method: 'GET'
         }
