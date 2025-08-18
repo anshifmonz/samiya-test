@@ -32,22 +32,22 @@ const mockPaymentMethods: PaymentMethodType[] = [
     type: 'card',
     name: 'Credit Card',
     details: '**** **** **** 1234',
-    isDefault: true,
+    isDefault: true
   },
   {
     id: '2',
     type: 'upi',
     name: 'UPI',
     details: 'john@paytm',
-    isDefault: false,
+    isDefault: false
   },
   {
     id: '3',
     type: 'cod',
     name: 'Cash on Delivery',
     details: 'Pay when you receive',
-    isDefault: false,
-  },
+    isDefault: false
+  }
 ];
 
 const deliveryOptions: DeliveryOption[] = [
@@ -56,22 +56,22 @@ const deliveryOptions: DeliveryOption[] = [
     name: 'Standard Delivery',
     price: 99,
     estimatedDays: '5-7 business days',
-    description: 'Free delivery on orders above ₹1000',
+    description: 'Free delivery on orders above ₹1000'
   },
   {
     id: 'express',
     name: 'Express Delivery',
     price: 199,
     estimatedDays: '2-3 business days',
-    description: 'Faster delivery to your doorstep',
+    description: 'Faster delivery to your doorstep'
   },
   {
     id: 'same-day',
     name: 'Same Day Delivery',
     price: 299,
     estimatedDays: 'Today by 9 PM',
-    description: 'Available for select locations',
-  },
+    description: 'Available for select locations'
+  }
 ];
 
 const Checkout = ({ checkoutData, addresses: initialAddresses }: CheckoutProps) => {
@@ -95,53 +95,53 @@ const Checkout = ({ checkoutData, addresses: initialAddresses }: CheckoutProps) 
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
   if (!checkoutData || !checkoutData.items || checkoutData.items.length === 0) {
-    return <EmptyCheckout />
+    return <EmptyCheckout />;
   }
 
   const subtotal = checkoutData.total;
   const selectedDeliveryOption = deliveryOptions.find(option => option.id === selectedDelivery);
-  const deliveryCharges = subtotal > 1000 && selectedDelivery === 'standard' ? 0 : selectedDeliveryOption?.price || 0;
+  const deliveryCharges =
+    subtotal > 1000 && selectedDelivery === 'standard' ? 0 : selectedDeliveryOption?.price || 0;
   const totalAmount = subtotal + deliveryCharges;
 
   const handleAddressAdded = (newAddress: AddressDisplay) => {
     setAddresses(prev => [...prev, newAddress]);
-    if (addresses.length === 0 || newAddress.isDefault)
-      setSelectedAddress(newAddress.id);
+    if (addresses.length === 0 || newAddress.isDefault) setSelectedAddress(newAddress.id);
   };
 
   const handlePlaceOrder = async () => {
     if (!selectedAddress) {
       toast({
-        title: "Address Required",
-        description: "Please select a shipping address.",
-        variant: "destructive",
+        title: 'Address Required',
+        description: 'Please select a shipping address.',
+        variant: 'destructive'
       });
       return;
     }
 
     if (!selectedPayment) {
       toast({
-        title: "Payment Method Required",
-        description: "Please select a payment method.",
-        variant: "destructive",
+        title: 'Payment Method Required',
+        description: 'Please select a payment method.',
+        variant: 'destructive'
       });
       return;
     }
 
     if (!acceptTerms) {
       toast({
-        title: "Accept Terms",
-        description: "Please accept the terms and conditions.",
-        variant: "destructive",
+        title: 'Accept Terms',
+        description: 'Please accept the terms and conditions.',
+        variant: 'destructive'
       });
       return;
     }
 
     if (!checkoutData?.checkout?.id) {
       toast({
-        title: "Checkout Error",
-        description: "Invalid checkout session. Please try again.",
-        variant: "destructive",
+        title: 'Checkout Error',
+        description: 'Invalid checkout session. Please try again.',
+        variant: 'destructive'
       });
       return;
     }
@@ -149,7 +149,9 @@ const Checkout = ({ checkoutData, addresses: initialAddresses }: CheckoutProps) 
     setIsPlacingOrder(true);
 
     try {
-      const selectedPaymentMethod = mockPaymentMethods.find(method => method.id === selectedPayment);
+      const selectedPaymentMethod = mockPaymentMethods.find(
+        method => method.id === selectedPayment
+      );
 
       // Create the order first
       const { data, error } = await apiRequest('/api/user/order', {
@@ -165,9 +167,9 @@ const Checkout = ({ checkoutData, addresses: initialAddresses }: CheckoutProps) 
 
       if (error) {
         toast({
-          title: "Order Failed",
+          title: 'Order Failed',
           description: error,
-          variant: "destructive",
+          variant: 'destructive'
         });
         return;
       }
@@ -175,8 +177,8 @@ const Checkout = ({ checkoutData, addresses: initialAddresses }: CheckoutProps) 
       // If payment is not required (COD), redirect to orders
       if (!data?.data?.payment_required) {
         toast({
-          title: "Order Placed Successfully!",
-          description: `Your order has been created. You will receive a confirmation email shortly.`,
+          title: 'Order Placed Successfully!',
+          description: `Your order has been created. You will receive a confirmation email shortly.`
         });
         router.push('/user/orders');
         return;
@@ -187,43 +189,29 @@ const Checkout = ({ checkoutData, addresses: initialAddresses }: CheckoutProps) 
       const payment = data.data.payment;
       if (!orderId || !payment || !payment.payment_session_id) {
         toast({
-          title: "Payment Initiation Failed",
-          description: data?.data?.payment_error || 'Order was created but payment initiation failed. Please contact support.',
-          variant: "destructive",
+          title: 'Payment Initiation Failed',
+          description:
+            data?.data?.payment_error ||
+            'Order was created but payment initiation failed. Please contact support.',
+          variant: 'destructive'
         });
         return;
       }
 
-      const { success } = await startCheckout(payment.payment_session_id, 'modal');
+      const { success } = await startCheckout(payment.payment_session_id, '_self');
       if (!success) {
         toast({
-          title: "Payment Failed",
+          title: 'Payment Failed',
           description: 'Payment failed. Please try again.',
-          variant: "destructive",
+          variant: 'destructive'
         });
         return;
       }
-
-      await apiRequest('/api/user/order/complete', {
-        method: 'POST',
-        body: {
-          checkoutId: checkoutData.checkout.id,
-          orderId,
-          paymentId: payment.id
-        },
-        showLoadingBar: true,
-        showErrorToast: false,
-        retry: true
-      });
-
-      router.push(`/user/orders`);
-      // const paymentUrl = `https://sandbox.cashfree.com/pg/orders/${payment.cf_order_id}/payments`;
-      // window.location.href = paymentUrl;
     } catch (error) {
       toast({
-        title: "Order Failed",
-        description: "There was an unexpected error placing your order. Please try again.",
-        variant: "destructive",
+        title: 'Order Failed',
+        description: 'There was an unexpected error placing your order. Please try again.',
+        variant: 'destructive'
       });
     } finally {
       setIsPlacingOrder(false);
