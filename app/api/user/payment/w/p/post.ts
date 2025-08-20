@@ -6,6 +6,6 @@ export async function POST(request: NextRequest) {
   const timestamp = request.headers.get('x-webhook-timestamp');
   const rawBody = await request.text();
 
-  const { body, status } = await processWebhook(signature, timestamp, rawBody);
-  return NextResponse.json(body, { status });
+  const status = await processWebhook(signature, timestamp, rawBody);
+  return NextResponse.json({}, { status });
 }

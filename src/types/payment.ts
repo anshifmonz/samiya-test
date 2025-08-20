@@ -74,49 +74,6 @@ export interface PaymentStatusResponse {
   error?: string;
 }
 
-// Webhook types
-export type CashfreeWebhookType =
-  | 'PAYMENT_SUCCESS_WEBHOOK'
-  | 'PAYMENT_FAILED_WEBHOOK'
-  | 'PAYMENT_USER_DROPPED_WEBHOOK'
-  | 'ORDER_PAID_WEBHOOK';
-
-export interface CashfreeWebhookOrderData {
-  order_id: string;
-  cf_order_id: string;
-  order_amount: number;
-  order_status: string;
-  payment_session_id: string;
-  order_currency: string;
-  order_tags?: Record<string, string>;
-}
-
-export interface CashfreeWebhookPaymentData {
-  cf_payment_id: string;
-  order_id: string;
-  entity: string;
-  payment_currency: string;
-  payment_amount: number;
-  payment_time: string;
-  payment_completion_time: string;
-  payment_status: string;
-  payment_message: string;
-  bank_reference: string;
-  auth_id: string;
-  payment_method: {
-    [key: string]: any;
-  };
-  payment_group: string;
-}
-
-export interface CashfreeWebhookData {
-  type: CashfreeWebhookType;
-  data: {
-    order?: CashfreeWebhookOrderData;
-    payment?: CashfreeWebhookPaymentData;
-  };
-}
-
 // Database payment record types
 export interface PaymentRecord {
   id: string;
