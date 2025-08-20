@@ -48,7 +48,7 @@ const PaymentReturn = ({ orderId, status }: PaymentReturnProps) => {
       };
 
       const { data: verifyData, error: verifyError } =
-        await apiRequest<PaymentVerificationResponse>('/api/payment/verify', {
+        await apiRequest<PaymentVerificationResponse>('/api/user/payment/verify', {
           method: 'POST',
           body: requestBody
         });
