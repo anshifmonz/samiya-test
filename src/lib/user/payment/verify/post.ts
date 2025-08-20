@@ -118,12 +118,15 @@ export async function verifyPayment(
     let orderStatus = payment.orders.status;
     let orderPaymentStatus = payment.orders.payment_status;
 
-    if (newPaymentStatus === 'completed') {
+    if (newPaymentStatus === 'paid') {
       orderStatus = 'confirmed';
-      orderPaymentStatus = 'paid';
-    } else if (newPaymentStatus === 'failed') {
+    } else if (newPaymentStatus === 'unpaid') {
+      orderStatus = 'pending';
+    } else if (
+      newPaymentStatus === 'failed' ||
+      newPaymentStatus === 'dropped'
+    ) {
       orderStatus = 'cancelled';
-      orderPaymentStatus = 'failed';
     }
 
     // Update order if status changed

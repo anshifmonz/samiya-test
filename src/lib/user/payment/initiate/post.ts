@@ -2,7 +2,6 @@ import { supabaseAdmin } from 'lib/supabase';
 import {
   createCashfreeOrder,
   generateReturnUrl,
-  generateWebhookUrl,
   type CashfreeOrderRequest
 } from 'utils/payment/cashfree';
 import { mapErrorToPaymentError, formatPaymentError } from 'utils/payment/errorHandling';
@@ -78,7 +77,7 @@ export async function initiatePaymentSession(
       .from('payments')
       .select('id, payment_session_id, cf_order_id, status')
       .eq('order_id', orderId)
-      .eq('status', 'pending')
+      .eq('status', 'unpaid')
       .single();
 
     if (existingPayment && existingPayment.payment_session_id) {
@@ -134,7 +133,6 @@ export async function initiatePaymentSession(
       },
       order_meta: {
         return_url: generateReturnUrl(orderId),
-        notify_url: generateWebhookUrl(),
         payment_methods: cfPaymentMethods
       },
       order_note: `Payment for order ${orderId}`,
@@ -169,7 +167,7 @@ export async function initiatePaymentSession(
       payment_currency: 'INR',
       payment_gateway: 'cashfree',
       method: paymentMethod,
-      status: 'pending',
+      status: 'unpaid',
       gateway_response: paymentResult.data
     };
 
@@ -191,7 +189,7 @@ export async function initiatePaymentSession(
     await supabaseAdmin
       .from('orders')
       .update({
-        status: 'processing',
+        status: 'pending',
         payment_method: 'cashfree',
         updated_at: new Date().toISOString()
       })

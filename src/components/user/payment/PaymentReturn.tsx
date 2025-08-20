@@ -91,10 +91,14 @@ const PaymentReturn = ({ orderId, status }: PaymentReturnProps) => {
     if (!paymentStatus) return <Clock className="h-12 w-12 text-muted-foreground" />;
 
     switch (paymentStatus.payment_status) {
-      case 'completed':
+      case 'paid':
         return <CheckCircle className="h-12 w-12 text-green-500" />;
       case 'failed':
+      case 'dropped':
         return <XCircle className="h-12 w-12 text-red-500" />;
+      case 'refunded':
+        return <CheckCircle className="h-12 w-12 text-blue-500" />;
+      case 'unpaid':
       default:
         return <Clock className="h-12 w-12 text-yellow-500" />;
     }
@@ -105,14 +109,17 @@ const PaymentReturn = ({ orderId, status }: PaymentReturnProps) => {
     if (!paymentStatus) return 'Unable to verify payment status';
 
     switch (paymentStatus.payment_status) {
-      case 'completed':
+      case 'paid':
         return 'Payment Successful!';
       case 'failed':
         return 'Payment Failed';
-      case 'pending':
-        return 'Payment Pending';
+      case 'dropped':
+        return 'Payment Dropped';
+      case 'refunded':
+        return 'Payment Refunded';
+      case 'unpaid':
       default:
-        return 'Payment Status Unknown';
+        return 'Payment Pending';
     }
   };
 
@@ -122,14 +129,17 @@ const PaymentReturn = ({ orderId, status }: PaymentReturnProps) => {
       return 'We encountered an issue verifying your payment. Please contact support.';
 
     switch (paymentStatus.payment_status) {
-      case 'completed':
+      case 'paid':
         return 'Your payment has been processed successfully. Your order is confirmed and you will receive a confirmation email shortly.';
       case 'failed':
         return 'Your payment could not be processed. Please try again or contact support if the issue persists.';
-      case 'pending':
-        return 'Your payment is being processed. This may take a few minutes. You will be notified once the payment is confirmed.';
+      case 'dropped':
+        return 'It looks like you did not complete the payment. You can try again from your orders page or contact support for help.';
+      case 'refunded':
+        return 'This payment has been refunded to your original payment method. Check your bank/app for the refund or contact support if you have questions.';
+      case 'unpaid':
       default:
-        return 'We are unable to determine your payment status. Please contact support for assistance.';
+        return 'Your payment is pending. This may take a few minutes — you will be notified once it is confirmed.';
     }
   };
 
