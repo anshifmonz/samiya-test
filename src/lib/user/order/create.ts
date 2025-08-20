@@ -44,27 +44,16 @@ export async function createOrder(
     let paymentError: string | undefined;
 
     if (paymentMethod && paymentMethod !== 'cod') {
-      const maxAttempts = 3;
-      for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-        const { body, status } = await initiatePaymentSession(
-          userId,
-          orderId,
-          paymentMethod as any
-        );
-        if (status !== 200) {
-          const errMsg = (body as any)?.error || 'Failed to initiate payment';
-          if (attempt === maxAttempts) paymentError = errMsg;
-          continue;
-        }
-        const data = (body as any).data as {
-          payment_session_id: string;
-          cf_order_id: string;
-          order_id: string;
-          payment_url?: string;
-        };
-        paymentDetails = data;
-        break;
-      }
+      const { body, status } = await initiatePaymentSession(userId, orderId, paymentMethod as any);
+      if (status !== 200) return { success: false, error: 'Internal server error', status: 500 };
+
+      const data = (body as any).data as {
+        payment_session_id: string;
+        cf_order_id: string;
+        order_id: string;
+        payment_url?: string;
+      };
+      paymentDetails = data;
     }
 
     return {
