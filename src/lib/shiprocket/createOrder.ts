@@ -135,7 +135,10 @@ async function createSROrderForLocalOrder(localOrderId: string): Promise<ApiResp
       weight: 1
     };
 
-    const sr = await srApiCreateOrder(token, payload);
+    const { data: sr } = await retry(async () => {
+      return await srApiCreateOrder(token, payload);
+    });
+
     if (!sr) {
       retry(async () => {
         return supabaseAdmin.rpc('mark_shiprocket_creation_failed', {
