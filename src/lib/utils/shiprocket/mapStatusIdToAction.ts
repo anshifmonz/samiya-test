@@ -35,7 +35,6 @@ export const mapStatusIdToAction = (statusId: number | string): 1 | 2 | 3 | 4 | 
     case 15: // RTO Initiated
     case 19: // Out for Delivery
     case 20: // In Transit
-    case 21: // Return Pending
     case 22: // Return Initiated
     case 23: // Return Pickup Queued
     case 25: // Return In Transit
@@ -79,7 +78,8 @@ export const mapStatusIdToAction = (statusId: number | string): 1 | 2 | 3 | 4 | 
       return 1;
 
     // === 2: CREATE_RETURN_REQUEST (merchant must initiate/schedule return pickup) ===
-    // return 2;
+    case 21: // Return Pending
+      return 2;
 
     // === 3: CREATE_REFUND and RETURN_REQUEST (policy-driven refund for delivered/lost/damaged) ===
     case 33: // Lost
