@@ -64,7 +64,7 @@ export interface SRReturnOrderPayload {
   shipping_isd_code?: string;
   shipping_phone: number;
   order_items: SRReturnOrderItem[];
-  payment_method: 'Prepaid';
+  payment_method: string;
   total_discount?: string;
   sub_total: number;
   length: number;
