@@ -1,42 +1,55 @@
-import { useMemo } from "react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line } from "recharts";
-import { BarChart3, PieChart as PieChartIcon, TrendingUp, Users, Clock } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "ui/card";
-import { useActivityLogsContext } from "contexts/ActivityLogsContext";
+import { useMemo } from 'react';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  LineChart,
+  Line
+} from 'recharts';
+import { BarChart3, PieChart as PieChartIcon, TrendingUp, Users, Clock } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from 'ui/card';
+import { useActivityLogsContext } from 'contexts/admin/activity-logs/ActivityLogsContext';
 
 const COLORS = {
-  create: "hsl(var(--create))",
-  update: "hsl(var(--update))",
-  delete: "hsl(var(--delete))",
-  login: "hsl(var(--login))",
-  logout: "hsl(var(--logout))",
+  create: 'hsl(var(--create))',
+  update: 'hsl(var(--update))',
+  delete: 'hsl(var(--delete))',
+  login: 'hsl(var(--login))',
+  logout: 'hsl(var(--logout))'
 };
 
 // Generate unique colors for admins based on their username hash
 const generateAdminColor = (adminName: string): string => {
   const colors = [
-    "hsl(220, 70%, 50%)",   // Blue
-    "hsl(142, 71%, 45%)",   // Green
-    "hsl(271, 76%, 53%)",   // Purple
-    "hsl(25, 85%, 60%)",    // Orange
-    "hsl(348, 75%, 59%)",   // Red
-    "hsl(191, 85%, 56%)",   // Cyan
-    "hsl(48, 94%, 55%)",    // Yellow
-    "hsl(283, 69%, 44%)",   // Violet
-    "hsl(162, 73%, 46%)",   // Teal
-    "hsl(14, 90%, 61%)",    // Red-Orange
-    "hsl(197, 71%, 52%)",   // Light Blue
-    "hsl(120, 61%, 50%)",   // Lime Green
-    "hsl(300, 76%, 72%)",   // Pink
-    "hsl(39, 87%, 55%)",    // Amber
-    "hsl(262, 83%, 58%)",   // Indigo
+    'hsl(220, 70%, 50%)', // Blue
+    'hsl(142, 71%, 45%)', // Green
+    'hsl(271, 76%, 53%)', // Purple
+    'hsl(25, 85%, 60%)', // Orange
+    'hsl(348, 75%, 59%)', // Red
+    'hsl(191, 85%, 56%)', // Cyan
+    'hsl(48, 94%, 55%)', // Yellow
+    'hsl(283, 69%, 44%)', // Violet
+    'hsl(162, 73%, 46%)', // Teal
+    'hsl(14, 90%, 61%)', // Red-Orange
+    'hsl(197, 71%, 52%)', // Light Blue
+    'hsl(120, 61%, 50%)', // Lime Green
+    'hsl(300, 76%, 72%)', // Pink
+    'hsl(39, 87%, 55%)', // Amber
+    'hsl(262, 83%, 58%)' // Indigo
   ];
 
   // Use a simple hash of the admin name to ensure consistent color assignment
   let hash = 0;
   for (let i = 0; i < adminName.length; i++) {
     const char = adminName.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
+    hash = (hash << 5) - hash + char;
     hash = hash & hash; // Convert to 32bit integer
   }
 
@@ -57,7 +70,7 @@ export const ActivityCharts = () => {
     const actionData = Object.entries(actionCounts).map(([action, count]) => ({
       name: action.charAt(0).toUpperCase() + action.slice(1),
       value: count,
-      color: COLORS[action as keyof typeof COLORS] || "hsl(var(--muted))"
+      color: COLORS[action as keyof typeof COLORS] || 'hsl(var(--muted))'
     }));
 
     // Activity over time for bar chart
@@ -90,10 +103,13 @@ export const ActivityCharts = () => {
       .sort(([a], [b]) => new Date(a).getTime() - new Date(b).getTime())
       .map(([date, adminCounts]) => ({
         date: new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-        ...uniqueAdmins.reduce((acc, admin) => ({
-          ...acc,
-          [admin]: adminCounts[admin] || 0
-        }), {})
+        ...uniqueAdmins.reduce(
+          (acc, admin) => ({
+            ...acc,
+            [admin]: adminCounts[admin] || 0
+          }),
+          {}
+        )
       }));
 
     // Hourly heatmap data
@@ -121,7 +137,8 @@ export const ActivityCharts = () => {
   }, [activities]);
 
   const totalActivities = activities.length;
-  const successRate = activities.filter(a => a.status === 'success').length / totalActivities * 100;
+  const successRate =
+    (activities.filter(a => a.status === 'success').length / totalActivities) * 100;
 
   return (
     <div className="space-y-6">
@@ -137,9 +154,7 @@ export const ActivityCharts = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-luxury-black">{totalActivities}</div>
-            <p className="text-xs text-muted-foreground">
-              {successRate.toFixed(1)}% success rate
-            </p>
+            <p className="text-xs text-muted-foreground">{successRate.toFixed(1)}% success rate</p>
             <div className="mt-2 h-2 w-full bg-muted rounded-full overflow-hidden">
               <div
                 className="h-full bg-success transition-all duration-300"
@@ -175,10 +190,10 @@ export const ActivityCharts = () => {
                 </Pie>
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "hsl(var(--card))",
-                    border: "1px solid hsl(var(--muted))",
-                    borderRadius: "6px",
-                    color: "hsl(var(--foreground))"
+                    backgroundColor: 'hsl(var(--card))',
+                    border: '1px solid hsl(var(--muted))',
+                    borderRadius: '6px',
+                    color: 'hsl(var(--foreground))'
                   }}
                 />
               </PieChart>
@@ -186,10 +201,7 @@ export const ActivityCharts = () => {
             <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
               {chartData.actionData.map((item, i) => (
                 <div key={i} className="flex items-center gap-2">
-                  <div
-                    className="h-2 w-2 rounded-full"
-                    style={{ backgroundColor: item.color }}
-                  />
+                  <div className="h-2 w-2 rounded-full" style={{ backgroundColor: item.color }} />
                   <span className="text-muted-foreground">
                     {item.name}: {item.value}
                   </span>
@@ -215,26 +227,22 @@ export const ActivityCharts = () => {
                   dataKey="date"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
+                  tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
                 />
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
+                  tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "hsl(var(--card))",
-                    border: "1px solid hsl(var(--muted))",
-                    borderRadius: "6px",
-                    color: "hsl(var(--foreground))"
+                    backgroundColor: 'hsl(var(--card))',
+                    border: '1px solid hsl(var(--muted))',
+                    borderRadius: '6px',
+                    color: 'hsl(var(--foreground))'
                   }}
                 />
-                <Bar
-                  dataKey="activities"
-                  fill="hsl(var(--primary))"
-                  radius={[4, 4, 0, 0]}
-                />
+                <Bar dataKey="activities" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -259,19 +267,19 @@ export const ActivityCharts = () => {
                   dataKey="date"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
+                  tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
                 />
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
+                  tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "hsl(var(--card))",
-                    border: "1px solid hsl(var(--muted))",
-                    borderRadius: "6px",
-                    color: "hsl(var(--foreground))"
+                    backgroundColor: 'hsl(var(--card))',
+                    border: '1px solid hsl(var(--muted))',
+                    borderRadius: '6px',
+                    color: 'hsl(var(--foreground))'
                   }}
                 />
                 {chartData.uniqueAdmins.map(admin => (
@@ -315,7 +323,10 @@ export const ActivityCharts = () => {
                 {/* Hours header */}
                 <div className="flex gap-1 text-xs text-muted-foreground mb-2 pl-10">
                   {Array.from({ length: 24 }, (_, i) => (
-                    <div key={i} className="w-4 h-4 text-center text-[10px] flex items-center justify-center">
+                    <div
+                      key={i}
+                      className="w-4 h-4 text-center text-[10px] flex items-center justify-center"
+                    >
                       {i % 6 === 0 ? i : ''}
                     </div>
                   ))}
@@ -324,9 +335,7 @@ export const ActivityCharts = () => {
                 {/* Heatmap grid */}
                 {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, dayIndex) => (
                   <div key={day} className="flex gap-1 items-center">
-                    <div className="text-xs text-muted-foreground w-8 text-right pr-2">
-                      {day}
-                    </div>
+                    <div className="text-xs text-muted-foreground w-8 text-right pr-2">{day}</div>
                     <div className="flex gap-1">
                       {Array.from({ length: 24 }, (_, hour) => {
                         const cell = chartData.heatmapMatrix.find(
@@ -340,9 +349,10 @@ export const ActivityCharts = () => {
                             key={hour}
                             className="w-4 h-4 rounded-sm border border-muted/50 hover:border-foreground transition-colors cursor-pointer"
                             style={{
-                              backgroundColor: intensity > 0
-                                ? `hsl(var(--primary) / ${0.2 + intensity * 0.8})`
-                                : 'hsl(var(--muted) / 0.3)'
+                              backgroundColor:
+                                intensity > 0
+                                  ? `hsl(var(--primary) / ${0.2 + intensity * 0.8})`
+                                  : 'hsl(var(--muted) / 0.3)'
                             }}
                             title={`${day} ${hour}:00 - ${cell?.value || 0} activities`}
                           />
@@ -361,9 +371,10 @@ export const ActivityCharts = () => {
                         key={i}
                         className="w-3 h-3 rounded-sm border border-muted/50"
                         style={{
-                          backgroundColor: intensity > 0
-                            ? `hsl(var(--primary) / ${0.2 + intensity * 0.8})`
-                            : 'hsl(var(--muted) / 0.3)'
+                          backgroundColor:
+                            intensity > 0
+                              ? `hsl(var(--primary) / ${0.2 + intensity * 0.8})`
+                              : 'hsl(var(--muted) / 0.3)'
                         }}
                       />
                     ))}

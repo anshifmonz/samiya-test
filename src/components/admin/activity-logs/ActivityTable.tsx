@@ -1,16 +1,23 @@
-import { useState } from "react";
-import { format } from "date-fns";
-import { Eye, EyeOff, User, Globe, Monitor } from "lucide-react";
-import { Badge } from "ui/badge";
-import { Button } from "ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "ui/card";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "ui/dialog";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "ui/table";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "ui/tooltip";
-import { ScrollArea } from "ui/scroll-area";
-import { ActivityDetection } from "./ActivityDetection";
-import { cn } from "lib/utils";
-import { useActivityLogsContext } from "contexts/ActivityLogsContext";
+import { useState } from 'react';
+import { format } from 'date-fns';
+import { Eye, EyeOff, User, Globe, Monitor } from 'lucide-react';
+import { Badge } from 'ui/badge';
+import { Button } from 'ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from 'ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from 'ui/dialog';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from 'ui/table';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from 'ui/tooltip';
+import { ScrollArea } from 'ui/scroll-area';
+import { ActivityDetection } from './ActivityDetection';
+import { cn } from 'lib/utils';
+import { useActivityLogsContext } from 'contexts/admin/activity-logs/ActivityLogsContext';
 
 const getActionBadgeVariant = (action: string) => {
   switch (action) {
@@ -69,7 +76,7 @@ const EntityIdDisplay = ({ entityId }: { entityId: string | null }) => {
         onClick={handleToggle}
         className="h-7 w-7 p-1 text-muted-foreground hover:text-luxury-black hover:bg-gray-100 rounded flex items-center justify-center transition-colors"
         type="button"
-        title={isRevealed ? "Hide entity ID" : "Show full entity ID"}
+        title={isRevealed ? 'Hide entity ID' : 'Show full entity ID'}
       >
         {isRevealed ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
       </button>
@@ -110,8 +117,8 @@ export const ActivityTable = () => {
                 <TableRow>
                   <TableCell colSpan={8} className="text-center text-admin-muted-foreground py-8">
                     {activityData.allActivities.length === 0
-                      ? "Loading activity data..."
-                      : "No activities match your current filters"}
+                      ? 'Loading activity data...'
+                      : 'No activities match your current filters'}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -120,166 +127,189 @@ export const ActivityTable = () => {
                     key={activity.id}
                     className="border-admin-muted hover:bg-admin-muted/30 transition-colors"
                   >
-                  <TableCell className="text-luxury-black font-mono text-sm">
-                    {format(new Date(activity.created_at), 'MMM dd hh:mm a')}
-                  </TableCell>
-                  <TableCell>
-                    <div className="space-y-2">
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <div className="flex items-center gap-2">
-                              <User className="h-4 w-4 text-muted-foreground" />
-                              <span className="text-luxury-black font-medium">
-                                {activity.admin_username}
-                              </span>
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent className="bg-admin-card border-admin-muted">
-                            <div className="space-y-1 text-xs">
-                              <p className="text-luxury-black">Admin ID: {activity.admin_id}</p>
-                              {activity.ip_address && (
-                                <div className="flex items-center gap-1">
-                                  <Globe className="h-3 w-3" />
-                                  <span>IP: {activity.ip_address}</span>
-                                </div>
-                              )}
-                              {activity.user_agent && (
-                                <div className="flex items-center gap-1">
-                                  <Monitor className="h-3 w-3" />
-                                  <span>UA: {truncateText(activity.user_agent, 30)}</span>
-                                </div>
-                              )}
-                            </div>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                      <ActivityDetection activity={activity} allActivities={allActivities} />
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={cn("text-xs font-medium hover:bg-", getActionBadgeVariant(activity.action))}>
-                      {activity.action.toUpperCase()}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-luxury-black capitalize">
-                    {activity.entity_type}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground text-sm font-mono">
-                    {activity.table_name || '-'}
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={cn("text-xs font-medium hover:bg-", getStatusBadgeVariant(activity.status))}>
-                      {activity.status.toUpperCase()}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground text-sm font-mono">
-                    {activity.request_path ? truncateText(activity.request_path, 30) : '-'}
-                  </TableCell>
-                  <TableCell>
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-muted-foreground hover:text-luxury-black"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-2xl max-h-[90vh] bg-admin-card border-admin-muted flex flex-col bg-[#fefefe]">
-                        <DialogHeader className="flex-shrink-0">
-                          <DialogTitle className="text-luxury-black">
-                            Activity Details
-                          </DialogTitle>
-                          <DialogDescription className="text-muted-foreground">
-                            Full details for activity {activity.id}
-                          </DialogDescription>
-                        </DialogHeader>
-                        <ScrollArea className="flex-1 pr-2">
-                          <div className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
-                              <div className="space-y-2">
-                                <h4 className="text-sm font-semibold text-luxury-black">Basic Info</h4>
-                                <div className="space-y-1 text-sm">
-                                  <div className="flex justify-between">
-                                    <span className="text-muted-foreground">Timestamp:</span>
-                                    <span className="text-luxury-black font-mono">
-                                      {format(new Date(activity.created_at), 'dd MMM yyyy hh:mm a')}
-                                    </span>
+                    <TableCell className="text-luxury-black font-mono text-sm">
+                      {format(new Date(activity.created_at), 'MMM dd hh:mm a')}
+                    </TableCell>
+                    <TableCell>
+                      <div className="space-y-2">
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <div className="flex items-center gap-2">
+                                <User className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-luxury-black font-medium">
+                                  {activity.admin_username}
+                                </span>
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent className="bg-admin-card border-admin-muted">
+                              <div className="space-y-1 text-xs">
+                                <p className="text-luxury-black">Admin ID: {activity.admin_id}</p>
+                                {activity.ip_address && (
+                                  <div className="flex items-center gap-1">
+                                    <Globe className="h-3 w-3" />
+                                    <span>IP: {activity.ip_address}</span>
                                   </div>
-                                  <div className="flex justify-between">
-                                    <span className="text-muted-foreground">Admin:</span>
-                                    <span className="text-luxury-black">{activity.admin_username}</span>
+                                )}
+                                {activity.user_agent && (
+                                  <div className="flex items-center gap-1">
+                                    <Monitor className="h-3 w-3" />
+                                    <span>UA: {truncateText(activity.user_agent, 30)}</span>
                                   </div>
-                                  <div className="flex justify-between">
-                                    <span className="text-muted-foreground">Entity ID:</span>
-                                    <EntityIdDisplay entityId={activity.entity_id} />
+                                )}
+                              </div>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                        <ActivityDetection activity={activity} allActivities={allActivities} />
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        className={cn(
+                          'text-xs font-medium hover:bg-',
+                          getActionBadgeVariant(activity.action)
+                        )}
+                      >
+                        {activity.action.toUpperCase()}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-luxury-black capitalize">
+                      {activity.entity_type}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground text-sm font-mono">
+                      {activity.table_name || '-'}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        className={cn(
+                          'text-xs font-medium hover:bg-',
+                          getStatusBadgeVariant(activity.status)
+                        )}
+                      >
+                        {activity.status.toUpperCase()}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground text-sm font-mono">
+                      {activity.request_path ? truncateText(activity.request_path, 30) : '-'}
+                    </TableCell>
+                    <TableCell>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-muted-foreground hover:text-luxury-black"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-2xl max-h-[90vh] bg-admin-card border-admin-muted flex flex-col bg-[#fefefe]">
+                          <DialogHeader className="flex-shrink-0">
+                            <DialogTitle className="text-luxury-black">
+                              Activity Details
+                            </DialogTitle>
+                            <DialogDescription className="text-muted-foreground">
+                              Full details for activity {activity.id}
+                            </DialogDescription>
+                          </DialogHeader>
+                          <ScrollArea className="flex-1 pr-2">
+                            <div className="space-y-4">
+                              <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                  <h4 className="text-sm font-semibold text-luxury-black">
+                                    Basic Info
+                                  </h4>
+                                  <div className="space-y-1 text-sm">
+                                    <div className="flex justify-between">
+                                      <span className="text-muted-foreground">Timestamp:</span>
+                                      <span className="text-luxury-black font-mono">
+                                        {format(
+                                          new Date(activity.created_at),
+                                          'dd MMM yyyy hh:mm a'
+                                        )}
+                                      </span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <span className="text-muted-foreground">Admin:</span>
+                                      <span className="text-luxury-black">
+                                        {activity.admin_username}
+                                      </span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <span className="text-muted-foreground">Entity ID:</span>
+                                      <EntityIdDisplay entityId={activity.entity_id} />
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="space-y-2">
+                                  <h4 className="text-sm font-semibold text-luxury-black">
+                                    Technical Info
+                                  </h4>
+                                  <div className="space-y-1 text-sm">
+                                    <div className="flex justify-between">
+                                      <span className="text-muted-foreground">IP Address:</span>
+                                      <span className="text-luxury-black font-mono">
+                                        {activity.ip_address || 'N/A'}
+                                      </span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <span className="text-muted-foreground">Request Path:</span>
+                                      <span className="text-luxury-black font-mono text-xs">
+                                        {activity.request_path || 'N/A'}
+                                      </span>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
-                              <div className="space-y-2">
-                                <h4 className="text-sm font-semibold text-luxury-black">Technical Info</h4>
-                                <div className="space-y-1 text-sm">
-                                  <div className="flex justify-between">
-                                    <span className="text-muted-foreground">IP Address:</span>
-                                    <span className="text-luxury-black font-mono">
-                                      {activity.ip_address || 'N/A'}
-                                    </span>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <span className="text-muted-foreground">Request Path:</span>
-                                    <span className="text-luxury-black font-mono text-xs">
-                                      {activity.request_path || 'N/A'}
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
 
-                            <div className="space-y-2">
-                              <h4 className="text-sm font-semibold text-luxury-black">Message</h4>
-                              <p className="bg-[#e8e8e8] text-sm text-muted-foreground bg-admin-muted/30 p-3 rounded-md">
-                                {activity.message}
-                              </p>
-                            </div>
-
-                            {activity.metadata && (
                               <div className="space-y-2">
-                                <h4 className="text-sm font-semibold text-luxury-black">Metadata</h4>
-                                <ScrollArea className="h-auto bg-[#e8e8e8] rounded-md">
-                                  <pre className="text-xs text-muted-foreground bg-admin-muted/30 p-3 rounded-md overflow-x-auto">
-                                    {JSON.stringify(activity.metadata, null, 2)}
-                                  </pre>
-                                </ScrollArea>
-                              </div>
-                            )}
-
-                            {activity.error && (
-                              <div className="space-y-2">
-                                <h4 className="text-sm font-semibold text-luxury-black">Error</h4>
-                                <ScrollArea className="h-auto bg-[#e8e8e8] rounded-md">
-                                  <pre className="text-xs text-muted-foreground bg-admin-muted/30 p-3 rounded-md overflow-x-auto">
-                                    {JSON.stringify(activity.error, null, 2)}
-                                  </pre>
-                                </ScrollArea>
-                              </div>
-                            )}
-
-                            {activity.user_agent && (
-                              <div className="space-y-2">
-                                <h4 className="text-sm font-semibold text-luxury-black">User Agent</h4>
-                                <p className="bg-[#e8e8e8] text-xs text-muted-foreground bg-admin-muted/30 p-3 rounded-md break-all">
-                                  {activity.user_agent}
+                                <h4 className="text-sm font-semibold text-luxury-black">Message</h4>
+                                <p className="bg-[#e8e8e8] text-sm text-muted-foreground bg-admin-muted/30 p-3 rounded-md">
+                                  {activity.message}
                                 </p>
                               </div>
-                            )}
-                          </div>
-                        </ScrollArea>
-                      </DialogContent>
-                    </Dialog>
-                  </TableCell>
-                </TableRow>
+
+                              {activity.metadata && (
+                                <div className="space-y-2">
+                                  <h4 className="text-sm font-semibold text-luxury-black">
+                                    Metadata
+                                  </h4>
+                                  <ScrollArea className="h-auto bg-[#e8e8e8] rounded-md">
+                                    <pre className="text-xs text-muted-foreground bg-admin-muted/30 p-3 rounded-md overflow-x-auto">
+                                      {JSON.stringify(activity.metadata, null, 2)}
+                                    </pre>
+                                  </ScrollArea>
+                                </div>
+                              )}
+
+                              {activity.error && (
+                                <div className="space-y-2">
+                                  <h4 className="text-sm font-semibold text-luxury-black">Error</h4>
+                                  <ScrollArea className="h-auto bg-[#e8e8e8] rounded-md">
+                                    <pre className="text-xs text-muted-foreground bg-admin-muted/30 p-3 rounded-md overflow-x-auto">
+                                      {JSON.stringify(activity.error, null, 2)}
+                                    </pre>
+                                  </ScrollArea>
+                                </div>
+                              )}
+
+                              {activity.user_agent && (
+                                <div className="space-y-2">
+                                  <h4 className="text-sm font-semibold text-luxury-black">
+                                    User Agent
+                                  </h4>
+                                  <p className="bg-[#e8e8e8] text-xs text-muted-foreground bg-admin-muted/30 p-3 rounded-md break-all">
+                                    {activity.user_agent}
+                                  </p>
+                                </div>
+                              )}
+                            </div>
+                          </ScrollArea>
+                        </DialogContent>
+                      </Dialog>
+                    </TableCell>
+                  </TableRow>
                 ))
               )}
             </TableBody>

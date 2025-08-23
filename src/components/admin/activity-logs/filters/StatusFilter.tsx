@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { useActivityLogsContext } from 'contexts/ActivityLogsContext';
+import { useActivityLogsContext } from 'contexts/admin/activity-logs/ActivityLogsContext';
 import { SelectFilter } from './SelectFilter';
 import { SelectFilterOption } from './types';
 

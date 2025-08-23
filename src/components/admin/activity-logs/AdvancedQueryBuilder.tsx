@@ -1,14 +1,14 @@
-import { useState } from "react";
-import { Plus, Trash2, Code, Copy } from "lucide-react";
+import { useState } from 'react';
+import { Plus, Trash2, Code, Copy } from 'lucide-react';
 
-import { Button } from "ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "ui/select";
-import { Input } from "ui/input";
-import { Badge } from "ui/badge";
-import { Textarea } from "ui/textarea";
-import { useToast } from "ui/use-toast";
-import { useActivityLogsContext } from "contexts/ActivityLogsContext";
+import { Button } from 'ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from 'ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui/select';
+import { Input } from 'ui/input';
+import { Badge } from 'ui/badge';
+import { Textarea } from 'ui/textarea';
+import { useToast } from 'ui/use-toast';
+import { useActivityLogsContext } from 'contexts/admin/activity-logs/ActivityLogsContext';
 
 export interface QueryCondition {
   id: string;
@@ -29,7 +29,7 @@ const operators = [
   { value: 'contains', label: 'Contains' },
   { value: 'not_contains', label: 'Does Not Contain' },
   { value: 'starts_with', label: 'Starts With' },
-  { value: 'ends_with', label: 'Ends With' },
+  { value: 'ends_with', label: 'Ends With' }
 ];
 
 export const AdvancedQueryBuilder = () => {
@@ -71,9 +71,7 @@ export const AdvancedQueryBuilder = () => {
   };
 
   const updateCondition = (id: string, updates: Partial<QueryCondition>) => {
-    const newConditions = conditions.map(c =>
-      c.id === id ? { ...c, ...updates } : c
-    );
+    const newConditions = conditions.map(c => (c.id === id ? { ...c, ...updates } : c));
     setConditions(newConditions);
     onQueryChange(newConditions);
   };
@@ -96,8 +94,8 @@ export const AdvancedQueryBuilder = () => {
     if (typeof navigator !== 'undefined' && navigator.clipboard) {
       navigator.clipboard.writeText(generateQueryString());
       toast({
-        title: "Query copied",
-        description: "The query string has been copied to your clipboard.",
+        title: 'Query copied',
+        description: 'The query string has been copied to your clipboard.'
       });
     }
   };
@@ -136,32 +134,51 @@ export const AdvancedQueryBuilder = () => {
         {/* Conditions */}
         <div className="space-y-3">
           {conditions.map((condition, index) => (
-            <div key={condition.id} className="flex items-center gap-2 p-3 bg-admin-muted/20 rounded-lg">
+            <div
+              key={condition.id}
+              className="flex items-center gap-2 p-3 bg-admin-muted/20 rounded-lg"
+            >
               {index > 0 && (
                 <Select
                   value={condition.logic}
-                  onValueChange={(value: 'AND' | 'OR') => updateCondition(condition.id, { logic: value })}
+                  onValueChange={(value: 'AND' | 'OR') =>
+                    updateCondition(condition.id, { logic: value })
+                  }
                 >
                   <SelectTrigger className="w-20 h-8  border-muted text-luxury-black">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="border-muted">
-                    <SelectItem value="AND" className="text-luxury-black hover:bg-[#fcfafa] data-[highlighted]:bg-[#fcfafa] hover:cursor-pointer">AND</SelectItem>
-                    <SelectItem value="OR" className="text-luxury-black hover:bg-[#fcfafa] data-[highlighted]:bg-[#fcfafa] hover:cursor-pointer">OR</SelectItem>
+                    <SelectItem
+                      value="AND"
+                      className="text-luxury-black hover:bg-[#fcfafa] data-[highlighted]:bg-[#fcfafa] hover:cursor-pointer"
+                    >
+                      AND
+                    </SelectItem>
+                    <SelectItem
+                      value="OR"
+                      className="text-luxury-black hover:bg-[#fcfafa] data-[highlighted]:bg-[#fcfafa] hover:cursor-pointer"
+                    >
+                      OR
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               )}
 
               <Select
                 value={condition.field}
-                onValueChange={(value) => updateCondition(condition.id, { field: value })}
+                onValueChange={value => updateCondition(condition.id, { field: value })}
               >
                 <SelectTrigger className="w-40 h-8  border-muted text-luxury-black">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="border-muted">
-                  {availableFields.map((field) => (
-                    <SelectItem key={field.value} value={field.value} className="text-luxury-black hover:bg-[#fcfafa] data-[highlighted]:bg-[#fcfafa] hover:cursor-pointer">
+                  {availableFields.map(field => (
+                    <SelectItem
+                      key={field.value}
+                      value={field.value}
+                      className="text-luxury-black hover:bg-[#fcfafa] data-[highlighted]:bg-[#fcfafa] hover:cursor-pointer"
+                    >
                       {field.label}
                     </SelectItem>
                   ))}
@@ -170,14 +187,18 @@ export const AdvancedQueryBuilder = () => {
 
               <Select
                 value={condition.operator}
-                onValueChange={(value) => updateCondition(condition.id, { operator: value })}
+                onValueChange={value => updateCondition(condition.id, { operator: value })}
               >
                 <SelectTrigger className="w-40 h-8  border-muted text-luxury-black">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="border-muted">
-                  {operators.map((op) => (
-                    <SelectItem key={op.value} value={op.value} className="text-luxury-black hover:bg-[#fcfafa] data-[highlighted]:bg-[#fcfafa] hover:cursor-pointer">
+                  {operators.map(op => (
+                    <SelectItem
+                      key={op.value}
+                      value={op.value}
+                      className="text-luxury-black hover:bg-[#fcfafa] data-[highlighted]:bg-[#fcfafa] hover:cursor-pointer"
+                    >
                       {op.label}
                     </SelectItem>
                   ))}
@@ -187,7 +208,7 @@ export const AdvancedQueryBuilder = () => {
               <Input
                 placeholder="Value"
                 value={condition.value}
-                onChange={(e) => updateCondition(condition.id, { value: e.target.value })}
+                onChange={e => updateCondition(condition.id, { value: e.target.value })}
                 className="flex-1 h-8 border-muted text-luxury-black"
               />
 

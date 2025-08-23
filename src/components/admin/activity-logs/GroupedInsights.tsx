@@ -1,8 +1,8 @@
-import { useMemo } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "ui/card";
-import { Badge } from "ui/badge";
-import { Users, Activity } from "lucide-react";
-import { useActivityLogsContext } from "contexts/ActivityLogsContext";
+import { useMemo } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from 'ui/card';
+import { Badge } from 'ui/badge';
+import { Users, Activity } from 'lucide-react';
+import { useActivityLogsContext } from 'contexts/admin/activity-logs/ActivityLogsContext';
 
 export const GroupedInsights = () => {
   const { filteredActivities: activities } = useActivityLogsContext();
@@ -38,8 +38,8 @@ export const GroupedInsights = () => {
         .map(([admin, data]) => ({
           admin,
           total: data.total,
-          topAction: Object.entries(data.actions).reduce((max, [action, count]) =>
-            count > max.count ? { action, count } : max,
+          topAction: Object.entries(data.actions).reduce(
+            (max, [action, count]) => (count > max.count ? { action, count } : max),
             { action: '', count: 0 }
           )
         }))
@@ -53,13 +53,15 @@ export const GroupedInsights = () => {
 
   const getActionColor = (action: string) => {
     const colors = {
-      create: "bg-success/10 text-success border-success/20",
-      update: "bg-warning/10 text-warning border-warning/20",
-      delete: "bg-destructive/10 text-destructive border-destructive/20",
-      login: "bg-blue-100 text-blue-600 border-blue-300",
-      logout: "bg-blue-100 text-blue-600 border-blue-300"
+      create: 'bg-success/10 text-success border-success/20',
+      update: 'bg-warning/10 text-warning border-warning/20',
+      delete: 'bg-destructive/10 text-destructive border-destructive/20',
+      login: 'bg-blue-100 text-blue-600 border-blue-300',
+      logout: 'bg-blue-100 text-blue-600 border-blue-300'
     };
-    return colors[action as keyof typeof colors] || "bg-muted/10 text-muted-foreground border-muted/20";
+    return (
+      colors[action as keyof typeof colors] || 'bg-muted/10 text-muted-foreground border-muted/20'
+    );
   };
 
   return (
@@ -77,18 +79,17 @@ export const GroupedInsights = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           {insights.adminInsights.map((insight, i) => (
-            <div key={insight.admin} className="flex items-center justify-between p-3 rounded-lg bg-admin-muted/5 border border-admin-muted/10">
+            <div
+              key={insight.admin}
+              className="flex items-center justify-between p-3 rounded-lg bg-admin-muted/5 border border-admin-muted/10"
+            >
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary text-sm font-medium">
                   {i + 1}
                 </div>
                 <div>
-                  <p className="font-medium text-luxury-black">
-                    {insight.admin}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {insight.total} total actions
-                  </p>
+                  <p className="font-medium text-luxury-black">{insight.admin}</p>
+                  <p className="text-sm text-muted-foreground">{insight.total} total actions</p>
                 </div>
               </div>
               <div className="text-right">
@@ -114,7 +115,10 @@ export const GroupedInsights = () => {
         </CardHeader>
         <CardContent className="space-y-3">
           {insights.actionInsights.map((insight, i) => (
-            <div key={`${insight.entity_type}_${insight.action}`} className="flex items-center justify-between p-3 rounded-lg bg-admin-muted/5 border border-admin-muted/10">
+            <div
+              key={`${insight.entity_type}_${insight.action}`}
+              className="flex items-center justify-between p-3 rounded-lg bg-admin-muted/5 border border-admin-muted/10"
+            >
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary text-sm font-medium">
                   {i + 1}
@@ -123,9 +127,7 @@ export const GroupedInsights = () => {
                   <p className="font-medium text-luxury-blackcapitalize">
                     {insight.entity_type} {insight.action}s
                   </p>
-                  <p className="text-sm text-muted-foreground">
-                    {insight.count} operations
-                  </p>
+                  <p className="text-sm text-muted-foreground">{insight.count} operations</p>
                 </div>
               </div>
               <Badge variant="outline" className={getActionColor(insight.action)}>

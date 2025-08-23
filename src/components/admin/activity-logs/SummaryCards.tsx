@@ -1,8 +1,8 @@
-import { useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "ui/card";
-import { CheckCircle2, XCircle, Users, Crown, Clock, Target } from "lucide-react";
-import { useActivityLogsContext } from "contexts/ActivityLogsContext";
-import { differenceInMinutes, parseISO } from "date-fns";
+import { useMemo } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from 'ui/card';
+import { CheckCircle2, XCircle, Users, Crown, Clock, Target } from 'lucide-react';
+import { useActivityLogsContext } from 'contexts/admin/activity-logs/ActivityLogsContext';
+import { differenceInMinutes, parseISO } from 'date-fns';
 
 export const SummaryCards = () => {
   const { filteredActivities: activities } = useActivityLogsContext();
@@ -19,14 +19,15 @@ export const SummaryCards = () => {
       return acc;
     }, {} as Record<string, number>);
 
-    const mostActiveAdmin = Object.entries(adminCounts).reduce((max, [admin, count]) =>
-      count > max.count ? { admin, count } : max,
+    const mostActiveAdmin = Object.entries(adminCounts).reduce(
+      (max, [admin, count]) => (count > max.count ? { admin, count } : max),
       { admin: '', count: 0 }
     );
 
     // Average time between updates
-    const sortedActivities = [...activities]
-      .sort((a, b) => parseISO(a.created_at).getTime() - parseISO(b.created_at).getTime());
+    const sortedActivities = [...activities].sort(
+      (a, b) => parseISO(a.created_at).getTime() - parseISO(b.created_at).getTime()
+    );
 
     let totalTimeDiff = 0;
     let intervals = 0;
@@ -36,7 +37,8 @@ export const SummaryCards = () => {
         parseISO(sortedActivities[i].created_at),
         parseISO(sortedActivities[i - 1].created_at)
       );
-      if (timeDiff < 1440) { // Only count if less than 24 hours apart
+      if (timeDiff < 1440) {
+        // Only count if less than 24 hours apart
         totalTimeDiff += timeDiff;
         intervals++;
       }
@@ -50,8 +52,8 @@ export const SummaryCards = () => {
       return acc;
     }, {} as Record<string, number>);
 
-    const mostEditedEntity = Object.entries(entityTypeCounts).reduce((max, [entity, count]) =>
-      count > max.count ? { entity, count } : max,
+    const mostEditedEntity = Object.entries(entityTypeCounts).reduce(
+      (max, [entity, count]) => (count > max.count ? { entity, count } : max),
       { entity: '', count: 0 }
     );
 
@@ -67,48 +69,49 @@ export const SummaryCards = () => {
 
   const summaryCards = [
     {
-      title: "Successful Actions",
+      title: 'Successful Actions',
       value: summaryData.successfulActions,
       icon: CheckCircle2,
-      color: "text-success",
-      bgColor: "bg-success/10"
+      color: 'text-success',
+      bgColor: 'bg-success/10'
     },
     {
-      title: "Failed Actions",
+      title: 'Failed Actions',
       value: summaryData.failedActions,
       icon: XCircle,
-      color: "text-destructive",
-      bgColor: "bg-destructive/10"
+      color: 'text-destructive',
+      bgColor: 'bg-destructive/10'
     },
     {
-      title: "Active Admins",
+      title: 'Active Admins',
       value: summaryData.uniqueAdmins,
       icon: Users,
-      color: "text-primary",
-      bgColor: "bg-primary/10"
+      color: 'text-primary',
+      bgColor: 'bg-primary/10'
     },
     {
-      title: "Most Active Admin",
+      title: 'Most Active Admin',
       value: summaryData.mostActiveAdmin.admin,
       subtitle: `${summaryData.mostActiveAdmin.count} actions`,
       icon: Crown,
-      color: "text-warning",
-      bgColor: "bg-warning/10"
+      color: 'text-warning',
+      bgColor: 'bg-warning/10'
     },
     {
-      title: "Avg. Time Between Updates",
-      value: summaryData.avgTimeBetweenUpdates > 0 ? `${summaryData.avgTimeBetweenUpdates}m` : "N/A",
+      title: 'Avg. Time Between Updates',
+      value:
+        summaryData.avgTimeBetweenUpdates > 0 ? `${summaryData.avgTimeBetweenUpdates}m` : 'N/A',
       icon: Clock,
-      color: "text-info",
-      bgColor: "bg-info/10"
+      color: 'text-info',
+      bgColor: 'bg-info/10'
     },
     {
-      title: "Most Edited Entity",
+      title: 'Most Edited Entity',
       value: summaryData.mostEditedEntity.entity,
       subtitle: `${summaryData.mostEditedEntity.count} edits`,
       icon: Target,
-      color: "text-accent",
-      bgColor: "bg-accent/10"
+      color: 'text-accent',
+      bgColor: 'bg-accent/10'
     }
   ];
 
@@ -127,13 +130,9 @@ export const SummaryCards = () => {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-luxury-black">
-                {card.value}
-              </div>
+              <div className="text-2xl font-bold text-luxury-black">{card.value}</div>
               {card.subtitle && (
-                <p className="text-xs text-muted-foreground mt-1">
-                  {card.subtitle}
-                </p>
+                <p className="text-xs text-muted-foreground mt-1">{card.subtitle}</p>
               )}
             </CardContent>
           </Card>

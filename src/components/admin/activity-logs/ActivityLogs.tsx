@@ -1,25 +1,26 @@
 'use client';
 
-import { Activity, RefreshCw } from "lucide-react";
-import { Button } from "ui/button";
-import { Badge } from "ui/badge";
-import { useToast } from "ui/use-toast";
-import { Alert, AlertDescription } from "ui/alert";
-import { ActivityFilters } from "components/admin/activity-logs/ActivityFilters";
-import { ActivityCharts } from "components/admin/activity-logs/ActivityCharts";
-import { ActivityTable } from "components/admin/activity-logs/ActivityTable";
-import { SummaryCards } from "components/admin/activity-logs/SummaryCards";
-import { GroupedInsights } from "components/admin/activity-logs/GroupedInsights";
-import { AdvancedQueryBuilder } from "components/admin/activity-logs/AdvancedQueryBuilder";
-import { IpAnalytics } from "components/admin/activity-logs/IpAnalytics";
-import { ActivityLogsProvider, useActivityLogsContext } from "contexts/ActivityLogsContext";
+import { Activity, RefreshCw } from 'lucide-react';
+import { Button } from 'ui/button';
+import { Badge } from 'ui/badge';
+import { useToast } from 'ui/use-toast';
+import { Alert, AlertDescription } from 'ui/alert';
+import { ActivityFilters } from 'components/admin/activity-logs/ActivityFilters';
+import { ActivityCharts } from 'components/admin/activity-logs/ActivityCharts';
+import { ActivityTable } from 'components/admin/activity-logs/ActivityTable';
+import { SummaryCards } from 'components/admin/activity-logs/SummaryCards';
+import { GroupedInsights } from 'components/admin/activity-logs/GroupedInsights';
+import { AdvancedQueryBuilder } from 'components/admin/activity-logs/AdvancedQueryBuilder';
+import { IpAnalytics } from 'components/admin/activity-logs/IpAnalytics';
+import {
+  ActivityLogsProvider,
+  useActivityLogsContext
+} from 'contexts/admin/activity-logs/ActivityLogsContext';
 
 const ActivityLogsContent = () => {
   const { toast } = useToast();
-  const {
-    filteredActivities, clearFilters, getShareableUrl,
-    isLoading, error, refetch
-  } = useActivityLogsContext();
+  const { filteredActivities, clearFilters, getShareableUrl, isLoading, error, refetch } =
+    useActivityLogsContext();
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-admin-background to-muted p-6 pt-24">
@@ -36,7 +37,15 @@ const ActivityLogsContent = () => {
           </div>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <div className={`h-2 w-2 rounded-full ${isLoading ? 'bg-yellow-500 animate-pulse' : error ? 'bg-red-500' : 'bg-success animate-pulse'}`} />
+              <div
+                className={`h-2 w-2 rounded-full ${
+                  isLoading
+                    ? 'bg-yellow-500 animate-pulse'
+                    : error
+                    ? 'bg-red-500'
+                    : 'bg-success animate-pulse'
+                }`}
+              />
               <span>{isLoading ? 'Loading...' : error ? 'Error' : 'Live monitoring'}</span>
             </div>
             <div className="flex items-center gap-4">
@@ -69,8 +78,8 @@ const ActivityLogsContent = () => {
                 onClick={() => {
                   navigator.clipboard.writeText(getShareableUrl());
                   toast({
-                    title: "Link copied",
-                    description: "The shareable link has been copied to your clipboard.",
+                    title: 'Link copied',
+                    description: 'The shareable link has been copied to your clipboard.'
                   });
                 }}
                 className="text-luxury-black hover:text-luxury-black"
@@ -83,9 +92,7 @@ const ActivityLogsContent = () => {
 
         {error && (
           <Alert variant="destructive">
-            <AlertDescription>
-              {error}
-            </AlertDescription>
+            <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
 

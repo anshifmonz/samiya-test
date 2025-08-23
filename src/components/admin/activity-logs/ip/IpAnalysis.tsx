@@ -1,13 +1,22 @@
 'use client';
 
-import { useState, useMemo, useEffect } from "react";
-import { format } from "date-fns";
-import { useActivityLogsContext } from "contexts/ActivityLogsContext";
-import { IpAnalysisHeader, IpAnalysisFilters, IpAnalysisCards, IpAnalysisTable, IpAnalysisCharts, IpFilters, defaultIpFilters, IpGeoData } from "./index";
-import { ActivityStatsData } from "lib/admin/activity-stats/getActivityStats";
-import { ipIntelligenceService, IpIntelligenceData } from "lib/services/ipIntelligence";
-import { Loader2 } from "lucide-react";
-import { Alert, AlertDescription } from "ui/alert";
+import { useState, useMemo, useEffect } from 'react';
+import { format } from 'date-fns';
+import { useActivityLogsContext } from 'contexts/admin/activity-logs/ActivityLogsContext';
+import {
+  IpAnalysisHeader,
+  IpAnalysisFilters,
+  IpAnalysisCards,
+  IpAnalysisTable,
+  IpAnalysisCharts,
+  IpFilters,
+  defaultIpFilters,
+  IpGeoData
+} from './index';
+import { ActivityStatsData } from 'lib/admin/activity-stats/getActivityStats';
+import { ipIntelligenceService, IpIntelligenceData } from 'lib/services/ipIntelligence';
+import { Loader2 } from 'lucide-react';
+import { Alert, AlertDescription } from 'ui/alert';
 
 const IpAnalysisContent = () => {
   const { activityData } = useActivityLogsContext();
@@ -18,11 +27,9 @@ const IpAnalysisContent = () => {
 
   // Extract unique IPs from activity data
   const uniqueIps = useMemo(() => {
-    return Array.from(new Set(
-      activityData.allActivities
-        .map(activity => activity.ip_address)
-        .filter(Boolean)
-    ));
+    return Array.from(
+      new Set(activityData.allActivities.map(activity => activity.ip_address).filter(Boolean))
+    );
   }, [activityData.allActivities]);
 
   // Fetch IP intelligence data
@@ -75,13 +82,16 @@ const IpAnalysisContent = () => {
 
   // Transform activity data to fit IP analysis structure
   const ipAnalysisData = useMemo(() => {
-    const ipMap = new Map<string, {
-      activities: ActivityStatsData[];
-      failedAttempts: number;
-      totalActions: number;
-      firstSeen: Date;
-      lastSeen: Date;
-    }>();
+    const ipMap = new Map<
+      string,
+      {
+        activities: ActivityStatsData[];
+        failedAttempts: number;
+        totalActions: number;
+        firstSeen: Date;
+        lastSeen: Date;
+      }
+    >();
 
     activityData.allActivities.forEach(activity => {
       if (!activity.ip_address) return;
@@ -106,19 +116,26 @@ const IpAnalysisContent = () => {
     });
 
     return Array.from(ipMap.entries()).map(([ip, stats]) => {
-      const failureRate = stats.totalActions > 0 ? (stats.failedAttempts / stats.totalActions) * 100 : 0;
+      const failureRate =
+        stats.totalActions > 0 ? (stats.failedAttempts / stats.totalActions) * 100 : 0;
       const intelligenceData = ipIntelligence.get(ip);
-      const severity = getSeverityLevel(failureRate, stats.totalActions, intelligenceData?.riskScore || 0);
+      const severity = getSeverityLevel(
+        failureRate,
+        stats.totalActions,
+        intelligenceData?.riskScore || 0
+      );
 
       // Convert intelligence data to geoData format for compatibility
-      const geoData: IpGeoData = intelligenceData ? {
-        country: intelligenceData.country,
-        city: intelligenceData.city,
-        region: intelligenceData.region,
-        asn: intelligenceData.asn,
-        org: intelligenceData.org,
-        timezone: intelligenceData.timezone
-      } : mockGeoEnrichment(ip);
+      const geoData: IpGeoData = intelligenceData
+        ? {
+            country: intelligenceData.country,
+            city: intelligenceData.city,
+            region: intelligenceData.region,
+            asn: intelligenceData.asn,
+            org: intelligenceData.org,
+            timezone: intelligenceData.timezone
+          }
+        : mockGeoEnrichment(ip);
 
       return {
         ip,
@@ -145,7 +162,7 @@ const IpAnalysisContent = () => {
       }
 
       // Severity filter
-      if (filters.severity !== "all" && item.severity !== filters.severity) return false;
+      if (filters.severity !== 'all' && item.severity !== filters.severity) return false;
 
       // Min actions filter
       const minActions = parseInt(filters.minActions) || 0;
@@ -180,40 +197,36 @@ const IpAnalysisContent = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-admin-background to-muted p-6 pt-24">
       <div className="mx-auto max-w-7xl space-y-6">
-        <IpAnalysisHeader  />
+        <IpAnalysisHeader />
 
         {/* Loading Intelligence Data */}
         {isLoadingIntelligence && (
           <Alert>
             <Loader2 className="h-4 w-4 animate-spin" />
-            <AlertDescription>
-              Loading IP intelligence data...
-            </AlertDescription>
+            <AlertDescription>Loading IP intelligence data...</AlertDescription>
           </Alert>
         )}
 
         {/* Intelligence Error */}
         {intelligenceError && (
           <Alert variant="destructive">
-            <AlertDescription>
-              {intelligenceError}
-            </AlertDescription>
+            <AlertDescription>{intelligenceError}</AlertDescription>
           </Alert>
         )}
 
         <IpAnalysisFilters filters={filters} onFiltersChange={setFilters} />
 
-        <IpAnalysisCards data={{
-          totalIPs: filteredData.length,
-          highRiskIPs: filteredData.filter(ip => ['critical', 'high'].includes(ip.severity)).length,
-          totalActions: filteredData.reduce((sum, ip) => sum + ip.totalActions, 0),
-          failedActions: filteredData.reduce((sum, ip) => sum + ip.failedAttempts, 0)
-        }} />
-
-        <IpAnalysisCharts
-          timelineData={chartData}
-          severityData={severityDistribution}
+        <IpAnalysisCards
+          data={{
+            totalIPs: filteredData.length,
+            highRiskIPs: filteredData.filter(ip => ['critical', 'high'].includes(ip.severity))
+              .length,
+            totalActions: filteredData.reduce((sum, ip) => sum + ip.totalActions, 0),
+            failedActions: filteredData.reduce((sum, ip) => sum + ip.failedAttempts, 0)
+          }}
         />
+
+        <IpAnalysisCharts timelineData={chartData} severityData={severityDistribution} />
         <IpAnalysisTable logs={filteredData} />
       </div>
     </div>
@@ -223,17 +236,56 @@ const IpAnalysisContent = () => {
 // Mock geo enrichment function (in real app, this would call an IP intelligence API)
 const mockGeoEnrichment = (ip: string): IpGeoData => {
   const geoMocks: Record<string, IpGeoData> = {
-    "192.168.1.100": { country: "United States", city: "New York", region: "NY", asn: "AS15169", org: "Google LLC", timezone: "America/New_York" },
-    "10.0.0.50": { country: "Canada", city: "Toronto", region: "ON", asn: "AS6453", org: "TATA Communications", timezone: "America/Toronto" },
-    "172.16.0.25": { country: "United Kingdom", city: "London", region: "England", asn: "AS8075", org: "Microsoft Corporation", timezone: "Europe/London" },
-    "203.0.113.45": { country: "Australia", city: "Sydney", region: "NSW", asn: "AS13335", org: "Cloudflare", timezone: "Australia/Sydney" },
-    "198.51.100.30": { country: "Germany", city: "Berlin", region: "Berlin", asn: "AS3320", org: "Deutsche Telekom AG", timezone: "Europe/Berlin" }
+    '192.168.1.100': {
+      country: 'United States',
+      city: 'New York',
+      region: 'NY',
+      asn: 'AS15169',
+      org: 'Google LLC',
+      timezone: 'America/New_York'
+    },
+    '10.0.0.50': {
+      country: 'Canada',
+      city: 'Toronto',
+      region: 'ON',
+      asn: 'AS6453',
+      org: 'TATA Communications',
+      timezone: 'America/Toronto'
+    },
+    '172.16.0.25': {
+      country: 'United Kingdom',
+      city: 'London',
+      region: 'England',
+      asn: 'AS8075',
+      org: 'Microsoft Corporation',
+      timezone: 'Europe/London'
+    },
+    '203.0.113.45': {
+      country: 'Australia',
+      city: 'Sydney',
+      region: 'NSW',
+      asn: 'AS13335',
+      org: 'Cloudflare',
+      timezone: 'Australia/Sydney'
+    },
+    '198.51.100.30': {
+      country: 'Germany',
+      city: 'Berlin',
+      region: 'Berlin',
+      asn: 'AS3320',
+      org: 'Deutsche Telekom AG',
+      timezone: 'Europe/Berlin'
+    }
   };
 
-  return geoMocks[ip] || { country: "Unknown", city: "Unknown", asn: "Unknown", org: "Unknown" };
+  return geoMocks[ip] || { country: 'Unknown', city: 'Unknown', asn: 'Unknown', org: 'Unknown' };
 };
 
-const getSeverityLevel = (failureRate: number, totalActions: number, riskScore = 0): 'critical' | 'high' | 'medium' | 'low' | 'normal' => {
+const getSeverityLevel = (
+  failureRate: number,
+  totalActions: number,
+  riskScore = 0
+): 'critical' | 'high' | 'medium' | 'low' | 'normal' => {
   // Factor in IP intelligence risk score
   let baseScore = 0;
 
@@ -249,7 +301,7 @@ const getSeverityLevel = (failureRate: number, totalActions: number, riskScore =
   else if (totalActions > 5) baseScore += 10;
 
   // Add IP intelligence risk score (weighted)
-  const combinedScore = baseScore + (riskScore * 0.3);
+  const combinedScore = baseScore + riskScore * 0.3;
 
   if (combinedScore >= 70) return 'critical';
   if (combinedScore >= 50) return 'high';
@@ -258,12 +310,12 @@ const getSeverityLevel = (failureRate: number, totalActions: number, riskScore =
   return 'normal';
 };
 
-import { ActivityLogsProvider } from "contexts/ActivityLogsContext";
+import { ActivityLogsProvider } from 'contexts/admin/activity-logs/ActivityLogsContext';
 const IpAnalysis = () => {
   return (
     <ActivityLogsProvider>
       <IpAnalysisContent />
     </ActivityLogsProvider>
   );
-}
+};
 export default IpAnalysis;

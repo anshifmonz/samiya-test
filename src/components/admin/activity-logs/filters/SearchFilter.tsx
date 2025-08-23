@@ -2,7 +2,7 @@ import React from 'react';
 import { Search } from 'lucide-react';
 import { Input } from 'ui/input';
 import { Label } from 'ui/label';
-import { useActivityLogsContext } from 'contexts/ActivityLogsContext';
+import { useActivityLogsContext } from 'contexts/admin/activity-logs/ActivityLogsContext';
 
 interface SearchFilterProps {
   value: string;
@@ -30,7 +30,7 @@ export const SearchFilter: React.FC<SearchFilterProps> = ({
           id={id}
           placeholder={placeholder}
           value={value}
-          onChange={(e) => updateFilter('search', e.target.value)}
+          onChange={e => updateFilter('search', e.target.value)}
           className="pl-10 bg-admin-background border-admin-muted text-admin-foreground"
         />
       </div>

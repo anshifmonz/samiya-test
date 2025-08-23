@@ -1,7 +1,7 @@
-import { Filter, X } from "lucide-react";
-import { Button } from "ui/button";
-import { Label } from "ui/label";
-import { Card } from "ui/card";
+import { Filter, X } from 'lucide-react';
+import { Button } from 'ui/button';
+import { Label } from 'ui/label';
+import { Card } from 'ui/card';
 import {
   SearchFilter,
   AdminFilter,
@@ -10,8 +10,8 @@ import {
   StatusFilter,
   IpAddressFilter,
   DateRangeFilter
-} from "./filters";
-import { useActivityLogsContext } from "contexts/ActivityLogsContext";
+} from './filters';
+import { useActivityLogsContext } from 'contexts/admin/activity-logs/ActivityLogsContext';
 
 export const ActivityFilters = () => {
   const { filters, clearFilters } = useActivityLogsContext();
@@ -36,7 +36,7 @@ export const ActivityFilters = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4">
-          <SearchFilter value={filters.search}/>
+          <SearchFilter value={filters.search} />
           <AdminFilter value={filters.admin} />
           <ActionFilter value={filters.action} />
           <EntityTypeFilter value={filters.entityType} />
