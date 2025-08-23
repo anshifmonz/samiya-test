@@ -94,7 +94,14 @@ export default {
 				logout: {
 					DEFAULT: 'hsl(var(--logout))',
 					foreground: 'hsl(var(--logout-foreground))'
-				}
+				},
+        status: {
+					normal: 'hsl(var(--status-normal))',
+					retry: 'hsl(var(--status-retry))',
+					refund: 'hsl(var(--status-refund))',
+					return: 'hsl(var(--status-return))',
+					cancelled: 'hsl(var(--status-cancelled))'
+				},
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
