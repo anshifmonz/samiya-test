@@ -33,7 +33,6 @@ export async function getUserOrders(
         created_at,
         updated_at,
         shiprocket_order_id,
-        shiprocket_tracking_url,
         shiprocket_awb_code,
         addresses:shipping_address_id (
           id,
