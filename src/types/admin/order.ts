@@ -9,8 +9,8 @@ export type EventRow = {
   status_text?: string | null;
   description?: string | null;
   when_arises?: string | null;
-  action_required?: boolean;
-  mapped_user_message?: string | null; // e.g., 'Return in transit'
+  follow_up_action?: string | null;
+  actions?: string | null;
 };
 
 export type Summary = {
