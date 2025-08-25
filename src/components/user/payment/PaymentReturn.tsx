@@ -58,7 +58,7 @@ const PaymentReturn = ({ orderId, status }: PaymentReturnProps) => {
         // If verification fails, try to get current status
         await getCurrentStatus();
       } else {
-        setPaymentStatus(verifyData?.data || null);
+        setPaymentStatus(verifyData || null);
       }
     } catch (error) {
       console.error('Error verifying payment:', error);
@@ -81,7 +81,7 @@ const PaymentReturn = ({ orderId, status }: PaymentReturnProps) => {
         }
       );
 
-      if (!error && data) setPaymentStatus(data.data || null);
+      if (!error && data) setPaymentStatus(data || null);
     } catch (error) {
       console.error('Error getting payment status:', error);
     }
