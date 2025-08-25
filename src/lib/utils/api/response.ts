@@ -24,10 +24,10 @@ const err = (
   data: null
 });
 
-const ok = <T>(data: T): ApiResponse<T> => ({
+const ok = <T>(data: T, status = 200): ApiResponse<T> => ({
   success: true,
   error: null,
-  status: 200,
+  status,
   data
 });
 
