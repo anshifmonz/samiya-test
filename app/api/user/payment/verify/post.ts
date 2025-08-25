@@ -1,14 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { getServerUser } from 'utils/getServerSession';
 import { verifyPayment } from 'lib/user/payment';
-import { type PaymentVerificationRequest, type PaymentVerificationResponse } from 'types/payment';
+import { err, jsonResponse } from 'utils/api/response';
 
-export async function POST(request: NextRequest): Promise<NextResponse<PaymentVerificationResponse | { error: string }>> {
+export async function POST(request: NextRequest) {
   const user = await getServerUser();
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!user) return jsonResponse(err('Unauthorized', 401));
 
-  const body: PaymentVerificationRequest = await request.json();
-  const { body: respBody, status } = await verifyPayment(user.id, body);
-  return NextResponse.json(respBody, { status });
+  const body = await request.json();
+  const result = await verifyPayment(user.id, body);
+  return jsonResponse(result);
 }
-
