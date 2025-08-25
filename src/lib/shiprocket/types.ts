@@ -95,7 +95,7 @@ export interface CreateOrderParams {
 
   // Billing Info
   billing_customer_name: string;
-  billing_last_name?: string;
+  billing_last_name: string;
   billing_address: string;
   billing_address_2?: string;
   billing_city: string;
@@ -114,11 +114,11 @@ export interface CreateOrderParams {
   shipping_address?: string;
   shipping_address_2?: string;
   shipping_city?: string;
-  shipping_pincode?: number;
+  shipping_pincode?: string | number;
   shipping_country?: string;
   shipping_state?: string;
   shipping_email?: string;
-  shipping_phone?: number;
+  shipping_phone?: string | number;
   longitude?: number;
   latitude?: number;
 

@@ -1,37 +1,18 @@
-import { cancelSROrder } from './orders';
-import { supabaseAdmin } from 'lib/supabase';
-import { type CreateOrderParams } from './types';
-import { getShiprocketToken } from './shiprocket';
+import dayjs from 'dayjs';
 import retry from 'utils/retry';
-import { apiRequest } from 'utils/apiRequest';
+import { cancelSROrder } from './orders';
+import { createOrder } from './order/create';
+import { supabaseAdmin } from 'lib/supabase';
 import { ok, err, type ApiResponse } from 'utils/api/response';
-
-const SR_BASE = process.env.SHIPROCKET_BASE_URL || 'https://apiv2.shiprocket.in/v1/external';
-
-async function srApiCreateOrder(token: string, payload: any): Promise<any | false> {
-  const { data, error, response } = await apiRequest(`${SR_BASE}/orders/create/adhoc`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`
-    },
-    body: payload,
-    retry: true
-  });
-  if (error || (response && !response.ok)) return false;
-  return data;
-}
 
 async function createSROrderForLocalOrder(localOrderId: string): Promise<ApiResponse<any>> {
   try {
-    const token = await getShiprocketToken();
-    if (!token) return err();
-
     const { data: order, error: orderErr } = await supabaseAdmin
       .from('orders')
       .select(
         `id,
         user_id,
+        status,
         total_amount,
         shipping_address_id,
         shiprocket_order_id,
@@ -42,23 +23,27 @@ async function createSROrderForLocalOrder(localOrderId: string): Promise<ApiResp
       .single();
 
     if (orderErr || !order) return err('Order not found', 404);
-    if (order.shiprocket_order_id)
+    if (order.status !== 'pending') return err('Order is already in progress', 400);
+
+    if (order.shiprocket_order_id) {
       return ok({
         shiprocket_order_id: order.shiprocket_order_id,
         shiprocket_shipment_id: order.shiprocket_shipment_id,
         shiprocket_awb_code: order.shiprocket_awb_code
       });
+    }
 
-    const { data: address } = await supabaseAdmin
+    const { data: address, error: addressError } = await supabaseAdmin
       .from('addresses')
       .select(
-        `name, phone, email,
-        landmark, street, pincode,
+        `full_name, phone, email,
+        landmark, street, postal_code,
         city, district, state, country`
       )
       .eq('id', order.shipping_address_id)
       .maybeSingle();
 
+    if (addressError) return err('Failed to create order');
     if (!address) return err('Shipping address not found', 404);
 
     // Acquire creation lock via RPC
@@ -93,29 +78,41 @@ async function createSROrderForLocalOrder(localOrderId: string): Promise<ApiResp
     const creationToken: string | null = lock.creation_token || null;
     if (!creationToken) return err();
 
-    const payload: CreateOrderParams = {
+    const payload = {
       order_id: order.id,
-      order_date: new Date().toISOString(),
-      pickup_location: process.env.SHIPROCKET_PICKUP_LOCATION || 'Primary',
+      order_date: dayjs().format('YYYY-MM-DD HH:mm'),
+      pickup_location: 'warehouse',
 
-      billing_customer_name: address.name || 'Customer',
-      billing_city: address.city || '',
-      billing_pincode: address.pincode || '',
-      billing_state: address.state || '',
-      billing_country: 'India',
-      billing_email: address.email || '',
-      billing_address: `${address.landmark}, ${address.street}, ${address.city}, ${address.district}, ${address.state}, ${address.country}`,
-      billing_phone: address.phone || '',
+      billing_customer_name: address.full_name,
+      billing_last_name: address.full_name,
+      billing_address: [
+        address.landmark,
+        address.street,
+        address.city,
+        address.district,
+        address.state,
+        address.country
+      ]
+        .filter(Boolean)
+        .join(', '),
+      billing_city: address.city,
+      billing_pincode: address.postal_code,
+      billing_state: address.state,
+      billing_country: address.country,
+      billing_email: address.email || 'customer@example.com',
+      billing_phone: address.phone,
 
       shipping_is_billing: true,
-      shipping_customer_name: address.name || 'Customer',
-      shipping_address: `${address.landmark}, ${address.street}, ${address.city}, ${address.district}, ${address.state}, ${address.country}`,
-      shipping_city: address.city || '',
-      shipping_pincode: address.pincode || '',
-      shipping_country: 'India',
-      shipping_state: address.state || '',
-      shipping_email: address.email || '',
-      shipping_phone: address.phone || '',
+      shipping_customer_name: '',
+      shipping_last_name: '',
+      shipping_address: '',
+      shipping_address_2: '',
+      shipping_city: '',
+      shipping_pincode: '',
+      shipping_country: '',
+      shipping_state: '',
+      shipping_email: '',
+      shipping_phone: '',
 
       order_items: [
         {
@@ -135,9 +132,7 @@ async function createSROrderForLocalOrder(localOrderId: string): Promise<ApiResp
       weight: 1
     };
 
-    const { data: sr } = await retry(async () => {
-      return await srApiCreateOrder(token, payload);
-    });
+    const { data: sr } =  await createOrder(payload);
 
     if (!sr) {
       retry(async () => {
@@ -171,9 +166,7 @@ async function createSROrderForLocalOrder(localOrderId: string): Promise<ApiResp
       });
     });
 
-    const { error: cancelError } = await retry(async () => {
-      return await cancelSROrder(localOrderId);
-    }, 5);
+    const { error: cancelError } =  await cancelSROrder(localOrderId);
     if (!cancelError) return err('Failed to create order');
 
     retry(async () => {
