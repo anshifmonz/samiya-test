@@ -33,15 +33,11 @@ export interface PaymentInitiationRequest {
 }
 
 export interface PaymentInitiationResponse {
-  success?: boolean;
-  data?: {
-    id: string;
-    payment_session_id: string;
-    cf_order_id: string;
-    order_id: string;
-    payment_url?: string;
-  };
-  error?: string;
+  id: string;
+  payment_session_id: string;
+  cf_order_id: string;
+  order_id: string;
+  payment_url?: string;
 }
 
 export interface PaymentVerificationRequest {
@@ -50,28 +46,20 @@ export interface PaymentVerificationRequest {
 }
 
 export interface PaymentVerificationResponse {
-  success?: boolean;
-  data?: {
-    payment_status: string;
-    order_status: string;
-    payment_amount: number;
-    cf_order_id: string;
-    transaction_details?: any;
-  };
-  error?: string;
+  payment_status: string;
+  order_status: string;
+  payment_amount: number;
+  cf_order_id: string;
+  transaction_details?: any;
 }
 
 export interface PaymentStatusResponse {
-  success: boolean;
-  data?: {
-    payment_status: string;
-    order_status: string;
-    payment_amount: number;
-    order_amount: number;
-    cf_order_id: string;
-    created_at: string;
-  };
-  error?: string;
+  payment_status: string;
+  order_status: string;
+  payment_amount: number;
+  order_amount: number;
+  cf_order_id: string;
+  created_at: string;
 }
 
 // Database payment record types

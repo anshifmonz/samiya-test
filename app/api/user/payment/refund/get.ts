@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerUser } from 'utils/getServerSession';
 import { getRefundById, getRefundsForOrder } from 'src/lib/user/payment/refund';
+import { err } from 'utils/api/response';
 
 // GET /api/user/payment/refund?id=REFUND_ID - Get Refund by ID
 // GET /api/user/payment/refund?orderId=ORDER_ID - Get All Refunds for an Order
 export async function GET(request: NextRequest) {
   try {
     const user = await getServerUser();
-    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!user) return err('Unauthorized', 401);
 
     const { searchParams } = new URL(request.url);
     const refundId = searchParams.get('id');
@@ -15,7 +16,7 @@ export async function GET(request: NextRequest) {
 
     if (refundId) {
       const result = await getRefundById(orderId, refundId);
-      if (!result) return NextResponse.json({ error: 'Refund not found' }, { status: 404 });
+      if (!result) return err('Refund not found', 404);
       return NextResponse.json({ refund: result }, { status: 200 });
     } else if (orderId) {
       const result = await getRefundsForOrder(orderId);
@@ -28,6 +29,6 @@ export async function GET(request: NextRequest) {
     }
   } catch (error) {
     console.error('Error fetching refund(s):', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return err('Internal server error');
   }
 }

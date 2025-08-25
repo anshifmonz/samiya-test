@@ -1,4 +1,5 @@
 import { getCashfreeRefund } from 'utils/payment/cashfree';
+import { ok, err, ApiResponse } from 'utils/api/response';
 
 interface Refund {
   error?: string;
@@ -14,10 +15,10 @@ interface Refund {
 export async function getRefundById(
   orderId: string,
   refundId: string
-): Promise<Refund> {
+): Promise<ApiResponse<Refund>> {
   const data = await getCashfreeRefund(orderId, refundId);
-  if (!data || data.error) return { error: data?.error || 'Refund not found' };
-  return {
+  if (!data || data.error) return err(data.error || 'Something went wrong');
+  return ok({
     refundId: data.refund_id,
     orderId: data.order_id,
     amount: data.refund_amount,
@@ -25,5 +26,5 @@ export async function getRefundById(
     reason: data.refund_note,
     createdAt: data.created_at,
     processedAt: data.processed_at
-  };
+  });
 }
