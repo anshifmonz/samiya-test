@@ -2,11 +2,9 @@ import retry from 'utils/retry';
 import { supabaseAdmin } from 'lib/supabase';
 import { SRCreateOrder } from 'lib/shiprocket/createOrder';
 import { ok, err, type ApiResponse } from 'utils/api/response';
-import { type PaymentVerificationRequest } from 'types/payment';
 import { consumeStockForUser, releaseStockForUser } from 'lib/inventory';
 import { fetchCashfreeOrder, mapCashfreeStatus } from 'utils/payment/cashfree';
 
-// Types for query results
 interface PaymentWithOrder {
   id: string;
   order_id: string;
@@ -25,14 +23,13 @@ interface PaymentWithOrder {
 
 export async function verifyPayment(
   userId: string,
-  body: PaymentVerificationRequest
+  body: { orderId?: string; cfOrderId?: string }
 ): Promise<ApiResponse<any>> {
   try {
     const { orderId, cfOrderId } = body;
-
     if (!orderId && !cfOrderId) return err('Either orderId or cfOrderId is required', 400);
-    if (typeof orderId !== 'string' || typeof cfOrderId !== 'string')
-      return err('Input must be a string', 400);
+    if (orderId && typeof orderId !== 'string') return err('Input must be a string', 400);
+    if (cfOrderId && typeof cfOrderId !== 'string') return err('Input must be a string', 400);
 
     // Find payment record
     let paymentQuery = supabaseAdmin.from('payments').select(`
