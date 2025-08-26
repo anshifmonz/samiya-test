@@ -1,44 +1,36 @@
 import { supabaseAdmin } from 'lib/supabase';
+import { ok, err, ApiResponse } from 'utils/api/response';
 
-export async function bulkUpdateCartSelection(userId: string, isSelected: boolean): Promise<{
-  success: boolean | null,
-  error: string | null,
-  status?: number,
-  updatedCount?: number
-}> {
+export async function bulkUpdateCartSelection(
+  userId: string,
+  isSelected: boolean
+): Promise<ApiResponse<any>> {
+  if (!userId || typeof userId !== 'string')
+    return err('User ID is required and must be a string', 400);
+  if (typeof isSelected !== 'boolean') return err('isSelected must be a boolean', 400);
 
-  try {
-    if (!userId || typeof userId !== 'string') return { success: null, error: 'User ID is required and must be a string', status: 400 };
-    if (typeof isSelected !== 'boolean') return { success: null, error: 'isSelected must be a boolean', status: 400 };
+  const { data: cart, error: cartError } = await supabaseAdmin
+    .from('carts')
+    .select('id')
+    .eq('user_id', userId)
+    .single();
 
-    const { data: cart, error: cartError } = await supabaseAdmin
-      .from('carts')
-      .select('id')
-      .eq('user_id', userId)
-      .single();
-
-    if (cartError) {
-      if (cartError.code === 'PGRST116')
-        return { success: null, error: 'Cart not found', status: 404 };
-      throw new Error(`Database error: ${cartError.message}`);
-    }
-
-    const { data, error: updateError } = await supabaseAdmin
-      .from('cart_items')
-      .update({ is_selected: isSelected })
-      .eq('cart_id', cart.id)
-      .select('id');
-
-    if (updateError) throw new Error(`Database error: ${updateError.message}`);
-
-    return {
-      success: true,
-      error: null,
-      status: 200,
-      updatedCount: data?.length || 0
-    };
-  } catch (error) {
-    console.error('Error in bulkUpdateCartSelection:', error);
-    return { success: null, error: 'Internal server error', status: 500 };
+  if (cartError) {
+    if (cartError.code === 'PGRST116') return err('Cart not found', 404);
+    return err();
   }
+
+  const { data, error: updateError } = await supabaseAdmin
+    .from('cart_items')
+    .update({ is_selected: isSelected })
+    .eq('cart_id', cart.id)
+    .select('id');
+
+  if (updateError) return err();
+  return ok({
+    success: true,
+    error: null,
+    status: 200,
+    updatedCount: data?.length || 0
+  });
 }

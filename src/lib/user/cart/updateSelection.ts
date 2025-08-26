@@ -1,37 +1,40 @@
 import { supabaseAdmin } from 'lib/supabase';
+import { ok, err, ApiResponse } from 'utils/api/response';
 
-export async function updateCartItemSelection(userId: string, cartItemId: string, isSelected: boolean): Promise<{ success: boolean | null, error: string | null, status?: number }> {
-  try {
-    if (!userId || typeof userId !== 'string') return { success: null, error: 'User ID is required and must be a string', status: 400 };
-    if (!cartItemId || typeof cartItemId !== 'string') return { success: null, error: 'Cart Item ID is required and must be a string', status: 400 };
-    if (typeof isSelected !== 'boolean') return { success: null, error: 'isSelected must be a boolean', status: 400 };
+export async function updateCartItemSelection(
+  userId: string,
+  cartItemId: string,
+  isSelected: boolean
+): Promise<ApiResponse<any>> {
+  if (!userId || typeof userId !== 'string')
+    return err('User ID is required and must be a string', 400);
+  if (!cartItemId || typeof cartItemId !== 'string')
+    return err('Cart Item ID is required and must be a string', 400);
+  if (typeof isSelected !== 'boolean') return err('isSelected must be a boolean', 400);
 
-    const { error: cartItemError } = await supabaseAdmin
-      .from('cart_items')
-      .select(`
-        id,
-        carts!inner(user_id)
-      `)
-      .eq('id', cartItemId)
-      .eq('carts.user_id', userId)
-      .single();
+  const { error: cartItemError } = await supabaseAdmin
+    .from('cart_items')
+    .select(
+      `
+      id,
+      carts!inner(user_id)
+    `
+    )
+    .eq('id', cartItemId)
+    .eq('carts.user_id', userId)
+    .single();
 
-    if (cartItemError) {
-      if (cartItemError.code === 'PGRST116')
-        return { success: null, error: 'Cart item not found or does not belong to this user', status: 404 };
-      throw new Error(`Database error: ${cartItemError.message}`);
-    }
-
-    const { error: updateError } = await supabaseAdmin
-      .from('cart_items')
-      .update({ is_selected: isSelected })
-      .eq('id', cartItemId);
-
-    if (updateError) throw new Error(`Database error: ${updateError.message}`);
-
-    return { success: true, error: null, status: 200 };
-  } catch (error) {
-    console.error('Error in updateCartItemSelection:', error);
-    return { success: null, error: 'Internal server error', status: 500 };
+  if (cartItemError) {
+    if (cartItemError.code === 'PGRST116')
+      return err('Cart item not found or does not belong to this user', 404);
+    return err();
   }
+
+  const { error: updateError } = await supabaseAdmin
+    .from('cart_items')
+    .update({ is_selected: isSelected })
+    .eq('id', cartItemId);
+
+  if (updateError) return err();
+  return ok(null);
 }

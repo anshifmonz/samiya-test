@@ -1,9 +1,9 @@
-import { supabaseAdmin } from '../../../supabase';
+import { supabaseAdmin } from 'lib/supabase';
 import { AddressFormData, Address } from 'types/address';
+import { ok, err, type ApiResponse } from 'utils/api/response';
 
-export async function updateAddress(addressId: string, userId: string, addressData: Partial<AddressFormData>): Promise<Address> {
-  try {
-    const dataToUpdate: any = {};
+export async function updateAddress(addressId: string, userId: string, addressData: Partial<AddressFormData>): Promise<ApiResponse<Address>> {
+  const dataToUpdate: any = {};
 
     if (addressData.label !== undefined) dataToUpdate.label = addressData.label;
     if (addressData.full_name !== undefined) dataToUpdate.full_name = addressData.full_name;
@@ -27,33 +27,22 @@ export async function updateAddress(addressId: string, userId: string, addressDa
       .select('*')
       .single();
 
-    if (error) throw new Error(`Failed to update address ${error}`);
-
-    return updatedAddress;
-  } catch (error) {
-    console.error('Error in updateAddress:', error);
-    throw error;
-  }
+    if (error) return err();
+    return ok(updatedAddress);
 }
 
-export async function setDefaultAddress(addressId: string, userId: string): Promise<void> {
-  try {
-    //unset all default addresses
-    await supabaseAdmin
-      .from('addresses')
-      .update({ is_default: false })
-      .eq('user_id', userId);
+export async function setDefaultAddress(addressId: string, userId: string): Promise<ApiResponse<null>> {
+  await supabaseAdmin
+    .from('addresses')
+    .update({ is_default: false })
+    .eq('user_id', userId);
 
-    // set specified address as default
-    const { error } = await supabaseAdmin
-      .from('addresses')
-      .update({ is_default: true })
-      .eq('id', addressId)
-      .eq('user_id', userId);
+  const { error } = await supabaseAdmin
+    .from('addresses')
+    .update({ is_default: true })
+    .eq('id', addressId)
+    .eq('user_id', userId);
 
-    if (error) throw new Error(`Failed to set default address ${error}`);
-  } catch (error) {
-    console.error('Error in setDefaultAddress:', error);
-    throw error;
-  }
+  if (error) return err();
+  return ok(null);
 }

@@ -1,38 +1,32 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from 'lib/supabase/server';
-import { updateAddress, setDefaultAddress } from 'lib/user/profile/address/update';
+import { NextRequest } from 'next/server';
+import { getServerUser } from 'utils/getServerSession';
+import { updateAddress, setDefaultAddress } from 'lib/user/profile/address';
+import { err, jsonResponse } from 'utils/api/response';
 import { AddressFormData } from 'types/address';
 
 export async function PUT(request: NextRequest) {
   try {
-    const supabase = createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-    if (authError || !user)
-      return NextResponse.json({ error: 'Unauthorized access' }, { status: 401 });
+    const user = await getServerUser();
+    if (!user) return jsonResponse(err('Unauthorized access', 401));
 
     const { searchParams } = new URL(request.url);
     const addressId = searchParams.get('id');
     const action = searchParams.get('action');
 
-    if (!addressId)
-      return NextResponse.json({ error: 'Address ID is required' }, { status: 400 });
+    if (!addressId) return jsonResponse(err('Address ID is required', 400));
 
     if (action === 'set-default') {
-      await setDefaultAddress(addressId, user.id);
-      return NextResponse.json({ message: 'Default address updated successfully' }, { status: 200 });
+      const result = await setDefaultAddress(addressId, user.id);
+      if (result.error) return jsonResponse(result);
+      return jsonResponse(result);
     }
 
     const addressData: Partial<AddressFormData> = await request.json();
-    const updatedAddress = await updateAddress(addressId, user.id, addressData);
+    const result = await updateAddress(addressId, user.id, addressData);
+    if (result.error) return jsonResponse(result);
 
-    return NextResponse.json({
-      message: 'Address updated successfully',
-      address: updatedAddress
-    }, { status: 200 });
-
+    return jsonResponse(result);
   } catch (error) {
-    console.error('Error updating address:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return jsonResponse(err('Internal server error', 500));
   }
 }

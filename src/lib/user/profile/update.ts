@@ -2,6 +2,7 @@ import { supabaseAdmin } from 'lib/supabase';
 import { User } from 'types/user';
 import { AddressFormData } from 'types/address';
 import { createAddress, updateAddress, setDefaultAddress } from './address';
+import { err, ok, type ApiResponse } from 'utils/api/response';
 
 interface UpdateData extends Partial<User> {
   address?: any;
@@ -60,31 +61,30 @@ export async function handleAddressOperation(userId: string, addressData: any) {
 async function updateUserProfile(
   userId: string,
   updateData: UpdateData
-): Promise<{ profile?: User | null; address?: any; error?: string; status?: number }> {
+): Promise<ApiResponse<{ profile?: User | null; address?: any }>> {
   try {
     const validatedData: any = {};
     const allowedFields = ['name', 'phone', 'date_of_birth', 'profile_picture', 'bio', 'address'];
 
     for (const [key, value] of Object.entries(updateData)) {
       if (!allowedFields.includes(key))
-        return { error: `Field '${key}' is not allowed to be updated`, status: 400 };
+        return err(`Field '${key}' is not allowed to be updated`, 400);
 
       switch (key) {
         case 'name':
           if (typeof value !== 'string' || value.trim().length === 0)
-            return { error: 'Name must be a non-empty string', status: 400 };
-          if (value.length > 255)
-            return { error: 'Name cannot exceed 255 characters', status: 400 };
+            return err('Name must be a non-empty string', 400);
+          if (value.length > 255) return err('Name cannot exceed 255 characters', 400);
           validatedData[key] = value.trim();
           break;
 
         case 'phone':
           if (value !== null && value !== undefined) {
             if (typeof value !== 'string' || value.length > 15)
-              return { error: 'Phone must be a string with maximum 15 characters', status: 400 };
+              return err('Phone must be a string with maximum 15 characters', 400);
             const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
             if (value.trim() !== '' && !phoneRegex.test(value.replace(/[\s\-\(\)]/g, '')))
-              return { error: 'Invalid phone number format', status: 400 };
+              return err('Invalid phone number format', 400);
             validatedData[key] = value.trim() || null;
           } else {
             validatedData[key] = null;
@@ -95,11 +95,10 @@ async function updateUserProfile(
           if (value !== null && value !== undefined) {
             const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
             if (typeof value !== 'string' || !dateRegex.test(value))
-              return { error: 'Date of birth must be in YYYY-MM-DD format', status: 400 };
+              return err('Date of birth must be in YYYY-MM-DD format', 400);
             const date = new Date(value);
-            if (isNaN(date.getTime())) return { error: 'Invalid date of birth', status: 400 };
-            if (date > new Date())
-              return { error: 'Date of birth cannot be in the future', status: 400 };
+            if (isNaN(date.getTime())) return err('Invalid date of birth', 400);
+            if (date > new Date()) return err('Date of birth cannot be in the future', 400);
             validatedData[key] = value;
           } else {
             validatedData[key] = null;
@@ -109,12 +108,12 @@ async function updateUserProfile(
         case 'profile_picture':
           if (value !== null && value !== undefined) {
             if (typeof value !== 'string')
-              return { error: 'Profile picture must be a string (URL)', status: 400 };
+              return err('Profile picture must be a string (URL)', 400);
             try {
               new URL(value);
               validatedData[key] = value;
             } catch {
-              return { error: 'Profile picture must be a valid URL', status: 400 };
+              return err('Profile picture must be a valid URL', 400);
             }
           } else {
             validatedData[key] = null;
@@ -123,9 +122,8 @@ async function updateUserProfile(
 
         case 'bio':
           if (value !== null && value !== undefined) {
-            if (typeof value !== 'string') return { error: 'Bio must be a string', status: 400 };
-            if (value.length > 1000)
-              return { error: 'Bio cannot exceed 1000 characters', status: 400 };
+            if (typeof value !== 'string') return err('Bio must be a string', 400);
+            if (value.length > 1000) return err('Bio cannot exceed 1000 characters', 400);
             validatedData[key] = value.trim() || null;
           } else {
             validatedData[key] = null;
@@ -141,8 +139,7 @@ async function updateUserProfile(
     let addressResult = null;
     if (updateData.address)
       addressResult = await handleAddressOperation(userId, updateData.address);
-    if (addressResult && addressResult.error)
-      return { error: addressResult.error, status: addressResult.status };
+    if (addressResult && addressResult.error) return err(addressResult.error, addressResult.status);
 
     // Only update user profile if there are validated fields to update
     let updatedProfile = null;
@@ -167,13 +164,13 @@ async function updateUserProfile(
         )
         .single();
 
-      if (error) return { error: 'Failed to update profile', status: 500 };
+      if (error) return err('Failed to update profile', 500);
       updatedProfile = profile;
     }
 
-    return { profile: updatedProfile, address: addressResult, status: 200, error: null };
+    return ok({ profile: updatedProfile, address: addressResult }, 200);
   } catch (error) {
-    return { error: 'Failed to update profile', status: 500 };
+    return err('Failed to update profile', 500);
   }
 }
 

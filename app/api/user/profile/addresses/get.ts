@@ -1,24 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from 'lib/supabase/server';
-import { getUserAddresses } from 'lib/user/profile/address/get';
+import { getServerUser } from 'utils/getServerSession';
+import { getUserAddresses } from 'lib/user/profile/address';
+import { err, jsonResponse } from 'utils/api/response';
 
-export async function GET(request: NextRequest) {
-  try {
-    const supabase = createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+export async function GET() {
+  const user = await getServerUser();
+  if (!user) return jsonResponse(err('Unauthorized access', 401));
 
-    if (authError || !user)
-      return NextResponse.json({ error: 'Unauthorized access' }, { status: 401 });
-
-    const addresses = await getUserAddresses(user.id);
-
-    return NextResponse.json({
-      addresses
-    }, { status: 200 });
-
-  } catch (error) {
-    console.error('Error fetching addresses:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  }
+  const result = await getUserAddresses(user.id);
+  return jsonResponse(result);
 }
-

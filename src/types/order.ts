@@ -123,15 +123,10 @@ export interface OrderHistory {
 }
 
 export interface GetOrderHistoryResponse {
-  success: boolean;
-  error?: string;
-  status?: number;
-  data?: {
-    orders: OrderHistory[];
-    totalCount: number;
-    page: number;
-    limit: number;
-  };
+  orders: OrderHistory[];
+  totalCount: number;
+  page: number;
+  limit: number;
 }
 
 // Stock reservation types

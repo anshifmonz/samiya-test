@@ -1,8 +1,10 @@
 import { supabaseAdmin } from 'lib/supabase';
+import { ok, err, type ApiResponse } from 'utils/api/response';
 
-export async function getUserCart(userId: string): Promise<{ success: boolean | null, data?: any, error: string | null, status?: number }> {
+export async function getUserCart(userId: string): Promise<ApiResponse<any>> {
   try {
-    if (!userId || typeof userId !== 'string') return { success: null, error: 'User ID is required and must be a string', status: 400 };
+    if (!userId || typeof userId !== 'string')
+      return err('User ID is required and must be a string', 400);
 
     const { data: cart, error: cartError } = await supabaseAdmin
       .from('carts')
@@ -10,12 +12,13 @@ export async function getUserCart(userId: string): Promise<{ success: boolean | 
       .eq('user_id', userId)
       .maybeSingle();
 
-    if (cartError) throw new Error(`Database error: ${cartError.message}`);
-    if (!cart) return { success: true, data: { items: [], total: 0 }, error: null, status: 200 };
+    if (cartError) return err();
+    if (!cart) return ok({ items: [], total: 0 });
 
     const { data: cartItems, error: itemsError } = await supabaseAdmin
       .from('cart_items')
-      .select(`
+      .select(
+        `
         id,
         cart_id,
         product_id,
@@ -39,44 +42,49 @@ export async function getUserCart(userId: string): Promise<{ success: boolean | 
           id,
           name
         )
-      `)
+      `
+      )
       .eq('cart_id', cart.id);
 
-    if (itemsError) throw new Error(`Database error: ${itemsError.message}`);
-    if (!cartItems || cartItems.length === 0) return { success: true, data: { items: [], total: 0 }, error: null, status: 200 };
+    if (itemsError) return err();
+    if (!cartItems || cartItems.length === 0) return ok({ items: [], total: 0 });
 
     const { data: productImages, error: imagesError } = await supabaseAdmin
       .from('product_images')
       .select('product_id, color_name, image_url, sort_order, is_primary')
-      .in('product_id', cartItems.map(item => item.product_id))
+      .in(
+        'product_id',
+        cartItems.map(item => item.product_id)
+      )
       .order('sort_order', { ascending: true });
 
-    if (imagesError) throw new Error(`Error fetching product images: ${imagesError.message}`);
+    if (imagesError) return err();
 
-    const total = cartItems.reduce((sum, item) => sum + ((item.products as any)?.price * item.quantity), 0);
+    const total = cartItems.reduce(
+      (sum, item) => sum + (item.products as any)?.price * item.quantity,
+      0
+    );
 
     const enhancedCartItems = cartItems.map(item => {
       const colorName = (item.product_colors as any)?.color_name;
       const productId = item.product_id;
 
-      let productImageForColor = productImages?.find(img =>
-        img.product_id === productId && img.color_name === colorName && img.is_primary
+      let productImageForColor = productImages?.find(
+        img => img.product_id === productId && img.color_name === colorName && img.is_primary
       )?.image_url;
 
       if (!productImageForColor)
-        productImageForColor = productImages?.find(img =>
-          img.product_id === productId && img.color_name === colorName
+        productImageForColor = productImages?.find(
+          img => img.product_id === productId && img.color_name === colorName
         )?.image_url;
 
       if (!productImageForColor)
-        productImageForColor = productImages?.find(img =>
-          img.product_id === productId && img.is_primary
+        productImageForColor = productImages?.find(
+          img => img.product_id === productId && img.is_primary
         )?.image_url;
 
       if (!productImageForColor)
-        productImageForColor = productImages?.find(img =>
-          img.product_id === productId
-        )?.image_url;
+        productImageForColor = productImages?.find(img => img.product_id === productId)?.image_url;
 
       const finalImage = productImageForColor || '/api/placeholder/200/200';
 
@@ -98,18 +106,12 @@ export async function getUserCart(userId: string): Promise<{ success: boolean | 
       };
     });
 
-    return {
-      success: true,
-      data: {
-        items: enhancedCartItems,
-        total
-      },
-      error: null,
-      status: 200
-    };
-  } catch (error) {
-    console.error('Error in getUserCart:', error);
-    return { success: null, error: 'Internal server error', status: 500 };
+    return ok({
+      items: enhancedCartItems,
+      total
+    });
+  } catch (_) {
+    return err('Internal server error', 500);
   }
 }
 

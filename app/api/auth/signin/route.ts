@@ -1,21 +1,20 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from 'lib/supabase/server';
 import '@supabase/supabase-js';
+import { createClient } from 'lib/supabase/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { err, jsonResponse } from 'lib/utils/api/response';
 
 export async function POST(request: NextRequest) {
   try {
     const { email, password } = await request.json();
 
     if (!email || typeof email !== 'string' || !email.includes('@'))
-      return NextResponse.json({ error: 'Valid email is required' }, { status: 400 });
+      return jsonResponse(err('Valid email is required', 400))
     if (!password || typeof password !== 'string')
-      return NextResponse.json({ error: 'Password is required' }, { status: 400 });
+      return jsonResponse(err('Password is required'))
 
     const supabase = createClient();
     const { data: { session }, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 401 });
-    }
+    if (error) return jsonResponse(err(error.message, 401));
 
     const response = NextResponse.json({ message: 'Sign in successful' }, { status: 200 });
 
@@ -38,8 +37,7 @@ export async function POST(request: NextRequest) {
     }
 
     return response;
-  } catch (error) {
-    console.error('Signin error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  } catch (_) {
+    return jsonResponse(err());
   }
 }
