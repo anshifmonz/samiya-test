@@ -10,8 +10,9 @@ export default async function CheckoutPage() {
   const user = await getServerUser();
   if (!user) redirect('/signin');
 
-  const checkoutResult = await getCheckout(user.id) as { data: CheckoutData };
-  const addresses = await getUserAddresses(user.id) as Address[];
+  const checkoutResult = (await getCheckout(user.id)) as { data: CheckoutData };
+  const { data } = await getUserAddresses(user.id);
+  const addresses = data || ([] as Address[]);
 
   return <Checkout checkoutData={checkoutResult.data} addresses={addresses} />;
 }

@@ -26,16 +26,17 @@ const AddressBook = ({ initialAddresses }: AddressBookProps) => {
         showErrorToast: false
       });
 
-      if (error) {
+      if (error || response?.error) {
         toast({
           title: "Error Adding Address",
-          description: error
+          description: response?.error || "An error occurred."
         });
         return;
       }
 
-      if (response?.address) {
-        const displayAddress = mapAddressToDisplay(response.address);
+      const address = response.data.address || null;
+      if (address) {
+        const displayAddress = mapAddressToDisplay(address);
         setAddresses([...addresses, displayAddress]);
         setShowAddForm(false);
         toast({
@@ -43,25 +44,25 @@ const AddressBook = ({ initialAddresses }: AddressBookProps) => {
           description: "Your new address has been saved successfully."
         });
       }
-    } catch (error: any) {
+    } catch (_) {
       toast({
         title: "Error Adding Address",
-        description: error?.message || "An error occurred."
+        description: "An error occurred."
       });
     }
   };
 
   const setAsDefault = async (id: string) => {
     try {
-      const { error } = await apiRequest(`/api/user/profile/addresses?id=${id}&action=set-default`, {
+      const { data, error } = await apiRequest(`/api/user/profile/addresses?id=${id}&action=set-default`, {
         method: 'PUT',
         showErrorToast: false
       });
 
-      if (error) {
+      if (error || data?.error) {
         toast({
           title: "Error Setting Default",
-          description: error
+          description: data?.error || "An error occurred."
         });
         return;
       }
@@ -75,25 +76,25 @@ const AddressBook = ({ initialAddresses }: AddressBookProps) => {
         title: "Default Address Updated",
         description: "This address has been set as your default."
       });
-    } catch (error: any) {
+    } catch (_) {
       toast({
         title: "Error Setting Default",
-        description: error?.message || "An error occurred."
+        description: "An error occurred."
       });
     }
   };
 
   const deleteAddress = async (id: string) => {
     try {
-      const { error } = await apiRequest(`/api/user/profile/addresses?id=${id}`, {
+      const { data, error } = await apiRequest(`/api/user/profile/addresses?id=${id}`, {
         method: 'DELETE',
         showErrorToast: false
       });
 
-      if (error) {
+      if (error || data?.error) {
         toast({
           title: "Error Deleting Address",
-          description: error
+          description: data?.error || "An error occurred."
         });
         return;
       }

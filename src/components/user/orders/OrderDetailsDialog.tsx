@@ -43,7 +43,6 @@ export default function OrderDetailsDialog({ open, onOpenChange, order }: OrderD
     async function refresh() {
       if (!open || !order?.id) return;
       if (!order.shiprocket_order_id) return;
-      // Use apiRequest util
       const { data, error } = await apiRequest('/api/delivery/track-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

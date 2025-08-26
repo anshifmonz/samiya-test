@@ -115,7 +115,7 @@ export const useCart = ({ initialCartItems }: { initialCartItems: CartItem[] }) 
   };
 
   const handleRemoveItem = async (itemId: string) => {
-    const { error } = await apiRequest('/api/user/cart', {
+    const { data, error } = await apiRequest('/api/user/cart', {
       method: 'DELETE',
       body: {
         cartId: itemId
@@ -126,16 +126,16 @@ export const useCart = ({ initialCartItems }: { initialCartItems: CartItem[] }) 
       showErrorToast: true,
       showLoadingBar: true,
     });
-    if (error) return;
+    if (error || data.error) return;
     setCartItems(items => items.filter(item => item.id !== itemId));
   };
 
   const handleProceedToCheckout = async () => {
-    const { error } = await apiRequest('/api/user/checkout', {
+    const { data, error } = await apiRequest('/api/user/checkout', {
       method: 'POST',
       showLoadingBar: true,
     });
-    if (error) return;
+    if (error || data.error) return;
     router.push("/user/checkout");
   };
 

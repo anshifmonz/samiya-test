@@ -126,7 +126,7 @@ export function useProductLogic(product: Product) {
       const method = isWishlist ? 'DELETE' : 'POST';
       const action = isWishlist ? 'remove from' : 'add to';
 
-      const { error } = await apiRequest('/api/user/wishlists', {
+      const { data, error } = await apiRequest('/api/user/wishlists', {
         method,
         body: {
           productId: product.id,
@@ -139,7 +139,7 @@ export function useProductLogic(product: Product) {
         showLoadingBar: true
       });
 
-      if (error) return;
+      if (error || data.error) return;
       setIsWishlist(!isWishlist);
 
       // update the selectedSizeData to include/remove the wishlist_id

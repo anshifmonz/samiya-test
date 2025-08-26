@@ -8,7 +8,8 @@ export default async function ProfilePage() {
   const user = await getServerUser();
   if (!user) redirect('/signin');
 
-  const profile = await getUserProfile(user.id);
+  const { data } = await getUserProfile(user.id);
+  const profile = data || null;
   if (!profile) redirect('/signin');
 
   return (

@@ -7,7 +7,8 @@ export default async function WishlistPage() {
   const user = await getServerUser();
   if (!user) redirect('/auth/login');
 
-  const { wishlists } = await getUserWishlists(user.id);
+  const { data } = await getUserWishlists(user.id);
+  const wishlists = data || [];
 
   return <Wishlist wishlists={wishlists} />;
 }

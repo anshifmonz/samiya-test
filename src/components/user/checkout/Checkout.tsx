@@ -165,10 +165,10 @@ const Checkout = ({ checkoutData, addresses: initialAddresses }: CheckoutProps) 
         showErrorToast: false
       });
 
-      if (error) {
+      if (error || data?.error) {
         toast({
           title: 'Order Failed',
-          description: error,
+          description: data?.error || 'An error occurred.',
           variant: 'destructive'
         });
         return;

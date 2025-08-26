@@ -57,8 +57,9 @@ const AddressFormModal = ({ open, onOpenChange, onAddressAdded }: AddressFormMod
         return;
       }
 
-      if (response?.address) {
-        const displayAddress = mapAddressToDisplay(response.address);
+      const address = response.data.address || null;
+      if (address) {
+        const displayAddress = mapAddressToDisplay(address);
         onAddressAdded(displayAddress);
         onOpenChange(false);
         form.reset();
@@ -67,10 +68,10 @@ const AddressFormModal = ({ open, onOpenChange, onAddressAdded }: AddressFormMod
           description: "Your new address has been saved successfully."
         });
       }
-    } catch (error: any) {
+    } catch (_) {
       toast({
         title: "Error Adding Address",
-        description: error?.message || "An error occurred.",
+        description: "An error occurred.",
         variant: "destructive"
       });
     } finally {
@@ -89,7 +90,7 @@ const AddressFormModal = ({ open, onOpenChange, onAddressAdded }: AddressFormMod
         <DialogHeader>
           <DialogTitle>Add New Address</DialogTitle>
         </DialogHeader>
-        
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -284,17 +285,17 @@ const AddressFormModal = ({ open, onOpenChange, onAddressAdded }: AddressFormMod
             />
 
             <div className="flex gap-3 pt-4">
-              <Button 
-                type="button" 
-                variant="outline" 
+              <Button
+                type="button"
+                variant="outline"
                 onClick={handleCancel}
                 disabled={isSubmitting}
                 className="flex-1"
               >
                 Cancel
               </Button>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 disabled={isSubmitting}
                 className="flex-1"
               >

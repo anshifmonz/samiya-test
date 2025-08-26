@@ -45,14 +45,14 @@ const UserSignup: React.FC = () => {
     }
 
     try {
-      const { error: apiError } = await apiRequest('/api/auth/signup', {
+      const { data, error: apiError } = await apiRequest('/api/auth/signup', {
         method: 'POST',
         body: { name, email, password },
         showLoadingBar: true,
         showErrorToast: false
       });
 
-      if (!apiError) {
+      if (!apiError || !data.error) {
         setSuccess('Account created successfully! Please check your email to verify your account.');
         setTimeout(() => {
           router.push('/login');
@@ -60,8 +60,7 @@ const UserSignup: React.FC = () => {
       } else {
         setError(apiError || 'Signup failed');
       }
-    } catch (error) {
-      console.error('Signup error:', error);
+    } catch (_) {
       setError('Network error. Please try again.');
     } finally {
       setIsLoading(false);

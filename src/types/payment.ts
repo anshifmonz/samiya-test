@@ -40,11 +40,6 @@ export interface PaymentInitiationResponse {
   payment_url?: string;
 }
 
-export interface PaymentVerificationRequest {
-  orderId?: string;
-  cfOrderId?: string;
-}
-
 export interface PaymentVerificationResponse {
   payment_status: string;
   order_status: string;

@@ -23,7 +23,7 @@ const WishlistClient = ({ wishlists }: WishlistClientProps) => {
 
     setLoading(true);
 
-    const { error } = await apiRequest('/api/user/wishlists', {
+    const { data, error } = await apiRequest('/api/user/wishlists', {
       method: 'DELETE',
       body: {
         wishlistId: item.id,
@@ -37,7 +37,7 @@ const WishlistClient = ({ wishlists }: WishlistClientProps) => {
       showLoadingBar: true,
     });
 
-    if (!error) setWishlistItems(prev => prev.filter(item => item.id !== itemId));
+    if (!error || !data.error) setWishlistItems(prev => prev.filter(item => item.id !== itemId));
 
     setLoading(false);
   };

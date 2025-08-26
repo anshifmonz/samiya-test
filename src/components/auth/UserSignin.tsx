@@ -27,19 +27,19 @@ const UserSignin: React.FC = () => {
     setError('');
 
     try {
-      const { error: apiError } = await apiRequest('/api/auth/signin', {
+      const { data, error: apiError } = await apiRequest('/api/auth/signin', {
         method: 'POST',
         body: { email, password },
         showLoadingBar: true,
         showErrorToast: false
       });
 
-      if (!apiError) {
+      if (!apiError || !data.error) {
         router.push('/');
       } else {
-        setError(apiError || 'Signin failed');
+        setError(data.error || 'Signin failed');
       }
-    } catch (error) {
+    } catch (_) {
       setError('Network error. Please try again.');
     } finally {
       setIsLoading(false);

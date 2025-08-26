@@ -6,11 +6,6 @@ import { Button } from 'ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from 'ui/card';
 import { CheckCircle, XCircle, Clock, ArrowRight } from 'lucide-react';
 import { apiRequest } from 'lib/utils/apiRequest';
-import {
-  type PaymentVerificationRequest,
-  type PaymentVerificationResponse,
-  type PaymentStatusResponse
-} from 'types/payment';
 
 interface PaymentReturnProps {
   orderId?: string;
@@ -41,27 +36,20 @@ const PaymentReturn = ({ orderId, status }: PaymentReturnProps) => {
   const verifyPaymentStatus = async () => {
     try {
       setVerifying(true);
-
-      // First try to verify the payment status
-      const requestBody: PaymentVerificationRequest = {
-        orderId
-      };
-
-      const { data: verifyData, error: verifyError } =
-        await apiRequest<PaymentVerificationResponse>('/api/user/payment/verify', {
+      const { data: verifyData, error: verifyError } = await apiRequest(
+        '/api/user/payment/verify',
+        {
           method: 'POST',
-          body: requestBody
-        });
+          body: { orderId }
+        }
+      );
 
-      if (verifyError) {
-        console.error('Payment verification failed:', verifyError);
-        // If verification fails, try to get current status
+      if (verifyError || verifyData.error) {
         await getCurrentStatus();
       } else {
-        setPaymentStatus(verifyData || null);
+        setPaymentStatus(verifyData.data || null);
       }
-    } catch (error) {
-      console.error('Error verifying payment:', error);
+    } catch (_) {
       await getCurrentStatus();
     } finally {
       setVerifying(false);
@@ -74,16 +62,13 @@ const PaymentReturn = ({ orderId, status }: PaymentReturnProps) => {
       const params = new URLSearchParams();
       if (orderId) params.append('orderId', orderId);
 
-      const { data, error } = await apiRequest<PaymentStatusResponse>(
-        `/api/user/payment/verify?${params.toString()}`,
-        {
-          method: 'GET'
-        }
-      );
+      const { data, error } = await apiRequest(`/api/user/payment/verify?${params.toString()}`, {
+        method: 'GET'
+      });
 
-      if (!error && data) setPaymentStatus(data || null);
-    } catch (error) {
-      console.error('Error getting payment status:', error);
+      if (!error && !data.error && data) setPaymentStatus(data.data || null);
+    } catch (_) {
+      // Handle error
     }
   };
 
