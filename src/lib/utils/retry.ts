@@ -1,7 +1,10 @@
+type RetryResult<T> = { data?: T; error?: any } | T | null | undefined | false;
+
 export default async function retry<T>(
-  fn: () => Promise<{ data?: T; error?: any }> | Promise<T> | Promise<null | undefined | false>,
+  fn: () => Promise<RetryResult<T>>,
   retries: number = 3,
-  delay: number = 500
+  delay: number = 500,
+  maxDelay: number = 7000
 ): Promise<{ data: T | null; error: any | null }> {
   let lastError: any = null;
 
@@ -15,16 +18,17 @@ export default async function retry<T>(
           lastError = error;
           throw error; // triggers retry
         }
-        if (!data) throw new Error('No data returned');
         return { data, error: null };
       } else {
         // Otherwise, treat as a single value (could be null/undefined/falsy)
-        if (!result) throw new Error('No value returned');
         return { data: result as T, error: null };
       }
     } catch (err) {
       lastError = err;
-      if (i < retries - 1) await new Promise(resolve => setTimeout(resolve, delay));
+      if (i < retries - 1) {
+        const wait = Math.min(delay * 2 ** i, maxDelay);
+        await new Promise(res => setTimeout(res, wait));
+      }
     }
   }
 
