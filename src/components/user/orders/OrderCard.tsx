@@ -16,7 +16,7 @@ import { OrderHistory } from 'types/order';
 import OrderItems from './OrderItems';
 import OrderStatusStepper from './OrderStatusStepper';
 import { DbEnumToMessage } from 'utils/shiprocket/dbEnumToMsg';
-import { useOrderContext } from 'contexts/OrderContext';
+import { useOrderContext } from 'contexts/user/OrderContext';
 import { ShipmentInfo } from 'hooks/user/useOrder';
 
 interface OrderCardProps {

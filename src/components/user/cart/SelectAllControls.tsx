@@ -3,15 +3,10 @@
 import { Button } from 'ui/button';
 import { Checkbox } from 'ui/checkbox';
 import { Card, CardContent } from 'ui/card';
-import { useCartContext } from 'contexts/CartContext';
+import { useCartContext } from 'contexts/user/CartContext';
 
 const SelectAllControls = () => {
-  const {
-    cartItems,
-    selectedItems,
-    handleSelectAll,
-    handleDeselectAll,
-  } = useCartContext();
+  const { cartItems, selectedItems, handleSelectAll, handleDeselectAll } = useCartContext();
 
   return (
     <Card>
@@ -20,7 +15,7 @@ const SelectAllControls = () => {
           <div className="flex items-center gap-4">
             <Checkbox
               checked={selectedItems.length === cartItems.length}
-              onCheckedChange={(checked) => {
+              onCheckedChange={checked => {
                 if (checked) handleSelectAll();
                 else handleDeselectAll();
               }}

@@ -1,7 +1,7 @@
 'use client';
 
 import { Card, CardContent } from 'ui/card';
-import { useOrderContext } from 'contexts/OrderContext';
+import { useOrderContext } from 'contexts/user/OrderContext';
 
 const OrderSummary = () => {
   const { totalSpent, deliveredOrders, filteredOrders } = useOrderContext();

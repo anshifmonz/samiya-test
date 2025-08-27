@@ -6,7 +6,7 @@ import EmptyCart from './EmptyCart';
 import CartSummary from './CartSummary';
 import CartItemsList from './CartItemsList';
 import { CartItem } from 'types/cart';
-import { CartProvider, useCartContext } from 'contexts/CartContext';
+import { CartProvider, useCartContext } from 'contexts/user/CartContext';
 
 interface CartProps {
   initialCartItems: CartItem[];

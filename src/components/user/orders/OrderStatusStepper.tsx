@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { useOrderContext } from 'contexts/OrderContext';
+import { useOrderContext } from 'contexts/user/OrderContext';
 
 const DEFAULT_STEPS = [
   { key: 'processing', label: 'Processing' },

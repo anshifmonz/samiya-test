@@ -2,7 +2,7 @@
 
 import CartItemCard from './CartItemCard';
 import SelectAllControls from './SelectAllControls';
-import { useCartContext } from 'contexts/CartContext';
+import { useCartContext } from 'contexts/user/CartContext';
 
 const CartItemsList = () => {
   const { cartItems } = useCartContext();
@@ -11,7 +11,7 @@ const CartItemsList = () => {
     <div className="lg:col-span-2 space-y-4">
       <SelectAllControls />
 
-      {cartItems.map((item) => (
+      {cartItems.map(item => (
         <CartItemCard key={item.id} item={item} />
       ))}
     </div>

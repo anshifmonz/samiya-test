@@ -6,7 +6,7 @@ import OrderFilter from './OrderFilter';
 import OrderSummary from './OrderSummary';
 import OrderDetailsDialog from './OrderDetailsDialog';
 import { OrderHistory } from 'types/order';
-import { OrderProvider, useOrderContext } from 'contexts/OrderContext';
+import { OrderProvider, useOrderContext } from 'contexts/user/OrderContext';
 
 interface OrdersProps {
   initialOrders: OrderHistory[];

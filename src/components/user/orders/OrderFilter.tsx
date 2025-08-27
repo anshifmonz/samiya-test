@@ -1,15 +1,9 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from 'ui/card';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from 'ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui/select';
 import { Filter } from 'lucide-react';
-import { useOrderContext } from 'contexts/OrderContext';
+import { useOrderContext } from 'contexts/user/OrderContext';
 
 const OrderFilter = () => {
   const { selectedFilter, setSelectedFilter } = useOrderContext();

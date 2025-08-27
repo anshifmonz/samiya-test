@@ -3,7 +3,7 @@
 import { Button } from 'ui/button';
 import { Separator } from 'ui/separator';
 import { Card, CardContent, CardHeader, CardTitle } from 'ui/card';
-import { useCartContext } from 'contexts/CartContext';
+import { useCartContext } from 'contexts/user/CartContext';
 
 const CartSummary = () => {
   const {
@@ -58,11 +58,7 @@ const CartSummary = () => {
       </Card>
 
       <div className="space-y-3">
-        <Button
-          variant="outline"
-          className="w-full"
-          onClick={handleContinueShopping}
-        >
+        <Button variant="outline" className="w-full" onClick={handleContinueShopping}>
           Continue Shopping
         </Button>
         <Button

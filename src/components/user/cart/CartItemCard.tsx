@@ -5,7 +5,7 @@ import { Button } from 'ui/button';
 import { Checkbox } from 'ui/checkbox';
 import { Card, CardContent } from 'ui/card';
 import { Minus, Plus, Trash2 } from 'lucide-react';
-import { useCartContext } from 'contexts/CartContext';
+import { useCartContext } from 'contexts/user/CartContext';
 import { CartItem } from 'types/cart';
 
 interface CartItemCardProps {
@@ -13,11 +13,7 @@ interface CartItemCardProps {
 }
 
 const CartItemCard = ({ item }: CartItemCardProps) => {
-  const {
-    handleSelectItem,
-    handleQuantityChange,
-    handleRemoveItem
-  } = useCartContext();
+  const { handleSelectItem, handleQuantityChange, handleRemoveItem } = useCartContext();
 
   const calculateDiscount = (price: number, originalPrice?: number) => {
     if (!originalPrice) return 0;
@@ -25,12 +21,14 @@ const CartItemCard = ({ item }: CartItemCardProps) => {
   };
 
   return (
-    <Card className={`transition-all ${item.isSelected ? 'ring-2 ring-primary/20 bg-primary/5' : ''}`}>
+    <Card
+      className={`transition-all ${item.isSelected ? 'ring-2 ring-primary/20 bg-primary/5' : ''}`}
+    >
       <CardContent className="p-4">
         <div className="flex gap-4">
           <Checkbox
             checked={item.isSelected}
-            onCheckedChange={(checked) => handleSelectItem(item.id, checked as boolean)}
+            onCheckedChange={checked => handleSelectItem(item.id, checked as boolean)}
           />
           <img
             src={item.image}
@@ -54,8 +52,12 @@ const CartItemCard = ({ item }: CartItemCardProps) => {
             </div>
 
             <div className="flex gap-4 text-sm">
-              <span>Size: <Badge variant="outline">{item.selectedSize}</Badge></span>
-              <span>Color: <Badge variant="outline">{item.selectedColor}</Badge></span>
+              <span>
+                Size: <Badge variant="outline">{item.selectedSize}</Badge>
+              </span>
+              <span>
+                Color: <Badge variant="outline">{item.selectedColor}</Badge>
+              </span>
             </div>
 
             <div className="flex justify-between items-center">

@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from 'ui/dialog';
 import { Truck, ExternalLink, Calendar, CreditCard, MapPin, Package } from 'lucide-react';
 import OrderItems from './OrderItems';
 import OrderStatusStepper from './OrderStatusStepper';
-import { useOrderContext } from 'contexts/OrderContext';
+import { useOrderContext } from 'contexts/user/OrderContext';
 
 export default function OrderDetailsDialog() {
   const { shipmentInfo, detailsOpen, setDetailsOpen, selectedOrder } = useOrderContext();
