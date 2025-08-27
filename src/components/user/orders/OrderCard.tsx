@@ -15,6 +15,8 @@ import {
 import { OrderHistory } from 'types/order';
 import OrderItems from './OrderItems';
 import OrderStatusStepper from './OrderStatusStepper';
+import { apiRequest } from 'utils/apiRequest';
+import { DbEnumToMessage } from 'utils/shiprocket/dbEnumToMsg';
 
 type ShipmentInfo = {
   status?: string | null;
@@ -47,6 +49,16 @@ const OrderCard = ({ order, onViewDetails }: OrderCardProps) => {
     ].filter(Boolean);
 
     return parts.join(', ');
+  };
+
+  const isShowCancelButton = () => {
+    const cancellableStatuses = ['pending', 'new', 'invoiced', 'ready_to_ship', 'pickup_scheduled'];
+    return (
+      cancellableStatuses.includes(order.status) &&
+      order.status !== 'failed' &&
+      order.status !== 'cancelled' &&
+      order.payment_status !== 'failed'
+    );
   };
 
   const getStatusColor = (status: string) => {
@@ -95,6 +107,16 @@ const OrderCard = ({ order, onViewDetails }: OrderCardProps) => {
     });
   };
 
+  const handleCancelOrder = async (orderId: string, orderNumber: string) => {
+    await apiRequest('/api/user/delivery/cancel-order', {
+      method: 'POST',
+      body: JSON.stringify({ localOrderId: orderId }),
+      showErrorToast: true,
+      showLoadingBar: true,
+      errorMessage: `Failed to cancel order ${orderNumber}.`
+    });
+  };
+
   return (
     <Card className="bg-profile-card border-profile-border">
       <CardHeader className="pb-4">
@@ -109,7 +131,7 @@ const OrderCard = ({ order, onViewDetails }: OrderCardProps) => {
             <div className="flex flex-col gap-1">
               <Badge className={`${getStatusColor(order.status)} capitalize gap-1 hover:bg-`}>
                 {getStatusIcon(order.status)}
-                {order.status}
+                {DbEnumToMessage(order.status).title}
               </Badge>
             </div>
             <p className="text-lg font-semibold text-foreground">
@@ -191,16 +213,16 @@ const OrderCard = ({ order, onViewDetails }: OrderCardProps) => {
               Retry Payment
             </Button>
           )}
-          {(order.status === 'pending' || order.status === 'processing') &&
-            order.payment_status !== 'failed' && (
-              <Button
-                variant="outline"
-                size="sm"
-                className="text-destructive hover:text-destructive"
-              >
-                Cancel Order
-              </Button>
-            )}
+          {isShowCancelButton() && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-destructive hover:text-destructive"
+              onClick={() => handleCancelOrder(order.id, order.order_number)}
+            >
+              Cancel Order
+            </Button>
+          )}
           {/* Track Order button always available if tracking_url exists */}
           {order.shipment?.tracking_url && (
             <Button asChild variant="outline" size="sm">
