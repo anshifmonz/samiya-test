@@ -35,15 +35,17 @@ export async function cancelSROrder(localOrderId: string) {
   const token = await getShiprocketToken();
   if (!token) return err();
 
+  const allowedCancelStatuses = ['pending', 'new', 'invoiced', 'ready_to_ship', 'pickup_scheduled'];
   const { data: order, error } = await supabaseAdmin
     .from('orders')
-    .select('id, shiprocket_order_id')
+    .select('id, shiprocket_order_id, status')
     .eq('id', localOrderId)
     .single();
 
   if (error) return err();
-  if (!order?.shiprocket_order_id) return err('Order not found', 400);
-  return SRCancelOrder(token, order.shiprocket_order_id);
+  if (!allowedCancelStatuses.includes(order.status)) return err('Order cannot be cancelled', 400);
+
+  return SRCancelOrder(token, order.shiprocket_order_id, localOrderId);
 }
 
 export async function createReturnForOrder(localOrderId: string, payload: SRReturnOrderPayload) {

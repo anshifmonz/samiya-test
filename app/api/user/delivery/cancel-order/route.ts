@@ -4,7 +4,8 @@ import { err, jsonResponse } from 'utils/api/response';
 
 export async function POST(request: NextRequest) {
   try {
-    const { localOrderId } = await request.json();
+    const body = await request.json();
+    const { localOrderId } = body;
     if (!localOrderId) return jsonResponse(err('Missing required field: localOrderId', 400));
 
     const result = await cancelSROrder(localOrderId);
