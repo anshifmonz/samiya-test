@@ -1,46 +1,19 @@
 'use client';
 
-import { useState } from 'react';
 import { ShoppingBag } from 'lucide-react';
 import OrderList from './OrderList';
 import OrderFilter from './OrderFilter';
 import OrderSummary from './OrderSummary';
 import OrderDetailsDialog from './OrderDetailsDialog';
 import { OrderHistory } from 'types/order';
+import { OrderProvider, useOrderContext } from 'contexts/OrderContext';
 
 interface OrdersProps {
   initialOrders: OrderHistory[];
 }
 
-const Orders = ({ initialOrders }: OrdersProps) => {
-  const [selectedFilter, setSelectedFilter] = useState<string>("all");
-  const [orders] = useState<OrderHistory[]>(initialOrders);
-  const [selectedOrder, setSelectedOrder] = useState<OrderHistory | null>(null);
-  const [detailsOpen, setDetailsOpen] = useState(false);
-
-  const filterOrders = (orders: OrderHistory[], filter: string) => {
-    const now = new Date();
-    const orderDate = (order: OrderHistory) => new Date(order.created_at);
-
-    switch (filter) {
-      case "last30days":
-        const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-        return orders.filter(order => orderDate(order) >= thirtyDaysAgo);
-      case "past3months":
-        const threeMonthsAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
-        return orders.filter(order => orderDate(order) >= threeMonthsAgo);
-      case "2025":
-        return orders.filter(order => orderDate(order).getFullYear() === 2025);
-      case "2024":
-        return orders.filter(order => orderDate(order).getFullYear() === 2024);
-      case "2023":
-        return orders.filter(order => orderDate(order).getFullYear() === 2023);
-      default:
-        return orders;
-    }
-  };
-
-  const filteredOrders = filterOrders(orders, selectedFilter);
+const OrdersContent = () => {
+  const { filteredOrders } = useOrderContext();
 
   return (
     <div className="min-h-screen bg-profile-bg pt-20">
@@ -58,32 +31,27 @@ const Orders = ({ initialOrders }: OrdersProps) => {
           </div>
 
           {/* Filter Section */}
-          <OrderFilter
-            selectedFilter={selectedFilter}
-            onFilterChange={setSelectedFilter}
-          />
+          <OrderFilter />
 
           {/* Orders List */}
-          <OrderList
-            orders={filteredOrders}
-            selectedFilter={selectedFilter}
-            onViewDetails={(order) => { setSelectedOrder(order); setDetailsOpen(true); }}
-          />
+          <OrderList />
 
           {/* Order Summary */}
-          {filteredOrders.length > 0 && (
-            <OrderSummary orders={filteredOrders} />
-          )}
+          {filteredOrders.length > 0 && <OrderSummary />}
         </div>
       </div>
 
       {/* Details Dialog */}
-      <OrderDetailsDialog
-        open={detailsOpen}
-        onOpenChange={(o) => setDetailsOpen(o)}
-        order={selectedOrder}
-      />
+      <OrderDetailsDialog />
     </div>
+  );
+};
+
+const Orders = ({ initialOrders }: OrdersProps) => {
+  return (
+    <OrderProvider initialOrders={initialOrders}>
+      <OrdersContent />
+    </OrderProvider>
   );
 };
 

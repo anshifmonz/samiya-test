@@ -15,70 +15,23 @@ import {
 import { OrderHistory } from 'types/order';
 import OrderItems from './OrderItems';
 import OrderStatusStepper from './OrderStatusStepper';
-import { apiRequest } from 'utils/apiRequest';
 import { DbEnumToMessage } from 'utils/shiprocket/dbEnumToMsg';
-
-type ShipmentInfo = {
-  status?: string | null;
-  courier?: string | null;
-  awb?: string | null;
-  expected_delivery?: string | null;
-  events?: any[];
-  tracking_url?: string | null;
-  error?: string | null;
-};
+import { useOrderContext } from 'contexts/OrderContext';
+import { ShipmentInfo } from 'hooks/user/useOrder';
 
 interface OrderCardProps {
   order: OrderHistory & { shipment?: ShipmentInfo };
-  onViewDetails?: (order: OrderHistory & { shipment?: ShipmentInfo }) => void;
 }
 
-const OrderCard = ({ order, onViewDetails }: OrderCardProps) => {
-  const formatShippingAddress = (address: any) => {
-    if (!address) return 'No shipping address';
-
-    const parts = [
-      address.full_name,
-      address.street,
-      address.landmark,
-      address.city,
-      address.district,
-      address.state,
-      address.postal_code,
-      address.country
-    ].filter(Boolean);
-
-    return parts.join(', ');
-  };
-
-  const isShowCancelButton = () => {
-    const cancellableStatuses = ['pending', 'new', 'invoiced', 'ready_to_ship', 'pickup_scheduled'];
-    return (
-      cancellableStatuses.includes(order.status) &&
-      order.status !== 'failed' &&
-      order.status !== 'cancelled' &&
-      order.payment_status !== 'failed'
-    );
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'processing':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'packaged':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'shipped':
-        return 'bg-purple-100 text-purple-800 border-purple-200';
-      case 'delivered':
-        return 'bg-green-100 text-green-800 border-green-200';
-      case 'cancelled':
-        return 'bg-red-100 text-red-800 border-red-200';
-      default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
-  };
+const OrderCard = ({ order }: OrderCardProps) => {
+  const {
+    handleCancelOrder,
+    isShowCancelButton,
+    handleViewDetails,
+    formatShippingAddress,
+    getStatusColor,
+    formatDate
+  } = useOrderContext();
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -97,24 +50,6 @@ const OrderCard = ({ order, onViewDetails }: OrderCardProps) => {
       default:
         return <Package className="w-3 h-3" />;
     }
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
-
-  const handleCancelOrder = async (orderId: string, orderNumber: string) => {
-    await apiRequest('/api/user/delivery/cancel-order', {
-      method: 'POST',
-      body: JSON.stringify({ localOrderId: orderId }),
-      showErrorToast: true,
-      showLoadingBar: true,
-      errorMessage: `Failed to cancel order ${orderNumber}.`
-    });
   };
 
   return (
@@ -199,7 +134,7 @@ const OrderCard = ({ order, onViewDetails }: OrderCardProps) => {
 
         {/* Order Actions */}
         <div className="flex gap-3 pt-4 border-t border-border flex-wrap">
-          <Button variant="outline" size="sm" onClick={() => onViewDetails?.(order)}>
+          <Button variant="outline" size="sm" onClick={() => handleViewDetails(order)}>
             View Details
           </Button>
           {order.status === 'delivered' && (
@@ -213,7 +148,7 @@ const OrderCard = ({ order, onViewDetails }: OrderCardProps) => {
               Retry Payment
             </Button>
           )}
-          {isShowCancelButton() && (
+          {isShowCancelButton(order) && (
             <Button
               variant="outline"
               size="sm"

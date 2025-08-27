@@ -1,83 +1,18 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { apiRequest } from 'lib/utils/apiRequest';
 import { Badge } from 'ui/badge';
 import { Button } from 'ui/button';
 import { Card, CardContent } from 'ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from 'ui/dialog';
 import { Truck, ExternalLink, Calendar, CreditCard, MapPin, Package } from 'lucide-react';
 import OrderItems from './OrderItems';
-import { OrderHistory } from 'types/order';
 import OrderStatusStepper from './OrderStatusStepper';
+import { useOrderContext } from 'contexts/OrderContext';
 
-interface ShipmentInfo {
-  origin?: string | null;
-  destination?: string | null;
-  status?: string | null;
-  expected_delivery?: string | null;
-  pickup_date?: string | null;
-  delivered_date?: string | null;
-  timeline?: Array<{
-    date: string;
-    activity: string;
-    location?: string;
-  }>;
-  tracking_url?: string | null;
-  error?: string | null;
-}
+export default function OrderDetailsDialog() {
+  const { shipmentInfo, detailsOpen, setDetailsOpen, selectedOrder } = useOrderContext();
 
-interface OrderDetailsDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  order: (OrderHistory & { shipment?: ShipmentInfo }) | null;
-}
-
-export default function OrderDetailsDialog({ open, onOpenChange, order }: OrderDetailsDialogProps) {
-  const [orderData, setOrderData] = useState<(OrderHistory & { shipment?: ShipmentInfo }) | null>(
-    order
-  );
-
-  useEffect(() => {
-    let cancelled = false;
-    async function refresh() {
-      if (!open || !order?.id) return;
-      if (!order.shiprocket_order_id) return;
-      const { data, error } = await apiRequest('/api/delivery/track-order', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ localOrderId: order.id })
-      });
-      if (error || !data?.data?.tracking_data) return;
-      const tracking = data.data.tracking_data;
-      if (!Array.isArray(tracking.shipment_track) || tracking.shipment_track.length === 0) return;
-      const summary = tracking.shipment_track[0];
-      const shipment: ShipmentInfo = {
-        origin: summary.origin,
-        destination: summary.destination,
-        status: summary.current_status,
-        expected_delivery: summary.edd || tracking.etd,
-        pickup_date: summary.pickup_date,
-        delivered_date: summary.delivered_date,
-        timeline: Array.isArray(tracking.shipment_track_activities)
-          ? tracking.shipment_track_activities.map((ev: any) => ({
-              date: ev.date,
-              activity: ev.activity,
-              location: ev.location
-            }))
-          : [],
-        tracking_url: tracking.track_url
-      };
-      if (!cancelled) setOrderData({ shipment } as OrderHistory & { shipment?: ShipmentInfo });
-    }
-    setOrderData(order || null);
-    refresh();
-    return () => {
-      cancelled = true;
-    };
-  }, [open, order?.id]);
-
-  if (!orderData) return null;
+  if (!selectedOrder) return null;
 
   const formatDateTime = (dateString: string) =>
     new Date(dateString).toLocaleString(undefined, {
@@ -89,17 +24,19 @@ export default function OrderDetailsDialog({ open, onOpenChange, order }: OrderD
     });
 
   const totals = {
-    subtotal: order.items.reduce((s, it) => s + it.total_price, 0),
-    total: order.total_amount
+    subtotal: selectedOrder.items.reduce((s, it) => s + it.total_price, 0),
+    total: selectedOrder.total_amount
   };
 
+  const orderData = { ...selectedOrder, shipment: shipmentInfo };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
       <DialogContent className="max-w-[95vw] max-h-[95vh] overflow-y-auto sm:max-w-2xl md:max-w-3xl lg:max-w-4xl">
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
-            <span>Order {order.order_number}</span>
-            <Badge className="capitalize">{order.status}</Badge>
+            <span>Order {selectedOrder.order_number}</span>
+            <Badge className="capitalize">{selectedOrder.status}</Badge>
           </DialogTitle>
         </DialogHeader>
 
@@ -184,7 +121,7 @@ export default function OrderDetailsDialog({ open, onOpenChange, order }: OrderD
           {/* Items */}
           <Card className="bg-profile-card border-profile-border">
             <CardContent className="p-4">
-              <OrderItems items={order.items} />
+              <OrderItems items={selectedOrder.items} />
             </CardContent>
           </Card>
 
@@ -196,13 +133,17 @@ export default function OrderDetailsDialog({ open, onOpenChange, order }: OrderD
                   <Calendar className="w-4 h-4" />
                   <span>Order Date</span>
                 </div>
-                <div className="text-sm">{formatDateTime(order.created_at)}</div>
+                <div className="text-sm">{formatDateTime(selectedOrder.created_at)}</div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground pt-2">
                   <CreditCard className="w-4 h-4" />
                   <span>Payment</span>
                 </div>
-                <div className="text-sm capitalize">Method: {order.payment_method || 'N/A'}</div>
-                <div className="text-xs text-muted-foreground">Status: {order.payment_status}</div>
+                <div className="text-sm capitalize">
+                  Method: {selectedOrder.payment_method || 'N/A'}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  Status: {selectedOrder.payment_status}
+                </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground pt-2">
                   <Package className="w-4 h-4" />
                   <span>Amounts</span>
@@ -225,28 +166,28 @@ export default function OrderDetailsDialog({ open, onOpenChange, order }: OrderD
                   <span>Shipping Address</span>
                 </div>
                 <div className="text-sm text-muted-foreground bg-muted/30 p-3 rounded-lg">
-                  {order.shipping_address ? (
+                  {selectedOrder.shipping_address ? (
                     <div className="space-y-1">
                       <div className="font-medium text-foreground">
-                        {order.shipping_address.full_name}
+                        {selectedOrder.shipping_address.full_name}
                       </div>
-                      <div>{order.shipping_address.street}</div>
-                      {order.shipping_address.landmark && (
-                        <div>{order.shipping_address.landmark}</div>
+                      <div>{selectedOrder.shipping_address.street}</div>
+                      {selectedOrder.shipping_address.landmark && (
+                        <div>{selectedOrder.shipping_address.landmark}</div>
                       )}
                       <div>
                         {[
-                          order.shipping_address.city,
-                          order.shipping_address.district,
-                          order.shipping_address.state
+                          selectedOrder.shipping_address.city,
+                          selectedOrder.shipping_address.district,
+                          selectedOrder.shipping_address.state
                         ]
                           .filter(Boolean)
                           .join(', ')}{' '}
-                        {order.shipping_address.postal_code}
+                        {selectedOrder.shipping_address.postal_code}
                       </div>
-                      <div>{order.shipping_address.country}</div>
+                      <div>{selectedOrder.shipping_address.country}</div>
                       <div className="text-xs text-muted-foreground mt-1">
-                        Phone: {order.shipping_address.phone}
+                        Phone: {selectedOrder.shipping_address.phone}
                       </div>
                     </div>
                   ) : (

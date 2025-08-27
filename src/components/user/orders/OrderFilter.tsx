@@ -1,15 +1,18 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from 'ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from 'ui/select';
 import { Filter } from 'lucide-react';
+import { useOrderContext } from 'contexts/OrderContext';
 
-interface OrderFilterProps {
-  selectedFilter: string;
-  onFilterChange: (filter: string) => void;
-}
-
-const OrderFilter = ({ selectedFilter, onFilterChange }: OrderFilterProps) => {
+const OrderFilter = () => {
+  const { selectedFilter, setSelectedFilter } = useOrderContext();
   return (
     <Card className="bg-profile-card border-profile-border">
       <CardHeader>
@@ -22,7 +25,7 @@ const OrderFilter = ({ selectedFilter, onFilterChange }: OrderFilterProps) => {
         <div className="flex flex-wrap gap-4">
           <div className="flex items-center gap-2">
             <label className="text-sm font-medium text-foreground">Time Period:</label>
-            <Select value={selectedFilter} onValueChange={onFilterChange}>
+            <Select value={selectedFilter} onValueChange={setSelectedFilter}>
               <SelectTrigger className="w-48">
                 <SelectValue placeholder="Select time period" />
               </SelectTrigger>

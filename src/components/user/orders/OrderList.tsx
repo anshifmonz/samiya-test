@@ -3,16 +3,12 @@
 import { Card } from 'ui/card';
 import { ShoppingBag } from 'lucide-react';
 import OrderCard from './OrderCard';
-import { OrderHistory } from 'types/order';
+import { useOrderContext } from 'contexts/OrderContext';
 
-interface OrderListProps {
-  orders: OrderHistory[];
-  selectedFilter: string;
-  onViewDetails?: (order: OrderHistory) => void;
-}
+const OrderList = () => {
+  const { filteredOrders, selectedFilter } = useOrderContext();
 
-const OrderList = ({ orders, selectedFilter, onViewDetails }: OrderListProps) => {
-  if (orders.length === 0) {
+  if (filteredOrders.length === 0) {
     return (
       <Card className="bg-profile-card border-profile-border p-8 text-center">
         <ShoppingBag className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
@@ -29,8 +25,8 @@ const OrderList = ({ orders, selectedFilter, onViewDetails }: OrderListProps) =>
 
   return (
     <div className="space-y-4">
-      {orders.map((order) => (
-        <OrderCard key={order.id} order={order} onViewDetails={onViewDetails} />
+      {filteredOrders.map((order) => (
+        <OrderCard key={order.id} order={order} />
       ))}
     </div>
   );
