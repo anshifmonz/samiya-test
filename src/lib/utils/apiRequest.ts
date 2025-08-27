@@ -32,7 +32,7 @@ export async function apiRequest<T = any>(
     loadingBarDelay = 200,
     bustCache = false,
     retry = false,
-    retryAttempts = 3,
+    retryAttempts = 3
   } = options;
 
   // Start loading bar if requested using global tracker
@@ -63,17 +63,17 @@ export async function apiRequest<T = any>(
           ...headers,
           ...(bustCache && {
             'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
+            Pragma: 'no-cache',
+            Expires: '0'
           })
-        },
+        }
       };
       if (body !== undefined) {
         fetchOptions.body = typeof body === 'string' ? body : JSON.stringify(body);
         if (!headers['Content-Type']) {
           fetchOptions.headers = {
             ...fetchOptions.headers,
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json'
           };
         }
       }
@@ -87,7 +87,7 @@ export async function apiRequest<T = any>(
         data = null;
       }
 
-      if (response.ok) {
+      if (response.ok && (data == null || !('error' in data) || !data.error)) {
         if (showSuccessToast && successMessage)
           showToast({ title: 'Success', description: successMessage });
 
@@ -134,8 +134,11 @@ export async function apiRequest<T = any>(
     showToast({ type: 'error', title: 'Error', description: lastError });
 
   // Stop loading bar on error using global tracker
-  if (showLoadingBar && requestId)
-    globalLoadingTracker.completeRequest(requestId);
+  if (showLoadingBar && requestId) globalLoadingTracker.completeRequest(requestId);
 
-  return { data: null, error: lastError || errorMessage || 'Request failed', response: lastResponse };
+  return {
+    data: null,
+    error: lastError || errorMessage || 'Request failed',
+    response: lastResponse
+  };
 }
