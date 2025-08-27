@@ -11,6 +11,6 @@ export async function POST(request: NextRequest): Promise<NextResponse<PaymentIn
   const { orderId } = body;
   if (!orderId) return NextResponse.json({ error: 'Order ID is required' }, { status: 400 });
 
-  const { body: respBody, status } = await initiatePaymentSession(user.id, orderId);
-  return NextResponse.json(respBody, { status });
+  const { data, status } = await initiatePaymentSession(user.id, orderId);
+  return NextResponse.json(data, { status });
 }
