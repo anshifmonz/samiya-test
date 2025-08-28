@@ -20,6 +20,7 @@ export interface Address {
 }
 
 export interface AddressFormData {
+  id?: string;
   label: string;
   full_name: string;
   phone: string;

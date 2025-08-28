@@ -24,6 +24,7 @@ export function mapAddressToDisplay(address: Address): AddressDisplay {
 
 export function mapDisplayToFormData(address: AddressDisplay): AddressFormData {
   return {
+    id: address.id,
     label: address.label,
     full_name: address.fullName,
     phone: address.phone,
