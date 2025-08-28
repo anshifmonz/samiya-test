@@ -1,79 +1,83 @@
 'use client';
 
 import { useState } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from 'ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from 'ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from 'ui/form';
 import { Input } from 'ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui/select';
-import { toast } from 'hooks/ui/use-toast';
 import { AddressFormData, AddressDisplay } from 'types/address';
-import { apiRequest } from 'utils/apiRequest';
-import { mapAddressToDisplay } from 'utils/addressMapper';
 
 interface AddressFormModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onAddressAdded: (address: AddressDisplay) => void;
+  onSubmitAddress: (formData: AddressFormData | AddressDisplay) => Promise<boolean> | boolean;
+  initialValues?: Partial<AddressFormData | AddressDisplay>;
+  isEdit?: boolean;
 }
 
-const AddressFormModal = ({ open, onOpenChange, onAddressAdded }: AddressFormModalProps) => {
+const AddressFormModal = ({
+  open,
+  onOpenChange,
+  onSubmitAddress,
+  initialValues,
+  isEdit = false
+}: AddressFormModalProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<AddressFormData>({
     defaultValues: {
-      label: "Home",
-      full_name: "",
-      phone: "",
-      phone_secondary: "",
-      email: "",
-      postal_code: "",
-      landmark: "",
-      street: "",
-      city: "",
-      district: "",
-      state: "",
-      country: "IN",
-      type: "shipping"
+      label: initialValues?.label || 'Home',
+      full_name: '',
+      phone: '',
+      phone_secondary: '',
+      email: '',
+      postal_code: '',
+      landmark: '',
+      street: '',
+      city: '',
+      district: '',
+      state: '',
+      country: 'IN',
+      type: 'shipping'
     }
   });
+
+  useEffect(() => {
+    if (!open) return;
+    form.reset({
+      label: initialValues?.label || 'Home',
+      full_name:
+        'full_name' in (initialValues || {})
+          ? (initialValues as any).full_name
+          : (initialValues as any)?.fullName || '',
+      phone: initialValues?.phone || '',
+      phone_secondary:
+        'phone_secondary' in (initialValues || {})
+          ? (initialValues as any).phone_secondary
+          : (initialValues as any)?.secondaryPhone || '',
+      email: initialValues?.email || '',
+      postal_code:
+        'postal_code' in (initialValues || {})
+          ? (initialValues as any).postal_code
+          : (initialValues as any)?.postalCode || '',
+      landmark: initialValues?.landmark || '',
+      street: initialValues?.street || '',
+      city: initialValues?.city || '',
+      district: initialValues?.district || '',
+      state: initialValues?.state || '',
+      country: initialValues?.country || 'IN',
+      type: initialValues?.type || 'shipping'
+    });
+  }, [initialValues, open]);
 
   const onSubmit = async (data: AddressFormData) => {
     setIsSubmitting(true);
     try {
-      const { data: response, error } = await apiRequest('/api/user/profile/addresses', {
-        method: 'POST',
-        body: data,
-        showErrorToast: false
-      });
-
-      if (error) {
-        toast({
-          title: "Error Adding Address",
-          description: error,
-          variant: "destructive"
-        });
-        return;
-      }
-
-      const address = response.data.address || null;
-      if (address) {
-        const displayAddress = mapAddressToDisplay(address);
-        onAddressAdded(displayAddress);
-        onOpenChange(false);
-        form.reset();
-        toast({
-          title: "Address Added",
-          description: "Your new address has been saved successfully."
-        });
-      }
-    } catch (_) {
-      toast({
-        title: "Error Adding Address",
-        description: "An error occurred.",
-        variant: "destructive"
-      });
+      const res = await onSubmitAddress(data);
+      if (res) form.reset();
     } finally {
       setIsSubmitting(false);
     }
@@ -294,12 +298,12 @@ const AddressFormModal = ({ open, onOpenChange, onAddressAdded }: AddressFormMod
               >
                 Cancel
               </Button>
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="flex-1"
-              >
-                {isSubmitting ? "Adding..." : "Add Address"}
+              <Button type="submit" disabled={isSubmitting} className="flex-1">
+                {isEdit && isSubmitting ? 'Updating...'
+                  : isSubmitting ? 'Adding...'
+                  : isEdit ? 'Update Address'
+                  : 'Add Address'
+                }
               </Button>
             </div>
           </form>

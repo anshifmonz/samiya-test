@@ -2,21 +2,11 @@
 
 import { Separator } from 'ui/separator';
 import { Card, CardContent } from 'ui/card';
-import { CheckoutItem } from 'types/checkout';
+import { useCheckoutContext } from 'contexts/user/CheckoutContext';
 
-interface PriceBreakdownProps {
-  checkoutItems: CheckoutItem[];
-  subtotal: number;
-  deliveryCharges: number;
-  totalAmount: number;
-}
-
-const PriceBreakdown = ({
-  checkoutItems,
-  subtotal,
-  deliveryCharges,
-  totalAmount
-}: PriceBreakdownProps) => {
+const PriceBreakdown = () => {
+  const { checkoutData, subtotal, deliveryCharges, totalAmount } = useCheckoutContext();
+  const checkoutItems = checkoutData?.items || [];
   return (
     <Card>
       <CardContent className="pt-6 space-y-3">

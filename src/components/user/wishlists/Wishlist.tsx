@@ -1,60 +1,16 @@
 'use client';
 
-import { useState } from 'react';
-import { toast } from 'hooks/ui/use-toast';
-import { useRouter } from 'next/navigation';
+import { WishlistProvider, useWishlistContext } from 'contexts/user/WishlistContext';
 import WishlistGrid from './WishlistGrid';
 import EmptyWishlist from './EmptyWishlist';
-import { apiRequest } from 'utils/apiRequest';
 import { WishlistWithProduct } from 'types/wishlist';
 
-interface WishlistClientProps {
+interface WishlistProps {
   wishlists: WishlistWithProduct[] | null;
 }
 
-const WishlistClient = ({ wishlists }: WishlistClientProps) => {
-  const router = useRouter();
-  const [wishlistItems, setWishlistItems] = useState<WishlistWithProduct[]>(wishlists || []);
-  const [loading, setLoading] = useState(false);
-
-  const removeFromWishlist = async (itemId: string) => {
-    const item = wishlistItems.find(item => item.id === itemId);
-    if (!item) return;
-
-    setLoading(true);
-
-    const { data, error } = await apiRequest('/api/user/wishlists', {
-      method: 'DELETE',
-      body: {
-        wishlistId: item.id,
-        colorId: item.color_id,
-        sizeId: item.size_id,
-      },
-      successMessage: "Item has been removed from your wishlist",
-      errorMessage: "Failed to remove item. Please try again.",
-      showSuccessToast: true,
-      showErrorToast: true,
-      showLoadingBar: true,
-    });
-
-    if (!error || !data.error) setWishlistItems(prev => prev.filter(item => item.id !== itemId));
-
-    setLoading(false);
-  };
-
-  const addToCart = (item: WishlistWithProduct) => {
-    toast({
-      title: "Added to cart",
-      description: `${item.product.title} has been added to your cart`,
-    });
-  };
-
-  const purchaseNow = (item: WishlistWithProduct) => {
-    toast({
-      title: "Redirecting to checkout",
-      description: `Processing purchase for ${item.product.title}`,
-    });
-  };
+const WishlistContent = () => {
+  const { wishlistItems, loading } = useWishlistContext();
 
   return (
     <div className="min-h-screen bg-profile-bg pt-16">
@@ -68,16 +24,7 @@ const WishlistClient = ({ wishlists }: WishlistClientProps) => {
           </div>
         </div>
 
-        {wishlistItems.length === 0 ? (
-          <EmptyWishlist onContinueShopping={() => router.push("/")} />
-        ) : (
-          <WishlistGrid
-            items={wishlistItems}
-            onRemove={removeFromWishlist}
-            onAddToCart={addToCart}
-            onPurchaseNow={purchaseNow}
-          />
-        )}
+        {wishlistItems.length === 0 ? <EmptyWishlist /> : <WishlistGrid />}
 
         {loading && (
           <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
@@ -92,4 +39,12 @@ const WishlistClient = ({ wishlists }: WishlistClientProps) => {
   );
 };
 
-export default WishlistClient;
+const Wishlist = ({ wishlists }: WishlistProps) => {
+  return (
+    <WishlistProvider wishlists={wishlists}>
+      <WishlistContent />
+    </WishlistProvider>
+  );
+};
+
+export default Wishlist;

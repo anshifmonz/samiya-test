@@ -1,26 +1,16 @@
 'use client';
 
-import { Label } from 'ui/label'
-import { Button } from 'ui/button'
-import { Checkbox } from 'ui/checkbox'
+import { Label } from 'ui/label';
+import { Button } from 'ui/button';
+import { Checkbox } from 'ui/checkbox';
 import { Card, CardContent } from 'ui/card';
 import { ShieldCheck } from 'lucide-react';
 
-interface PlaceOrderSectionProps {
-  acceptTerms: boolean;
-  onAcceptTermsChange: (checked: boolean) => void;
-  isPlacingOrder: boolean;
-  totalAmount: number;
-  onPlaceOrder: () => void;
-}
+import { useCheckoutContext } from 'contexts/user/CheckoutContext';
 
-const PlaceOrderSection = ({
-  acceptTerms,
-  onAcceptTermsChange,
-  isPlacingOrder,
-  totalAmount,
-  onPlaceOrder
-}: PlaceOrderSectionProps) => {
+const PlaceOrderSection = () => {
+  const { acceptTerms, setAcceptTerms, isPlacingOrder, totalAmount, handlePlaceOrder } =
+    useCheckoutContext();
   return (
     <Card>
       <CardContent className="pt-6 space-y-4">
@@ -28,17 +18,24 @@ const PlaceOrderSection = ({
           <Checkbox
             id="terms"
             checked={acceptTerms}
-            onCheckedChange={(checked) => onAcceptTermsChange(checked as boolean)}
+            onCheckedChange={checked => setAcceptTerms(checked as boolean)}
           />
           <Label htmlFor="terms" className="text-sm text-muted-foreground cursor-pointer">
-            I agree to the <a href="#" className="text-primary underline">Terms & Conditions</a> and <a href="#" className="text-primary underline">Privacy Policy</a>
+            I agree to the{' '}
+            <a href="#" className="text-primary underline">
+              Terms & Conditions
+            </a>{' '}
+            and{' '}
+            <a href="#" className="text-primary underline">
+              Privacy Policy
+            </a>
           </Label>
         </div>
 
         <Button
           className="w-full"
           size="lg"
-          onClick={onPlaceOrder}
+          onClick={handlePlaceOrder}
           disabled={!acceptTerms || isPlacingOrder}
         >
           {isPlacingOrder ? (

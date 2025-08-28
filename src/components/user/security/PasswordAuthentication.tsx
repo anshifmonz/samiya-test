@@ -6,22 +6,17 @@ import { Switch } from 'ui/switch';
 import { Lock } from 'lucide-react';
 import { Separator } from 'ui/separator';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from 'ui/card';
+import { useSecurityContext } from 'contexts/user/SecurityContext';
 
-interface PasswordAuthenticationProps {
-  lastPasswordChange: string;
-  twoFactorEnabled: boolean;
-  onPasswordChange: () => void;
-  onTwoFactorToggle: (enabled: boolean) => void;
-  onSetupTwoFactor: () => void;
-}
+const PasswordAuthentication = () => {
+  const {
+    sessionInfo,
+    userAccount,
+    handlePasswordChange,
+    handleTwoFactorToggle,
+    handleSetupTwoFactor
+  } = useSecurityContext();
 
-const PasswordAuthentication = ({
-  lastPasswordChange,
-  twoFactorEnabled,
-  onPasswordChange,
-  onTwoFactorToggle,
-  onSetupTwoFactor
-}: PasswordAuthenticationProps) => {
   return (
     <Card className="bg-profile-card border-profile-border">
       <CardHeader>
@@ -35,9 +30,9 @@ const PasswordAuthentication = ({
         <div className="flex items-center justify-between p-4 border rounded-lg">
           <div className="space-y-1">
             <h4 className="font-medium">Password</h4>
-            <p className="text-sm text-muted-foreground">Last changed {lastPasswordChange}</p>
+            <p className="text-sm text-muted-foreground">Last changed {sessionInfo.lastPasswordChange}</p>
           </div>
-          <Button variant="outline" onClick={onPasswordChange}>
+          <Button variant="outline" onClick={handlePasswordChange}>
             Change Password
           </Button>
         </div>
@@ -54,10 +49,10 @@ const PasswordAuthentication = ({
           </div>
           <div className="flex items-center gap-2">
             <Switch
-              checked={twoFactorEnabled}
-              onCheckedChange={onTwoFactorToggle}
+              checked={userAccount.twoFactorEnabled}
+              onCheckedChange={handleTwoFactorToggle}
             />
-            <Button variant="outline" size="sm" onClick={onSetupTwoFactor}>
+            <Button variant="outline" size="sm" onClick={handleSetupTwoFactor}>
               Setup
             </Button>
           </div>

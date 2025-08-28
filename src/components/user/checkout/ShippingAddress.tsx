@@ -6,21 +6,17 @@ import { Button } from 'ui/button';
 import { MapPin, Plus, Edit3 } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from 'ui/radio-group';
 import { Card, CardContent, CardHeader, CardTitle } from 'ui/card';
-import { AddressDisplay } from 'types/address';
+import { useCheckoutContext } from 'contexts/user/CheckoutContext';
 
-interface ShippingAddressProps {
-  addresses: AddressDisplay[];
-  selectedAddress: string;
-  onAddressChange: (addressId: string) => void;
-  onAddNewAddress: () => void;
-}
+const ShippingAddress = () => {
+  const {
+    addresses,
+    selectedAddress,
+    setSelectedAddress,
+    setShowAddressModal
+  } = useCheckoutContext();
 
-const ShippingAddress = ({
-  addresses,
-  selectedAddress,
-  onAddressChange,
-  onAddNewAddress
-}: ShippingAddressProps) => {
+  const onAddNewAddress = () => setShowAddressModal(true);
   if (!addresses || addresses.length === 0) {
     return (
       <Card>
@@ -52,8 +48,8 @@ const ShippingAddress = ({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <RadioGroup value={selectedAddress} onValueChange={onAddressChange}>
-          {addresses.map((address) => (
+        <RadioGroup value={selectedAddress} onValueChange={setSelectedAddress}>
+          {addresses.map(address => (
             <div key={address.id} className="flex items-start space-x-3 p-3 border rounded-lg">
               <RadioGroupItem value={address.id} id={`address-${address.id}`} className="mt-1" />
               <div className="flex-1">

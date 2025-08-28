@@ -5,15 +5,15 @@ import { Label } from 'ui/label';
 import { Button } from 'ui/button';
 import { Mail } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from 'ui/card';
-import { UserAccount } from 'types/security';
+import { useSecurityContext } from 'contexts/user/SecurityContext';
 
-interface AccountInformationProps {
-  account: UserAccount;
-  onEmailChange: () => void;
-  onPhoneChange: () => void;
-}
+const AccountInformation = () => {
+  const {
+    userAccount,
+    handleEmailChange,
+    handlePhoneChange
+  } = useSecurityContext();
 
-const AccountInformation = ({ account, onEmailChange, onPhoneChange }: AccountInformationProps) => {
   return (
     <Card className="bg-profile-card border-profile-border">
       <CardHeader>
@@ -28,14 +28,8 @@ const AccountInformation = ({ account, onEmailChange, onPhoneChange }: AccountIn
           <div className="space-y-2">
             <Label htmlFor="email">Email Address</Label>
             <div className="flex items-center gap-2">
-              <Input
-                id="email"
-                type="email"
-                value={account.email}
-                readOnly
-                className="bg-muted"
-              />
-              <Button variant="outline" size="sm" onClick={onEmailChange}>
+              <Input id="email" type="email" value={userAccount.email} readOnly className="bg-muted" />
+              <Button variant="outline" size="sm" onClick={handleEmailChange}>
                 Change
               </Button>
             </div>
@@ -44,14 +38,8 @@ const AccountInformation = ({ account, onEmailChange, onPhoneChange }: AccountIn
           <div className="space-y-2">
             <Label htmlFor="phone">Phone Number</Label>
             <div className="flex items-center gap-2">
-              <Input
-                id="phone"
-                type="tel"
-                value={account.phone}
-                readOnly
-                className="bg-muted"
-              />
-              <Button variant="outline" size="sm" onClick={onPhoneChange}>
+              <Input id="phone" type="tel" value={userAccount.phone} readOnly className="bg-muted" />
+              <Button variant="outline" size="sm" onClick={handlePhoneChange}>
                 Change
               </Button>
             </div>

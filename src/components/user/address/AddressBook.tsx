@@ -1,122 +1,14 @@
 'use client';
 
-import { useState } from 'react';
 import { Button } from 'ui/button';
 import { MapPin, Plus } from 'lucide-react';
-import { toast } from 'hooks/ui/use-toast';
 import AddressForm from './AddressForm';
 import AddressList from './AddressList';
-import { AddressDisplay, AddressFormData } from 'types/address';
-import { apiRequest } from 'utils/apiRequest';
-import { mapAddressToDisplay } from 'utils/addressMapper';
+import { AddressDisplay } from 'types/address';
+import { AddressProvider, useAddressContext } from 'contexts/user/AddressContext';
 
-interface AddressBookProps {
-  initialAddresses: AddressDisplay[];
-}
-
-const AddressBook = ({ initialAddresses }: AddressBookProps) => {
-  const [addresses, setAddresses] = useState<AddressDisplay[]>(initialAddresses);
-  const [showAddForm, setShowAddForm] = useState(false);
-
-  const onSubmit = async (data: AddressFormData) => {
-    try {
-      const { data: response, error } = await apiRequest('/api/user/profile/addresses', {
-        method: 'POST',
-        body: data,
-        showErrorToast: false
-      });
-
-      if (error || response?.error) {
-        toast({
-          title: "Error Adding Address",
-          description: response?.error || "An error occurred."
-        });
-        return;
-      }
-
-      const address = response.data.address || null;
-      if (address) {
-        const displayAddress = mapAddressToDisplay(address);
-        setAddresses([...addresses, displayAddress]);
-        setShowAddForm(false);
-        toast({
-          title: "Address Added",
-          description: "Your new address has been saved successfully."
-        });
-      }
-    } catch (_) {
-      toast({
-        title: "Error Adding Address",
-        description: "An error occurred."
-      });
-    }
-  };
-
-  const setAsDefault = async (id: string) => {
-    try {
-      const { data, error } = await apiRequest(`/api/user/profile/addresses?id=${id}&action=set-default`, {
-        method: 'PUT',
-        showErrorToast: false
-      });
-
-      if (error || data?.error) {
-        toast({
-          title: "Error Setting Default",
-          description: data?.error || "An error occurred."
-        });
-        return;
-      }
-
-      setAddresses(addresses.map((addr) => ({
-        ...addr,
-        isDefault: addr.id === id
-      })));
-
-      toast({
-        title: "Default Address Updated",
-        description: "This address has been set as your default."
-      });
-    } catch (_) {
-      toast({
-        title: "Error Setting Default",
-        description: "An error occurred."
-      });
-    }
-  };
-
-  const deleteAddress = async (id: string) => {
-    try {
-      const { data, error } = await apiRequest(`/api/user/profile/addresses?id=${id}`, {
-        method: 'DELETE',
-        showErrorToast: false
-      });
-
-      if (error || data?.error) {
-        toast({
-          title: "Error Deleting Address",
-          description: data?.error || "An error occurred."
-        });
-        return;
-      }
-
-      const filteredAddresses = addresses.filter((addr) => addr.id !== id);
-
-      if (addresses.find((addr) => addr.id === id)?.isDefault && filteredAddresses.length > 0)
-        filteredAddresses[0].isDefault = true;
-
-      setAddresses(filteredAddresses);
-
-      toast({
-        title: "Address Deleted",
-        description: "The address has been removed from your address book."
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error Deleting Address",
-        description: error?.message || "An error occurred."
-      });
-    }
-  };
+const AddressBookContent = () => {
+  const { showAddForm, toggleAddForm } = useAddressContext();
 
   return (
     <div className="min-h-screen bg-profile-bg pt-20">
@@ -130,27 +22,29 @@ const AddressBook = ({ initialAddresses }: AddressBookProps) => {
                 <p className="text-muted-foreground">Manage your shipping addresses</p>
               </div>
             </div>
-            <Button onClick={() => setShowAddForm(!showAddForm)} className="gap-2">
+            <Button onClick={toggleAddForm} className="gap-2">
               <Plus className="w-4 h-4" />
               Add New Address
             </Button>
           </div>
 
-          {showAddForm && (
-            <AddressForm
-              onSubmit={onSubmit}
-              onCancel={() => setShowAddForm(false)}
-            />
-          )}
-
-          <AddressList
-            addresses={addresses}
-            onSetDefault={setAsDefault}
-            onDelete={deleteAddress}
-          />
+          {showAddForm && <AddressForm />}
+          <AddressList />
         </div>
       </div>
     </div>
+  );
+};
+
+interface AddressBookProps {
+  initialAddresses: AddressDisplay[];
+}
+
+const AddressBook = ({ initialAddresses }: AddressBookProps) => {
+  return (
+    <AddressProvider initialAddresses={initialAddresses}>
+      <AddressBookContent />
+    </AddressProvider>
   );
 };
 

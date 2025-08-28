@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { getServerUser } from 'lib/auth/getServerUser';
-import PaymentReturn from 'components/user/payment/PaymentReturn';
+import Payment from 'components/user/payment/Payment';
 
 interface PaymentReturnPageProps {
   searchParams: {
@@ -13,8 +13,8 @@ export default async function PaymentReturnPage({ searchParams }: PaymentReturnP
   const user = await getServerUser();
   if (!user) redirect('/signin');
 
-  const { order_id, status } = searchParams;
+  const { order_id } = searchParams;
   if (!order_id) redirect('/user/orders');
 
-  return <PaymentReturn orderId={order_id} status={status} />;
+  return <Payment orderId={order_id} />;
 }

@@ -3,12 +3,10 @@
 import { Button } from 'ui/button';
 import { Card, CardContent } from 'ui/card';
 import { Heart } from 'lucide-react';
+import { useWishlistContext } from 'contexts/user/WishlistContext';
 
-interface EmptyWishlistProps {
-  onContinueShopping: () => void;
-}
-
-const EmptyWishlist = ({ onContinueShopping }: EmptyWishlistProps) => {
+const EmptyWishlist = () => {
+  const { onContinueShopping } = useWishlistContext();
   return (
     <Card className="bg-profile-card border-profile-border">
       <CardContent className="text-center py-16">

@@ -5,15 +5,15 @@ import { Button } from 'ui/button';
 import { Card, CardContent } from 'ui/card';
 import { Heart, ShoppingCart, Zap } from 'lucide-react';
 import { WishlistWithProduct } from 'types/wishlist';
+import { useWishlistContext } from 'contexts/user/WishlistContext';
 
 interface WishlistCardProps {
   item: WishlistWithProduct;
-  onRemove: (itemId: string) => void;
-  onAddToCart: (item: WishlistWithProduct) => void;
-  onPurchaseNow: (item: WishlistWithProduct) => void;
 }
 
-const WishlistCard = ({ item, onRemove, onAddToCart, onPurchaseNow }: WishlistCardProps) => {
+const WishlistCard = ({ item }: WishlistCardProps) => {
+  const { removeFromWishlist, addToCart, purchaseNow } = useWishlistContext();
+
   const calculateDiscount = (price: number, originalPrice: number) => {
     return Math.round(((originalPrice - price) / originalPrice) * 100);
   };
@@ -31,7 +31,7 @@ const WishlistCard = ({ item, onRemove, onAddToCart, onPurchaseNow }: WishlistCa
             variant="ghost"
             size="icon"
             className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm hover:bg-background/90"
-            onClick={() => onRemove(item.id)}
+            onClick={() => removeFromWishlist(item.id)}
           >
             <Heart className="w-4 h-4 text-destructive fill-destructive" />
           </Button>
@@ -62,23 +62,18 @@ const WishlistCard = ({ item, onRemove, onAddToCart, onPurchaseNow }: WishlistCa
           <div className="flex items-center gap-2">
             <span className="text-2xl font-bold text-foreground">${item.product.price}</span>
             {item.product.original_price && item.product.original_price > item.product.price && (
-              <span className="text-lg text-muted-foreground line-through">${item.product.original_price}</span>
+              <span className="text-lg text-muted-foreground line-through">
+                ${item.product.original_price}
+              </span>
             )}
           </div>
 
           <div className="space-y-2">
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={() => onAddToCart(item)}
-            >
+            <Button variant="outline" className="w-full" onClick={() => addToCart(item)}>
               <ShoppingCart className="w-4 h-4 mr-2" />
               Add to Cart
             </Button>
-            <Button
-              className="w-full"
-              onClick={() => onPurchaseNow(item)}
-            >
+            <Button className="w-full" onClick={() => purchaseNow(item)}>
               <Zap className="w-4 h-4 mr-2" />
               Purchase Now
             </Button>

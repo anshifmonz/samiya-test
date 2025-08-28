@@ -9,33 +9,31 @@ import { Card, CardContent, CardHeader, CardTitle } from 'ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from 'ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui/select';
 
-interface AddressFormProps {
-  onSubmit: (data: AddressFormData) => void;
-  onCancel: () => void;
-}
+import { useAddressContext } from 'contexts/user/AddressContext';
 
-const AddressForm = ({ onSubmit, onCancel }: AddressFormProps) => {
+const AddressForm = () => {
+  const { addAddress, setShowAddForm } = useAddressContext();
   const form = useForm<AddressFormData>({
     defaultValues: {
-      label: "Home",
-      full_name: "",
-      phone: "",
-      phone_secondary: "",
-      email: "",
-      postal_code: "",
-      landmark: "",
-      street: "",
-      city: "",
-      district: "",
-      state: "",
-      country: "IN",
-      type: "shipping"
+      label: 'Home',
+      full_name: '',
+      phone: '',
+      phone_secondary: '',
+      email: '',
+      postal_code: '',
+      landmark: '',
+      street: '',
+      city: '',
+      district: '',
+      state: '',
+      country: 'IN',
+      type: 'shipping'
     }
   });
 
   const handleSubmit = (data: AddressFormData) => {
-    onSubmit(data);
-    form.reset();
+    const res = addAddress(data);
+    if (res) form.reset();
   };
 
   return (
@@ -234,7 +232,7 @@ const AddressForm = ({ onSubmit, onCancel }: AddressFormProps) => {
 
             <div className="flex gap-3 pt-4">
               <Button type="submit">Save Address</Button>
-              <Button type="button" variant="outline" onClick={onCancel}>
+              <Button type="button" variant="outline" onClick={() => setShowAddForm(false)}>
                 Cancel
               </Button>
             </div>

@@ -3,15 +3,15 @@
 import { Button } from 'ui/button';
 import { Shield, LogOut } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from 'ui/card';
-import { SessionInfo } from 'types/security';
+import { useSecurityContext } from 'contexts/user/SecurityContext';
 
-interface SessionManagementProps {
-  sessionInfo: SessionInfo;
-  onViewSessions: () => void;
-  onLogoutAll: () => void;
-}
+const SessionManagement = () => {
+  const {
+    sessionInfo,
+    handleViewSessions,
+    handleLogoutAll
+  } = useSecurityContext();
 
-const SessionManagement = ({ sessionInfo, onViewSessions, onLogoutAll }: SessionManagementProps) => {
   return (
     <Card className="bg-profile-card border-profile-border">
       <CardHeader>
@@ -29,7 +29,7 @@ const SessionManagement = ({ sessionInfo, onViewSessions, onLogoutAll }: Session
               You're currently logged in on {sessionInfo.activeSessions} devices
             </p>
           </div>
-          <Button variant="outline" onClick={onViewSessions}>
+          <Button variant="outline" onClick={handleViewSessions}>
             View All Sessions
           </Button>
         </div>
@@ -42,7 +42,7 @@ const SessionManagement = ({ sessionInfo, onViewSessions, onLogoutAll }: Session
           <Button
             variant="outline"
             className="text-destructive"
-            onClick={onLogoutAll}
+            onClick={handleLogoutAll}
           >
             <LogOut className="w-4 h-4 mr-2" />
             Logout All

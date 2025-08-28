@@ -7,17 +7,11 @@ import { Button } from 'ui/button';
 import { CreditCard, Plus } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from 'ui/radio-group';
 import { Card, CardContent, CardHeader, CardTitle } from 'ui/card';
-import { PaymentMethod as PaymentMethodType } from 'types/payment';
-import AddPaymentMethodDialog, { type AddPaymentMethodPayload } from './AddPaymentMethodDialog';
 
-interface PaymentMethodProps {
-  paymentMethods: PaymentMethodType[];
-  selectedPayment: string;
-  onPaymentChange: (paymentId: string) => void;
-  onAddNewPaymentMethod?: (payload: AddPaymentMethodPayload) => void;
-}
+import { useCheckoutContext } from 'contexts/user/CheckoutContext';
 
-const PaymentMethod = ({ paymentMethods, selectedPayment, onPaymentChange, onAddNewPaymentMethod }: PaymentMethodProps) => {
+const PaymentMethod = () => {
+  const { mockPaymentMethods, selectedPayment, setSelectedPayment } = useCheckoutContext();
   const [showAddModal, setShowAddModal] = useState(false);
 
   return (
@@ -29,8 +23,8 @@ const PaymentMethod = ({ paymentMethods, selectedPayment, onPaymentChange, onAdd
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <RadioGroup value={selectedPayment} onValueChange={onPaymentChange}>
-          {paymentMethods.map((method) => (
+        <RadioGroup value={selectedPayment} onValueChange={setSelectedPayment}>
+          {mockPaymentMethods.map(method => (
             <div key={method.id} className="flex items-center space-x-3 p-3 border rounded-lg">
               <RadioGroupItem value={method.id} id={`payment-${method.id}`} />
               <div className="flex-1">
@@ -50,15 +44,6 @@ const PaymentMethod = ({ paymentMethods, selectedPayment, onPaymentChange, onAdd
           Add New Payment Method
         </Button>
       </CardContent>
-
-      <AddPaymentMethodDialog
-        open={showAddModal}
-        onOpenChange={setShowAddModal}
-        onAdded={(payload) => {
-          // Bubble up to parent to actually add and persist if desired
-          onAddNewPaymentMethod?.(payload);
-        }}
-      />
     </Card>
   );
 };

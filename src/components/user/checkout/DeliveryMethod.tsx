@@ -4,16 +4,10 @@ import { Label } from 'ui/label';
 import { Truck } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from 'ui/radio-group';
 import { Card, CardContent, CardHeader, CardTitle } from 'ui/card';
-import { DeliveryOption } from 'types/delivery';
+import { useCheckoutContext } from 'contexts/user/CheckoutContext';
 
-interface DeliveryMethodProps {
-  deliveryOptions: DeliveryOption[];
-  selectedDelivery: string;
-  onDeliveryChange: (deliveryId: string) => void;
-  subtotal: number;
-}
-
-const DeliveryMethod = ({ deliveryOptions, selectedDelivery, onDeliveryChange, subtotal }: DeliveryMethodProps) => {
+const DeliveryMethod = () => {
+  const { deliveryOptions, selectedDelivery, setSelectedDelivery, subtotal } = useCheckoutContext();
   return (
     <Card>
       <CardHeader>
@@ -23,8 +17,8 @@ const DeliveryMethod = ({ deliveryOptions, selectedDelivery, onDeliveryChange, s
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <RadioGroup value={selectedDelivery} onValueChange={onDeliveryChange}>
-          {deliveryOptions.map((option) => (
+        <RadioGroup value={selectedDelivery} onValueChange={setSelectedDelivery}>
+          {deliveryOptions.map(option => (
             <div key={option.id} className="flex items-center space-x-3 p-3 border rounded-lg">
               <RadioGroupItem value={option.id} id={`delivery-${option.id}`} />
               <div className="flex-1">
