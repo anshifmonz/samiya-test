@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { AddressDisplay, AddressFormData } from 'types/address';
 import { apiRequest } from 'utils/apiRequest';
+import { moveDefaultAddressFirst } from 'utils/moveDefaultAddressFirst'
 import { mapAddressToDisplay, mapDisplayToFormData } from 'utils/addressMapper';
 
 export const useAddress = (initialAddresses: AddressDisplay[]) => {
@@ -68,12 +69,13 @@ export const useAddress = (initialAddresses: AddressDisplay[]) => {
       errorMessage: 'Failed to set default address'
     });
 
-    setAddresses(prev =>
-      prev.map(addr => ({
+    setAddresses(prev => {
+      const updated = prev.map(addr => ({
         ...addr,
         isDefault: addr.id === id
-      }))
-    );
+      }));
+      return moveDefaultAddressFirst(updated);
+    });
   };
 
   const deleteAddress = async (id: string) => {
