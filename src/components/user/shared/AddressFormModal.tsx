@@ -1,13 +1,14 @@
 'use client';
 
-import { useState } from 'react';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from 'ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from 'ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from 'ui/form';
 import { Input } from 'ui/input';
+import { Label } from 'ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui/select';
+import { Switch } from 'ui/switch';
 import { AddressFormData, AddressDisplay } from 'types/address';
 
 interface AddressFormModalProps {
@@ -16,6 +17,7 @@ interface AddressFormModalProps {
   onSubmitAddress: (formData: AddressFormData | AddressDisplay) => Promise<boolean> | boolean;
   initialValues?: Partial<AddressFormData | AddressDisplay>;
   isEdit?: boolean;
+  showSaveToggle?: boolean;
 }
 
 const AddressFormModal = ({
@@ -23,9 +25,11 @@ const AddressFormModal = ({
   onOpenChange,
   onSubmitAddress,
   initialValues,
-  isEdit = false
+  isEdit = false,
+  showSaveToggle = false
 }: AddressFormModalProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [saveForFuture, setSaveForFuture] = useState(true);
 
   const form = useForm<AddressFormData>({
     defaultValues: {
@@ -47,6 +51,8 @@ const AddressFormModal = ({
 
   useEffect(() => {
     if (!open) return;
+    if (showSaveToggle) setSaveForFuture(true);
+
     form.reset({
       label: initialValues?.label || 'Home',
       full_name:
@@ -71,12 +77,14 @@ const AddressFormModal = ({
       country: initialValues?.country || 'IN',
       type: initialValues?.type || 'shipping'
     });
-  }, [initialValues, open]);
+  }, [initialValues, open, showSaveToggle, form]);
 
   const onSubmit = async (data: AddressFormData) => {
     setIsSubmitting(true);
     try {
-      const res = await onSubmitAddress(data);
+      const addressData =
+        showSaveToggle && !isEdit ? { ...data, saveAddress: saveForFuture } : data;
+      const res = await onSubmitAddress(addressData);
       if (res) form.reset();
     } finally {
       setIsSubmitting(false);
@@ -92,7 +100,7 @@ const AddressFormModal = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Add New Address</DialogTitle>
+          <DialogTitle>{isEdit ? 'Edit Address' : 'Add New Address'}</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
@@ -288,6 +296,17 @@ const AddressFormModal = ({
               )}
             />
 
+            {showSaveToggle && !isEdit && (
+              <div className="flex items-center space-x-2 pt-2">
+                <Switch
+                  id="save-for-future"
+                  checked={saveForFuture}
+                  onCheckedChange={setSaveForFuture}
+                />
+                <Label htmlFor="save-for-future">Want to save for future use?</Label>
+              </div>
+            )}
+
             <div className="flex gap-3 pt-4">
               <Button
                 type="button"
@@ -299,11 +318,13 @@ const AddressFormModal = ({
                 Cancel
               </Button>
               <Button type="submit" disabled={isSubmitting} className="flex-1">
-                {isEdit && isSubmitting ? 'Updating...'
-                  : isSubmitting ? 'Adding...'
-                  : isEdit ? 'Update Address'
-                  : 'Add Address'
-                }
+                {isEdit && isSubmitting
+                  ? 'Updating...'
+                  : isSubmitting
+                  ? 'Adding...'
+                  : isEdit
+                  ? 'Update Address'
+                  : 'Add Address'}
               </Button>
             </div>
           </form>

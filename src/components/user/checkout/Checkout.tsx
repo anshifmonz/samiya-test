@@ -50,6 +50,7 @@ const CheckoutContent = () => {
           open={showAddressModal}
           onOpenChange={setShowAddressModal}
           onSubmitAddress={handleAddressAdded}
+          showSaveToggle={true}
         />
       </div>
     </div>

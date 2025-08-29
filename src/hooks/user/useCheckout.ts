@@ -90,8 +90,10 @@ export function useCheckout({
   const totalAmount = subtotal + deliveryCharges;
 
   const handleAddressAdded = (newAddress: AddressDisplay) => {
-    setAddresses(prev => [...prev, newAddress]);
-    if (addresses.length === 0 || newAddress.isDefault) setSelectedAddress(newAddress.id);
+    setShowAddressModal(false);
+    const finalAddress = { ...newAddress, id: 'TEMP_ID' };
+    setAddresses(prev => [...prev, finalAddress]);
+    if (addresses.length === 0 || newAddress.isDefault) setSelectedAddress(finalAddress.id);
     return true;
   };
 
@@ -133,32 +135,26 @@ export function useCheckout({
     }
 
     setIsPlacingOrder(true);
-
     try {
       const selectedPaymentMethod = mockPaymentMethods.find(
         method => method.id === selectedPayment
       );
 
       // Create the order first
+      const address = selectedAddress === 'TEMP_ID' && addresses.find(addr => addr.id === 'TEMP_ID');
       const { data, error } = await apiRequest('/api/user/order', {
         method: 'POST',
         body: {
           checkoutId: checkoutData.checkout.id,
-          shippingAddressId: selectedAddress,
+          orderAddressId: selectedAddress,
+          address,
           paymentMethod: selectedPaymentMethod?.type || 'card'
         },
         showLoadingBar: true,
-        showErrorToast: false
+        showErrorToast: true,
+        errorMessage: 'Failed to create order. Please try again.'
       });
-
-      if (error || data?.error) {
-        toast({
-          title: 'Order Failed',
-          description: data?.error || 'An error occurred.',
-          variant: 'destructive'
-        });
-        return;
-      }
+      if (error || data?.error) return;
 
       // If payment is not required (COD), redirect to orders
       if (!data?.data?.payment_required) {
