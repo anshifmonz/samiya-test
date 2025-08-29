@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import retry from 'utils/retry';
+import splitName from  'utils/splitName';
 import { cancelSROrder } from './orders';
 import { createOrder } from './order/create';
 import { supabaseAdmin } from 'lib/supabase';
@@ -14,7 +15,7 @@ async function createSROrderForLocalOrder(localOrderId: string): Promise<ApiResp
         user_id,
         status,
         total_amount,
-        shipping_address_id,
+        order_address_id,
         shiprocket_order_id,
         shiprocket_shipment_id,
         shiprocket_awb_code`
@@ -34,13 +35,13 @@ async function createSROrderForLocalOrder(localOrderId: string): Promise<ApiResp
     }
 
     const { data: address, error: addressError } = await supabaseAdmin
-      .from('addresses')
+      .from('order_address')
       .select(
-        `full_name, phone, email,
+        `full_name, phone, phone_secondary, email,
         landmark, street, postal_code,
         city, district, state, country`
       )
-      .eq('id', order.shipping_address_id)
+      .eq('id', order.order_address_id)
       .maybeSingle();
 
     if (addressError) return err('Failed to create order');
@@ -78,13 +79,14 @@ async function createSROrderForLocalOrder(localOrderId: string): Promise<ApiResp
     const creationToken: string | null = lock.creation_token || null;
     if (!creationToken) return err();
 
+    const { firstName, lastName } = splitName(address.full_name);
     const payload = {
       order_id: order.id,
       order_date: dayjs().format('YYYY-MM-DD HH:mm'),
       pickup_location: 'warehouse',
 
-      billing_customer_name: address.full_name,
-      billing_last_name: address.full_name,
+      billing_customer_name: firstName,
+      billing_last_name: lastName,
       billing_address: [
         address.landmark,
         address.street,
@@ -101,6 +103,7 @@ async function createSROrderForLocalOrder(localOrderId: string): Promise<ApiResp
       billing_country: address.country,
       billing_email: address.email || 'customer@example.com',
       billing_phone: address.phone,
+      billing_alternate_phone: address.phone_secondary,
 
       shipping_is_billing: true,
       shipping_customer_name: '',
@@ -132,7 +135,7 @@ async function createSROrderForLocalOrder(localOrderId: string): Promise<ApiResp
       weight: 1
     };
 
-    const { data: sr } =  await createOrder(payload);
+    const { data: sr } = await createOrder(payload);
 
     if (!sr) {
       retry(async () => {
@@ -166,7 +169,7 @@ async function createSROrderForLocalOrder(localOrderId: string): Promise<ApiResp
       });
     });
 
-    const { error: cancelError } =  await cancelSROrder(localOrderId);
+    const { error: cancelError } = await cancelSROrder(localOrderId);
     if (!cancelError) return err('Failed to create order');
 
     retry(async () => {
