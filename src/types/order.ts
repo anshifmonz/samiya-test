@@ -1,3 +1,5 @@
+import { AddressFormData } from './address';
+
 // Database-aligned types for order management
 export interface OrderItem {
   id: string;
@@ -50,9 +52,13 @@ export interface OrderSummary {
 
 // For creating orders from checkout
 export interface CreateOrderRequest {
+  userId: string;
   checkoutId: string;
-  shippingAddressId?: string;
-  paymentMethod?: string;
+  orderAddressId: string;
+  paymentMethod: string;
+  address?: AddressFormData & {
+    saveAddress: boolean;
+  };
 }
 
 export interface CreateOrderResponse {

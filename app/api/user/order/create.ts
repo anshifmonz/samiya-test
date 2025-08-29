@@ -10,9 +10,15 @@ export async function POST(request: NextRequest) {
     if (!user) return jsonResponse(err('Unauthorized', 401));
 
     const body: CreateOrderRequest = await request.json();
-    const { checkoutId, shippingAddressId, paymentMethod } = body;
+    const { checkoutId, paymentMethod, orderAddressId, address } = body;
 
-    const result = await createOrder(user.id, checkoutId, shippingAddressId, paymentMethod);
+    const result = await createOrder({
+      userId: user.id,
+      checkoutId,
+      orderAddressId,
+      paymentMethod,
+      address
+    });
     return jsonResponse(result);
   } catch (error) {
     return jsonResponse(err());

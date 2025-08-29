@@ -36,7 +36,7 @@ export async function getUserOrders(
         updated_at,
         shiprocket_order_id,
         shiprocket_awb_code,
-        addresses:shipping_address_id (
+        order_address:order_address_id (
           id,
           label,
           full_name,
@@ -129,7 +129,7 @@ export async function getUserOrders(
         shiprocket_tracking_url: (order as any).shiprocket_tracking_url || null,
         shiprocket_awb_code: (order as any).shiprocket_awb_code || null,
         items: itemsByOrderId[order.id] || [],
-        shipping_address: Array.isArray(order.addresses) ? order.addresses[0] : order.addresses
+        shipping_address: Array.isArray(order.order_address) ? order.order_address[0] : order.order_address
       };
     });
 
@@ -170,7 +170,7 @@ export async function getUserOrderById(
         shiprocket_order_id,
         shiprocket_tracking_url,
         shiprocket_awb_code,
-        addresses:shipping_address_id (
+        order_address:order_address_id (
           id,
           label,
           full_name,
@@ -247,7 +247,7 @@ export async function getUserOrderById(
         created_at: item.created_at,
         product: Array.isArray(item.products) ? item.products[0] : item.products
       })),
-      shipping_address: Array.isArray(order.addresses) ? order.addresses[0] : order.addresses
+      shipping_address: Array.isArray(order.order_address) ? order.order_address[0] : order.order_address
     };
 
     return ok(orderHistory);
