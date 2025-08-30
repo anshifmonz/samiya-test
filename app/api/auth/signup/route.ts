@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
     if (!email || typeof email !== 'string' || !email.includes('@'))
       return jsonResponse(err('Valid email is required', 400));
     if (!password || typeof password !== 'string' || password.length < 6)
-      return jsonResponse(err('Password must be at least 6 characters long', 400));
+      return jsonResponse(err('Password must be between 6 and 64 characters', 400));
 
     const result = await createUser({ name, email, password });
     if (result.error) return jsonResponse(err(result.error, 400));
