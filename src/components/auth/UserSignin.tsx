@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from 'ui/button';
+import Link from 'next/link';
 import { Input } from 'ui/input';
 import { Label } from 'ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from 'ui/card';
+import { Button } from 'ui/button';
 import { Lock, Mail } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from 'ui/card';
 import { apiRequest } from 'lib/utils/apiRequest';
 
 const UserSignin: React.FC = () => {
@@ -53,9 +54,7 @@ const UserSignin: React.FC = () => {
           <div className="mx-auto w-10 h-10 bg-luxury-gold/10 rounded-full flex items-center justify-center mb-2">
             <Mail className="w-5 h-5 text-luxury-gold" />
           </div>
-          <CardTitle className="text-xl font-bold text-luxury-black">
-            Welcome Back
-          </CardTitle>
+          <CardTitle className="text-xl font-bold text-luxury-black">Welcome Back</CardTitle>
           <CardDescription className="text-sm text-luxury-gray">
             Sign in to continue
           </CardDescription>
@@ -73,7 +72,7 @@ const UserSignin: React.FC = () => {
                   type="email"
                   placeholder="Enter your email address"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={e => setEmail(e.target.value)}
                   className="pl-10 h-9 bg-luxury-white border-luxury-gray/30 focus:ring-luxury-gold/50 focus:border-luxury-gold/30 transition-colors"
                   required
                   disabled={isLoading}
@@ -92,7 +91,7 @@ const UserSignin: React.FC = () => {
                   type="password"
                   placeholder="Enter your password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={e => setPassword(e.target.value)}
                   className="pl-10 h-9 bg-luxury-white border-luxury-gray/30 focus:ring-luxury-gold/50 focus:border-luxury-gold/30 transition-colors"
                   required
                   disabled={isLoading}
@@ -118,23 +117,21 @@ const UserSignin: React.FC = () => {
           <div className="text-center space-y-2">
             <p className="text-sm text-luxury-gray">
               Don't have an account?{' '}
-              <button
-                onClick={() => router.push('/signup')}
+              <Link
                 className="text-luxury-gold hover:text-luxury-gold/80 font-medium transition-colors"
-                disabled={isLoading}
+                href="/signup"
               >
                 Sign up here
-              </button>
+              </Link>
             </p>
             <p className="text-xs text-luxury-gray/60">
               Forgot your password?{' '}
-              <button
-                onClick={() => router.push('/reset-password')}
+              <Link
                 className="text-luxury-gold hover:text-luxury-gold/80 font-medium transition-colors"
-                disabled={isLoading}
+                href="/user/forgot-password"
               >
                 Reset here
-              </button>
+              </Link>
             </p>
           </div>
         </CardContent>

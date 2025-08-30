@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from 'ui/button';
+import Link from 'next/link';
 import { Input } from 'ui/input';
 import { Label } from 'ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from 'ui/card';
+import { Button } from 'ui/button';
 import { Lock, Mail, User, UserPlus } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from 'ui/card';
 import { apiRequest } from 'utils/apiRequest';
 
 const UserSignup: React.FC = () => {
@@ -38,8 +39,8 @@ const UserSignup: React.FC = () => {
       return;
     }
 
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters long');
+    if (password.length < 6 || password.length > 64) {
+      setError('Password must be between 6 and 64 characters');
       setIsLoading(false);
       return;
     }
@@ -54,9 +55,7 @@ const UserSignup: React.FC = () => {
 
       if (!apiError || !data.error) {
         setSuccess('Account created successfully! Please check your email to verify your account.');
-        setTimeout(() => {
-          router.push('/login');
-        }, 3000);
+        setTimeout(() => router.push('/login'), 3000);
       } else {
         setError(apiError || 'Signup failed');
       }
@@ -74,9 +73,7 @@ const UserSignup: React.FC = () => {
           <div className="mx-auto w-10 h-10 bg-luxury-gold/10 rounded-full flex items-center justify-center mb-2">
             <UserPlus className="w-5 h-5 text-luxury-gold" />
           </div>
-          <CardTitle className="text-xl font-bold text-luxury-black">
-            Create Account
-          </CardTitle>
+          <CardTitle className="text-xl font-bold text-luxury-black">Create Account</CardTitle>
           <CardDescription className="text-sm text-luxury-gray">
             Join us today and start shopping your favorite items
           </CardDescription>
@@ -94,7 +91,7 @@ const UserSignup: React.FC = () => {
                   type="text"
                   placeholder="Enter your full name"
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={e => setName(e.target.value)}
                   className="pl-10 h-9 bg-luxury-white border-luxury-gray/30 focus:ring-luxury-gold/50 focus:border-luxury-gold/30 transition-colors"
                   required
                   disabled={isLoading}
@@ -113,7 +110,7 @@ const UserSignup: React.FC = () => {
                   type="email"
                   placeholder="Enter your email address"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={e => setEmail(e.target.value)}
                   className="pl-10 h-9 bg-luxury-white border-luxury-gray/30 focus:ring-luxury-gold/50 focus:border-luxury-gold/30 transition-colors"
                   required
                   disabled={isLoading}
@@ -132,7 +129,7 @@ const UserSignup: React.FC = () => {
                   type="password"
                   placeholder="Create a password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={e => setPassword(e.target.value)}
                   className="pl-10 h-9 bg-luxury-white border-luxury-gray/30 focus:ring-luxury-gold/50 focus:border-luxury-gold/30 transition-colors"
                   required
                   disabled={isLoading}
@@ -151,7 +148,7 @@ const UserSignup: React.FC = () => {
                   type="password"
                   placeholder="Confirm your password"
                   value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onChange={e => setConfirmPassword(e.target.value)}
                   className="pl-10 h-9 bg-luxury-white border-luxury-gray/30 focus:ring-luxury-gold/50 focus:border-luxury-gold/30 transition-colors"
                   required
                   disabled={isLoading}
@@ -183,13 +180,12 @@ const UserSignup: React.FC = () => {
           <div className="text-center space-y-2">
             <p className="text-sm text-luxury-gray">
               Already have an account?{' '}
-              <button
-                onClick={() => router.push('/signin')}
+              <Link
                 className="text-luxury-gold hover:text-luxury-gold/80 font-medium transition-colors"
-                disabled={isLoading}
+                href="/signin"
               >
                 Sign in here
-              </button>
+              </Link>
             </p>
             <p className="text-xs text-luxury-gray/60">
               By creating an account, you agree to our terms of service and privacy policy
