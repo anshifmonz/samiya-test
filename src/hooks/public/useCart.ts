@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { CartItem } from 'types/cart';
 import { useAuth } from 'hooks/useAuth';
-import { toast } from 'hooks/ui/use-toast';
 import { useRouter } from 'next/navigation';
 import { apiRequest } from 'utils/apiRequest';
 import { useDebounce } from 'hooks/useDebounce';
@@ -12,7 +11,12 @@ export const useCart = ({ initialCartItems }: { initialCartItems: CartItem[] }) 
   const [cartItems, setCartItems] = useState<CartItem[]>(initialCartItems);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
 
-  const handleAddToCart = async (productId: string, quantity: number, selectedColor: string, variant: any) => {
+  const handleAddToCart = async (
+    productId: string,
+    quantity: number,
+    selectedColor: string,
+    variant: any
+  ) => {
     if (!user) return;
 
     setIsAddingToCart(true);
@@ -36,42 +40,27 @@ export const useCart = ({ initialCartItems }: { initialCartItems: CartItem[] }) 
   };
 
   const updateCartQuantity = async (cartItemId: string, quantity: number) => {
-    try {
-      apiRequest('/api/user/cart', {
-        method: 'PUT',
-        body: {
-          cartItemId,
-          quantity
-        }
-      });
-    } catch (error) {
-      return;
-    }
+    apiRequest('/api/user/cart', {
+      method: 'PUT',
+      body: { cartItemId, quantity }
+    });
   };
 
   const updateCartSelection = async (cartItemId: string, isSelected: boolean) => {
-    try {
-      apiRequest('/api/user/cart', {
-        method: 'PATCH',
-        body: {
-          cartItemId,
-          isSelected
-        }
-      });
-    } catch (error) {
-      return;
-    }
+    apiRequest('/api/user/cart', {
+      method: 'PATCH',
+      body: {
+        cartItemId,
+        isSelected
+      }
+    });
   };
 
   const bulkUpdateCartSelection = async (isSelected: boolean) => {
-    try {
-      apiRequest('/api/user/cart/bulk-select', {
-        method: 'PATCH',
-        body: { isSelected }
-      });
-    } catch (error) {
-      return;
-    }
+    apiRequest('/api/user/cart/bulk-select', {
+      method: 'PATCH',
+      body: { isSelected }
+    });
   };
 
   const debouncedUpdateCartQuantity = useDebounce(updateCartQuantity, 1000);
@@ -79,37 +68,33 @@ export const useCart = ({ initialCartItems }: { initialCartItems: CartItem[] }) 
   const debouncedUpdateCartBulkSelection = useDebounce(bulkUpdateCartSelection, 1000);
 
   const handleSelectItem = (itemId: string, isSelected: boolean) => {
-    setCartItems(items =>
-      items.map(item =>
-        item.id === itemId ? { ...item, isSelected } : item
-      )
-    );
+    setCartItems(items => items.map(item => (
+      item.id === itemId
+      ? { ...item, isSelected }
+      : item
+    )));
 
     debouncedUpdateCartSelection(itemId, isSelected);
   };
 
   const handleSelectAll = () => {
-    setCartItems(items =>
-      items.map(item => ({ ...item, isSelected: true }))
-    );
+    setCartItems(items => items.map(item => ({ ...item, isSelected: true })));
     debouncedUpdateCartBulkSelection(true);
   };
 
   const handleDeselectAll = () => {
-    setCartItems(items =>
-      items.map(item => ({ ...item, isSelected: false }))
-    );
+    setCartItems(items => items.map(item => ({ ...item, isSelected: false })));
     debouncedUpdateCartBulkSelection(false);
   };
 
   const handleQuantityChange = (itemId: string, newQuantity: number) => {
     if (newQuantity < 1) return;
 
-    setCartItems(items =>
-      items.map(item =>
-        item.id === itemId ? { ...item, quantity: newQuantity } : item
-      )
-    );
+    setCartItems(items => items.map(item => (
+      item.id === itemId
+      ? { ...item, quantity: newQuantity }
+      : item
+    )));
 
     debouncedUpdateCartQuantity(itemId, newQuantity);
   };
@@ -117,14 +102,12 @@ export const useCart = ({ initialCartItems }: { initialCartItems: CartItem[] }) 
   const handleRemoveItem = async (itemId: string) => {
     const { data, error } = await apiRequest('/api/user/cart', {
       method: 'DELETE',
-      body: {
-        cartId: itemId
-      },
-      successMessage: "Item has been removed from your cart",
-      errorMessage: "Failed to remove item. Please try again.",
+      body: { cartId: itemId },
+      successMessage: 'Item has been removed from your cart',
+      errorMessage: 'Failed to remove item. Please try again.',
       showSuccessToast: true,
       showErrorToast: true,
-      showLoadingBar: true,
+      showLoadingBar: true
     });
     if (error || data.error) return;
     setCartItems(items => items.filter(item => item.id !== itemId));
@@ -134,25 +117,21 @@ export const useCart = ({ initialCartItems }: { initialCartItems: CartItem[] }) 
     const { data, error } = await apiRequest('/api/user/checkout', {
       method: 'POST',
       showLoadingBar: true,
+      showErrorToast: true,
+      errorMessage: 'Failed to create checkout, Please try again'
     });
     if (error || data.error) return;
-    router.push("/user/checkout");
+    if (data.data.checkoutId) router.push('/user/checkout');
   };
 
-  const handleContinueShopping = () => {
-    router.push("/");
-  };
-
-  const handleGoBack = () => {
-    router.back();
-  };
+  const handleContinueShopping = () => router.push('/');
+  const handleGoBack = () => router.back();
 
   // Computed values
   const selectedItems = cartItems.filter(item => item.isSelected);
-  const subtotal = selectedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const subtotal = selectedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const totalDiscount = selectedItems.reduce((sum, item) => {
-    if (item.originalPrice)
-      return sum + ((item.originalPrice - item.price) * item.quantity);
+    if (item.originalPrice) return sum + (item.originalPrice - item.price) * item.quantity;
     return sum;
   }, 0);
   const deliveryCharges = selectedItems.length > 0 ? (subtotal > 1000 ? 0 : 99) : 0;
@@ -179,12 +158,6 @@ export const useCart = ({ initialCartItems }: { initialCartItems: CartItem[] }) 
     handleRemoveItem,
     handleProceedToCheckout,
     handleContinueShopping,
-    handleGoBack,
+    handleGoBack
   };
 };
-
-
-
-
-
-
