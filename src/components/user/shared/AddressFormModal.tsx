@@ -1,14 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { Button } from 'ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from 'ui/dialog';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from 'ui/form';
 import { Input } from 'ui/input';
 import { Label } from 'ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui/select';
+import { Button } from 'ui/button';
 import { Switch } from 'ui/switch';
+import { Textarea } from 'ui/textarea';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from 'ui/dialog';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from 'ui/form';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui/select';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { addressSchema } from 'lib/validators/address';
 import { AddressFormData, AddressDisplay } from 'types/address';
 
 interface AddressFormModalProps {
@@ -32,6 +35,7 @@ const AddressFormModal = ({
   const [saveForFuture, setSaveForFuture] = useState(true);
 
   const form = useForm<AddressFormData>({
+    resolver: zodResolver(addressSchema),
     defaultValues: {
       label: initialValues?.label || 'Home',
       full_name: '',
@@ -135,7 +139,12 @@ const AddressFormModal = ({
                   <FormItem>
                     <FormLabel>Full Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter full name" {...field} />
+                      <Input
+                        type="text"
+                        inputMode="text"
+                        placeholder="Enter full name"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -151,7 +160,13 @@ const AddressFormModal = ({
                   <FormItem>
                     <FormLabel>Phone Number</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter phone number" {...field} />
+                      <Input
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        placeholder="Enter phone number"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -163,9 +178,15 @@ const AddressFormModal = ({
                 name="phone_secondary"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Alternate Phone (Optional)</FormLabel>
+                    <FormLabel>Secondary Phone (Optional)</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter alternate phone" {...field} />
+                      <Input
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        placeholder="Enter secondary phone"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -194,7 +215,10 @@ const AddressFormModal = ({
                 <FormItem>
                   <FormLabel>Street Address</FormLabel>
                   <FormControl>
-                    <Input placeholder="House/Flat/Office No, Building Name, Street" {...field} />
+                    <Textarea
+                      placeholder="House/Flat/Office No, Building Name, Street"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

@@ -25,15 +25,16 @@ export interface AddressFormData {
   full_name: string;
   phone: string;
   phone_secondary?: string;
-  email?: string;
+  email: string;
   street: string;
-  landmark?: string;
+  landmark: string;
   city: string;
-  district?: string;
+  district: string;
   state: string;
   postal_code: string;
   country: string;
   type?: 'shipping' | 'billing';
+  saveAddress?: boolean;
 }
 
 // Helper interface for frontend display (mapped from database fields)

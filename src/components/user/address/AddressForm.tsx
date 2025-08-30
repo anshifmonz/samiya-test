@@ -4,16 +4,18 @@ import { Input } from 'ui/input';
 import { Button } from 'ui/button';
 import { Textarea } from 'ui/textarea';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { AddressFormData } from 'types/address';
+import { addressSchema } from 'lib/validators/address';
 import { Card, CardContent, CardHeader, CardTitle } from 'ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from 'ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui/select';
-
 import { useAddressContext } from 'contexts/user/AddressContext';
 
 const AddressForm = () => {
   const { addAddress, setShowAddForm } = useAddressContext();
   const form = useForm<AddressFormData>({
+    resolver: zodResolver(addressSchema),
     defaultValues: {
       label: 'Home',
       full_name: '',
@@ -74,7 +76,12 @@ const AddressForm = () => {
                   <FormItem>
                     <FormLabel>Full Name</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Enter full name" />
+                      <Input
+                        type="text"
+                        inputMode="text"
+                        placeholder="Enter full name"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -90,7 +97,13 @@ const AddressForm = () => {
                   <FormItem>
                     <FormLabel>Phone Number</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Enter phone number" />
+                      <Input
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        placeholder="Enter phone number"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -104,7 +117,13 @@ const AddressForm = () => {
                   <FormItem>
                     <FormLabel>Secondary Phone (Optional)</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Enter secondary phone" />
+                      <Input
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        placeholder="Enter secondary phone"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -117,7 +136,7 @@ const AddressForm = () => {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email (Optional)</FormLabel>
+                  <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input {...field} type="email" placeholder="Enter email address" />
                   </FormControl>
@@ -163,7 +182,10 @@ const AddressForm = () => {
                 <FormItem>
                   <FormLabel>Street Address</FormLabel>
                   <FormControl>
-                    <Textarea {...field} placeholder="Enter street address" />
+                    <Textarea
+                      placeholder="House/Flat/Office No, Building Name, Street"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -190,7 +212,7 @@ const AddressForm = () => {
                 name="district"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>District (Optional)</FormLabel>
+                    <FormLabel>District</FormLabel>
                     <FormControl>
                       <Input {...field} placeholder="Enter district" />
                     </FormControl>
