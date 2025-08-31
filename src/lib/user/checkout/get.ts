@@ -1,10 +1,8 @@
 import { supabaseAdmin } from 'lib/supabase';
-import { err, ok, ApiResponse } from 'utils/api/response';
+import { CheckoutData } from 'types/checkout';
+import { ok, err, ApiResponse } from 'utils/api/response';
 
-export async function getCheckout(userId: string): Promise<ApiResponse<any>> {
-  if (!userId || typeof userId !== 'string')
-    return err('User ID is required and must be a string', 400);
-
+export async function getCheckout(userId: string): Promise<ApiResponse<CheckoutData>> {
   const { data: checkout, error: checkoutError } = await supabaseAdmin
     .from('checkout')
     .select('id, status, expires_at, created_at')
@@ -47,8 +45,57 @@ export async function getCheckout(userId: string): Promise<ApiResponse<any>> {
 
   if (itemsError) return err();
 
+  // Fetch product images for all items
+  const productIds = (checkoutItems || []).map(item => item.product_id);
+
+  const { data: productImages, error: imagesError } = await supabaseAdmin
+    .from('product_images')
+    .select('product_id, color_name, image_url, sort_order, is_primary')
+    .in('product_id', productIds)
+    .order('sort_order', { ascending: true });
+
+  if (imagesError) return err();
+
+  const enhancedCheckoutItems = (checkoutItems || []).map(item => {
+    const colorName = (item.product_colors as any)?.color_name;
+    const productId = item.product_id;
+
+    let productImageForColor = productImages?.find(
+      img => img.product_id === productId && img.color_name === colorName && img.is_primary
+    )?.image_url;
+
+    if (!productImageForColor)
+      productImageForColor = productImages?.find(
+        img => img.product_id === productId && img.color_name === colorName
+      )?.image_url;
+
+    if (!productImageForColor)
+      productImageForColor = productImages?.find(
+        img => img.product_id === productId && img.is_primary
+      )?.image_url;
+
+    if (!productImageForColor)
+      productImageForColor = productImages?.find(img => img.product_id === productId)?.image_url;
+
+    const finalImage = productImageForColor || '/api/placeholder/200/200';
+
+    return {
+      id: item.id,
+      productId: item.product_id,
+      colorId: item.color_id,
+      sizeId: item.size_id,
+      title: item.product_title,
+      price: item.product_price,
+      quantity: item.quantity,
+      selectedColor: colorName || 'Unknown',
+      colorHex: (item.product_colors as any)?.hex_code,
+      selectedSize: (item.sizes as any)?.name || 'Unknown',
+      image: finalImage
+    };
+  });
+
   const total =
-    checkoutItems?.reduce((sum, item) => sum + item.product_price * item.quantity, 0) || 0;
+    enhancedCheckoutItems.reduce((sum, item) => sum + item.price * item.quantity, 0) || 0;
 
   return ok({
     checkout: {
@@ -57,7 +104,7 @@ export async function getCheckout(userId: string): Promise<ApiResponse<any>> {
       expiresAt: checkout.expires_at,
       createdAt: checkout.created_at
     },
-    items: checkoutItems || [],
+    items: enhancedCheckoutItems,
     total
   });
 }
