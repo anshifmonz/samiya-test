@@ -9,7 +9,7 @@ const PriceBreakdown = () => {
   const checkoutItems = checkoutData?.items || [];
   return (
     <Card>
-      <CardContent className="pt-6 space-y-3">
+      <CardContent className="space-y-3 p-4 sm:p-6">
         <div className="flex justify-between">
           <span>Subtotal ({checkoutItems.length} items)</span>
           <span>₹{subtotal}</span>

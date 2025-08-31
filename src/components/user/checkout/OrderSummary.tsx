@@ -3,20 +3,19 @@
 import { Badge } from 'ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from 'ui/card';
 import { CheckoutItem } from 'types/checkout';
+import { useCheckoutContext } from 'contexts/user/CheckoutContext';
 
-interface OrderSummaryProps {
-  checkoutItems: CheckoutItem[];
-}
+const OrderSummary = () => {
+  const { checkoutData } = useCheckoutContext();
+  const checkoutItems: CheckoutItem[] = checkoutData.items;
 
-const OrderSummary = ({ checkoutItems }: OrderSummaryProps) => {
-  console.log('checkoutItems', checkoutItems);
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="p-4 sm:p-6">
         <CardTitle>Order Summary</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {checkoutItems.map((item) => (
+      <CardContent className="space-y-4 p-4 sm:p-6">
+        {checkoutItems.map(item => (
           <div key={item.id} className="flex gap-3">
             <img
               src={item.image || '/api/placeholder/80/80'}
@@ -26,15 +25,16 @@ const OrderSummary = ({ checkoutItems }: OrderSummaryProps) => {
             <div className="flex-1 space-y-1">
               <h4 className="font-medium text-sm">{item.title}</h4>
               <div className="flex gap-2 text-xs">
-                {item?.selectedSize && (
-                  <Badge variant="outline">{item.selectedSize}</Badge>
-                )}
+                {item?.selectedSize && <Badge variant="outline">{item.selectedSize}</Badge>}
                 {item.selectedColor && (
                   <div className="flex items-center gap-2">
                     <Badge variant="outline">
-                      {item.selectedColor}  <span className="w-3 h-3 rounded-full ml-2" style={{ backgroundColor: item.colorHex }}></span>
+                      {item.selectedColor}{' '}
+                      <span
+                        className="w-3 h-3 rounded-full ml-2"
+                        style={{ backgroundColor: item.colorHex }}
+                      ></span>
                     </Badge>
-                    {/* <div className="w-4 h-4 rounded-full" style={{ backgroundColor: item.product_colors.hex_code }}></div> */}
                   </div>
                 )}
               </div>

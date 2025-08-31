@@ -13,7 +13,7 @@ const PlaceOrderSection = () => {
     useCheckoutContext();
   return (
     <Card>
-      <CardContent className="pt-6 space-y-4">
+      <CardContent className="space-y-4 p-4 sm:p-6 pt-6">
         <div className="flex items-start space-x-2">
           <Checkbox
             id="terms"

@@ -102,7 +102,7 @@ const AddressFormModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-[90vw] md:max-w-[80vw] lg:max-w-[60vw] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{isEdit ? 'Edit Address' : 'Add New Address'}</DialogTitle>
         </DialogHeader>
@@ -199,7 +199,7 @@ const AddressFormModal = ({
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email (Optional)</FormLabel>
+                  <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input type="email" placeholder="Enter email address" {...field} />
                   </FormControl>
@@ -230,7 +230,7 @@ const AddressFormModal = ({
               name="landmark"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Landmark (Optional)</FormLabel>
+                  <FormLabel>Landmark</FormLabel>
                   <FormControl>
                     <Input placeholder="Near landmark" {...field} />
                   </FormControl>
@@ -259,7 +259,7 @@ const AddressFormModal = ({
                 name="district"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>District (Optional)</FormLabel>
+                    <FormLabel>District</FormLabel>
                     <FormControl>
                       <Input placeholder="Enter district" {...field} />
                     </FormControl>

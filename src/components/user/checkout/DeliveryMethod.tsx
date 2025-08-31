@@ -10,13 +10,13 @@ const DeliveryMethod = () => {
   const { deliveryOptions, selectedDelivery, setSelectedDelivery, subtotal } = useCheckoutContext();
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="p-4 sm:p-6">
         <CardTitle className="flex items-center gap-2">
           <Truck className="h-5 w-5" />
           Delivery Method
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-4 p-4 sm:p-6">
         <RadioGroup value={selectedDelivery} onValueChange={setSelectedDelivery}>
           {deliveryOptions.map(option => (
             <div key={option.id} className="flex items-center space-x-3 p-3 border rounded-lg">

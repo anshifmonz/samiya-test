@@ -16,13 +16,13 @@ const PaymentMethod = () => {
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="p-4 sm:p-6">
         <CardTitle className="flex items-center gap-2">
           <CreditCard className="h-5 w-5" />
           Payment Method
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 p-4 sm:p-6">
         <RadioGroup value={selectedPayment} onValueChange={setSelectedPayment}>
           {mockPaymentMethods.map(method => (
             <div key={method.id} className="flex items-center space-x-3 p-3 border rounded-lg">
