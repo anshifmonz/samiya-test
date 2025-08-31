@@ -7,7 +7,7 @@ export default function ProductActions() {
     selectedColor,
     selectedSize,
     selectedSizeData,
-    handleWhatsApp,
+    handlePurchase,
     handleAddToCart,
     isAddingToCart
   } = useProductContext();
@@ -38,7 +38,7 @@ export default function ProductActions() {
 
       <Button
         className="w-full py-3 text-base font-medium bg-luxury-gold text-black hover:bg-luxury-black/90"
-        onClick={handleWhatsApp}
+        onClick={handlePurchase}
         disabled={!canAddToCart}
       >
         Buy it now

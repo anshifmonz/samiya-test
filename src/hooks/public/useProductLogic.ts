@@ -114,6 +114,28 @@ export function useProductLogic(product: Product) {
     window.open(whatsappUrl, '_blank');
   };
 
+  const handlePurchase = async () => {
+    if (!user) return;
+    if (!selectedColor || !selectedSize || !selectedSizeData) return;
+
+    const colorId = product.colorIdMapping?.[selectedColor] || selectedColor;
+    const sizeId = selectedSizeData.id;
+
+    const { data, error } = await apiRequest('/api/user/checkout/direct', {
+      method: 'POST',
+      body: {
+        productId: product.id,
+        colorId,
+        sizeId,
+        quantity
+      },
+      showLoadingBar: true,
+      showErrorToast: true,
+      errorMessage: 'Failed to create checkout'
+    });
+    if (!error && !data?.error && data?.success) router.push('/user/checkout/');
+  };
+
   const handleWishlistToggle = async () => {
     if (!user) return;
     if (!selectedSizeData?.id) return;
@@ -230,6 +252,7 @@ export function useProductLogic(product: Product) {
     handleWhatsApp,
     handleWishlistToggle,
     handleAddToCart,
+    handlePurchase,
     isWishlist,
     isLoadingWishlist,
     isAddingToCart,

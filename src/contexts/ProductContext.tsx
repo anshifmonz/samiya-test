@@ -19,19 +19,30 @@ interface ProductContextType {
   handleWhatsApp: () => void;
   handleWishlistToggle: () => Promise<void>;
   handleAddToCart: () => Promise<void>;
+  handlePurchase: () => Promise<void>;
   getColorStyle: (color: string) => string;
 }
 
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
 
-export const ProductProvider = ({ children, product }: { children: ReactNode; product: Product }) => {
+export const ProductProvider = ({
+  children,
+  product
+}: {
+  children: ReactNode;
+  product: Product;
+}) => {
   const productLogic = useProductLogic(product);
-  return <ProductContext.Provider value={{ product, ...productLogic }}>{children}</ProductContext.Provider>;
+  return (
+    <ProductContext.Provider value={{ product, ...productLogic }}>
+      {children}
+    </ProductContext.Provider>
+  );
 };
 
 export const useProductContext = () => {
   const context = useContext(ProductContext);
-  if (context === undefined) throw new Error('useProductContext must be used within a ProductProvider');
+  if (context === undefined)
+    throw new Error('useProductContext must be used within a ProductProvider');
   return context;
 };
-
