@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { Badge } from 'ui/badge';
 import { Button } from 'ui/button';
 import { Card, CardContent } from 'ui/card';
-import { Trash2, ShoppingCart, Zap } from 'lucide-react';
+import { Trash2, ShoppingCart, Loader2, Zap } from 'lucide-react';
 import { WishlistWithProduct } from 'types/wishlist';
 import { useWishlistContext } from 'contexts/user/WishlistContext';
 
@@ -13,7 +13,7 @@ interface WishlistCardProps {
 }
 
 const WishlistCard = ({ item }: WishlistCardProps) => {
-  const { removeFromWishlist, addToCart, purchaseNow } = useWishlistContext();
+  const { isAddingToCart, removeFromWishlist, addToCart, purchaseNow } = useWishlistContext();
 
   const calculateDiscount = (price: number, originalPrice: number) => {
     return Math.round(((originalPrice - price) / originalPrice) * 100);
@@ -85,8 +85,17 @@ const WishlistCard = ({ item }: WishlistCardProps) => {
                 </Button>
                 <div className="flex gap-2 mt-2">
                   <Button variant="outline" className="flex-1" onClick={() => addToCart(item)}>
-                    <ShoppingCart className="w-4 h-4 mr-2" />
-                    Add to Cart
+                    {isAddingToCart ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Adding to Cart...
+                      </>
+                    ) : (
+                      <>
+                        <ShoppingCart className="mr-2 h-4 w-4" />
+                        Add to Cart
+                      </>
+                    )}
                   </Button>
                   <Button className="flex-1" onClick={() => purchaseNow(item)}>
                     <Zap className="w-4 h-4 mr-2" />
