@@ -19,10 +19,10 @@ const CartSummary = () => {
   return (
     <div className="space-y-4">
       <Card>
-        <CardHeader>
+        <CardHeader className="p-4 sm:p-6">
           <CardTitle>Order Summary</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 p-4 sm:p-6 !pt-0">
           <div className="flex justify-between">
             <span>Subtotal ({selectedItems.length} items)</span>
             <span>₹{subtotal}</span>

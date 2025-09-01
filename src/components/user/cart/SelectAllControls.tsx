@@ -6,13 +6,18 @@ import { Card, CardContent } from 'ui/card';
 import { useCartContext } from 'contexts/user/CartContext';
 
 const SelectAllControls = () => {
-  const { cartItems, selectedItems, handleSelectAll, handleDeselectAll } = useCartContext();
+  const {
+    cartItems,
+    selectedItems,
+    handleSelectAll,
+    handleDeselectAll
+  } = useCartContext();
 
   return (
     <Card>
       <CardContent className="p-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             <Checkbox
               checked={selectedItems.length === cartItems.length}
               onCheckedChange={checked => {
@@ -20,9 +25,8 @@ const SelectAllControls = () => {
                 else handleDeselectAll();
               }}
             />
-            <span className="font-medium">Select All Items</span>
           </div>
-          <div className="flex gap-2">
+          <div className="flex sm:gap-2">
             <Button variant="ghost" size="sm" onClick={handleSelectAll}>
               Select All
             </Button>

@@ -1,7 +1,5 @@
 'use client';
 
-import { Button } from 'ui/button';
-import { ArrowLeft } from 'lucide-react';
 import EmptyCart from './EmptyCart';
 import CartSummary from './CartSummary';
 import CartItemsList from './CartItemsList';
@@ -13,19 +11,12 @@ interface CartProps {
 }
 
 const CartContent = () => {
-  const { cartItems, handleGoBack } = useCartContext();
+  const { cartItems } = useCartContext();
 
   if (cartItems.length === 0) {
     return (
       <div className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center gap-3 mb-6">
-            <Button variant="ghost" size="icon" onClick={handleGoBack}>
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-            <h1 className="text-2xl font-bold">Shopping Cart</h1>
-          </div>
-
+        <div className="container mx-auto px-4 py-28">
           <EmptyCart />
         </div>
       </div>
@@ -33,15 +24,8 @@ const CartContent = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center gap-3 mb-6">
-          <Button variant="ghost" size="icon" onClick={handleGoBack}>
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <h1 className="text-2xl font-bold">Shopping Cart ({cartItems.length} items)</h1>
-        </div>
-
+    <div className="min-h-screen bg-background pt-16">
+      <div className="container mx-auto px-2 sm:px-4 py-8">
         <div className="grid lg:grid-cols-3 gap-6">
           <CartItemsList />
           <CartSummary />
