@@ -362,18 +362,18 @@ function CreditCard({
 
   const getErrors = () => errors;
 
-  // React 19: Expose imperative methods via ref callback
-  useEffect(() => {
-    if (ref && 'current' in ref) {
-      ref.current = {
-        validate: handleValidate,
-        isValid: () => Object.keys(validateCreditCard(currentValue, cvvLabel)).length === 0,
-        focus: handleFocus,
-        reset: handleReset,
-        getErrors
-      };
-    }
-  }, [ref, currentValue, errors, handleValidate, handleReset, getErrors]);
+  // Expose imperative methods via useImperativeHandle
+  React.useImperativeHandle(
+    ref,
+    () => ({
+      validate: handleValidate,
+      isValid: () => Object.keys(validateCreditCard(currentValue, cvvLabel)).length === 0,
+      focus: handleFocus,
+      reset: handleReset,
+      getErrors
+    }),
+    [currentValue, errors]
+  );
 
   const cardType = getCardType(currentValue.cardNumber);
   const currentYear = new Date().getFullYear();
