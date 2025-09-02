@@ -27,7 +27,7 @@ const ColorImagePanel: React.FC<ColorImagePanelProps> = ({
   imageCount,
   deletingImages = new Set()
 }) => (
-  <div className="border border-luxury-gray/20 rounded-xl p-4 flex flex-col gap-4 max-h-[60vh] md:max-h-[70vh]">
+  <div className="border border-luxury-gray/20 rounded-xl p-4 flex flex-col gap-4">
     <div className="flex items-center justify-between mb-4">
       <h4 className="luxury-body font-medium text-luxury-black capitalize flex items-center gap-2">
         {color} Images ({imageCount})
@@ -44,7 +44,7 @@ const ColorImagePanel: React.FC<ColorImagePanelProps> = ({
         Remove Color
       </button>
     </div>
-    <div className="flex-1 min-h-0 overflow-y-auto">
+    <div className="flex-1 min-h-[40vh] max-h-[40vh] overflow-y-auto">
       <DraggableImageList
         images={images}
         onReorder={onReorder}
