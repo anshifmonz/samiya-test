@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { OrderHistory } from 'types/order';
 import { apiRequest } from 'utils/apiRequest';
+import { mapStatusIdToCategory } from 'lib/utils/shiprocket/tracking/mapStatusIdToCategory';
 
 // From OrderStatusStepper
 export type DeliveryStatus =
@@ -78,8 +79,9 @@ export const useOrder = (initialOrders: OrderHistory[]) => {
   const [selectedOrder, setSelectedOrder] = useState<
     (OrderHistory & { shipment?: ShipmentInfo }) | null
   >(null);
-  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState<boolean>(false);
   const [shipmentInfo, setShipmentInfo] = useState<ShipmentInfo | null>(null);
+  const [isFetcingshipmentInfo, setIsFetcingshipmentInfo] = useState<boolean>(false);
 
   const filterOrders = (orders: OrderHistory[], filter: string) => {
     const now = new Date();
@@ -108,11 +110,6 @@ export const useOrder = (initialOrders: OrderHistory[]) => {
     [initialOrders, selectedFilter]
   );
 
-  const handleViewDetails = (order: OrderHistory) => {
-    setSelectedOrder(order);
-    setDetailsOpen(true);
-  };
-
   const handleCancelOrder = useCallback(async (orderId: string, orderNumber: string) => {
     await apiRequest('/api/user/delivery/cancel-order', {
       method: 'POST',
@@ -134,28 +131,30 @@ export const useOrder = (initialOrders: OrderHistory[]) => {
   }, []);
 
   const fetchShipmentDetails = useCallback(async (order: OrderHistory) => {
-    if (!order?.id || !order.shiprocket_order_id) return;
-    const { data, error } = await apiRequest('/api/delivery/track-order', {
-      method: 'POST',
+    if (!order?.id) return;
+
+    setIsFetcingshipmentInfo(true);
+    const { data, error } = await apiRequest(`/api/user/delivery/track-order?id=${order.id}`, {
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ localOrderId: order.id })
     });
-    if (error || !data?.data?.tracking_data) {
+    const tracking = data.data;
+    if (error || !tracking) {
       setShipmentInfo({ error: 'Could not fetch tracking details.' });
+      setIsFetcingshipmentInfo(false);
       return;
     }
-    const tracking = data.data.tracking_data;
     if (!Array.isArray(tracking.shipment_track) || tracking.shipment_track.length === 0) {
       setShipmentInfo({ error: 'No shipment tracking data available.' });
+      setIsFetcingshipmentInfo(false);
       return;
     }
     const summary = tracking.shipment_track[0];
+    const mappedStatus = mapStatusIdToCategory(Number(tracking.shipment_status));
     const shipment: ShipmentInfo = {
       origin: summary.origin,
       destination: summary.destination,
-      status: summary.current_status,
+      status: mappedStatus,
       courier: summary.courier_name,
-      awb: summary.awb_code,
       expected_delivery: summary.edd || tracking.etd,
       pickup_date: summary.pickup_date,
       delivered_date: summary.delivered_date,
@@ -165,16 +164,25 @@ export const useOrder = (initialOrders: OrderHistory[]) => {
             activity: ev.activity,
             location: ev.location
           }))
-        : [],
-      tracking_url: tracking.track_url
+        : []
     };
     setShipmentInfo(shipment);
+    setIsFetcingshipmentInfo(false)
   }, []);
 
+  const handleViewDetails = (order: OrderHistory) => {
+    setSelectedOrder(order);
+    setDetailsOpen(true);
+  };
+
+  // Fetch shipment details when dialog opens and order is selected
   useEffect(() => {
+    console.log('hit')
     if (detailsOpen && selectedOrder) {
+      console.log('yes')
       fetchShipmentDetails(selectedOrder);
     } else {
+
       setShipmentInfo(null);
     }
   }, [detailsOpen, selectedOrder, fetchShipmentDetails]);
@@ -240,6 +248,7 @@ export const useOrder = (initialOrders: OrderHistory[]) => {
     selectedOrder,
     detailsOpen,
     setDetailsOpen,
+    isFetcingshipmentInfo,
     shipmentInfo,
 
     // Computed values

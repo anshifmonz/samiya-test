@@ -14,7 +14,6 @@ import {
 } from 'lucide-react';
 import { OrderHistory } from 'types/order';
 import OrderItems from './OrderItems';
-import OrderStatusStepper from './OrderStatusStepper';
 import { DbEnumToMessage } from 'utils/shiprocket/dbEnumToMsg';
 import { useOrderContext } from 'contexts/user/OrderContext';
 import { ShipmentInfo } from 'hooks/user/useOrder';
@@ -98,7 +97,6 @@ const OrderCard = ({ order }: OrderCardProps) => {
                 </Button>
               )}
             </div>
-            <OrderStatusStepper status={order.shipment.status || order.status} />
             <div className="flex flex-wrap gap-4 mt-2 text-xs text-muted-foreground">
               {order.shipment.courier && (
                 <span>
