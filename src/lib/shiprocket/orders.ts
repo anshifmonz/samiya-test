@@ -79,15 +79,7 @@ export async function getTrackingByShipmentId(localOrderId: string) {
 export async function getTrackingByOrderId(localOrderId: string) {
   const token = await getShiprocketToken();
   if (!token) return err();
-
-  const { data: order, error } = await supabaseAdmin
-    .from('orders')
-    .select('id, shiprocket_order_id')
-    .eq('id', localOrderId)
-    .single();
-  if (error) return err();
-  if (!order?.shiprocket_order_id) return err('Order not found', 400);
-  return SRTrackByOrderId(token, order.shiprocket_order_id);
+  return SRTrackByOrderId(token, localOrderId);
 }
 
 export async function getSpecificOrderDetails(localOrderId: string) {

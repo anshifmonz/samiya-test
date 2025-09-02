@@ -24,16 +24,18 @@ export async function SRTrackByShipmentId(
 
 export async function SRTrackByOrderId(
   token: string,
-  srOrderId: string | number
+  localOrderId: string | number
 ): Promise<ApiResponse<any>> {
-  if (!srOrderId) return err('Shiprocket order ID is required', 400);
-  if (typeof srOrderId !== 'string' && typeof srOrderId !== 'number')
+  if (!localOrderId) return err('Shiprocket order ID is required', 400);
+  if (typeof localOrderId !== 'string' && typeof localOrderId !== 'number')
     return err('Invalid Shiprocket order ID type', 400);
-
-  const { data, error, response } = await apiRequest(`${SR_BASE}/courier/track/awb/${srOrderId}`, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
+  const { data, error, response } = await apiRequest(
+    `${SR_BASE}/courier/track?order_id=${localOrderId}`,
+    {
+      headers: { Authorization: `Bearer ${token}` }
+    }
+  );
 
   if (error || (response && !response.ok)) return err('Failed to track order');
-  return ok(data);
+  return ok(data[0]?.[localOrderId]?.tracking_data);
 }
