@@ -48,7 +48,7 @@ const AddressFormModal = ({
       city: '',
       district: '',
       state: '',
-      country: 'IN',
+      country: 'India',
       type: 'shipping'
     }
   });
@@ -78,7 +78,7 @@ const AddressFormModal = ({
       city: initialValues?.city || '',
       district: initialValues?.district || '',
       state: initialValues?.state || '',
-      country: initialValues?.country || 'IN',
+      country: initialValues?.country || 'India',
       type: initialValues?.type || 'shipping'
     });
   }, [initialValues, open, showSaveToggle, form]);
@@ -312,7 +312,7 @@ const AddressFormModal = ({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="IN">India</SelectItem>
+                      <SelectItem value="India">India</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -320,7 +320,7 @@ const AddressFormModal = ({
               )}
             />
 
-            {showSaveToggle && !isEdit && (
+            {showSaveToggle && (
               <div className="flex items-center space-x-2 pt-2">
                 <Switch
                   id="save-for-future"

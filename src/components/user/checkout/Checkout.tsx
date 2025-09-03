@@ -1,6 +1,5 @@
 'use client';
 
-import AddressFormModal from '../shared/AddressFormModal';
 import OrderSummary from './OrderSummary';
 import EmptyCheckout from './EmptyCheckout';
 import PaymentMethod from './PaymentMethod';
@@ -11,12 +10,7 @@ import PlaceOrderSection from './PlaceOrderSection';
 import { useCheckoutContext, CheckoutProvider } from 'contexts/user/CheckoutContext';
 
 const CheckoutContent = () => {
-  const {
-    checkoutData,
-    showAddressModal,
-    setShowAddressModal,
-    handleAddressAdded
-  } = useCheckoutContext();
+  const { checkoutData } = useCheckoutContext();
 
   if (!checkoutData || !checkoutData.items || checkoutData.items.length === 0)
     return <EmptyCheckout />;
@@ -39,14 +33,6 @@ const CheckoutContent = () => {
             <PlaceOrderSection />
           </div>
         </div>
-
-        {/* address form modal */}
-        <AddressFormModal
-          open={showAddressModal}
-          onOpenChange={setShowAddressModal}
-          onSubmitAddress={handleAddressAdded}
-          showSaveToggle={true}
-        />
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'hooks/ui/use-toast';
 import { apiRequest } from 'lib/utils/apiRequest';
@@ -71,7 +71,7 @@ export function useCheckout({
   const [addresses, setAddresses] = useState<AddressDisplay[]>(
     initialAddresses.map(mapAddressToDisplay)
   );
-  const [showAddressModal, setShowAddressModal] = useState(false);
+  const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
 
   const [selectedAddress, setSelectedAddress] = useState<string>(
     addresses.find(addr => addr.isDefault)?.id || addresses[0]?.id || ''
@@ -82,6 +82,8 @@ export function useCheckout({
   const [selectedDelivery, setSelectedDelivery] = useState<string>('standard');
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+  const [hasTemp, setHasTemp] = useState(false);
+  const [editingAddress, setEditingAddress] = useState<AddressDisplay | null>(null);
 
   const subtotal = checkoutData?.total || 0;
   const selectedDeliveryOption = deliveryOptions.find(option => option.id === selectedDelivery);
@@ -89,13 +91,38 @@ export function useCheckout({
     subtotal > 1000 && selectedDelivery === 'standard' ? 0 : selectedDeliveryOption?.price || 0;
   const totalAmount = subtotal + deliveryCharges;
 
-  const handleAddressAdded = (newAddress: AddressDisplay) => {
-    setShowAddressModal(false);
+  useEffect(() => {
+    if (addresses && addresses.length > 0) {
+      setHasTemp(addresses.some(a => a.id === 'TEMP_ID'));
+    } else {
+      setHasTemp(false);
+    }
+  }, [addresses]);
+
+  const handleAddAddress = (newAddress: AddressDisplay) => {
+    setIsAddressModalOpen(false);
     const finalAddress = { ...newAddress, id: 'TEMP_ID' };
     setAddresses(prev => [...prev, finalAddress]);
     if (addresses.length === 0 || newAddress.isDefault) setSelectedAddress(finalAddress.id);
     return true;
   };
+
+  const handleEditAddress = (updatedAddress: AddressDisplay) => {
+    setIsAddressModalOpen(false);
+    const finalAddress = { ...updatedAddress, id: 'TEMP_ID' };
+    setAddresses(prev => {
+      const filtered = prev.filter(addr => addr.id !== "TEMP_ID");
+      return [...filtered, finalAddress];
+    });
+    return true;
+  };
+
+  const onAddAddress = () => setIsAddressModalOpen(true);
+  const onEditAddress = (address: AddressDisplay) => {
+    if (!address.id.includes('TEMP')) return;
+    setEditingAddress(address);
+    setIsAddressModalOpen(true);
+  }
 
   const handlePlaceOrder = async () => {
     if (!selectedAddress) {
@@ -141,7 +168,8 @@ export function useCheckout({
       );
 
       // Create the order first
-      const address = selectedAddress === 'TEMP_ID' && addresses.find(addr => addr.id === 'TEMP_ID');
+      const address =
+        selectedAddress === 'TEMP_ID' && addresses.find(addr => addr.id === 'TEMP_ID');
       const { data, error } = await apiRequest('/api/user/order', {
         method: 'POST',
         body: {
@@ -202,20 +230,24 @@ export function useCheckout({
 
   return {
     // State
+    hasTemp,
     addresses,
-    setAddresses,
-    showAddressModal,
-    setShowAddressModal,
-    selectedAddress,
-    setSelectedAddress,
-    selectedPayment,
-    setSelectedPayment,
-    selectedDelivery,
-    setSelectedDelivery,
     acceptTerms,
-    setAcceptTerms,
+    editingAddress,
     isPlacingOrder,
+    selectedAddress,
+    selectedPayment,
+    selectedDelivery,
+    isAddressModalOpen,
+
+    // State handlers
+    setAddresses,
+    setAcceptTerms,
     setIsPlacingOrder,
+    setSelectedAddress,
+    setSelectedPayment,
+    setSelectedDelivery,
+    setIsAddressModalOpen,
 
     // Data
     checkoutData,
@@ -228,7 +260,10 @@ export function useCheckout({
     totalAmount,
 
     // Handlers
-    handleAddressAdded,
+    onAddAddress,
+    onEditAddress,
+    handleAddAddress,
+    handleEditAddress,
     handlePlaceOrder
   };
 }
