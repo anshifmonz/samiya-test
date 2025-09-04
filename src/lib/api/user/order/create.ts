@@ -1,6 +1,6 @@
 import { supabaseAdmin } from 'lib/supabase';
 import { type ApiResponse, ok, err } from 'utils/api/response';
-import { initiatePaymentSession } from 'lib/user/payment';
+import { initiatePaymentSession } from 'lib/api/user/payment';
 import { CreateOrderRequest } from 'types/order';
 
 export async function createOrder(request: CreateOrderRequest): Promise<ApiResponse<any>> {

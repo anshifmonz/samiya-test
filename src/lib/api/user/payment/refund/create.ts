@@ -26,6 +26,5 @@ export async function createRefund(
     amount,
     reason,
     status: 'PENDING',
-    message: result.message
   });
 }

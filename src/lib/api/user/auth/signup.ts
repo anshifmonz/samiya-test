@@ -1,4 +1,4 @@
-import { supabasePublic } from '../../supabasePublic';
+import { supabasePublic } from 'lib/supabasePublic';
 
 interface CreateUserParams {
   name: string;

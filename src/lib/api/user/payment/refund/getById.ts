@@ -16,8 +16,8 @@ export async function getRefundById(
   orderId: string,
   refundId: string
 ): Promise<ApiResponse<Refund>> {
-  const data = await getCashfreeRefund(orderId, refundId);
-  if (!data || data.error) return err(data.error || 'Something went wrong');
+  const { data, error } = await getCashfreeRefund(orderId, refundId);
+  if (!data || error) return err('Something went wrong');
   return ok({
     refundId: data.refund_id,
     orderId: data.order_id,
