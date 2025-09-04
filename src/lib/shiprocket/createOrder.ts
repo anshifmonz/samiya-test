@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import retry from 'utils/retry';
-import splitName from  'utils/splitName';
+import splitName from 'utils/splitName';
 import { cancelSROrder } from './orders';
 import { createOrder } from './order/create';
 import { supabaseAdmin } from 'lib/supabase';
@@ -79,6 +79,30 @@ async function createSROrderForLocalOrder(localOrderId: string): Promise<ApiResp
     const creationToken: string | null = lock.creation_token || null;
     if (!creationToken) return err();
 
+    const { data: orderItems, error: orderItemsErr } = await supabaseAdmin
+      .from('order_items')
+      .select(
+        `
+        products:product_id (
+          short_code
+        ),
+        product_colors:color_id (
+          color_name
+        ),
+        sizes:size_id (
+          name
+        ),
+        product_name,
+        quantity,
+        final_price
+      `
+      )
+      .eq('order_id', localOrderId);
+
+    if (orderItemsErr) return err('Failed to fetch order items');
+    if (!orderItems || !Array.isArray(orderItems) || orderItems.length === 0)
+      return err('No order items found', 404);
+
     const { firstName, lastName } = splitName(address.full_name);
     const payload = {
       order_id: order.id,
@@ -117,14 +141,12 @@ async function createSROrderForLocalOrder(localOrderId: string): Promise<ApiResp
       shipping_email: '',
       shipping_phone: '',
 
-      order_items: [
-        {
-          name: `Order ${order.id}`,
-          sku: `ORDER-${order.id}`,
-          units: 1,
-          selling_price: Number(order.total_amount)
-        }
-      ],
+      order_items: orderItems.map(item => ({
+        name: item.product_name,
+        sku: `${(item.products as any).short_code}-${(item.product_colors as any)?.color_name.replace(/\s+/g, "-")}-${(item.sizes as any)?.name.replace(/\s+/g, "-")}`.toUpperCase(),
+        units: item.quantity,
+        selling_price: Number(item.final_price)
+      })),
 
       payment_method: 'Prepaid',
       sub_total: Number(order.total_amount),
@@ -173,9 +195,7 @@ async function createSROrderForLocalOrder(localOrderId: string): Promise<ApiResp
     if (!cancelError) return err('Failed to create order');
 
     retry(async () => {
-      return supabaseAdmin
-        .from('cancel_order')
-        .insert({ order_id: localOrderId });
+      return supabaseAdmin.from('cancel_order').insert({ order_id: localOrderId });
     }, 5);
     return err('Failed to create order');
   } catch (error: any) {
