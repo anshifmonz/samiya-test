@@ -88,12 +88,11 @@ export interface OrderHistoryItem {
   final_price: number;
   total_price: number;
   created_at: string;
-  // Product details (if product still exists)
+  color: string;
+  size: string;
+  image_url: string;
   product?: {
     id: string;
-    title: string;
-    primary_image_url?: string;
-    short_code?: string;
   };
 }
 

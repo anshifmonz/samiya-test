@@ -79,12 +79,12 @@ export async function getUserOrders(
         final_price,
         total_price,
         created_at,
-        products:product_id (
-          id,
-          title,
-          primary_image_url,
-          short_code
-        )
+        products:product_id (id),
+        product_colors:color_id (
+          color_name,
+          hex_code
+        ),
+        sizes:size_id (name)
       `
       )
       .in('order_id', orderIds)
@@ -92,9 +92,28 @@ export async function getUserOrders(
 
     if (itemsError) return err();
 
+    const { data: productImages, error: imagesError } = await supabaseAdmin
+      .from('product_images')
+      .select('product_id, color_name, hex_code, image_url')
+      .eq('sort_order', 0)
+      .in('product_id', orderItems.map(i => i.product_id));
+
+    if (imagesError) return err();
+
+    const imageMap = new Map<string, string>();
+    productImages?.forEach(img => {
+      const key = `${img.product_id}-${img.color_name}-${img.hex_code}`;
+      imageMap.set(key, img.image_url);
+    });
+
     // Group order items by order_id
     const itemsByOrderId = (orderItems || []).reduce((acc, item) => {
       if (!acc[item.order_id]) acc[item.order_id] = [];
+
+      // Find matching image for product + color
+      const key = `${item.product_id}-${(item.product_colors as any)?.color_name}-${(item.product_colors as any)?.hex_code}`;
+      const image_url = imageMap.get(key) || null;
+
       acc[item.order_id].push({
         id: item.id,
         order_id: item.order_id,
@@ -104,8 +123,12 @@ export async function getUserOrders(
         final_price: item.final_price,
         total_price: item.total_price,
         created_at: item.created_at,
-        product: Array.isArray(item.products) ? item.products[0] : item.products
+        product: Array.isArray(item.products) ? item.products[0] : item.products,
+        color: (item.product_colors as any)?.color_name || null,
+        size: (item.sizes as any)?.name || null,
+        image_url: image_url || null
       });
+
       return acc;
     }, {} as Record<string, any[]>);
 
@@ -126,7 +149,6 @@ export async function getUserOrders(
         created_at: order.created_at,
         updated_at: order.updated_at,
         shiprocket_order_id: (order as any).shiprocket_order_id || null,
-        shiprocket_tracking_url: (order as any).shiprocket_tracking_url || null,
         shiprocket_awb_code: (order as any).shiprocket_awb_code || null,
         items: itemsByOrderId[order.id] || [],
         shipping_address: Array.isArray(order.order_address) ? order.order_address[0] : order.order_address
@@ -168,7 +190,6 @@ export async function getUserOrderById(
         created_at,
         updated_at,
         shiprocket_order_id,
-        shiprocket_tracking_url,
         shiprocket_awb_code,
         order_address:order_address_id (
           id,
@@ -207,12 +228,12 @@ export async function getUserOrderById(
         final_price,
         total_price,
         created_at,
-        products:product_id (
-          id,
-          title,
-          primary_image_url,
-          short_code
-        )
+        products:product_id (id),
+        product_colors:color_id (
+          color_name,
+          hex_code
+        ),
+        sizes:size_id (name)
       `
       )
       .eq('order_id', orderId)
@@ -220,8 +241,39 @@ export async function getUserOrderById(
 
     if (itemsError) return err();
 
+    const { data: productImages, error: imagesError } = await supabaseAdmin
+      .from('product_images')
+      .select('product_id, color_name, hex_code, image_url')
+      .eq('is_primary', true)
+      .in('product_id', orderItems.map(i => i.product_id));
+
+    if (imagesError) return err();
+
     // order number for single order using index 1
     const orderNumber = generateOrderNumber(order.created_at, 1);
+
+    const items = (orderItems || []).map(item => {
+      // Find matching image for product + color
+      const image = productImages?.find(img =>
+        img.product_id === item.product_id &&
+        img.color_name === (item.product_colors as any)?.color_name &&
+        img.hex_code === (item.product_colors as any)?.hex_code
+      );
+      return {
+        id: item.id,
+        order_id: item.order_id,
+        product_id: item.product_id,
+        product_name: item.product_name,
+        quantity: item.quantity,
+        final_price: item.final_price,
+        total_price: item.total_price,
+        created_at: item.created_at,
+        color: (item.product_colors as any)?.color_name || null,
+        size: (item.sizes as any)?.name || null,
+        image_url: image?.image_url || null,
+        product: Array.isArray(item.products) ? item.products[0] : item.products
+      }
+    })
 
     const orderHistory: OrderHistory = {
       id: order.id,
@@ -234,19 +286,8 @@ export async function getUserOrderById(
       created_at: order.created_at,
       updated_at: order.updated_at,
       shiprocket_order_id: (order as any).shiprocket_order_id || null,
-      shiprocket_tracking_url: (order as any).shiprocket_tracking_url || null,
       shiprocket_awb_code: (order as any).shiprocket_awb_code || null,
-      items: (orderItems || []).map(item => ({
-        id: item.id,
-        order_id: item.order_id,
-        product_id: item.product_id,
-        product_name: item.product_name,
-        quantity: item.quantity,
-        final_price: item.final_price,
-        total_price: item.total_price,
-        created_at: item.created_at,
-        product: Array.isArray(item.products) ? item.products[0] : item.products
-      })),
+      items: items,
       shipping_address: Array.isArray(order.order_address) ? order.order_address[0] : order.order_address
     };
 
