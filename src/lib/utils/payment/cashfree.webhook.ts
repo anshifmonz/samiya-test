@@ -1,16 +1,16 @@
 import { getCashfreeInstance } from './cashfree.config';
+import { ApiResponse, err, ok } from 'utils/api/response';
 
 export const verifyCashfreeWebhook = (
   signature: string,
   rawBody: string,
   timestamp: string
-): boolean => {
+): ApiResponse<null> => {
   try {
     const cashfree = getCashfreeInstance();
     cashfree.PGVerifyWebhookSignature(signature, rawBody, timestamp);
-    return true;
-  } catch (error) {
-    console.error('Webhook verification failed:', error);
-    return false;
+    return ok(null);
+  } catch (_) {
+    return err('Webhook verification failed');
   }
 };

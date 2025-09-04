@@ -19,20 +19,3 @@ export interface CashfreeOrderResponse extends OrderEntity {
   order_currency?: string;
   created_at?: string;
 }
-
-export interface PaymentInitiationResult {
-  success: boolean;
-  error?: string;
-  data?: {
-    payment_session_id: string;
-    cf_order_id: string;
-    order_id: string;
-    payment_url?: string;
-  };
-}
-
-export interface CashfreeOrderFetchResult {
-  success: boolean;
-  error?: string;
-  data?: OrderEntity;
-}
