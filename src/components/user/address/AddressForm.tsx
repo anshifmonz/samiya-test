@@ -11,6 +11,8 @@ import { Card, CardContent, CardHeader, CardTitle } from 'ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from 'ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui/select';
 import { useAddressContext } from 'contexts/user/AddressContext';
+import { useOtp } from 'hooks/user/shared/useOtp';
+import OtpModal from '../shared/OtpModal';
 
 const AddressForm = () => {
   const { addAddress, setShowAddForm } = useAddressContext();
@@ -32,6 +34,19 @@ const AddressForm = () => {
       type: 'shipping'
     }
   });
+
+  // OTP modal state and hook
+  const {
+    otpModalOpen,
+    setOtpModalOpen,
+    verifyingPhone,
+    onVerifyClick,
+    verifyOtp,
+    loading: otpLoading,
+    error: otpError,
+    cooldown,
+    reset: resetOtp
+  } = useOtp();
 
   const handleSubmit = (data: AddressFormData) => {
     const res = addAddress(data);
@@ -96,15 +111,26 @@ const AddressForm = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Phone Number</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="text"
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                        placeholder="Enter phone number"
-                        {...field}
-                      />
-                    </FormControl>
+                    <div className="flex gap-2 items-center">
+                      <FormControl>
+                        <Input
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          placeholder="Enter phone number"
+                          {...field}
+                        />
+                      </FormControl>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        disabled={otpLoading || !field.value || field.value.length < 10}
+                        onClick={() => onVerifyClick(field.value)}
+                      >
+                        Verify
+                      </Button>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -260,6 +286,23 @@ const AddressForm = () => {
             </div>
           </form>
         </Form>
+        <OtpModal
+          open={otpModalOpen}
+          onOpenChange={open => {
+            setOtpModalOpen(open);
+            if (!open) resetOtp();
+          }}
+          phone={verifyingPhone}
+          resendOtp={async () => {
+            if (cooldown === 0) await onVerifyClick(verifyingPhone);
+          }}
+          resendDisabled={cooldown > 0}
+          onChangeNumber={() => setOtpModalOpen(false)}
+          onSubmit={async otp => {
+            await verifyOtp(otp);
+          }}
+        />
+        {otpError && <div className="text-destructive text-sm mt-2">{otpError}</div>}
       </CardContent>
     </Card>
   );

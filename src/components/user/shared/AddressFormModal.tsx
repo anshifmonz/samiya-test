@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useOtp } from 'hooks/user/shared/useOtp';
+import OtpModal from './OtpModal';
 import { Input } from 'ui/input';
 import { Label } from 'ui/label';
 import { Button } from 'ui/button';
@@ -52,6 +54,19 @@ const AddressFormModal = ({
       type: 'shipping'
     }
   });
+
+  // OTP modal state and hook
+  const {
+    otpModalOpen,
+    setOtpModalOpen,
+    verifyingPhone,
+    onVerifyClick,
+    verifyOtp,
+    loading: otpLoading,
+    error: otpError,
+    cooldown,
+    reset: resetOtp
+  } = useOtp();
 
   useEffect(() => {
     if (!open) return;
@@ -159,15 +174,26 @@ const AddressFormModal = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Phone Number</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="text"
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                        placeholder="Enter phone number"
-                        {...field}
-                      />
-                    </FormControl>
+                    <div className="flex gap-2 items-center">
+                      <FormControl>
+                        <Input
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          placeholder="Enter phone number"
+                          {...field}
+                        />
+                      </FormControl>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        disabled={otpLoading || !field.value || field.value.length < 10}
+                        onClick={() => onVerifyClick(field.value)}
+                      >
+                        Verify
+                      </Button>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -353,6 +379,23 @@ const AddressFormModal = ({
             </div>
           </form>
         </Form>
+        <OtpModal
+          open={otpModalOpen}
+          onOpenChange={open => {
+            setOtpModalOpen(open);
+            if (!open) resetOtp();
+          }}
+          phone={verifyingPhone}
+          resendOtp={async () => {
+            if (cooldown === 0) await onVerifyClick(verifyingPhone);
+          }}
+          resendDisabled={cooldown > 0}
+          onChangeNumber={() => setOtpModalOpen(false)}
+          onSubmit={async otp => {
+            await verifyOtp(otp);
+          }}
+        />
+        {otpError && <div className="text-destructive text-sm mt-2">{otpError}</div>}
       </DialogContent>
     </Dialog>
   );
