@@ -1,5 +1,5 @@
-import { ActivityStatsData } from "lib/admin/activity-stats/getActivityStats";
-import { IpIntelligenceData } from "lib/services/ipIntelligence";
+import { ActivityStatsData } from 'lib/api/admin/activity-stats/getActivityStats';
+import { IpIntelligenceData } from 'lib/services/ipIntelligence';
 import { subDays, startOfDay, endOfDay } from 'date-fns';
 
 export interface IpGeoData {
@@ -39,8 +39,8 @@ export interface IpAnalysisCardsData {
 
 export const defaultIpFilters: IpFilters = {
   dateRange: { from: startOfDay(subDays(new Date(), 7)), to: endOfDay(new Date()) },
-  severity: "all",
-  minActions: "0"
+  severity: 'all',
+  minActions: '0'
 };
 
 export interface ActivityTimelineData {

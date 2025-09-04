@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import createCollection from 'lib/admin/collection/create';
+import createCollection from 'lib/api/admin/collection/create';
 import { getAdminContext } from 'utils/adminApiHelpers';
 
 export async function POST(request: NextRequest) {
@@ -11,8 +11,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ collection }, { status: status || 201 });
   } catch (error: any) {
     console.error('Error creating collection:', error);
-    return NextResponse.json({ 
-      error: 'Internal server error' 
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: 'Internal server error'
+      },
+      { status: 500 }
+    );
   }
 }

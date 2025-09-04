@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import getSections, { getSectionsWithProducts } from 'lib/admin/section/get';
+import getSections, { getSectionsWithProducts } from 'lib/api/admin/section/get';
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,9 +16,6 @@ export async function GET(request: NextRequest) {
     }
   } catch (error) {
     console.error('Error in GET /api/admin/section:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch sections' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch sections' }, { status: 500 });
   }
 }

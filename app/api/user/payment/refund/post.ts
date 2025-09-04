@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerUser } from 'utils/getServerSession';
-import { createRefund } from 'lib/user/payment/refund';
+import { createRefund } from 'lib/api/user/payment/refund';
 import { err, jsonResponse, ApiResponse } from 'utils/api/response';
 
 export async function POST(request: NextRequest): Promise<NextResponse<ApiResponse<any>>> {

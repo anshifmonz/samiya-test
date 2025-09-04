@@ -1,7 +1,7 @@
 import ProfileOverview from 'components/user/profile/ProfileOverview';
 import ProfileNavigation from 'components/user/profile/ProfileNavigation';
 import { getServerUser } from 'lib/auth/getServerUser';
-import getUserProfile from 'lib/user/profile/get';
+import getUserProfile from 'lib/api/user/profile/get';
 import { redirect } from 'next/navigation';
 
 export default async function ProfilePage() {

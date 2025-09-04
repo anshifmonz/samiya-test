@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { getServerUser } from 'utils/getServerSession';
-import { deleteAddress } from 'lib/user/profile/address';
+import { deleteAddress } from 'lib/api/user/profile/address';
 import { err, jsonResponse } from 'utils/api/response';
 
 export async function DELETE(request: NextRequest) {

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import updateCategory from 'lib/admin/category/update';
+import updateCategory from 'lib/api/admin/category/update';
 import { getAdminContext } from 'utils/adminApiHelpers';
 
 export async function PUT(request: NextRequest) {
@@ -11,8 +11,11 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ category }, { status: status || 200 });
   } catch (error: any) {
     console.error('Error updating category:', error);
-    return NextResponse.json({ 
-      error: 'Internal server error' 
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: 'Internal server error'
+      },
+      { status: 500 }
+    );
   }
 }

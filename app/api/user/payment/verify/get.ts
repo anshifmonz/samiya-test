@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerUser } from 'utils/getServerSession';
-import { getPaymentStatus } from 'lib/user/payment';
+import { getPaymentStatus } from 'lib/api/user/payment';
 import { err, jsonResponse, ApiResponse } from 'utils/api/response';
 import { type PaymentStatusResponse } from 'types/payment';
 

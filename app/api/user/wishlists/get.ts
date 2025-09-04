@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { getUserFromSession } from 'utils/getUserFromSession';
-import { getUserWishlists } from 'lib/user/wishlists';
+import { getUserWishlists } from 'lib/api/user/wishlists';
 import { err, jsonResponse } from 'utils/api/response';
 
 export async function GET(request: NextRequest) {

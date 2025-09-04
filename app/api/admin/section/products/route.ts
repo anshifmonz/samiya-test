@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { addProductToSection, getProducts, removeProductFromSection, reorderSectionProducts } from 'src/lib/admin/section/products';
+import {
+  addProductToSection,
+  getProducts,
+  removeProductFromSection,
+  reorderSectionProducts
+} from 'lib/api/admin/section/products';
 import { getAdminContext } from 'utils/adminApiHelpers';
 
 export const dynamic = 'force-dynamic';
@@ -12,7 +17,7 @@ export async function GET(request: NextRequest) {
   const limitNumber = limit ? parseInt(limit) : 16;
   const offsetNumber = offset ? parseInt(offset) : 0;
 
-  const { products, error, status } =  await getProducts(limitNumber, offsetNumber, query);
+  const { products, error, status } = await getProducts(limitNumber, offsetNumber, query);
   if (error) return NextResponse.json({ error }, { status: status || 500 });
   return NextResponse.json({ products });
 }
@@ -22,14 +27,23 @@ export async function POST(request: NextRequest) {
     const { sectionId, productId, sortOrder } = await request.json();
 
     const { adminUserId, requestInfo } = getAdminContext(request, '/api/admin/section/products');
-    const { success, error, status } = await addProductToSection(sectionId, productId, sortOrder, adminUserId, requestInfo);
+    const { success, error, status } = await addProductToSection(
+      sectionId,
+      productId,
+      sortOrder,
+      adminUserId,
+      requestInfo
+    );
     if (error) return NextResponse.json({ error }, { status: status || 500 });
     return NextResponse.json({ success });
   } catch (error: any) {
     console.error('Error adding product to section:', error);
-    return NextResponse.json({
-      error: error.message || 'Internal server error'
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: error.message || 'Internal server error'
+      },
+      { status: 500 }
+    );
   }
 }
 
@@ -47,14 +61,22 @@ export async function DELETE(request: NextRequest) {
     }
 
     const { adminUserId, requestInfo } = getAdminContext(request, '/api/admin/section/products');
-    const { success, error, status } =  await removeProductFromSection(sectionId, productId, adminUserId, requestInfo);
+    const { success, error, status } = await removeProductFromSection(
+      sectionId,
+      productId,
+      adminUserId,
+      requestInfo
+    );
     if (error) return NextResponse.json({ error }, { status: status || 500 });
     return NextResponse.json({ success });
   } catch (error: any) {
     console.error('Error removing product from section:', error);
-    return NextResponse.json({
-      error: error.message || 'Internal server error'
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: error.message || 'Internal server error'
+      },
+      { status: 500 }
+    );
   }
 }
 
@@ -63,13 +85,21 @@ export async function PATCH(request: NextRequest) {
     const { sectionId, productIds } = await request.json();
 
     const { adminUserId, requestInfo } = getAdminContext(request, '/api/admin/section/products');
-    const { success, error, status } = await reorderSectionProducts(sectionId, productIds, adminUserId, requestInfo);
+    const { success, error, status } = await reorderSectionProducts(
+      sectionId,
+      productIds,
+      adminUserId,
+      requestInfo
+    );
     if (error) return NextResponse.json({ error }, { status: status || 500 });
     return NextResponse.json({ success });
   } catch (error: any) {
     console.error('Error reordering section products:', error);
-    return NextResponse.json({
-      error: error.message || 'Internal server error'
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: error.message || 'Internal server error'
+      },
+      { status: 500 }
+    );
   }
 }

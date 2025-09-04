@@ -1,10 +1,10 @@
-import { useState, useMemo, useCallback, useEffect } from "react";
-import { subDays, startOfDay, endOfDay } from "date-fns";
-import { useToast } from "ui/use-toast";
-import { ActivityStatsData } from "lib/admin/activity-stats/getActivityStats";
+import { useState, useMemo, useCallback, useEffect } from 'react';
+import { subDays, startOfDay, endOfDay } from 'date-fns';
+import { useToast } from 'ui/use-toast';
+import { ActivityStatsData } from 'lib/api/admin/activity-stats/getActivityStats';
 import { apiRequest } from 'utils/apiRequest';
 import { isDateInInclusiveRange } from 'utils/dateRange';
-import { QueryCondition } from "components/admin/activity-logs/AdvancedQueryBuilder";
+import { QueryCondition } from 'components/admin/activity-logs/AdvancedQueryBuilder';
 
 export interface FilterState {
   admin: string;
@@ -27,8 +27,17 @@ interface ApiResponse {
     totalActivities: number;
     groupedByDate: Array<{ date: string; count: number; activities: ActivityStatsData[] }>;
     groupedByAction: Array<{ action: string; count: number; activities: ActivityStatsData[] }>;
-    groupedByEntityType: Array<{ entity_type: string; count: number; activities: ActivityStatsData[] }>;
-    groupedByAdmin: Array<{ admin_id: string; admin_username: string; count: number; activities: ActivityStatsData[] }>;
+    groupedByEntityType: Array<{
+      entity_type: string;
+      count: number;
+      activities: ActivityStatsData[];
+    }>;
+    groupedByAdmin: Array<{
+      admin_id: string;
+      admin_username: string;
+      count: number;
+      activities: ActivityStatsData[];
+    }>;
   };
   error?: string;
 }
@@ -44,29 +53,48 @@ const useActivityLogs = () => {
     totalActivities: number;
     groupedByDate: Array<{ date: string; count: number; activities: ActivityStatsData[] }>;
     groupedByAction: Array<{ action: string; count: number; activities: ActivityStatsData[] }>;
-    groupedByEntityType: Array<{ entity_type: string; count: number; activities: ActivityStatsData[] }>;
-    groupedByAdmin: Array<{ admin_id: string; admin_username: string; count: number; activities: ActivityStatsData[] }>;
-  }>({ allActivities: [], totalActivities: 0, groupedByDate: [], groupedByAction: [], groupedByEntityType: [], groupedByAdmin: [] });
+    groupedByEntityType: Array<{
+      entity_type: string;
+      count: number;
+      activities: ActivityStatsData[];
+    }>;
+    groupedByAdmin: Array<{
+      admin_id: string;
+      admin_username: string;
+      count: number;
+      activities: ActivityStatsData[];
+    }>;
+  }>({
+    allActivities: [],
+    totalActivities: 0,
+    groupedByDate: [],
+    groupedByAction: [],
+    groupedByEntityType: [],
+    groupedByAdmin: []
+  });
 
   // Default filters - consistent between server and client
   const getDefaultFilters = (): FilterState => ({
-    admin: "all",
-    action: "all",
-    entityType: "all",
-    status: "all",
+    admin: 'all',
+    action: 'all',
+    entityType: 'all',
+    status: 'all',
     dateRange: {
       from: startOfDay(subDays(new Date(), 7)),
-      to: endOfDay(new Date()),
+      to: endOfDay(new Date())
     },
-    search: "",
-    ipAddress: "all",
-    advancedQuery: [],
+    search: '',
+    ipAddress: 'all',
+    advancedQuery: []
   });
 
   const [filters, setFilters] = useState<FilterState>(getDefaultFilters);
   const defaultFilters: FilterState = getDefaultFilters();
 
-  const evaluateAdvancedQuery = (activity: ActivityStatsData, conditions: QueryCondition[]): boolean => {
+  const evaluateAdvancedQuery = (
+    activity: ActivityStatsData,
+    conditions: QueryCondition[]
+  ): boolean => {
     if (conditions.length === 0) return true;
     let result = true;
     let currentLogic: 'AND' | 'OR' | undefined = undefined;
@@ -74,7 +102,8 @@ const useActivityLogs = () => {
       if (!condition.value || condition.value.trim() === '') {
         continue;
       }
-      const fieldValue = activity[condition.field as keyof ActivityStatsData]?.toString().toLowerCase() || '';
+      const fieldValue =
+        activity[condition.field as keyof ActivityStatsData]?.toString().toLowerCase() || '';
       const conditionValue = condition.value.toLowerCase();
       let conditionResult = false;
       switch (condition.operator) {
@@ -129,12 +158,15 @@ const useActivityLogs = () => {
         offset: '0'
       });
 
-      const { data, error } = await apiRequest<ApiResponse>(`/api/admin/activity-stats?${queryParams.toString()}`, {
-        showErrorToast: false,
-        showLoadingBar: true,
-        loadingBarDelay: 200,
-        bustCache: true
-      });
+      const { data, error } = await apiRequest<ApiResponse>(
+        `/api/admin/activity-stats?${queryParams.toString()}`,
+        {
+          showErrorToast: false,
+          showLoadingBar: true,
+          loadingBarDelay: 200,
+          bustCache: true
+        }
+      );
 
       if (error) {
         setError(error);
@@ -173,22 +205,38 @@ const useActivityLogs = () => {
 
   const filteredActivities = useMemo(() => {
     return activityData.allActivities.filter(activity => {
-      const matchesAdmin = filters.admin === "all" || activity.admin_id === filters.admin;
-      const matchesAction = filters.action === "all" || activity.action === filters.action;
-      const matchesEntityType = filters.entityType === "all" || activity.entity_type === filters.entityType;
-      const matchesStatus = filters.status === "all" || activity.status === filters.status;
-      const matchesIpAddress = filters.ipAddress === "all" || activity.ip_address === filters.ipAddress;
-      const matchesSearch = filters.search === "" ||
+      const matchesAdmin = filters.admin === 'all' || activity.admin_id === filters.admin;
+      const matchesAction = filters.action === 'all' || activity.action === filters.action;
+      const matchesEntityType =
+        filters.entityType === 'all' || activity.entity_type === filters.entityType;
+      const matchesStatus = filters.status === 'all' || activity.status === filters.status;
+      const matchesIpAddress =
+        filters.ipAddress === 'all' || activity.ip_address === filters.ipAddress;
+      const matchesSearch =
+        filters.search === '' ||
         activity.message.toLowerCase().includes(filters.search.toLowerCase()) ||
         activity.admin_username.toLowerCase().includes(filters.search.toLowerCase()) ||
         activity.entity_type.toLowerCase().includes(filters.search.toLowerCase());
 
       // Use inclusive date range for client-side filtering consistency
       const activityDate = new Date(activity.created_at);
-      const matchesDateRange = isDateInInclusiveRange(activityDate, filters.dateRange.from, filters.dateRange.to);
+      const matchesDateRange = isDateInInclusiveRange(
+        activityDate,
+        filters.dateRange.from,
+        filters.dateRange.to
+      );
 
       const matchesAdvancedQuery = evaluateAdvancedQuery(activity, filters.advancedQuery);
-      return matchesAdmin && matchesAction && matchesEntityType && matchesStatus && matchesIpAddress && matchesSearch && matchesDateRange && matchesAdvancedQuery;
+      return (
+        matchesAdmin &&
+        matchesAction &&
+        matchesEntityType &&
+        matchesStatus &&
+        matchesIpAddress &&
+        matchesSearch &&
+        matchesDateRange &&
+        matchesAdvancedQuery
+      );
     });
   }, [filters, activityData.allActivities]);
 
@@ -206,16 +254,18 @@ const useActivityLogs = () => {
   const compressAdvancedQuery = useCallback((query: QueryCondition[]): string => {
     if (query.length === 0) return '';
     // Convert to a more compact format and encode
-    const compact = query.map(q => `${q.field}:${q.operator}:${q.value}:${q.logic || ''}`).join('|');
-    return btoa(compact).replace(/[+/=]/g, (m) => ({ '+': '-', '/': '_', '=': '' }[m] || m));
+    const compact = query
+      .map(q => `${q.field}:${q.operator}:${q.value}:${q.logic || ''}`)
+      .join('|');
+    return btoa(compact).replace(/[+/=]/g, m => ({ '+': '-', '/': '_', '=': '' }[m] || m));
   }, []);
 
   const decompressAdvancedQuery = useCallback((compressed: string): QueryCondition[] => {
     if (!compressed) return [];
     try {
       // Restore base64 padding and characters
-      const restored = compressed.replace(/[-_]/g, (m) => ({ '-': '+', '_': '/' }[m] || m));
-      const padded = restored + '='.repeat((4 - restored.length % 4) % 4);
+      const restored = compressed.replace(/[-_]/g, m => ({ '-': '+', _: '/' }[m] || m));
+      const padded = restored + '='.repeat((4 - (restored.length % 4)) % 4);
       const compact = atob(padded);
 
       return compact.split('|').map((item, index) => {
@@ -234,13 +284,13 @@ const useActivityLogs = () => {
   }, []);
 
   const compressIpAddress = useCallback((ip: string): string => {
-    return btoa(ip).replace(/[+/=]/g, (m) => ({ '+': '-', '/': '_', '=': '' }[m] || m));
+    return btoa(ip).replace(/[+/=]/g, m => ({ '+': '-', '/': '_', '=': '' }[m] || m));
   }, []);
 
   const decompressIpAddress = useCallback((compressed: string): string => {
     try {
-      const restored = compressed.replace(/[-_]/g, (m) => ({ '-': '+', '_': '/' }[m] || m));
-      const padded = restored + '='.repeat((4 - restored.length % 4) % 4);
+      const restored = compressed.replace(/[-_]/g, m => ({ '-': '+', _: '/' }[m] || m));
+      const padded = restored + '='.repeat((4 - (restored.length % 4)) % 4);
       return atob(padded);
     } catch (e) {
       return '';
@@ -274,8 +324,7 @@ const useActivityLogs = () => {
           // Keep default date range if decompression fails
         }
       }
-      if (params.get('aq'))
-        urlFilters.advancedQuery = decompressAdvancedQuery(params.get('aq')!);
+      if (params.get('aq')) urlFilters.advancedQuery = decompressAdvancedQuery(params.get('aq')!);
 
       // Only update filters if they're different from defaults
       if (JSON.stringify(urlFilters) !== JSON.stringify(getDefaultFilters()))
@@ -294,19 +343,21 @@ const useActivityLogs = () => {
 
     const params = new URLSearchParams();
 
-    if (filters.admin !== "all") params.set('a', filters.admin);
-    if (filters.action !== "all") params.set('ac', filters.action);
-    if (filters.entityType !== "all") params.set('et', filters.entityType);
-    if (filters.status !== "all") params.set('st', filters.status);
-    if (filters.search !== "") params.set('s', filters.search);
-    if (filters.ipAddress !== "all") {
+    if (filters.admin !== 'all') params.set('a', filters.admin);
+    if (filters.action !== 'all') params.set('ac', filters.action);
+    if (filters.entityType !== 'all') params.set('et', filters.entityType);
+    if (filters.status !== 'all') params.set('st', filters.status);
+    if (filters.search !== '') params.set('s', filters.search);
+    if (filters.ipAddress !== 'all') {
       const compressed = compressIpAddress(filters.ipAddress);
       if (compressed) params.set('ip', compressed);
     }
 
     const defaultFilters = getDefaultFilters();
-    if (filters.dateRange.from.getTime() !== defaultFilters.dateRange.from.getTime() ||
-        filters.dateRange.to.getTime() !== defaultFilters.dateRange.to.getTime()) {
+    if (
+      filters.dateRange.from.getTime() !== defaultFilters.dateRange.from.getTime() ||
+      filters.dateRange.to.getTime() !== defaultFilters.dateRange.to.getTime()
+    ) {
       params.set('df', compressDate(filters.dateRange.from));
       params.set('dt', compressDate(filters.dateRange.to));
     }
@@ -318,12 +369,22 @@ const useActivityLogs = () => {
 
     const newUrl = `${window.location.pathname}?${params.toString()}`;
     window.history.replaceState({}, '', newUrl);
-  }, [filters, isInitialized, compressDate, compressAdvancedQuery, compressIpAddress, getDefaultFilters]);
+  }, [
+    filters,
+    isInitialized,
+    compressDate,
+    compressAdvancedQuery,
+    compressIpAddress,
+    getDefaultFilters
+  ]);
 
-  const updateFilter = useCallback((key: keyof FilterState, value: any) => {
-    const newFilters = { ...filters, [key]: value };
-    setFilters(newFilters);
-  }, [filters]);
+  const updateFilter = useCallback(
+    (key: keyof FilterState, value: any) => {
+      const newFilters = { ...filters, [key]: value };
+      setFilters(newFilters);
+    },
+    [filters]
+  );
 
   const clearFilters = useCallback(() => {
     setFilters(defaultFilters);
@@ -356,7 +417,9 @@ const useActivityLogs = () => {
   }, [activityData.allActivities]);
 
   const getUniqueIpAddresses = useCallback(() => {
-    return Array.from(new Set(activityData.allActivities.map(activity => activity.ip_address).filter(Boolean)));
+    return Array.from(
+      new Set(activityData.allActivities.map(activity => activity.ip_address).filter(Boolean))
+    );
   }, [activityData.allActivities]);
 
   const availableFields = [

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSession, signSessionId } from 'lib/adminSession';
-import login from 'lib/admin/auth/login';
+import login from 'lib/api/admin/auth/login';
 import { getAdminContext } from 'utils/adminApiHelpers';
 
 export const dynamic = 'force-dynamic';

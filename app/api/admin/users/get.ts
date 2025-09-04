@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getUsers } from 'lib/admin/users/getUsers';
+import { getUsers } from 'lib/api/admin/users/getUsers';
 import { AdminUser } from 'types/admin';
 
 export async function GET(): Promise<NextResponse<{ error: string | null; admins: AdminUser[] }>> {

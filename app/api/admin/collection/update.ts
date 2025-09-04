@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import updateCollection from 'lib/admin/collection/update';
+import updateCollection from 'lib/api/admin/collection/update';
 import { getAdminContext } from 'utils/adminApiHelpers';
 
 export async function PUT(request: NextRequest) {
@@ -11,8 +11,11 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ collection }, { status: status || 200 });
   } catch (error: any) {
     console.error('Error updating collection:', error);
-    return NextResponse.json({
-      error: error.message || 'Internal server error'
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: error.message || 'Internal server error'
+      },
+      { status: 500 }
+    );
   }
 }

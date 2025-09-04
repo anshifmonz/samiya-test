@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
-import { getServerUser } from 'utils/getServerSession';
-import { updateCartItemQuantity } from 'lib/user/cart';
-import { err, jsonResponse } from 'utils/api/response';
+import { getServerUser } from 'src/lib/utils/getServerSession';
+import { updateCartItemQuantity } from 'src/lib/api/user/cart';
+import { err, jsonResponse } from 'src/lib/utils/api/response';
 
 export async function PUT(request: NextRequest) {
   try {

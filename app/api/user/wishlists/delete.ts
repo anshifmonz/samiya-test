@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { getServerUser } from 'utils/getServerSession';
-import { deleteWishlistItem } from 'lib/user/wishlists';
+import { deleteWishlistItem } from 'lib/api/user/wishlists';
 import { err, jsonResponse } from 'utils/api/response';
 
 export async function DELETE(request: NextRequest) {

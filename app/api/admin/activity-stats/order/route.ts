@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { err, jsonResponse } from 'utils/api/response';
-import { getOrderActivityStats } from 'lib/admin/activity-stats/order/get';
+import { getOrderActivityStats } from 'lib/api/admin/activity-stats/order/get';
 
 export async function GET(req: NextRequest) {
   try {

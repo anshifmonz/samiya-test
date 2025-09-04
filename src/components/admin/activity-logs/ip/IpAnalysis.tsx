@@ -13,7 +13,7 @@ import {
   defaultIpFilters,
   IpGeoData
 } from './index';
-import { ActivityStatsData } from 'lib/admin/activity-stats/getActivityStats';
+import { ActivityStatsData } from 'lib/api/admin/activity-stats/getActivityStats';
 import { ipIntelligenceService, IpIntelligenceData } from 'lib/services/ipIntelligence';
 import { Loader2 } from 'lucide-react';
 import { Alert, AlertDescription } from 'ui/alert';

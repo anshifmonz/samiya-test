@@ -1,8 +1,8 @@
-import { useMemo } from "react";
-import { AlertTriangle, Clock, RefreshCw } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { ActivityStatsData } from "@/lib/admin/activity-stats/getActivityStats";
-import { parseISO, differenceInMinutes } from "date-fns";
+import { useMemo } from 'react';
+import { Badge } from 'ui/badge';
+import { parseISO, differenceInMinutes } from 'date-fns';
+import { AlertTriangle, Clock, RefreshCw } from 'lucide-react';
+import { ActivityStatsData } from 'lib/api/admin/activity-stats/getActivityStats';
 
 interface ActivityDetectionProps {
   activity: ActivityStatsData;
@@ -14,10 +14,11 @@ export const ActivityDetection = ({ activity, allActivities }: ActivityDetection
     const warnings = [];
 
     // Check for multiple failed attempts by same admin within 30 minutes
-    const adminFailures = allActivities.filter(a =>
-      a.admin_id === activity.admin_id &&
-      a.status === 'failed' &&
-      Math.abs(differenceInMinutes(parseISO(a.created_at), parseISO(activity.created_at))) <= 30
+    const adminFailures = allActivities.filter(
+      a =>
+        a.admin_id === activity.admin_id &&
+        a.status === 'failed' &&
+        Math.abs(differenceInMinutes(parseISO(a.created_at), parseISO(activity.created_at))) <= 30
     );
 
     if (adminFailures.length >= 3) {
@@ -31,10 +32,11 @@ export const ActivityDetection = ({ activity, allActivities }: ActivityDetection
 
     // Check for high-frequency updates on same entity within 1 hour
     if (activity.entity_id) {
-      const entityUpdates = allActivities.filter(a =>
-        a.entity_id === activity.entity_id &&
-        a.action === 'update' &&
-        Math.abs(differenceInMinutes(parseISO(a.created_at), parseISO(activity.created_at))) <= 60
+      const entityUpdates = allActivities.filter(
+        a =>
+          a.entity_id === activity.entity_id &&
+          a.action === 'update' &&
+          Math.abs(differenceInMinutes(parseISO(a.created_at), parseISO(activity.created_at))) <= 60
       );
 
       if (entityUpdates.length >= 5) {
@@ -48,9 +50,10 @@ export const ActivityDetection = ({ activity, allActivities }: ActivityDetection
     }
 
     // Check for rapid sequential actions (within 2 minutes)
-    const rapidActions = allActivities.filter(a =>
-      a.admin_id === activity.admin_id &&
-      Math.abs(differenceInMinutes(parseISO(a.created_at), parseISO(activity.created_at))) <= 2
+    const rapidActions = allActivities.filter(
+      a =>
+        a.admin_id === activity.admin_id &&
+        Math.abs(differenceInMinutes(parseISO(a.created_at), parseISO(activity.created_at))) <= 2
     );
 
     if (rapidActions.length >= 4) {

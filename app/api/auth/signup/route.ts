@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import createUser from 'lib/user/auth/signup';
+import createUser from 'src/lib/api/user/auth/signup';
 import { ok, err, jsonResponse } from 'lib/utils/api/response';
 
 export async function POST(request: NextRequest) {

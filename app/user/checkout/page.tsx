@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation';
 import { type Address } from 'types/address';
-import { getCheckout } from 'lib/user/checkout/get';
+import { getCheckout } from 'lib/api/user/checkout/get';
 import { getServerUser } from 'lib/auth/getServerUser';
-import { getUserAddresses } from 'lib/user/profile/address';
+import { getUserAddresses } from 'lib/api/user/profile/address';
 import Checkout from 'components/user/checkout/Checkout';
 
 export const dynamic = 'force-dynamic';

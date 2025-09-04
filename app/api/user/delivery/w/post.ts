@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { processShiprocketWebhook } from 'lib/user/delivery/w/post';
+import { processShiprocketWebhook } from 'src/lib/api/user/delivery/w/post';
 
 export async function POST(request: NextRequest) {
   const rawBody = await request.text();

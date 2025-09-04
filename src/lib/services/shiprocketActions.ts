@@ -2,7 +2,7 @@ import retry from 'utils/retry';
 import { supabaseAdmin } from 'lib/supabase';
 import { cancelSROrder } from 'lib/shiprocket/orders';
 import { createReturnForOrder } from 'lib/shiprocket/orders';
-import { createRefund } from 'lib/user/payment/refund/create';
+import { createRefund } from 'lib/api/user/payment/refund/create';
 import { type SRReturnOrderPayload } from 'lib/shiprocket/types';
 
 export async function handleMappedAction3(order_id: string) {

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import createProduct from 'lib/admin/product/create';
+import createProduct from 'lib/api/admin/product/create';
 import { getAdminContext } from 'utils/adminApiHelpers';
 
 export async function POST(request: NextRequest) {
@@ -11,8 +11,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ product }, { status: status || 201 });
   } catch (error: any) {
     console.error('Error creating product:', error);
-    return NextResponse.json({ 
-      error: 'Internal server error' 
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: 'Internal server error'
+      },
+      { status: 500 }
+    );
   }
 }

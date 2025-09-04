@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import getCollections from '@/lib/admin/collection/get';
+import getCollections from 'lib/api/admin/collection/get';
 
 export async function GET() {
   try {

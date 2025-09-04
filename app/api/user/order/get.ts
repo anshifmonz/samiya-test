@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
-import { getServerUser } from 'utils/getServerSession';
-import { err, jsonResponse } from 'utils/api/response';
-import { getUserOrders, getUserOrderById } from 'lib/user/order';
+import { getServerUser } from 'src/lib/utils/getServerSession';
+import { err, jsonResponse } from 'src/lib/utils/api/response';
+import { getUserOrders, getUserOrderById } from 'src/lib/api/user/order';
 
 export async function GET(request: NextRequest) {
   try {

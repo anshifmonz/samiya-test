@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
-import { getServerUser } from 'utils/getServerSession';
-import { completeOrder } from 'lib/user/order/complete';
-import { err, jsonResponse } from 'utils/api/response';
+import { getServerUser } from 'src/lib/utils/getServerSession';
+import { completeOrder } from 'src/lib/api/user/order/complete';
+import { err, jsonResponse } from 'src/lib/utils/api/response';
 
 export const dynamic = 'force-dynamic';
 

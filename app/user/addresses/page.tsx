@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { getServerUser } from 'lib/auth/getServerUser';
-import { getUserAddresses } from 'lib/user/profile/address';
+import { getUserAddresses } from 'lib/api/user/profile/address';
 import { mapAddressesToDisplay } from 'utils/addressMapper';
 import AddressBook from 'components/user/address/AddressBook';
 import { type Address } from 'types/address';

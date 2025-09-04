@@ -1,10 +1,10 @@
 import React, { Suspense } from 'react';
 import LoadingSpinner from 'components/shared/LoadingSpinner';
 import AdminDashboard from 'components/admin/AdminDashboard';
-import getProducts from 'lib/admin/product/get';
-import getCollections from 'lib/admin/collection/get';
-import getCategories from 'lib/admin/category/get';
-import { getSectionsWithProducts } from 'lib/admin/section/get';
+import getProducts from 'lib/api/admin/product/get';
+import getCollections from 'lib/api/admin/collection/get';
+import getCategories from 'lib/api/admin/category/get';
+import { getSectionsWithProducts } from 'lib/api/admin/section/get';
 import LogoutButton from 'components/admin/LogoutButton';
 
 export const revalidate = 0;
@@ -24,7 +24,12 @@ async function getAdminData() {
 }
 
 export default async function Admin() {
-  const { products: productList, collections: collectionList, categories: categoryList, sections: sectionList } = await getAdminData();
+  const {
+    products: productList,
+    collections: collectionList,
+    categories: categoryList,
+    sections: sectionList
+  } = await getAdminData();
 
   return (
     <div className="min-h-screen bg-luxury-white">

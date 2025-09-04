@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import Orders from 'components/user/orders/Orders';
-import { getUserOrders } from 'lib/user/order/get';
+import { getUserOrders } from 'lib/api/user/order/get';
 import { getServerUser } from 'lib/auth/getServerUser';
 
 export default async function OrderPage() {

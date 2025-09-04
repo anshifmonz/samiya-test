@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import createProduct from 'lib/admin/product/create';
+import createProduct from 'lib/api/admin/product/create';
 import { type CreateProductData } from 'types/product';
 import { getAdminContext } from 'utils/adminApiHelpers';
 
@@ -51,7 +51,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: `Successfully imported ${successCount} products${errorCount > 0 ? `, ${errorCount} failed` : ''}`,
+      message: `Successfully imported ${successCount} products${
+        errorCount > 0 ? `, ${errorCount} failed` : ''
+      }`,
       results,
       errors,
       summary: {
@@ -60,12 +62,8 @@ export async function POST(request: NextRequest) {
         failed: errorCount
       }
     });
-
   } catch (error: any) {
     console.error('Bulk import error:', error);
-    return NextResponse.json(
-      { error: error.message || 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
   }
 }

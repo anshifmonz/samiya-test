@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { getUserFromSession } from 'utils/getUserFromSession';
-import getUserProfile from 'lib/user/profile/get';
+import getUserProfile from 'lib/api/user/profile/get';
 import { err, jsonResponse } from 'utils/api/response';
 
 export async function GET(request: NextRequest) {

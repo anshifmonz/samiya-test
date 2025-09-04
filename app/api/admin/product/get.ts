@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import getProducts from 'lib/admin/product/get';
+import getProducts from 'lib/api/admin/product/get';
 
 export async function GET(request: NextRequest) {
   try {
@@ -12,13 +12,21 @@ export async function GET(request: NextRequest) {
     const offsetNumber = offset ? parseInt(offset) : 0;
     const queryText = query || '';
     const sortByValue = sortBy || 'updated_at';
-    const { products, error, status } = await getProducts(limitNumber, offsetNumber, queryText, sortByValue);
+    const { products, error, status } = await getProducts(
+      limitNumber,
+      offsetNumber,
+      queryText,
+      sortByValue
+    );
     if (error) return NextResponse.json({ error }, { status: status || 500 });
     return NextResponse.json({ products });
   } catch (error: any) {
     console.error('Error fetching products:', error);
-    return NextResponse.json({
-      error: error.message || 'Internal server error'
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: error.message || 'Internal server error'
+      },
+      { status: 500 }
+    );
   }
 }

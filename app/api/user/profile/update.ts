@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { getUserFromSession } from 'utils/getUserFromSession';
-import updateUserProfile from 'lib/user/profile/update';
+import updateUserProfile from 'lib/api/user/profile/update';
 import { err, jsonResponse } from 'utils/api/response';
 
 export async function PATCH(request: NextRequest) {

@@ -5,7 +5,7 @@ import { Badge } from 'ui/badge';
 import { Button } from 'ui/button';
 import { Progress } from 'ui/progress';
 import Link from 'next/link';
-import { ActivityStatsData } from 'lib/admin/activity-stats/getActivityStats';
+import { ActivityStatsData } from 'lib/api/admin/activity-stats/getActivityStats';
 import { useActivityLogsContext } from 'contexts/admin/activity-logs/ActivityLogsContext';
 
 export const IpAnalytics = () => {

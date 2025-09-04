@@ -1,6 +1,6 @@
-import { getCheckout } from 'lib/user/checkout';
-import { getServerUser } from 'utils/getServerSession';
-import { err, jsonResponse } from 'utils/api/response';
+import { getCheckout } from 'src/lib/api/user/checkout';
+import { getServerUser } from 'src/lib/utils/getServerSession';
+import { err, jsonResponse } from 'src/lib/utils/api/response';
 
 export async function GET() {
   try {

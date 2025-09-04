@@ -1,5 +1,5 @@
 import { getServerUser } from 'utils/getServerSession';
-import { getUserAddresses } from 'lib/user/profile/address';
+import { getUserAddresses } from 'lib/api/user/profile/address';
 import { err, jsonResponse } from 'utils/api/response';
 
 export async function GET() {

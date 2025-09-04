@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import deleteCategory from 'lib/admin/category/delete';
+import deleteCategory from 'lib/api/admin/category/delete';
 import { getAdminContext } from 'utils/adminApiHelpers';
 
 export async function DELETE(request: NextRequest) {
@@ -14,8 +14,11 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ success }, { status: status || 200 });
   } catch (error: any) {
     console.error('Error deleting category:', error);
-    return NextResponse.json({ 
-      error: 'Internal server error' 
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: 'Internal server error'
+      },
+      { status: 500 }
+    );
   }
 }

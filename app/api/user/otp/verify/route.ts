@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
-import { getServerUser } from 'utils/getServerSession';
-import { err, jsonResponse } from 'utils/api/response';
-import verifyOtp from 'lib/user/otp/verify';
+import { getServerUser } from 'src/lib/utils/getServerSession';
+import { err, jsonResponse } from 'src/lib/utils/api/response';
+import verifyOtp from 'src/lib/api/user/otp/verify';
 
 export async function POST(req: NextRequest) {
   const user = await getServerUser();

@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { getServerUser } from 'utils/getServerSession';
-import { updateAddress, setDefaultAddress } from 'lib/user/profile/address';
+import { updateAddress, setDefaultAddress } from 'lib/api/user/profile/address';
 import { err, jsonResponse } from 'utils/api/response';
 import { AddressFormData } from 'types/address';
 

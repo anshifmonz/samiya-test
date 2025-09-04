@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { createAddress } from 'lib/user/profile/address';
+import { createAddress } from 'lib/api/user/profile/address';
 import { getServerUser } from 'utils/getServerSession';
 import { err, jsonResponse } from 'utils/api/response';
 import { AddressFormData } from 'types/address';

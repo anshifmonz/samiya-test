@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { deleteUser } from 'lib/admin/users/deleteUser';
+import { deleteUser } from 'lib/api/admin/users/deleteUser';
 import { AdminUser } from 'types/admin';
 import { getAdminContext } from 'utils/adminApiHelpers';
 
-export async function DELETE(request: NextRequest): Promise<NextResponse<{ error: string | null; admins: AdminUser[] }>> {
+export async function DELETE(
+  request: NextRequest
+): Promise<NextResponse<{ error: string | null; admins: AdminUser[] }>> {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');

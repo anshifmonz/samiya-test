@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { getServerUser } from 'utils/getServerSession';
-import { verifyPayment } from 'lib/user/payment';
+import { verifyPayment } from 'lib/api/user/payment';
 import { err, jsonResponse } from 'utils/api/response';
 
 export async function POST(request: NextRequest) {
