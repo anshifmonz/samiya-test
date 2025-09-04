@@ -111,14 +111,14 @@ export async function verifyPayment(
     // Update order if status changed
     if (
       orderStatus !== payment.orders.status ||
-      orderPaymentStatus !== payment.orders.payment_status
+      orderPaymentStatus !== newPaymentStatus
     ) {
       const { error: orderUpdateError } = await retry(async () => {
         return await supabaseAdmin
           .from('orders')
           .update({
             status: orderStatus,
-            payment_status: orderPaymentStatus,
+            payment_status: newPaymentStatus,
             updated_at: new Date().toISOString()
           })
           .eq('id', payment.order_id), 3, 1000
