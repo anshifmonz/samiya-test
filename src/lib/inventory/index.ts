@@ -158,24 +158,6 @@ async function findProcessingCheckoutId(userId: string): Promise<string | null> 
   return data?.id ?? null;
 }
 
-/**
- * Convenience: Consume stock for the currently processing checkout of a user
- */
-async function consumeStockForUser(userId: string): Promise<{ success: boolean; error?: string }> {
-  const checkoutId = await findProcessingCheckoutId(userId);
-  if (!checkoutId) return { success: false, error: 'No processing checkout found for user' };
-  return consumeStock(checkoutId);
-}
-
-/**
- * Convenience: Release stock for the currently processing checkout of a user
- */
-async function releaseStockForUser(userId: string): Promise<{ success: boolean; error?: string }> {
-  const checkoutId = await findProcessingCheckoutId(userId);
-  if (!checkoutId) return { success: false, error: 'No processing checkout found for user' };
-  return releaseStock(checkoutId);
-}
-
 async function cleanupExpiredReservations(): Promise<{
   success: boolean;
   error?: string;
@@ -205,8 +187,6 @@ export {
   consumeStock,
   rollbackReservations,
   findProcessingCheckoutId,
-  consumeStockForUser,
-  releaseStockForUser,
   cleanupExpiredReservations
 };
 export type { ReserveStockRPCRequestItem, StockReservation };

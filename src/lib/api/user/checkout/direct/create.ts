@@ -8,10 +8,9 @@ export async function createDirectCheckout(
   sizeId: string,
   quantity: number
 ): Promise<ApiResponse<any>> {
-  if (!userId || typeof userId !== 'string')
-    return err('User ID is required and must be a string', 400);
+  if (!userId || typeof userId !== 'string') return err();
   if (!productId || !colorId || !sizeId || !quantity)
-    return err('All product details are required', 400);
+    return err('Required details are missing', 400);
 
   const { data, error } = await supabaseAdmin.rpc('direct_checkout_rpc', {
     p_user_id: userId,
@@ -27,8 +26,5 @@ export async function createDirectCheckout(
   if (!resp?.success)
     return err(resp?.error || 'Direct checkout creation failed', resp?.status || 500);
 
-  return ok({
-    checkoutId: resp.checkout_id,
-    expiresAt: resp.expires_at
-  }, 201);
+  return ok({ checkoutId: resp.checkout_id }, 201);
 }

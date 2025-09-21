@@ -14,11 +14,5 @@ export async function createCheckout(userId: string): Promise<ApiResponse<any>> 
   const resp = data as any;
   if (!resp?.success) return err(resp?.error || 'Checkout creation failed', resp?.status || 500);
 
-  return ok(
-    {
-      checkoutId: resp.checkout_id,
-      expiresAt: resp.expires_at
-    },
-    201
-  );
+  return ok({ checkoutId: resp.checkout_id }, 201);
 }

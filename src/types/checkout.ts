@@ -2,7 +2,6 @@ export interface CheckoutData {
   checkout: {
     id: string;
     status: string;
-    expiresAt: string;
     createdAt: string;
   };
   items: CheckoutItem[];

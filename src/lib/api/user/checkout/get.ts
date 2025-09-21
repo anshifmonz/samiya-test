@@ -1,11 +1,12 @@
 import { supabaseAdmin } from 'lib/supabase';
-import { CheckoutData } from 'types/checkout';
+import { type CheckoutData } from 'types/checkout';
+import { isExpired } from 'utils/isExpired';
 import { ok, err, ApiResponse } from 'utils/api/response';
 
 export async function getCheckout(userId: string): Promise<ApiResponse<CheckoutData>> {
   const { data: checkout, error: checkoutError } = await supabaseAdmin
     .from('checkout')
-    .select('id, status, expires_at, created_at')
+    .select('id, status, created_at')
     .eq('user_id', userId)
     .eq('status', 'pending')
     .single();
@@ -15,8 +16,7 @@ export async function getCheckout(userId: string): Promise<ApiResponse<CheckoutD
     return err();
   }
 
-  if (new Date(checkout.expires_at + 'Z').getTime() < Date.now())
-    return err('Checkout session has expired', 400);
+  if (isExpired(checkout.created_at, 30)) return err('Checkout session has expired', 410);
 
   const { data: checkoutItems, error: itemsError } = await supabaseAdmin
     .from('checkout_items')
@@ -101,7 +101,6 @@ export async function getCheckout(userId: string): Promise<ApiResponse<CheckoutD
     checkout: {
       id: checkout.id,
       status: checkout.status,
-      expiresAt: checkout.expires_at,
       createdAt: checkout.created_at
     },
     items: enhancedCheckoutItems,
