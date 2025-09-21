@@ -32,7 +32,7 @@ export async function createOrder(request: CreateOrderRequest): Promise<ApiRespo
   const resp = data as any;
   if (!resp?.success) return err('Order creation failed', 400);
 
-  const orderId = resp.order_id;
+  const orderId = resp.data.order_id;
 
   let paymentDetails: {
     payment_session_id: string;
