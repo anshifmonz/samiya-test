@@ -20,7 +20,7 @@ const CartSummary = () => {
     <div className="space-y-4">
       <Card>
         <CardHeader className="p-4 sm:p-6">
-          <CardTitle>Order Summary</CardTitle>
+          <CardTitle>Cart Summary</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4 p-4 sm:p-6 !pt-0">
           <div className="flex justify-between">
