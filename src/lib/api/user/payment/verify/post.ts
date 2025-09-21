@@ -2,7 +2,7 @@ import retry from 'utils/retry';
 import { supabaseAdmin } from 'lib/supabase';
 import { SRCreateOrder } from 'lib/shiprocket/createOrder';
 import { ok, err, type ApiResponse } from 'utils/api/response';
-import { consumeStockForUser, releaseStockForUser } from 'lib/inventory';
+import { consumeStock, releaseStock } from 'lib/inventory';
 import { fetchCashfreeOrder, mapCashfreeStatus } from 'utils/payment/cashfree';
 
 interface PaymentWithOrder {
@@ -18,6 +18,7 @@ interface PaymentWithOrder {
     user_id: string;
     status: string;
     payment_status: string;
+    checkout_id: string;
   } | null;
 }
 
@@ -32,7 +33,9 @@ export async function verifyPayment(
     if (cfOrderId && typeof cfOrderId !== 'string') return err('Input must be a string', 400);
 
     // Find payment record
-    let paymentQuery = supabaseAdmin.from('payments').select(`
+    let paymentQuery = supabaseAdmin
+      .from('payments')
+      .select(`
         id,
         order_id,
         cf_order_id,
@@ -40,7 +43,7 @@ export async function verifyPayment(
         status,
         payment_amount,
         gateway_response,
-        orders(id, user_id, status, payment_status)
+        orders(id, user_id, checkout_id, status, payment_status)
       `);
 
     if (orderId) {
@@ -55,9 +58,9 @@ export async function verifyPayment(
 
     if (paymentError || !payment || !payment.orders) return err('Payment record not found', 400);
 
+    const checkoutId = payment.orders.checkout_id
     if (payment.status === 'paid') {
-      // Ensure stock is consumed if not already done (based on user's processing checkout)
-      await consumeStockForUser(userId);
+      await consumeStock(checkoutId);
 
       return ok({
         payment_status: 'paid',
@@ -77,9 +80,9 @@ export async function verifyPayment(
 
     // Side effects based on final status
     if (newPaymentStatus === 'paid') {
-      await consumeStockForUser(userId);
+      await consumeStock(checkoutId);
     } else if (newPaymentStatus === 'failed') {
-      await releaseStockForUser(userId);
+      await releaseStock(checkoutId);
     }
 
     // Update payment record with latest information
@@ -109,10 +112,7 @@ export async function verifyPayment(
     }
 
     // Update order if status changed
-    if (
-      orderStatus !== payment.orders.status ||
-      orderPaymentStatus !== newPaymentStatus
-    ) {
+    if (orderStatus !== payment.orders.status || orderPaymentStatus !== newPaymentStatus) {
       const { error: orderUpdateError } = await retry(async () => {
         return await supabaseAdmin
           .from('orders')

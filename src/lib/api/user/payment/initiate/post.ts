@@ -9,6 +9,7 @@ import { retryPaymentInitiation } from 'utils/payment/retryMechanism';
 import { type PaymentInitiationResponse } from 'types/payment';
 import { cleanupExpiredReservations } from 'lib/inventory';
 import { ok, err, ApiResponse } from 'utils/api/response';
+import { isExpired } from 'utils/isExpired';
 
 const ALLOWED_METHODS = new Set(['card', 'upi', 'netbanking', 'wallet']);
 
@@ -39,24 +40,9 @@ export async function initiatePaymentSession(
     if (order.status !== 'pending') return err('Order is not in a valid state for payment', 400);
     if (order.payment_status === 'paid') return err('Order has already been paid', 400);
 
-    // Block payment if the reservation window has expired (15 minutes from checkout creation)
-    // We locate the user's processing checkout created during createOrder()
-    const { data: processingCheckout } = await supabaseAdmin
-      .from('checkout')
-      .select('id, expires_at')
-      .eq('user_id', userId)
-      .eq('status', 'processing')
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .single();
-
-    if (!processingCheckout)
-      return err('Checkout session not found for this order', 400)
-
-    if (new Date(processingCheckout.expires_at + 'Z').getTime() < Date.now()) {
-      // Proactively clean up any expired reservations
-      await cleanupExpiredReservations();
-      return err('Checkout reservation has expired. Please re-checkout', 400)
+    if (isExpired(order.created_at, 10)) {
+      cleanupExpiredReservations();
+      return err('Checkout session has expired. Please start a new checkout.', 410);
     }
 
     // Check if payment session already exists
@@ -73,7 +59,7 @@ export async function initiatePaymentSession(
         payment_session_id: existingPayment.payment_session_id,
         cf_order_id: String(existingPayment.cf_order_id || ''),
         order_id: orderId
-      })
+      });
     }
 
     // Get user details for payment
@@ -83,12 +69,11 @@ export async function initiatePaymentSession(
       .eq('id', userId)
       .single();
 
-    if (userError || !userProfile)
-      return err('User profile not found', 404)
+    if (userError || !userProfile) return err('User profile not found', 404);
 
     // Validate payment method from client (no server-side default)
     if (!paymentMethod || !ALLOWED_METHODS.has(paymentMethod))
-      return err('Invalid or unsupported payment method', 400)
+      return err('Invalid or unsupported payment method', 400);
 
     // Map paymentMethod to Cashfree order_meta.payment_methods string format
     const cfMethodMap: Record<'card' | 'upi' | 'netbanking' | 'wallet', string> = {
@@ -133,7 +118,7 @@ export async function initiatePaymentSession(
       const paymentError = mapErrorToPaymentError(
         new Error(paymentResult.error || 'Failed to initiate payment')
       );
-      return err(formatPaymentError(paymentError))
+      return err(formatPaymentError(paymentError));
     }
 
     // Store payment record in database
@@ -155,10 +140,7 @@ export async function initiatePaymentSession(
       .select('id, payment_session_id, cf_order_id')
       .single();
 
-    if (paymentError) {
-      console.error('Failed to store payment record:', paymentError);
-      return err('Failed to store payment information')
-    }
+    if (paymentError) return err();
 
     // Update order status to processing
     await supabaseAdmin
@@ -175,9 +157,9 @@ export async function initiatePaymentSession(
       payment_session_id: payment.payment_session_id,
       cf_order_id: String(payment.cf_order_id || ''),
       order_id: orderId
-    })
-  } catch (error: any) {
+    });
+  } catch (error: unknown) {
     const paymentError = mapErrorToPaymentError(error);
-    return err(formatPaymentError(paymentError))
+    return err(formatPaymentError(paymentError));
   }
 }
