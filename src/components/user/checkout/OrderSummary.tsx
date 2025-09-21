@@ -1,9 +1,10 @@
 'use client';
 
 import { Badge } from 'ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from 'ui/card';
 import { CheckoutItem } from 'types/checkout';
+import { Card, CardContent, CardHeader, CardTitle } from 'ui/card';
 import { useCheckoutContext } from 'contexts/user/CheckoutContext';
+import Timer from 'components/shared/Timer';
 
 const OrderSummary = () => {
   const { checkoutData } = useCheckoutContext();
@@ -11,8 +12,11 @@ const OrderSummary = () => {
 
   return (
     <Card>
-      <CardHeader className="p-4 sm:p-6">
+      <CardHeader className="flex flex-row items-center justify-between p-4 sm:p-6">
         <CardTitle>Order Summary</CardTitle>
+        {checkoutData.checkout.createdAt && (
+          <Timer createdAt={checkoutData.checkout.createdAt} expireTime={30} className="hidden lg:block" />
+        )}
       </CardHeader>
       <CardContent className="space-y-4 p-4 sm:p-6">
         {checkoutItems.map(item => (

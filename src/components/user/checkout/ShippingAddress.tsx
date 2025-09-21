@@ -8,11 +8,14 @@ import { RadioGroup, RadioGroupItem } from 'ui/radio-group';
 import { Card, CardContent, CardHeader, CardTitle } from 'ui/card';
 import { useCheckoutContext } from 'contexts/user/CheckoutContext';
 import AddressFormModal from '../shared/AddressFormModal';
+import Timer from 'components/shared/Timer';
+import { useRouter } from 'next/navigation';
 
 const ShippingAddress = () => {
   const {
     hasTemp,
     addresses,
+    checkoutData,
     editingAddress,
     selectedAddress,
     isAddressModalOpen,
@@ -25,6 +28,7 @@ const ShippingAddress = () => {
     handleAddAddress,
     handleEditAddress
   } = useCheckoutContext();
+  const router = useRouter();
 
   if (!addresses || addresses.length === 0) {
     return (
@@ -34,6 +38,14 @@ const ShippingAddress = () => {
             <MapPin className="h-5 w-5" />
             Shipping Address
           </CardTitle>
+          {checkoutData.checkout.createdAt && (
+            <Timer
+              createdAt={checkoutData.checkout.createdAt}
+              expireTime={30}
+              className="lg:hidden"
+              onExpire={() => router.push('/user/cart')}
+            />
+          )}
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="text-center py-6">
@@ -51,11 +63,19 @@ const ShippingAddress = () => {
   return (
     <>
       <Card>
-        <CardHeader className="p-4 sm:p-6">
+        <CardHeader className="p-4 sm:p-6 flex flex-row items-center justify-between">
           <CardTitle className="flex items-center gap-2">
             <MapPin className="h-5 w-5" />
             Shipping Address
           </CardTitle>
+          {checkoutData.checkout.createdAt && (
+            <Timer
+              createdAt={checkoutData.checkout.createdAt}
+              expireTime={30}
+              className="lg:hidden"
+              onExpire={() => router.push('/user/cart')}
+            />
+          )}
         </CardHeader>
         <CardContent className="space-y-4 p-4 sm:p-6">
           <RadioGroup value={selectedAddress} onValueChange={setSelectedAddress}>
