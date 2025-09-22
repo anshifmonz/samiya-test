@@ -32,31 +32,43 @@ const ShippingAddress = () => {
 
   if (!addresses || addresses.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <MapPin className="h-5 w-5" />
-            Shipping Address
-          </CardTitle>
-          {checkoutData.checkout.createdAt && (
-            <Timer
-              createdAt={checkoutData.checkout.createdAt}
-              expireTime={30}
-              className="lg:hidden"
-              onExpire={() => router.push('/user/cart')}
-            />
-          )}
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="text-center py-6">
-            <p className="text-muted-foreground mb-4">No saved addresses found</p>
-            <Button onClick={onAddAddress} className="w-full">
-              <Plus className="h-4 w-4 mr-2" />
-              Add New Address
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <MapPin className="h-5 w-5" />
+              Shipping Address
+            </CardTitle>
+            {checkoutData.checkout.createdAt && (
+              <Timer
+                createdAt={checkoutData.checkout.createdAt}
+                expireTime={30}
+                className="lg:hidden"
+                onExpire={() => router.push('/user/cart')}
+              />
+            )}
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">No saved addresses found</p>
+              <Button variant="outline" onClick={onAddAddress} className="w-full">
+                <Plus className="h-4 w-4 mr-2" />
+                Add New Address
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+        {isAddressModalOpen && (
+          <AddressFormModal
+            open={isAddressModalOpen}
+            onOpenChange={setIsAddressModalOpen}
+            onSubmitAddress={editingAddress ? handleEditAddress : handleAddAddress}
+            initialValues={editingAddress}
+            isEdit={editingAddress && true}
+            showSaveToggle={true}
+          />
+        )}
+      </>
     );
   }
 
