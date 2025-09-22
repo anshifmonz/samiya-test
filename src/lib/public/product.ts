@@ -1,9 +1,10 @@
-import { supabasePublic } from 'lib/supabasePublic';
+import { createClient } from 'lib/supabase/server';
 import { type Product, type ProductColorData, type Size } from 'types/product';
 
 const getProduct = async (id: string, userId?: string): Promise<Product | null> => {
   try {
-    const { data, error } = await supabasePublic.rpc('get_product_details_rpc', {
+    const supabase = createClient();
+    const { data, error } = await supabase.rpc('get_product_details_rpc', {
       product_id: id,
       user_id: userId || null
     });
@@ -13,7 +14,7 @@ const getProduct = async (id: string, userId?: string): Promise<Product | null> 
     const colorSizes: Record<string, Size[]> = {};
     const colorIdMapping: Record<string, string> = {}; // Map color names to color IDs
 
-    if (data.product_images) {
+    if (data?.product_images) {
       const sortedImages = data.product_images.sort((a: any, b: any) => {
         if (a.color_name !== b.color_name) {
           if (a.color_name === data.primary_color) return -1;
@@ -33,7 +34,7 @@ const getProduct = async (id: string, userId?: string): Promise<Product | null> 
       });
     }
 
-    if (data.product_sizes)
+    if (data?.product_sizes)
       data.product_sizes.forEach((colorSizeData: any) => {
         const colorName = colorSizeData.color_name;
         const colorId = colorSizeData.color_id;
@@ -56,12 +57,11 @@ const getProduct = async (id: string, userId?: string): Promise<Product | null> 
         }));
 
         // store sizes in the color data for the images object
-        if (images[colorName])
-          images[colorName].sizes = colorSizes[colorName];
+        if (images[colorName]) images[colorName].sizes = colorSizes[colorName];
       });
 
     const tags: string[] = [];
-    if (data.product_tags)
+    if (data?.product_tags)
       data.product_tags.forEach((pt: any) => {
         if (pt.tag?.name) tags.push(pt.tag.name);
       });
@@ -84,6 +84,6 @@ const getProduct = async (id: string, userId?: string): Promise<Product | null> 
     console.error('Error fetching product:', error);
     return null;
   }
-}
+};
 
 export default getProduct;
