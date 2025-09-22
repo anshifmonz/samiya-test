@@ -1,9 +1,8 @@
 import mbClient from 'lib/messagebird';
-import { supabaseAdmin } from 'lib/supabase';
+import { createClient } from 'lib/supabase/server';
 import { ok, err } from 'utils/api/response';
 
 const verifyOtp = async (
-  userId: string,
   verificationId: string,
   token: string,
   phone: string
@@ -16,10 +15,11 @@ const verifyOtp = async (
       });
     });
 
-    const { error: dbError } = await supabaseAdmin
+    const supabase = createClient();
+
+    const { error: dbError } = await supabase
       .from('addresses')
       .update({ is_phone_verified: true })
-      .eq('user_id', userId)
       .eq('phone', phone);
 
     if (dbError) err();

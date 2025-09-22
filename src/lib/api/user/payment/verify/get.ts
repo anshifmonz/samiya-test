@@ -1,4 +1,4 @@
-import { supabaseAdmin } from 'lib/supabase';
+import { createClient } from 'lib/supabase/server';
 import { type PaymentStatusResponse } from 'types/payment';
 import { ok, err, type ApiResponse } from 'utils/api/response';
 
@@ -19,7 +19,6 @@ interface PaymentStatusWithOrder {
 }
 
 export async function getPaymentStatus(
-  userId: string,
   orderId?: string | null,
   cfOrderId?: string | null
 ): Promise<ApiResponse<PaymentStatusResponse>> {
@@ -28,7 +27,9 @@ export async function getPaymentStatus(
     if (typeof orderId !== 'string' || typeof cfOrderId !== 'string')
       return err('Input must be a string', 400);
 
-    let paymentQuery = supabaseAdmin.from('payments').select(`
+    const supabase = createClient();
+
+    let paymentQuery = supabase.from('payments').select(`
         id,
         order_id,
         cf_order_id,
@@ -44,9 +45,10 @@ export async function getPaymentStatus(
       paymentQuery = paymentQuery.eq('cf_order_id', cfOrderId);
     }
 
-    const { data: payment, error: paymentError } = (await paymentQuery
-      .eq('orders.user_id', userId)
-      .single()) as { data: PaymentStatusWithOrder | null; error: any };
+    const { data: payment, error: paymentError } = (await paymentQuery.single()) as {
+      data: PaymentStatusWithOrder | null;
+      error: any;
+    };
 
     if (paymentError || !payment || !payment.orders) return err('Payment record not found', 404);
 

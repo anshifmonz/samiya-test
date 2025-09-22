@@ -1,4 +1,4 @@
-import { supabaseAdmin } from 'lib/supabase';
+import { createClient } from 'lib/supabase/server';
 import { GetOrderHistoryResponse, OrderHistory } from 'types/order';
 import { generateOrderNumber, getOrderIndexForYear } from 'utils/orderUtils';
 import { ok, err, type ApiResponse } from 'utils/api/response';
@@ -9,11 +9,14 @@ export async function getUserOrders(
   limit: number = 10
 ): Promise<ApiResponse<GetOrderHistoryResponse>> {
   try {
-    if (!userId || typeof userId !== 'string') return err('User ID is required and must be a string', 400);
+    if (!userId || typeof userId !== 'string')
+      return err('User ID is required and must be a string', 400);
     if (page < 1) return err('Page must be greater than 0', 400);
     if (limit < 1 || limit > 25) return err('Limit must be between 1 and 25', 400);
 
-    const { data, error } = await supabaseAdmin.rpc('get_orders', {
+    const supabase = createClient();
+
+    const { data, error } = await supabase.rpc('get_orders', {
       p_user_id: userId,
       p_page: page,
       p_limit: limit
@@ -59,10 +62,14 @@ export async function getUserOrderById(
   orderId: string
 ): Promise<ApiResponse<OrderHistory>> {
   try {
-    if (!userId || typeof userId !== 'string') return err('User ID is required and must be a string', 400);
-    if (!orderId || typeof orderId !== 'string') return err('Order ID is required and must be a string', 400);
+    if (!userId || typeof userId !== 'string')
+      return err('User ID is required and must be a string', 400);
+    if (!orderId || typeof orderId !== 'string')
+      return err('Order ID is required and must be a string', 400);
 
-    const { data: order, error } = await supabaseAdmin.rpc('get_a_order', {
+    const supabase = createClient();
+
+    const { data: order, error } = await supabase.rpc('get_a_order', {
       p_user_id: userId,
       p_order_id: orderId
     });

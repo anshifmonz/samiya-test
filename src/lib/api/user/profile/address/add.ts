@@ -1,8 +1,11 @@
-import { supabaseAdmin } from 'lib/supabase';
+import { createClient } from 'lib/supabase/server';
 import { AddressFormData, Address } from 'types/address';
 import { ok, err, type ApiResponse } from 'utils/api/response';
 
-export async function createAddress(userId: string, addressData: AddressFormData): Promise<ApiResponse<Address>> {
+export async function createAddress(
+  userId: string,
+  addressData: AddressFormData
+): Promise<ApiResponse<Address>> {
   const dataToInsert = {
     user_id: userId,
     label: addressData.label,
@@ -21,7 +24,9 @@ export async function createAddress(userId: string, addressData: AddressFormData
     is_default: false
   };
 
-  const { data: newAddress, error } = await supabaseAdmin
+  const supabase = createClient();
+
+  const { data: newAddress, error } = await supabase
     .from('addresses')
     .insert(dataToInsert)
     .select('*')

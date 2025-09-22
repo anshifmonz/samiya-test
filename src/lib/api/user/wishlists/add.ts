@@ -1,4 +1,4 @@
-import { supabaseAdmin } from 'lib/supabase';
+import { createClient } from 'lib/supabase/server';
 import { err, ok, type ApiResponse } from 'utils/api/response';
 
 export async function addToWishlists(
@@ -16,7 +16,9 @@ export async function addToWishlists(
   if (!sizeId || typeof sizeId !== 'string')
     return err('Size ID is required and must be a string', 400);
 
-  const { data: product, error: productError } = await supabaseAdmin
+  const supabase = createClient();
+
+  const { data: product, error: productError } = await supabase
     .from('products')
     .select('id, is_active')
     .eq('id', productId)
@@ -29,7 +31,7 @@ export async function addToWishlists(
 
   if (!product.is_active) return err('Product is not available', 400);
 
-  const { data: color, error: colorError } = await supabaseAdmin
+  const { data: color, error: colorError } = await supabase
     .from('product_colors')
     .select('id')
     .eq('id', colorId)
@@ -41,7 +43,7 @@ export async function addToWishlists(
     return err();
   }
 
-  const { data: size, error: sizeError } = await supabaseAdmin
+  const { data: size, error: sizeError } = await supabase
     .from('sizes')
     .select('id')
     .eq('id', sizeId)
@@ -52,7 +54,7 @@ export async function addToWishlists(
     return err();
   }
 
-  const { data: existingWishlist, error: fetchError } = await supabaseAdmin
+  const { data: existingWishlist, error: fetchError } = await supabase
     .from('wishlists')
     .select('product_id')
     .eq('user_id', userId)
@@ -64,7 +66,7 @@ export async function addToWishlists(
   if (fetchError && fetchError.code !== 'PGRST116') return err();
   if (existingWishlist) return ok(null, 200);
 
-  const { error } = await supabaseAdmin.from('wishlists').insert({
+  const { error } = await supabase.from('wishlists').insert({
     user_id: userId,
     product_id: productId,
     color_id: colorId,

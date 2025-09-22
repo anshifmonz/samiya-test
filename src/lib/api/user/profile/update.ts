@@ -1,4 +1,4 @@
-import { supabaseAdmin } from 'lib/supabase';
+import { createClient } from 'lib/supabase/server';
 import { User } from 'types/user';
 import { AddressFormData } from 'types/address';
 import { createAddress, updateAddress, setDefaultAddress } from './address';
@@ -150,7 +150,9 @@ async function updateUserProfile(
         updated_at: new Date().toISOString()
       };
 
-      const { data: profile, error } = await supabaseAdmin
+      const supabase = createClient();
+
+      const { data: profile, error } = await supabase
         .from('users')
         .update(dataToUpdate)
         .eq('id', userId)

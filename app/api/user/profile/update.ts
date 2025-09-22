@@ -1,11 +1,11 @@
 import { NextRequest } from 'next/server';
-import { getUserFromSession } from 'utils/getUserFromSession';
+import { getServerUser } from 'src/lib/utils/getServerSession';
 import updateUserProfile from 'lib/api/user/profile/update';
 import { err, jsonResponse } from 'utils/api/response';
 
 export async function PATCH(request: NextRequest) {
   try {
-    const user = await getUserFromSession(request);
+    const user = await getServerUser();
     if (!user) return jsonResponse(err('Unauthorized access', 401));
 
     const updateData = await request.json();

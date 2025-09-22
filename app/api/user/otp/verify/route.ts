@@ -10,6 +10,6 @@ export async function POST(req: NextRequest) {
   const { verificationId, token, phone } = await req.json();
   if (!verificationId || !token) return jsonResponse(err('Missing verificationId or token', 400));
 
-  const res = await verifyOtp(user.id, verificationId, token, phone);
+  const res = await verifyOtp(verificationId, token, phone);
   return jsonResponse(res);
 }

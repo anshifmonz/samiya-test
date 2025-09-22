@@ -1,6 +1,6 @@
 import ProfileOverview from 'components/user/profile/ProfileOverview';
 import ProfileNavigation from 'components/user/profile/ProfileNavigation';
-import { getServerUser } from 'lib/auth/getServerUser';
+import { getServerUser } from 'utils/getServerSession';
 import getUserProfile from 'lib/api/user/profile/get';
 import { redirect } from 'next/navigation';
 
@@ -8,7 +8,7 @@ export default async function ProfilePage() {
   const user = await getServerUser();
   if (!user) redirect('/signin');
 
-  const { data } = await getUserProfile(user.id);
+  const { data } = await getUserProfile();
   const profile = data || null;
   if (!profile) redirect('/signin');
 

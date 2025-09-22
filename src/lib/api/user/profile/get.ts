@@ -1,16 +1,20 @@
-import { supabaseAdmin } from 'lib/supabase';
 import { UserProfile } from 'types/user';
+import { createClient } from 'lib/supabase/server';
 import { err, ok, type ApiResponse } from 'utils/api/response';
 
-async function getUserProfile(userId: string): Promise<ApiResponse<UserProfile>> {
-  const { data: profile, error } = await supabaseAdmin
+async function getUserProfile(): Promise<ApiResponse<UserProfile>> {
+  const supabase = createClient();
+  const { data: profile, error } = await supabase
     .from('users')
     .select(
       `
-      id, name, email, profile_picture, signup_date
+      id,
+      name,
+      email,
+      profile_picture,
+      signup_date
     `
     )
-    .eq('id', userId)
     .single();
 
   if (error) return err();

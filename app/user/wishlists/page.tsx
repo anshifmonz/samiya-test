@@ -1,13 +1,8 @@
-import { redirect } from 'next/navigation';
-import { getServerUser } from 'lib/auth/getServerUser';
 import { getUserWishlists } from 'lib/api/user/wishlists/get';
 import Wishlist from 'components/user/wishlists/Wishlist';
 
 export default async function WishlistPage() {
-  const user = await getServerUser();
-  if (!user) redirect('/auth/login');
-
-  const { data } = await getUserWishlists(user.id);
+  const { data } = await getUserWishlists();
   const wishlists = data || [];
 
   return <Wishlist wishlists={wishlists} />;

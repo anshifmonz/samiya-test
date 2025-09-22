@@ -1,4 +1,4 @@
-import { supabaseAdmin } from 'lib/supabase';
+import { createClient } from 'lib/supabase/server';
 import { ok, err, ApiResponse } from 'utils/api/response';
 
 export async function updateCartItemSelection(
@@ -12,7 +12,9 @@ export async function updateCartItemSelection(
     return err('Cart Item ID is required and must be a string', 400);
   if (typeof isSelected !== 'boolean') return err('isSelected must be a boolean', 400);
 
-  const { error: cartItemError } = await supabaseAdmin
+  const supabase = createClient();
+
+  const { error: cartItemError } = await supabase
     .from('cart_items')
     .select(
       `
@@ -30,7 +32,7 @@ export async function updateCartItemSelection(
     return err();
   }
 
-  const { error: updateError } = await supabaseAdmin
+  const { error: updateError } = await supabase
     .from('cart_items')
     .update({ is_selected: isSelected })
     .eq('id', cartItemId);

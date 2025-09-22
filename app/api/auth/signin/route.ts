@@ -1,7 +1,7 @@
 import '@supabase/supabase-js';
 import { createClient } from 'lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
-import { err, jsonResponse } from 'lib/utils/api/response';
+import { ok, err, jsonResponse } from 'lib/utils/api/response';
 import { supabasePublic } from 'lib/supabasePublic';
 
 export async function POST(request: NextRequest) {
@@ -31,18 +31,15 @@ export async function POST(request: NextRequest) {
 
     if (rpcError) {
       if (rpcError.message === 'account_deactivated')
-        return { error: 'Account is deactivated', user: null, session: null };
+        return jsonResponse(err('Account is deactivated', 403));
       console.error('RPC Error:', rpcError);
-      return { error: 'Server error', user: null, session: null };
+      return jsonResponse(err('Server error'));
     }
     if (!profileRows || profileRows.length === 0)
       return jsonResponse(err('User profile not found', 404));
     const profile = profileRows[0];
 
-    const response = NextResponse.json(
-      { data: profile, message: 'Sign in successful' },
-      { status: 200 }
-    );
+    const response = jsonResponse(ok(profile));
 
     if (session) {
       response.cookies.set('auth-token', session.access_token, {

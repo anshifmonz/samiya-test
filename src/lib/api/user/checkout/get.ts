@@ -1,10 +1,12 @@
-import { supabaseAdmin } from 'lib/supabase';
+import { createClient } from 'lib/supabase/server';
 import { type CheckoutData } from 'types/checkout';
 import { isExpired } from 'utils/isExpired';
 import { ok, err, ApiResponse } from 'utils/api/response';
 
 export async function getCheckout(userId: string): Promise<ApiResponse<CheckoutData>> {
-  const { data: checkout, error: checkoutError } = await supabaseAdmin
+  const supabase = createClient();
+
+  const { data: checkout, error: checkoutError } = await supabase
     .from('checkout')
     .select('id, status, created_at')
     .eq('user_id', userId)
@@ -18,7 +20,7 @@ export async function getCheckout(userId: string): Promise<ApiResponse<CheckoutD
 
   if (isExpired(checkout.created_at, 30)) return err('Checkout session has expired', 410);
 
-  const { data: checkoutItems, error: itemsError } = await supabaseAdmin
+  const { data: checkoutItems, error: itemsError } = await supabase
     .from('checkout_items')
     .select(
       `
@@ -48,7 +50,7 @@ export async function getCheckout(userId: string): Promise<ApiResponse<CheckoutD
   // Fetch product images for all items
   const productIds = (checkoutItems || []).map(item => item.product_id);
 
-  const { data: productImages, error: imagesError } = await supabaseAdmin
+  const { data: productImages, error: imagesError } = await supabase
     .from('product_images')
     .select('product_id, color_name, image_url, sort_order, is_primary')
     .in('product_id', productIds)
