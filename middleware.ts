@@ -7,7 +7,12 @@ export async function middleware(request: NextRequest) {
   const method = request.method;
   let response = NextResponse.next();
 
-  const ip = request.ip || request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || request.headers.get('cf-connecting-ip') || 'unknown';
+  const ip =
+    request.ip ||
+    request.headers.get('x-forwarded-for') ||
+    request.headers.get('x-real-ip') ||
+    request.headers.get('cf-connecting-ip') ||
+    'unknown';
   const userAgent = request.headers.get('user-agent') || 'unknown';
 
   response.headers.set('x-client-ip', ip);
@@ -18,28 +23,24 @@ export async function middleware(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        getAll() {
-          return request.cookies.getAll()
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-          response = NextResponse.next({
-            request,
-          })
-          cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
-          )
-        },
-      },
+        getAll: () => request.cookies.getAll(),
+        setAll: cookiesToSet => {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            response.cookies.set(name, value, options);
+          });
+        }
+      }
     }
-  )
+  );
 
-  // ensure Supabase refreshes session cookies if needed
-  const { data: { user } } = await supabase.auth.getUser()
-  if (user) response.headers.set('x-user-id', user?.id);
+  // Refresh session if needed
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
 
-  if (!pathname.startsWith('/admin') && !pathname.startsWith('/api/admin'))
-    return response;
+  if (user) response.headers.set('x-user-id', user.id);
+
+  if (!pathname.startsWith('/admin') && !pathname.startsWith('/api/admin')) return response;
 
   const cookieSecret = process.env.COOKIE_SIGNING_SECRET;
   const adminAuthCookie = request.cookies.get('admin_auth');
@@ -51,13 +52,13 @@ export async function middleware(request: NextRequest) {
       const sessionId = await unsignSessionId(adminAuthCookie.value, cookieSecret);
       if (!sessionId) return NextResponse.next();
       const currentAdmin = await getAdminUserFromSession(sessionId);
-      if (currentAdmin)
-        return NextResponse.redirect(new URL('/admin', request.url));
+      if (currentAdmin) return NextResponse.redirect(new URL('/admin', request.url));
     }
     return response;
   }
 
-  if (!cookieSecret) return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+  if (!cookieSecret)
+    return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
   if (!adminAuthCookie) return redirectToLogin();
   const sessionId = await unsignSessionId(adminAuthCookie.value, cookieSecret);
   if (!sessionId) return redirectToLogin();
@@ -99,7 +100,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|public).*)',
-  ],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|public).*)']
 };
