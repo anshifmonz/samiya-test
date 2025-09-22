@@ -4,8 +4,7 @@ export async function getServerSession() {
   const supabase = createClient()
 
   try {
-    const { data: { session }, error } = await supabase.auth.getSession()
-    if (error) throw new Error(error.message);
+    const { data: { session } } = await supabase.auth.getSession()
     return session
   } catch (error) {
     console.error('Error in getServerSession:', error)
@@ -17,8 +16,7 @@ export async function getServerUser() {
   const supabase = createClient()
 
   try {
-    const { data: { user }, error } = await supabase.auth.getUser()
-    if (error) throw new Error(error.message);
+    const { data: { user } } = await supabase.auth.getUser()
     return user
   } catch (error) {
     console.error('Error in getServerUser:', error)
