@@ -37,71 +37,69 @@ const WishlistCard = ({ item }: WishlistCardProps) => {
               </Badge>
             )}
           </div>
-          <div className="flex-1 flex flex-col justify-between space-y-2">
-            <div className="flex items-start justify-between w-full">
-              <div className="flex flex-col gap-4">
-                <div>
-                  <h3 className="font-semibold text-foreground text-base text-lg line-clamp-1">
-                    {item.product.title}
-                  </h3>
-                  <p className="text-xs text-muted-foreground line-clamp-2">
-                    {item.product.description}
-                  </p>
+          <div className="flex justify-between w-full flex-col items-between">
+            <div className="flex gap-4 items-center justify-between w-full">
+              <div>
+                <h3 className="font-semibold text-foreground text-base text-lg line-clamp-1">
+                  {item.product.title}
+                </h3>
+                <p className="text-xs text-muted-foreground line-clamp-2">
+                  {item.product.description}
+                </p>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="ml-2 text-destructive hover:text-destructive"
+                onClick={() => removeFromWishlist(item.id)}
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </div>
+            <div className="flex items-center justify-between w-full">
+              <div>
+                <div className="flex gap-2 text-xs">
+                  {item?.size.name && <Badge variant="outline">{item.size.name}</Badge>}
+                  {item.color.color_name && (
+                    <div>
+                      <Badge variant="outline" className="px-1 py-1">
+                        <span className="hidden sm:inline mr-2">{item.color.color_name} </span>
+                        <span
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: item.color.hex_code }}
+                        ></span>
+                      </Badge>
+                    </div>
+                  )}
                 </div>
-                <div>
-                  <div className="flex gap-2 text-xs">
-                    {item?.size.name && <Badge variant="outline">{item.size.name}</Badge>}
-                    {item.color.color_name && (
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline">
-                          {item.color.color_name}{' '}
-                          <span
-                            className="w-3 h-3 rounded-full ml-2"
-                            style={{ backgroundColor: item.color.hex_code }}
-                          ></span>
-                        </Badge>
-                      </div>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-xl font-bold text-foreground">₹{item.product.price}</span>
+                  {item.product.original_price &&
+                    item.product.original_price > item.product.price && (
+                      <span className="text-base text-muted-foreground line-through">
+                        ₹{item.product.original_price}
+                      </span>
                     )}
-                  </div>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="text-xl font-bold text-foreground">₹{item.product.price}</span>
-                    {item.product.original_price &&
-                      item.product.original_price > item.product.price && (
-                        <span className="text-base text-muted-foreground line-through">
-                          ₹{item.product.original_price}
-                        </span>
-                      )}
-                  </div>
                 </div>
               </div>
-              <div className="flex flex-col items-end justify-between h-full">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="ml-2 text-destructive hover:text-destructive"
-                  onClick={() => removeFromWishlist(item.id)}
-                >
-                  <Trash2 className="w-4 h-4" />
+              <div className="flex gap-2">
+                <Button variant="outline" className="flex-1" onClick={() => addToCart(item)}>
+                  {isAddingToCart ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      <span className="hidden sm:inline">Adding to Cart...</span>
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingCart className="mr-2 h-4 w-4" />
+                      <span className="ml-2 hidden sm:inline">Add to Cart</span>
+                    </>
+                  )}
                 </Button>
-                <div className="flex gap-2 mt-2">
-                  <Button variant="outline" className="flex-1" onClick={() => addToCart(item)}>
-                    {isAddingToCart ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Adding to Cart...
-                      </>
-                    ) : (
-                      <>
-                        <ShoppingCart className="mr-2 h-4 w-4" />
-                        Add to Cart
-                      </>
-                    )}
-                  </Button>
-                  <Button className="flex-1" onClick={() => purchaseNow(item)}>
-                    <Zap className="w-4 h-4 mr-2" />
-                    Purchase Now
-                  </Button>
-                </div>
+                <Button className="flex-1" onClick={() => purchaseNow(item)}>
+                  <Zap className="w-4 h-4" />
+                  <span className="ml-2 hidden sm:inline">Purchase Now</span>
+                </Button>
               </div>
             </div>
           </div>
