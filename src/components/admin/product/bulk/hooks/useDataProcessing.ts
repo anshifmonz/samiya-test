@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { type Category } from 'types/category';
 import { type Size } from 'types/product';
 
@@ -20,8 +20,8 @@ interface ParsedProduct {
  * Hook for handling data processing, parsing, and validation
  */
 export const useDataProcessing = (
-  categories: Category[], 
-  sizes: Size[], 
+  categories: Category[],
+  sizes: Size[],
   expectedHeaders: string[],
   persistentData: string = '',
   onDataChange?: (data: string) => void
@@ -97,7 +97,7 @@ export const useDataProcessing = (
 
         setTableHeaders(headers);
         setRawTableData(rawData);
-        
+
         const parsed = parsePastedData(persistentData);
         setParsedProducts(parsed);
       }
@@ -108,7 +108,7 @@ export const useDataProcessing = (
   }, [persistentData, isInitialized, expectedHeaders]);
 
   // Helper function to find category ID with multiple fallback strategies
-  const findCategoryId = (categoryInput: string): { id: string | null; matched: boolean } => {
+  const findCategoryId = useCallback((categoryInput: string): { id: string | null; matched: boolean } => {
     if (!categoryInput?.trim()) {
       return { id: null, matched: false };
     }
@@ -154,7 +154,7 @@ export const useDataProcessing = (
     }
 
     return { id: null, matched: false };
-  };
+  }, [categoryMap]);
 
   // size name to ID mapping
   const sizeMap = useMemo(() => {
@@ -167,7 +167,7 @@ export const useDataProcessing = (
   }, [sizes]);
 
   // Helper function to parse image data
-  const parseImageData = (imageString: string): { data: Record<string, { hex: string; images: string[] }>; errors: string[] } => {
+  const parseImageData = useCallback((imageString: string): { data: Record<string, { hex: string; images: string[] }>; errors: string[] } => {
     const result: Record<string, { hex: string; images: string[] }> = {};
     const errors: string[] = [];
 
@@ -261,9 +261,9 @@ export const useDataProcessing = (
     }
 
     return { data: result, errors };
-  };
+  }, []);
 
-  const parsePastedData = (data: string): ParsedProduct[] => {
+  const parsePastedData = useCallback((data: string): ParsedProduct[] => {
     const lines = data.trim().split('\n');
     if (lines.length < 1) return [];
 
@@ -385,7 +385,7 @@ export const useDataProcessing = (
     }
 
     return products;
-  };
+  }, [categories, expectedHeaders, findCategoryId, parseImageData, sizeMap]);
 
   const processAndUpdateData = (value: string) => {
     // Convert four consecutive spaces to tab characters for column separation
@@ -413,12 +413,12 @@ export const useDataProcessing = (
       setRawTableData([]);
       setTableHeaders([]);
     }
-    
+
     // Persist the data change
     if (onDataChange && isInitialized) {
       onDataChange(processedValue);
     }
-    
+
     return processedValue;
   };
 
@@ -443,7 +443,7 @@ export const useDataProcessing = (
 
       const newPastedData = lines.join('\n');
       setPastedData(newPastedData);
-      
+
       // Persist the data change
       if (onDataChange && isInitialized) {
         onDataChange(newPastedData);

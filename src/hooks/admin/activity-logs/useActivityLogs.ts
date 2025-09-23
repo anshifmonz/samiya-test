@@ -74,7 +74,7 @@ const useActivityLogs = () => {
   });
 
   // Default filters - consistent between server and client
-  const getDefaultFilters = (): FilterState => ({
+  const getDefaultFilters = useCallback((): FilterState => ({
     admin: 'all',
     action: 'all',
     entityType: 'all',
@@ -86,7 +86,7 @@ const useActivityLogs = () => {
     search: '',
     ipAddress: 'all',
     advancedQuery: []
-  });
+  }), []);
 
   const [filters, setFilters] = useState<FilterState>(getDefaultFilters);
   const defaultFilters: FilterState = getDefaultFilters();
@@ -332,7 +332,7 @@ const useActivityLogs = () => {
     }
 
     setIsInitialized(true);
-  }, [decompressDate, decompressAdvancedQuery, decompressIpAddress]);
+  }, [decompressDate, decompressAdvancedQuery, decompressIpAddress, getDefaultFilters]);
 
   useEffect(() => {
     if (isMounted) fetchActivityData();
@@ -388,7 +388,7 @@ const useActivityLogs = () => {
 
   const clearFilters = useCallback(() => {
     setFilters(defaultFilters);
-  }, []);
+  }, [defaultFilters]);
 
   const getShareableUrl = useCallback(() => {
     if (typeof window !== 'undefined') return window.location.href;

@@ -99,7 +99,7 @@ const ProductsCarousel: React.FC<ProductsCarouselProps> = ({ section }) => {
     return (
       <div className="text-center py-8 text-luxury-gray">
         <p className="luxury-body text-sm">No products in this section yet.</p>
-        <p className="luxury-body text-xs mt-1">Click "Add Product" to get started.</p>
+        <p className="luxury-body text-xs mt-1">Click &quot;Add Product&quot; to get started.</p>
       </div>
     );
   }

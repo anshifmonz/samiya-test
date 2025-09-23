@@ -26,7 +26,7 @@ const SessionManagement = () => {
           <div className="space-y-1">
             <h4 className="font-medium">Active Sessions</h4>
             <p className="text-sm text-muted-foreground">
-              You're currently logged in on {sessionInfo.activeSessions} devices
+              You&apos;re currently logged in on {sessionInfo.activeSessions} devices
             </p>
           </div>
           <Button variant="outline" onClick={handleViewSessions}>

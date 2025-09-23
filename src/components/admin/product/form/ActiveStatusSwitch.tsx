@@ -22,7 +22,7 @@ const ActiveStatusSwitch: React.FC<ActiveStatusSwitchProps> = ({ label = "Produc
         </label>
       </div>
       <p className="luxury-body text-luxury-gray/70 text-sm mt-4">
-        Inactive {label.toLowerCase()} won't be visible to customers
+        Inactive {label.toLowerCase()} won&apos;t be visible to customers
       </p>
     </div>
   );

@@ -21,6 +21,7 @@ const Collections = ({ collections }: { collections: Collection[] }) => {
       <CarouselWrapper>
         {collections.map((collection) => (
           <CollectionsCard
+            key={collection.id}
             collection={collection}
             hoveredCard={hoveredCard}
             setHoveredCard={setHoveredCard}

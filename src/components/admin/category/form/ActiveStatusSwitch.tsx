@@ -21,7 +21,7 @@ const ActiveStatusSwitch: React.FC<ActiveStatusSwitchProps> = ({ label, value, o
         </label>
       </div>
       <p className="luxury-body text-luxury-gray/70 text-sm mt-4">
-        Inactive {label} won't be visible to customers
+        Inactive {label} won&apos;t be visible to customers
       </p>
     </div>
   );

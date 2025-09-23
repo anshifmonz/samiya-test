@@ -113,7 +113,7 @@ const UserSignin: React.FC = () => {
 
           <div className="text-center space-y-2">
             <p className="text-sm text-luxury-gray">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Link
                 className="text-luxury-gold hover:text-luxury-gold/80 font-medium transition-colors"
                 href="/signup"

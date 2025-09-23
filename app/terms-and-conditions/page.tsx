@@ -17,10 +17,10 @@ export default function TermsAndConditionsPage() {
               <h2 className="luxury-heading text-2xl text-luxury-black mt-8 mb-6">Agreement Overview</h2>
 
               <p className="text-lg">
-                These Terms and Conditions, along with privacy policy or other terms ("Terms") constitute a binding
-                agreement by and between <strong>SAMIYA SILKS</strong>, ("Website Owner" or "we" or "us" or "our") and you
-                ("you" or "your") and relate to your use of our website, goods (as applicable) or services (as applicable)
-                (collectively, "Services").
+                These Terms and Conditions, along with privacy policy or other terms (&quot;Terms&quot;) constitute a binding
+                agreement by and between <strong>SAMIYA SILKS</strong>, (&quot;Website Owner&quot; or &quot;we&quot; or &quot;us&quot; or &quot;our&quot;) and you
+                (&quot;you&quot; or &quot;your&quot;) and relate to your use of our website, goods (as applicable) or services (as applicable)
+                (collectively, &quot;Services&quot;).
               </p>
 
               <p>

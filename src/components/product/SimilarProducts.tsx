@@ -59,7 +59,7 @@ const SimilarProducts: React.FC<SimilarProductsProps> = ({
     if (initialProducts.length === 0) {
       loadMoreProducts();
     }
-  }, []);
+  }, [initialProducts.length, loadMoreProducts]);
 
   if (products.length === 0 && !loading && !error) {
     return null;

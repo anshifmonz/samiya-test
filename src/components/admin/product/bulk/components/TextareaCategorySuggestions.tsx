@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useCategorySuggestions } from '../hooks/useCategorySuggestions';
 import { SuggestionsDropdown } from './SuggestionsDropdown';
 import { useBulkImportState, useBulkImportConfig, useBulkImportCursor, useBulkImportRefs, useBulkImportActions } from '../context';
@@ -76,7 +76,7 @@ export const TextareaCategorySuggestions: React.FC = () => {
     }
 
     return null;
-  }, [value, cursorPosition, categoryColumnIndex]);
+  }, [value, cursorPosition, categoryColumnIndex, textareaRef]);
 
   // Get suggestions for current category text
   const suggestions = useCategorySuggestions(
@@ -147,10 +147,10 @@ export const TextareaCategorySuggestions: React.FC = () => {
     });
     setIsVisible(true);
     setHighlightedIndex(0);
-  }, [currentCategoryInfo, suggestions.length, value]);
+  }, [currentCategoryInfo, suggestions.length, value, textareaRef]);
 
   // Handle suggestion selection
-  const handleSuggestionSelect = (suggestion: any) => {
+  const handleSuggestionSelect = useCallback((suggestion: any) => {
     if (!suggestionPosition) return;
 
     onSuggestionSelect(
@@ -159,7 +159,7 @@ export const TextareaCategorySuggestions: React.FC = () => {
       suggestionPosition.endPos
     );
     setIsVisible(false);
-  };
+  }, [onSuggestionSelect, suggestionPosition]);
 
   // Handle keyboard navigation
   useEffect(() => {
@@ -201,7 +201,7 @@ export const TextareaCategorySuggestions: React.FC = () => {
       document.addEventListener('keydown', handleKeyDown);
       return () => document.removeEventListener('keydown', handleKeyDown);
     }
-  }, [isVisible, suggestions, highlightedIndex]);
+  }, [isVisible, suggestions, highlightedIndex, handleSuggestionSelect]);
 
   // Scroll highlighted item into view
   useEffect(() => {

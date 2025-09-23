@@ -24,7 +24,7 @@ const CollectionsGrid: React.FC = () => {
               Featured Collections
             </h2>
             <p className="luxury-body text-xl text-luxury-gray max-w-3xl mx-auto">
-              Explore our handpicked selections that define today's fashion landscape
+              Explore our handpicked selections that define today&apos;s fashion landscape
             </p>
           </div>
         </div>
@@ -80,7 +80,7 @@ const CollectionsGrid: React.FC = () => {
 
         <div className="text-center mt-20 animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
           <p className="luxury-body text-xl text-luxury-gray mb-8">
-            Can't find what you're looking for?
+            Can&apos;t find what you&apos;re looking for?
           </p>
           <button
             onClick={() => router.push('/search')}

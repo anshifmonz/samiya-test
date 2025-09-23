@@ -120,7 +120,7 @@ const AddColorDialog: React.FC<AddColorDialogProps> = ({
                   onClick={handleUseDetectedName}
                   className="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs text-luxury-gold hover:text-luxury-gold-light transition-colors duration-200 px-2 py-1 rounded-md hover:bg-luxury-gold/10"
                 >
-                  Use "{detectedColorName}"
+                  Use &quot;{detectedColorName}&quot;
                 </button>
               )}
             </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import { apiRequest, type ApiRequestOptions } from 'utils/apiRequest';
 
 // Enhanced hook for search API calls that automatically triggers the loading progress bar
@@ -62,17 +62,17 @@ export const searchWithLoadingBar = async <T = any>(
 
 // Debounced search function with loading bar for real-time search
 export const useDebouncedSearchWithLoadingBar = () => {
-  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+  const timeoutIdRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const debouncedSearch = useCallback((
     searchFn: () => Promise<void>,
     delay: number = 500
   ) => {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
+    if (timeoutIdRef.current) {
+      clearTimeout(timeoutIdRef.current);
     }
 
-    timeoutId = setTimeout(async () => {
+    timeoutIdRef.current = setTimeout(async () => {
       await searchFn();
     }, delay);
   }, []);
