@@ -14,6 +14,6 @@ export async function GET(
   const orderId = searchParams.get('orderId');
   const cfOrderId = searchParams.get('cfOrderId');
 
-  const result = await getPaymentStatus(user.id, orderId, cfOrderId);
+  const result = await getPaymentStatus(orderId, cfOrderId);
   return jsonResponse(result);
 }

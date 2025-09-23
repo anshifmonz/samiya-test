@@ -1,5 +1,5 @@
 import retry from 'utils/retry';
-import { supabaseAdmin } from 'lib/supabase';
+import { createClient } from 'lib/supabase/server';
 import { SRCreateOrder } from 'lib/shiprocket/createOrder';
 import { ok, err, type ApiResponse } from 'utils/api/response';
 import { consumeStock, releaseStock } from 'lib/inventory';
@@ -32,10 +32,10 @@ export async function verifyPayment(
     if (orderId && typeof orderId !== 'string') return err('Input must be a string', 400);
     if (cfOrderId && typeof cfOrderId !== 'string') return err('Input must be a string', 400);
 
+    const supabase = createClient();
+
     // Find payment record
-    let paymentQuery = supabaseAdmin
-      .from('payments')
-      .select(`
+    let paymentQuery = supabase.from('payments').select(`
         id,
         order_id,
         cf_order_id,
@@ -52,13 +52,14 @@ export async function verifyPayment(
       paymentQuery = paymentQuery.eq('cf_order_id', cfOrderId);
     }
 
-    const { data: payment, error: paymentError } = (await paymentQuery
-      .eq('orders.user_id', userId)
-      .single()) as { data: PaymentWithOrder | null; error: any };
+    const { data: payment, error: paymentError } = (await paymentQuery.single()) as {
+      data: PaymentWithOrder | null;
+      error: any;
+    };
 
     if (paymentError || !payment || !payment.orders) return err('Payment record not found', 400);
 
-    const checkoutId = payment.orders.checkout_id
+    const checkoutId = payment.orders.checkout_id;
     if (payment.status === 'paid') {
       await consumeStock(checkoutId);
 
@@ -92,7 +93,7 @@ export async function verifyPayment(
       updated_at: new Date().toISOString()
     };
 
-    const { error: updateError } = await supabaseAdmin
+    const { error: updateError } = await supabase
       .from('payments')
       .update(updateData)
       .eq('id', payment.id);
@@ -114,7 +115,7 @@ export async function verifyPayment(
     // Update order if status changed
     if (orderStatus !== payment.orders.status || orderPaymentStatus !== newPaymentStatus) {
       const { error: orderUpdateError } = await retry(async () => {
-        return await supabaseAdmin
+        return await supabase
           .from('orders')
           .update({
             status: orderStatus,

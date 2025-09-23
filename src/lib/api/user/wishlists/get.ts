@@ -1,14 +1,11 @@
-import { supabaseAdmin } from 'lib/supabase';
+import { createClient } from 'lib/supabase/server';
 import { WishlistWithProduct } from 'types/wishlist';
 import { err, ok, type ApiResponse } from 'utils/api/response';
 
-export async function getUserWishlists(
-  userId: string
-): Promise<ApiResponse<WishlistWithProduct[]>> {
-  if (!userId || typeof userId !== 'string')
-    return err('User ID is required and must be a string', 400);
+export async function getUserWishlists(): Promise<ApiResponse<WishlistWithProduct[]>> {
+  const supabase = createClient();
 
-  const { data: wishlists, error } = await supabaseAdmin
+  const { data: wishlists, error } = await supabase
     .from('wishlists')
     .select(
       `
@@ -31,7 +28,6 @@ export async function getUserWishlists(
       )
     `
     )
-    .eq('user_id', userId)
     .order('created_at', { ascending: false });
 
   if (error) return err();

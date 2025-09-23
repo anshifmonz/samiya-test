@@ -1,11 +1,13 @@
-import { supabaseAdmin } from 'lib/supabase';
+import { createClient } from 'lib/supabase/server';
 import { err, ok, ApiResponse } from 'utils/api/response';
 
 export async function createCheckout(userId: string): Promise<ApiResponse<any>> {
   if (!userId || typeof userId !== 'string')
     return err('User ID is required and must be a string', 400);
 
-  const { data, error } = await supabaseAdmin.rpc('create_checkout_rpc', {
+  const supabase = createClient();
+
+  const { data, error } = await supabase.rpc('create_checkout_rpc', {
     p_user_id: userId
   });
 

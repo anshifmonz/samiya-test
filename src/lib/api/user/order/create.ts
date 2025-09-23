@@ -1,4 +1,4 @@
-import { supabaseAdmin } from 'lib/supabase';
+import { createClient } from 'lib/supabase/server';
 import { type ApiResponse, ok, err } from 'utils/api/response';
 import { initiatePaymentSession } from 'lib/api/user/payment';
 import { CreateOrderRequest } from 'types/order';
@@ -18,7 +18,9 @@ export async function createOrder(request: CreateOrderRequest): Promise<ApiRespo
   if (orderAddressId === 'TEMP_ID' && !address)
     return err('Address is required when using new order address', 400);
 
-  const { data, error } = await supabaseAdmin.rpc('create_order_rpc', {
+  const supabase = createClient();
+
+  const { data, error } = await supabase.rpc('create_order_rpc', {
     p_user_id: userId,
     p_checkout_id: checkoutId,
     p_order_address_id: orderAddressId,

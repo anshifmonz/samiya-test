@@ -1,5 +1,5 @@
 import { err, ok, type ApiResponse } from 'utils/api/response';
-import { supabaseAdmin } from 'lib/supabase';
+import { createClient } from 'lib/supabase/server';
 import { fetchCashfreeOrder, mapCashfreeStatus } from 'utils/payment/cashfree';
 
 export async function completeOrder(
@@ -13,8 +13,10 @@ export async function completeOrder(
   if (!orderId) return err('orderId is required', 400);
   if (!paymentId) return err('paymentId is required', 400);
 
+  const supabase = createClient();
+
   // Validate that the order belongs to the user and is in a payable state
-  const { data: order, error: orderErr } = await supabaseAdmin
+  const { data: order, error: orderErr } = await supabase
     .from('orders')
     .select('id, user_id, status, payment_status')
     .eq('id', orderId)
@@ -24,7 +26,7 @@ export async function completeOrder(
   if (orderErr || !order) return err('Order not found', 404);
 
   // Validate checkout belongs to user
-  const { data: checkout, error: checkoutErr } = await supabaseAdmin
+  const { data: checkout, error: checkoutErr } = await supabase
     .from('checkout')
     .select('id, user_id, status')
     .eq('id', checkoutId)
@@ -34,7 +36,7 @@ export async function completeOrder(
   if (checkoutErr || !checkout) return err('Checkout session not found', 404);
 
   // Fetch payment and ensure it belongs to order
-  const { data: payment, error: paymentErr } = await supabaseAdmin
+  const { data: payment, error: paymentErr } = await supabase
     .from('payments')
     .select('id, order_id, status, cf_order_id, payment_amount, method')
     .eq('id', paymentId)
@@ -56,7 +58,7 @@ export async function completeOrder(
       return err(msg, code);
     }
 
-    const { error: updPayErr } = await supabaseAdmin
+    const { error: updPayErr } = await supabase
       .from('payments')
       .update({
         status: 'completed',
@@ -69,7 +71,7 @@ export async function completeOrder(
   }
 
   // Complete order via transactional RPC
-  const { data: rpcData, error: rpcError } = await supabaseAdmin.rpc('complete_order_rpc', {
+  const { data: rpcData, error: rpcError } = await supabase.rpc('complete_order_rpc', {
     p_user_id: userId,
     p_order_id: orderId,
     p_checkout_id: checkoutId,

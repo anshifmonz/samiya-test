@@ -1,4 +1,4 @@
-import { supabaseAdmin } from 'lib/supabase';
+import { createClient } from 'lib/supabase/server';
 import { ok, err, type ApiResponse } from 'utils/api/response';
 
 export async function updateCartItemQuantity(
@@ -14,7 +14,9 @@ export async function updateCartItemQuantity(
     return err('Valid quantity (greater than 0) is required', 400);
   if (quantity > 100) return err('Quantity cannot exceed 100', 400);
 
-  const { data: cartItem, error: cartItemError } = await supabaseAdmin
+  const supabase = createClient();
+
+  const { data: cartItem, error: cartItemError } = await supabase
     .from('cart_items')
     .select(
       `
@@ -38,7 +40,7 @@ export async function updateCartItemQuantity(
 
   const { product_id: productId, color_id: colorId, size_id: sizeId } = cartItem;
 
-  const { data: colorSizeCombo, error: comboError } = await supabaseAdmin
+  const { data: colorSizeCombo, error: comboError } = await supabase
     .from('product_color_sizes')
     .select('stock_quantity')
     .eq('product_id', productId)
@@ -55,7 +57,7 @@ export async function updateCartItemQuantity(
   if (colorSizeCombo.stock_quantity < quantity)
     return err(`Only ${colorSizeCombo.stock_quantity} items available in stock`, 400);
 
-  const { error: updateError } = await supabaseAdmin
+  const { error: updateError } = await supabase
     .from('cart_items')
     .update({
       quantity

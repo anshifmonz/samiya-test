@@ -1,4 +1,4 @@
-import { supabaseAdmin } from 'lib/supabase';
+import { createClient } from 'lib/supabase/server';
 import {
   createCashfreeOrder,
   generateReturnUrl,
@@ -19,8 +19,10 @@ export async function initiatePaymentSession(
   paymentMethod?: 'card' | 'upi' | 'netbanking' | 'wallet'
 ): Promise<ApiResponse<PaymentInitiationResponse>> {
   try {
+    const supabase = createClient();
+
     // Fetch order details from database
-    const { data: order, error: orderError } = await supabaseAdmin
+    const { data: order, error: orderError } = await supabase
       .from('orders')
       .select(
         `
@@ -46,7 +48,7 @@ export async function initiatePaymentSession(
     }
 
     // Check if payment session already exists
-    const { data: existingPayment } = await supabaseAdmin
+    const { data: existingPayment } = await supabase
       .from('payments')
       .select('id, payment_session_id, cf_order_id, status')
       .eq('order_id', orderId)
@@ -63,7 +65,7 @@ export async function initiatePaymentSession(
     }
 
     // Get user details for payment
-    const { data: userProfile, error: userError } = await supabaseAdmin
+    const { data: userProfile, error: userError } = await supabase
       .from('users')
       .select('email, phone')
       .eq('id', userId)
@@ -134,7 +136,7 @@ export async function initiatePaymentSession(
       gateway_response: paymentResult.data
     };
 
-    const { data: payment, error: paymentError } = await supabaseAdmin
+    const { data: payment, error: paymentError } = await supabase
       .from('payments')
       .insert(paymentData)
       .select('id, payment_session_id, cf_order_id')
@@ -143,7 +145,7 @@ export async function initiatePaymentSession(
     if (paymentError) return err();
 
     // Update order status to processing
-    await supabaseAdmin
+    await supabase
       .from('orders')
       .update({
         status: 'pending',

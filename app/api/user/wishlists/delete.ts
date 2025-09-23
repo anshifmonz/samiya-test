@@ -11,7 +11,7 @@ export async function DELETE(request: NextRequest) {
     const body = await request.json();
     const { wishlistId, colorId, sizeId } = body;
 
-    const result = await deleteWishlistItem(user.id, wishlistId, colorId, sizeId);
+    const result = await deleteWishlistItem(wishlistId, colorId, sizeId);
     return jsonResponse(result);
   } catch (_) {
     return jsonResponse(err());

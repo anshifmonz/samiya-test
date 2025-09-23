@@ -1,4 +1,4 @@
-import { supabaseAdmin } from 'lib/supabase';
+import { createClient } from 'lib/supabase/server';
 import { err, ok, ApiResponse } from 'utils/api/response';
 
 export async function createDirectCheckout(
@@ -12,7 +12,9 @@ export async function createDirectCheckout(
   if (!productId || !colorId || !sizeId || !quantity)
     return err('Required details are missing', 400);
 
-  const { data, error } = await supabaseAdmin.rpc('direct_checkout_rpc', {
+  const supabase = createClient();
+
+  const { data, error } = await supabase.rpc('direct_checkout_rpc', {
     p_user_id: userId,
     p_product_id: productId,
     p_color_id: colorId,

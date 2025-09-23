@@ -1,4 +1,4 @@
-import { supabaseAdmin } from 'lib/supabase';
+import { createClient } from 'lib/supabase/server';
 import { ok, err, type ApiResponse } from 'utils/api/response';
 
 export async function addToCart(
@@ -20,7 +20,9 @@ export async function addToCart(
     return err('Valid quantity (greater than 0) is required', 400);
   if (quantity > 100) return err('Quantity cannot exceed 100', 400);
 
-  let { data: cart, error: cartError } = await supabaseAdmin
+  const supabase = createClient();
+
+  let { data: cart, error: cartError } = await supabase
     .from('carts')
     .select('id')
     .eq('user_id', userId)
@@ -29,7 +31,7 @@ export async function addToCart(
   if (cartError) return err();
 
   if (!cart) {
-    const { data: newCart, error: createError } = await supabaseAdmin
+    const { data: newCart, error: createError } = await supabase
       .from('carts')
       .insert({ user_id: userId })
       .select('id')
@@ -39,7 +41,7 @@ export async function addToCart(
     cart = newCart;
   }
 
-  const { data: product, error: productError } = await supabaseAdmin
+  const { data: product, error: productError } = await supabase
     .from('products')
     .select('price, is_active')
     .eq('id', productId)
@@ -52,7 +54,7 @@ export async function addToCart(
 
   if (!product.is_active) return err('Product is no longer available', 400);
 
-  const { data: colorSizeCombo, error: comboError } = await supabaseAdmin
+  const { data: colorSizeCombo, error: comboError } = await supabase
     .from('product_color_sizes')
     .select('stock_quantity')
     .eq('product_id', productId)
@@ -69,7 +71,7 @@ export async function addToCart(
   if (colorSizeCombo.stock_quantity < quantity)
     return err(`Only ${colorSizeCombo.stock_quantity} items available in stock`, 400);
 
-  const { data: existingItem, error: existingError } = await supabaseAdmin
+  const { data: existingItem, error: existingError } = await supabase
     .from('cart_items')
     .select('quantity')
     .eq('cart_id', cart.id)
@@ -91,7 +93,7 @@ export async function addToCart(
       );
     }
 
-    const { error: updateError } = await supabaseAdmin
+    const { error: updateError } = await supabase
       .from('cart_items')
       .update({
         quantity: newTotalQuantity
@@ -103,7 +105,7 @@ export async function addToCart(
 
     if (updateError) return err();
   } else {
-    const { error: insertError } = await supabaseAdmin.from('cart_items').insert({
+    const { error: insertError } = await supabase.from('cart_items').insert({
       cart_id: cart.id,
       product_id: productId,
       color_id: colorId,

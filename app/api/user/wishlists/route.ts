@@ -3,8 +3,8 @@ import { GET as handleGET } from './get';
 import { POST as handlePOST } from './add';
 import { DELETE as handleDELETE } from './delete';
 
-export async function GET(request: NextRequest) {
-  return handleGET(request);
+export async function GET() {
+  return handleGET();
 }
 
 export async function POST(request: NextRequest) {

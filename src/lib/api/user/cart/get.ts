@@ -1,4 +1,4 @@
-import { supabaseAdmin } from 'lib/supabase';
+import { createClient } from 'lib/supabase/server';
 import { ok, err, type ApiResponse } from 'utils/api/response';
 
 export async function getUserCart(userId: string): Promise<ApiResponse<any>> {
@@ -6,7 +6,9 @@ export async function getUserCart(userId: string): Promise<ApiResponse<any>> {
     if (!userId || typeof userId !== 'string')
       return err('User ID is required and must be a string', 400);
 
-    const { data: cart, error: cartError } = await supabaseAdmin
+    const supabase = createClient();
+
+    const { data: cart, error: cartError } = await supabase
       .from('carts')
       .select('id')
       .eq('user_id', userId)
@@ -15,7 +17,7 @@ export async function getUserCart(userId: string): Promise<ApiResponse<any>> {
     if (cartError) return err();
     if (!cart) return ok({ items: [], total: 0 });
 
-    const { data: cartItems, error: itemsError } = await supabaseAdmin
+    const { data: cartItems, error: itemsError } = await supabase
       .from('cart_items')
       .select(
         `
@@ -49,7 +51,7 @@ export async function getUserCart(userId: string): Promise<ApiResponse<any>> {
     if (itemsError) return err();
     if (!cartItems || cartItems.length === 0) return ok({ items: [], total: 0 });
 
-    const { data: productImages, error: imagesError } = await supabaseAdmin
+    const { data: productImages, error: imagesError } = await supabase
       .from('product_images')
       .select('product_id, color_name, image_url, sort_order, is_primary')
       .in(
