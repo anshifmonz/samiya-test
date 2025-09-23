@@ -33,9 +33,9 @@ const AddressList = () => {
       <div className="space-y-4">
         {addresses.map(address => (
           <Card key={address.id} className="bg-profile-card border-profile-border">
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex items-start justify-between flex-col">
+                <div className="flex justify-between w-full mb-4">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="p-2 rounded-lg bg-primary/10">
                       {address.label === 'Home' ? (
@@ -45,7 +45,7 @@ const AddressList = () => {
                       )}
                     </div>
                     <div className="flex items-center gap-2">
-                      <h3 className="font-semibold text-foreground">{address.label}</h3>
+                      <h3 className="font-semibold text-foreground hidden sm:inline">{address.label}</h3>
                       {address.isDefault && (
                         <div className="flex items-center gap-1 bg-primary/10 text-primary px-2 py-1 rounded-full text-xs">
                           <Star className="w-3 h-3 fill-current" />
@@ -54,50 +54,48 @@ const AddressList = () => {
                       )}
                     </div>
                   </div>
-
-                  <div className="space-y-1 text-sm text-muted-foreground">
-                    <p className="font-medium text-foreground">{address.fullName}</p>
-                    <p>{address.street}</p>
-                    <p>{address.landmark}</p>
-                    <p>
-                      {address.city}, {address.state} - {address.postalCode}
-                    </p>
-                    <p>Phone: {address.phone}</p>
-                    {address.secondaryPhone && <p>Alt Phone: {address.secondaryPhone}</p>}
-                    {address.email && <p>Email: {address.email}</p>}
-                  </div>
-                </div>
-
-                <div className="flex gap-2">
-                  {!address.isDefault && (
+                  <div className="flex gap-2">
+                    {!address.isDefault && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setAsDefault(address.id)}
+                        className="gap-1"
+                      >
+                        <Star className="w-3 h-3" />
+                        Set Default
+                      </Button>
+                    )}
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setAsDefault(address.id)}
                       className="gap-1"
+                      onClick={() => handleEditOpen(address)}
                     >
-                      <Star className="w-3 h-3" />
-                      Set Default
+                      <Edit className="w-3 h-3" />
+                      <span className="hidden sm:inline">Edit</span>
                     </Button>
-                  )}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="gap-1"
-                    onClick={() => handleEditOpen(address)}
-                  >
-                    <Edit className="w-3 h-3" />
-                    Edit
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => deleteAddress(address.id)}
-                    className="gap-1 text-destructive hover:text-destructive"
-                  >
-                    <Trash2 className="w-3 h-3" />
-                    Delete
-                  </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => deleteAddress(address.id)}
+                      className="gap-1 text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                      <span className="hidden sm:inline">Delete</span>
+                    </Button>
+                  </div>
+                </div>
+                <div className="space-y-1 text-sm text-muted-foreground">
+                  <p className="font-medium text-foreground">{address.fullName}</p>
+                  <p>{address.street}</p>
+                  <p>{address.landmark}</p>
+                  <p>
+                    {address.city}, {address.state} - {address.postalCode}
+                  </p>
+                  <p>Phone: {address.phone}</p>
+                  {address.secondaryPhone && <p>Alt Phone: {address.secondaryPhone}</p>}
+                  {address.email && <p>Email: {address.email}</p>}
                 </div>
               </div>
             </CardContent>

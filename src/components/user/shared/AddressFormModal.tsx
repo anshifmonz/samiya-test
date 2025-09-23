@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useOtp } from 'hooks/user/shared/useOtp';
 import OtpModal from './OtpModal';
 import { Input } from 'ui/input';
 import { Label } from 'ui/label';
@@ -12,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from 'ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from 'ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui/select';
 import { useForm } from 'react-hook-form';
+import { useOtp } from 'hooks/user/shared/useOtp';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { addressSchema } from 'lib/validators/address';
 import { AddressFormData, AddressDisplay } from 'types/address';
@@ -117,7 +117,7 @@ const AddressFormModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[90vw] md:max-w-[80vw] lg:max-w-[60vw] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-[90%] max-w-3xl max-h-[90vh] rounded-lg overflow-y-auto p-4 md:p-6">
         <DialogHeader>
           <DialogTitle>{isEdit ? 'Edit Address' : 'Add New Address'}</DialogTitle>
         </DialogHeader>

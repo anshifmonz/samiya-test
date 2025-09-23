@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from 'ui/dialog';
-import { Input } from 'ui/input';
+import { useState } from 'react';
 import { Button } from 'ui/button';
-import { Pencil } from 'lucide-react';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from 'ui/input-otp';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from 'ui/dialog';
 
 interface OtpModalProps {
   open: boolean;
@@ -14,20 +13,13 @@ interface OtpModalProps {
   resendDisabled: boolean;
 }
 
-const OtpModal = ({
-  open,
-  onOpenChange,
-  onSubmit,
-  onChangeNumber,
-  phone,
-  resendOtp,
-  resendDisabled
-}: OtpModalProps) => {
+const OtpModal = ({ open, onOpenChange, onSubmit, resendOtp, resendDisabled }: OtpModalProps) => {
   const [otp, setOtp] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (otp.length !== 4) return;
     setIsSubmitting(true);
     await onSubmit(otp);
     setIsSubmitting(false);
@@ -35,37 +27,57 @@ const OtpModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-sm">
-        <DialogHeader>
-          <DialogTitle>Enter OTP</DialogTitle>
+      <DialogContent className="p-4 sm:p-6 rounded-lg w-[90%] sm:w-[70%] max-w-xl">
+        <DialogHeader className="text-center">
+          <DialogTitle className="text-xl sm:text-2xl font-bold text-center">
+            Mobile Phone Verification
+          </DialogTitle>
+          <DialogDescription className="text-center text-sm sm:text-base">
+            Enter the 4-digit verification code that was sent to your phone number.
+          </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-muted-foreground text-sm">Sent to {phone}</span>
-            <Button type="button" variant="ghost" size="icon" onClick={onChangeNumber}>
-              <Pencil className="h-4 w-4" />
-            </Button>
+        <form onSubmit={handleSubmit} className="space-y-6 flex flex-col items-center">
+          <div className="flex justify-center w-full">
+            <InputOTP maxLength={4} value={otp} onChange={setOtp}>
+              <InputOTPGroup className="gap-2 sm:gap-3">
+                <InputOTPSlot
+                  className="h-12 w-12 sm:h-14 sm:w-14 text-base sm:text-lg"
+                  index={0}
+                />
+                <InputOTPSlot
+                  className="h-12 w-12 sm:h-14 sm:w-14 text-base sm:text-lg"
+                  index={1}
+                />
+                <InputOTPSlot
+                  className="h-12 w-12 sm:h-14 sm:w-14 text-base sm:text-lg"
+                  index={2}
+                />
+                <InputOTPSlot
+                  className="h-12 w-12 sm:h-14 sm:w-14 text-base sm:text-lg"
+                  index={3}
+                />
+              </InputOTPGroup>
+            </InputOTP>
           </div>
-          <Input
-            type="text"
-            inputMode="numeric"
-            pattern="[0-9]{6}"
-            maxLength={6}
-            value={otp}
-            onChange={e => setOtp(e.target.value.replace(/\D/g, ''))}
-            placeholder="Enter 6-digit OTP"
-            required
-            className="tracking-widest text-center text-lg"
-          />
-          <div className="flex items-center justify-between">
-            <Button type="button" variant="outline" onClick={resendOtp} disabled={resendDisabled}>
-              Resend OTP{resendDisabled ? ' (wait 1 min)' : ''}
-            </Button>
-            <Button type="submit" disabled={isSubmitting || otp.length !== 6}>
-              Verify
-            </Button>
-          </div>
+          <Button
+            type="submit"
+            className="w-full sm:w-[50%] text-white cursor-pointer"
+            disabled={isSubmitting || otp.length !== 4}
+          >
+            Verify
+          </Button>
         </form>
+        <div className="text-center text-sm text-muted-foreground">
+          Didn’t receive code?{' '}
+          <Button
+            variant="link"
+            className="p-0 h-auto text-blue-500 cursor-pointer hover:underline disabled:text-gray-400"
+            onClick={resendOtp}
+            disabled={resendDisabled}
+          >
+            Resend
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );

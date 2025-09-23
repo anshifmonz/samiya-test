@@ -18,13 +18,13 @@ const AddressBookContent = () => {
             <div className="flex items-center gap-3">
               <MapPin className="w-8 h-8 text-primary" />
               <div>
-                <h1 className="text-2xl font-bold text-foreground">Address Book</h1>
-                <p className="text-muted-foreground">Manage your shipping addresses</p>
+                <h1 className="text-xl sm:text-2xl font-bold text-foreground">Address Book</h1>
+                <p className="text-sm sm:text-md text-muted-foreground">Manage your shipping addresses</p>
               </div>
             </div>
-            <Button onClick={toggleAddForm} className="gap-2">
+            <Button onClick={toggleAddForm} className="gap-2 rounded-lg sm:rounded-md">
               <Plus className="w-4 h-4" />
-              Add New Address
+              <span className="hidden sm:inline">Add New Address</span>
             </Button>
           </div>
 
