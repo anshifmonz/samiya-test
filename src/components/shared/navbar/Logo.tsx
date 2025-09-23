@@ -6,12 +6,13 @@ interface LogoProps {
     logo: string;
     logoSubtext: string;
   };
+  className?: string;
 }
 
-const Logo: React.FC<LogoProps> = ({ variant, textStyles }) => {
+const Logo: React.FC<LogoProps> = ({ variant, textStyles, className }) => {
   if (variant === 'desktop') {
     return (
-      <div className="hidden md:block">
+      <div className={`hidden md:block ${className}`}>
         <Link href="/" className={`${textStyles.logo}`}>
           <span>Samiya</span>
           <span className={`${textStyles.logoSubtext}`}>
@@ -23,7 +24,7 @@ const Logo: React.FC<LogoProps> = ({ variant, textStyles }) => {
   }
 
   return (
-    <div className="md:hidden">
+    <div className={`md:hidden ${className}`}>
       <Link href="/" className={`${textStyles.logo}`}>
         <span>Samiya</span>
         <span className={`${textStyles.logoSubtext}`}>

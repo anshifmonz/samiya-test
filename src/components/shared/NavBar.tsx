@@ -1,6 +1,6 @@
 "use client";
 
-import { useNavigation } from '../../hooks/useNavigation';
+import { useNavigation } from 'hooks/useNavigation';
 import {
   Logo,
   NavigationLinks,
@@ -8,6 +8,15 @@ import {
   MobileSearch
 } from './navbar';
 import Link from 'next/link';
+import { useAuth } from 'hooks/useAuth';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from 'ui/dropdown-menu';
+import { User } from 'lucide-react';
+import { Button } from 'ui/button';
 
 const Navigation: React.FC = () => {
   const {
@@ -23,6 +32,7 @@ const Navigation: React.FC = () => {
     getNavbarStyling,
     getTextStyling,
   } = useNavigation();
+  const { user } = useAuth();
 
   const textStyles = getTextStyling();
 
@@ -55,12 +65,43 @@ const Navigation: React.FC = () => {
 
           {/* Center - Navigation Links (desktop) or Logo (mobile) */}
           <div className="flex items-center">
-            <Logo variant="mobile" textStyles={textStyles} />
-            <NavigationLinks textStyles={textStyles} isAdminPage={isAdminPage} />
+            <Logo variant="mobile" textStyles={textStyles} className="pl-12" />
+            <NavigationLinks textStyles={textStyles} isAdminPage={isAdminPage} className="pl-12 lg:pl-20" />
           </div>
 
-          {/* Right side - Search Section */}
-          <SearchSection toggleMobileSearch={toggleMobileSearch} />
+          {/* Right side - Search and User Sections */}
+          <div className="flex items-center space-x-4">
+            <SearchSection toggleMobileSearch={toggleMobileSearch} />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild className="border hover:bg-muted">
+                <Button variant="ghost" size="icon">
+                  <User className="h-6 w-6" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                {user ? (
+                  <>
+                    <DropdownMenuItem className="cursor-pointer" asChild>
+                      <Link href="/user/profile">Profile</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="cursor-pointer" asChild>
+                      <Link href="/user/wishlists">Wishlists</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="cursor-pointer" asChild>
+                      <Link href="/user/cart">Cart</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="cursor-pointer" asChild>
+                      <Link href="/user/orders">Orders</Link>
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <DropdownMenuItem className="cursor-pointer" asChild>
+                    <Link href="/signin">Sign In</Link>
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
 
         {/* Mobile Search Bar - Expandable */}

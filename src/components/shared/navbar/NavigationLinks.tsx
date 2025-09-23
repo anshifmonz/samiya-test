@@ -5,11 +5,12 @@ interface NavigationLinksProps {
     navLinks: string;
   };
   isAdminPage: boolean;
+  className?: string;
 }
 
-const NavigationLinks: React.FC<NavigationLinksProps> = ({ textStyles, isAdminPage }) => {
+const NavigationLinks: React.FC<NavigationLinksProps> = ({ textStyles, isAdminPage, className }) => {
   return (
-    <div className="hidden md:flex space-x-12 md:space-x-8 lg:space-x-16">
+    <div className={`hidden md:flex space-x-12 md:space-x-8 lg:space-x-16 ${className}`}>
       <Link
         href="/"
         className={`${textStyles.navLinks}`}
