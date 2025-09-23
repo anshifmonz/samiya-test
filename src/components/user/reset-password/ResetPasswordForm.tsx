@@ -32,7 +32,7 @@ const ResetPasswordFormComponent = () => {
       const supabase = createClient();
       supabase.auth.setSession({ access_token, refresh_token: '' });
     }
-  }, []);
+  }, [router, searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

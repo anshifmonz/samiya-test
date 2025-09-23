@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { cn } from 'lib/utils';
 import { Input } from 'ui/input';
@@ -264,15 +264,15 @@ function CreditCard({
   const cardNumberInputRef = useRef<HTMLInputElement>(null);
   const cvvInputRef = useRef<HTMLInputElement>(null);
 
-  const currentValue = value || {
+  const currentValue = useMemo(() => value || {
     cardholderName: '',
     cardNumber: '',
     expiryMonth: '',
     expiryYear: '',
     cvv: ''
-  };
+  }, [value]);
 
-  const validateAndUpdate = (newValue: CreditCardValue) => {
+  const validateAndUpdate = useCallback((newValue: CreditCardValue) => {
     const validationErrors = validateCreditCard(newValue, cvvLabel);
     setErrors(validationErrors);
 
@@ -280,7 +280,7 @@ function CreditCard({
     onValidationChange?.(isValid, validationErrors);
 
     return isValid;
-  };
+  }, [cvvLabel, onValidationChange]);
 
   const handleInputChange = (field: keyof CreditCardValue, newValue: string) => {
     const updatedValue = { ...currentValue, [field]: newValue };
@@ -327,7 +327,7 @@ function CreditCard({
     y.set(0);
   };
 
-  const handleValidate = () => {
+  const handleValidate = useCallback(() => {
     const isValid = validateAndUpdate(currentValue);
 
     if (!isValid) {
@@ -341,9 +341,9 @@ function CreditCard({
     }
 
     return isValid;
-  };
+  }, [currentValue, errors.cardholderName, errors.cardNumber, errors.cvv, validateAndUpdate]);
 
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     setErrors({});
     setFocusedField(null);
     setIsFlipped(false);
@@ -354,13 +354,13 @@ function CreditCard({
       expiryYear: '',
       cvv: ''
     });
-  };
+  }, [onChange]);
 
   const handleFocus = () => {
     cardholderInputRef.current?.focus();
   };
 
-  const getErrors = () => errors;
+  const getErrors = useCallback(() => errors, [errors]);
 
   // Expose imperative methods via useImperativeHandle
   React.useImperativeHandle(
@@ -372,7 +372,7 @@ function CreditCard({
       reset: handleReset,
       getErrors
     }),
-    [currentValue, errors]
+    [currentValue, cvvLabel, getErrors, handleReset, handleValidate]
   );
 
   const cardType = getCardType(currentValue.cardNumber);

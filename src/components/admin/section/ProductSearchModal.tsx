@@ -37,34 +37,8 @@ const ProductSearchModal: React.FC = () => {
   const debouncedQuery = useDebounce(searchQuery, DEBOUNCE_DELAY);
   const loaderRef = useRef<HTMLDivElement | null>(null);
 
-  const {
-    searchModalOpen,
-    closeSearchModal,
-    handleProductSelect,
-    getExistingProductIds
-  } = useSectionsTab();
-
-  useEffect(() => {
-    setMounted(true);
-    if (searchModalOpen) {
-      document.body.style.overflow = 'hidden';
-      fetchFirstPage();
-    }
-
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [searchModalOpen]);
-
-  useEffect(() => {
-    if (searchModalOpen) {
-      setIsSearching(searchQuery !== debouncedQuery);
-      if (debouncedQuery !== undefined) {
-        fetchFirstPage();
-      }
-    }
-  }, [debouncedQuery, searchModalOpen]);
-
+  const { searchModalOpen, closeSearchModal, handleProductSelect, getExistingProductIds } =
+    useSectionsTab();
 
   const fetchFirstPage = useCallback(async () => {
     let ignore = false;
@@ -98,8 +72,31 @@ const ProductSearchModal: React.FC = () => {
       }
     }
 
-    return () => { ignore = true; };
+    return () => {
+      ignore = true;
+    };
   }, [debouncedQuery]);
+
+  useEffect(() => {
+    setMounted(true);
+    if (searchModalOpen) {
+      document.body.style.overflow = 'hidden';
+      fetchFirstPage();
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [searchModalOpen, fetchFirstPage]);
+
+  useEffect(() => {
+    if (searchModalOpen) {
+      setIsSearching(searchQuery !== debouncedQuery);
+      if (debouncedQuery !== undefined) {
+        fetchFirstPage();
+      }
+    }
+  }, [debouncedQuery, searchModalOpen, searchQuery, fetchFirstPage]);
 
   const fetchMoreProducts = useCallback(async () => {
     if (loading || !hasMore) return;
@@ -113,8 +110,8 @@ const ProductSearchModal: React.FC = () => {
       if (!res.ok) throw new Error('Failed to fetch products');
       const { products: newProducts } = await res.json();
 
-      setProducts(prev => Array.isArray(newProducts) ? [...prev, ...newProducts] : prev);
-      setOffset(prev => Array.isArray(newProducts) ? prev + newProducts.length : prev);
+      setProducts(prev => (Array.isArray(newProducts) ? [...prev, ...newProducts] : prev));
+      setOffset(prev => (Array.isArray(newProducts) ? prev + newProducts.length : prev));
       setHasMore(Array.isArray(newProducts) ? newProducts.length === PAGE_SIZE : false);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
@@ -128,7 +125,7 @@ const ProductSearchModal: React.FC = () => {
     if (!hasMore) return;
 
     const observer = new window.IntersectionObserver(
-      (entries) => {
+      entries => {
         if (entries[0].isIntersecting) {
           fetchMoreProducts();
         }
@@ -136,10 +133,11 @@ const ProductSearchModal: React.FC = () => {
       { threshold: 0.1, rootMargin: '100px' }
     );
 
-    if (loaderRef.current) observer.observe(loaderRef.current);
+    const currentLoaderRef = loaderRef.current;
+    if (currentLoaderRef) observer.observe(currentLoaderRef);
 
     return () => {
-      if (loaderRef.current) observer.unobserve(loaderRef.current);
+      if (currentLoaderRef) observer.unobserve(currentLoaderRef);
     };
   }, [fetchMoreProducts, hasMore]);
 
@@ -148,9 +146,7 @@ const ProductSearchModal: React.FC = () => {
       <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[80vh] flex flex-col">
         {/* Header */}
         <div className="flex-shrink-0 bg-white rounded-t-2xl border-b border-luxury-gray/20 p-6 flex items-center justify-between">
-          <h2 className="luxury-heading text-2xl text-luxury-black">
-            Add Products to Section
-          </h2>
+          <h2 className="luxury-heading text-2xl text-luxury-black">Add Products to Section</h2>
           <button
             onClick={closeSearchModal}
             className="text-luxury-gray hover:text-luxury-black transition-colors duration-200"
@@ -163,11 +159,14 @@ const ProductSearchModal: React.FC = () => {
         {/* Search Input */}
         <div className="flex-shrink-0 p-6 border-b border-luxury-gray/20">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-luxury-gray" size={20} />
+            <Search
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-luxury-gray"
+              size={20}
+            />
             <Input
               placeholder="Search products by name, ID, category, or tags..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={e => setSearchQuery(e.target.value)}
               className="pl-10 border-luxury-gray/30 focus:border-luxury-gold"
               autoFocus
             />
@@ -188,69 +187,87 @@ const ProductSearchModal: React.FC = () => {
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-luxury-gold mx-auto"></div>
                 <p className="luxury-body text-luxury-gray mt-4">Loading products...</p>
               </div>
-            ) : products.filter(product => !getExistingProductIds(searchModalOpen).includes(product.id)).length === 0 ? (
+            ) : products.filter(
+                product => !getExistingProductIds(searchModalOpen).includes(product.id)
+              ).length === 0 ? (
               <div className="text-center py-12 text-luxury-gray">
                 <p className="luxury-body text-lg">
-                  {searchQuery ? 'No products found matching your search.' : 'No products available.'}
+                  {searchQuery
+                    ? 'No products found matching your search.'
+                    : 'No products available.'}
                 </p>
                 <p className="luxury-body text-sm mt-2">
-                  {searchQuery ? 'Try a different search term.' : 'All products may already be added to this section.'}
+                  {searchQuery
+                    ? 'Try a different search term.'
+                    : 'All products may already be added to this section.'}
                 </p>
               </div>
             ) : (
               <div className="grid gap-4">
-                {products.filter(product => !getExistingProductIds(searchModalOpen).includes(product.id)).map((product) => {
-                  const imageUrl = product.imageUrl;
-                  return (
-                    <div
-                      key={product.id}
-                      className="flex items-center gap-4 p-4 border border-luxury-gray/20 rounded-lg hover:bg-luxury-cream/30 transition-colors duration-200"
-                    >
-                      {/* Product Image */}
-                      <div className="w-16 h-16 rounded-lg overflow-hidden bg-luxury-gray/10 flex-shrink-0">
-                        {imageUrl ? (
-                          <Image
-                            src={imageUrl}
-                            alt={product.title}
-                            className="w-full h-full object-cover"
-                            width={100}
-                            height={100}
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.style.display = 'none';
-                              target.nextElementSibling?.classList.remove('hidden');
-                            }}
-                          />
-                        ) : null}
-                        <div className="w-full h-full flex items-center justify-center hidden">
-                          <svg className="w-6 h-6 text-luxury-gray/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                          </svg>
-                        </div>
-                      </div>
-
-                      {/* Product Info */}
-                      <div className="flex-1 min-w-0">
-                        <h4 className="luxury-heading text-lg text-luxury-black truncate">
-                          {product.title}
-                        </h4>
-                        <p className="luxury-body text-luxury-gold font-semibold">
-                          ₹{product.price.toLocaleString()}
-                        </p>
-                      </div>
-
-                      {/* Add Button */}
-                      <Button
-                        onClick={() => handleProductSelect(product.id)}
-                        size="sm"
-                        className="bg-luxury-gold hover:bg-luxury-gold/90 text-luxury-black px-3 py-1 rounded-lg flex items-center gap-2"
+                {products
+                  .filter(product => !getExistingProductIds(searchModalOpen).includes(product.id))
+                  .map(product => {
+                    const imageUrl = product.imageUrl;
+                    return (
+                      <div
+                        key={product.id}
+                        className="flex items-center gap-4 p-4 border border-luxury-gray/20 rounded-lg hover:bg-luxury-cream/30 transition-colors duration-200"
                       >
-                        <Plus size={14} />
-                        Add
-                      </Button>
-                    </div>
-                  );
-                })}
+                        {/* Product Image */}
+                        <div className="w-16 h-16 rounded-lg overflow-hidden bg-luxury-gray/10 flex-shrink-0">
+                          {imageUrl ? (
+                            <Image
+                              src={imageUrl}
+                              alt={product.title}
+                              className="w-full h-full object-cover"
+                              width={100}
+                              height={100}
+                              onError={e => {
+                                const target = e.target as HTMLImageElement;
+                                target.style.display = 'none';
+                                target.nextElementSibling?.classList.remove('hidden');
+                              }}
+                            />
+                          ) : null}
+                          <div className="w-full h-full flex items-center justify-center hidden">
+                            <svg
+                              className="w-6 h-6 text-luxury-gray/60"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={1.5}
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                              />
+                            </svg>
+                          </div>
+                        </div>
+
+                        {/* Product Info */}
+                        <div className="flex-1 min-w-0">
+                          <h4 className="luxury-heading text-lg text-luxury-black truncate">
+                            {product.title}
+                          </h4>
+                          <p className="luxury-body text-luxury-gold font-semibold">
+                            ₹{product.price.toLocaleString()}
+                          </p>
+                        </div>
+
+                        {/* Add Button */}
+                        <Button
+                          onClick={() => handleProductSelect(product.id)}
+                          size="sm"
+                          className="bg-luxury-gold hover:bg-luxury-gold/90 text-luxury-black px-3 py-1 rounded-lg flex items-center gap-2"
+                        >
+                          <Plus size={14} />
+                          Add
+                        </Button>
+                      </div>
+                    );
+                  })}
 
                 {/* Infinite Scroll Loader */}
                 {hasMore && (
@@ -258,7 +275,9 @@ const ProductSearchModal: React.FC = () => {
                     {loading ? (
                       <div className="text-center">
                         <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-luxury-gold mx-auto"></div>
-                        <p className="luxury-body text-luxury-gray text-sm mt-2">Loading more products...</p>
+                        <p className="luxury-body text-luxury-gray text-sm mt-2">
+                          Loading more products...
+                        </p>
                       </div>
                     ) : (
                       <div className="h-4" /> // Invisible spacer to trigger intersection observer

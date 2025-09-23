@@ -100,10 +100,11 @@ export function useAdminProductInfiniteScroll(initialProducts: Product[], search
       { threshold: 0.1, rootMargin: '100px' }
     );
 
-    if (loaderRef.current) observer.observe(loaderRef.current);
+    const currentLoaderRef = loaderRef.current;
+    if (currentLoaderRef) observer.observe(currentLoaderRef);
 
     return () => {
-      if (loaderRef.current) observer.unobserve(loaderRef.current);
+      if (currentLoaderRef) observer.unobserve(currentLoaderRef);
     };
   }, [fetchMoreProducts, hasMore]);
 

@@ -38,7 +38,7 @@ const AboutMission: React.FC = () => {
                 Create Memories
               </h3>
               <p className="luxury-body text-luxury-gray leading-relaxed">
-                Helping families celebrate life's most precious moments with attire that reflects their unique style and personality.
+                Helping families celebrate life&apos;s most precious moments with attire that reflects their unique style and personality.
               </p>
             </div>
           </div>

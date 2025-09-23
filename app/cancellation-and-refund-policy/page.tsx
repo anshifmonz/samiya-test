@@ -56,7 +56,7 @@ export default function CancellationAndRefundPolicyPage() {
                   <span className="flex-shrink-0 w-2 h-2 bg-luxury-gold rounded-full mt-3" aria-hidden="true"></span>
                   <p>
                     <strong>Warranty Claims and Refund Processing:</strong> In case of complaints regarding products that come with a warranty from manufacturers, please refer
-                    the issue to them. In case of any Refunds approved by the SAMIYA SILKS, it'll take <strong>3-5 days</strong> for
+                    the issue to them. In case of any Refunds approved by the SAMIYA SILKS, it&apos;ll take <strong>3-5 days</strong> for
                     the refund to be processed to the end customer.
                   </p>
                 </li>

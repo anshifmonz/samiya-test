@@ -185,7 +185,7 @@ export function useProductImagesSection({ images, onImagesChange, activeColorTab
         });
       }
     }
-  }, [images, onImagesChange]);
+  }, [images, onImagesChange, confirmation]);
 
   const handleColorDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;

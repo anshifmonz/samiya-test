@@ -97,7 +97,7 @@ export default function ContactPage() {
           <div className="bg-luxury-gold/5 rounded-xl p-8 border border-luxury-gold/10">
             <h2 className="luxury-heading text-2xl text-luxury-black mb-4">Ready to Connect?</h2>
             <p className="luxury-body text-luxury-gray mb-6 max-w-2xl mx-auto">
-              Whether you have questions about our products, need assistance with an order, or want to learn more about our services, we're here to help.
+              Whether you have questions about our products, need assistance with an order, or want to learn more about our services, we&apos;re here to help.
             </p>
             <nav className="flex flex-col sm:flex-row gap-4 justify-center" aria-label="Contact Actions">
               <a
