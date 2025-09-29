@@ -11,10 +11,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from 'ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from 'ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui/select';
 import { useForm } from 'react-hook-form';
-import { useOtp } from 'hooks/user/shared/useOtp';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { addressSchema } from 'lib/validators/address';
 import { AddressFormData, AddressDisplay } from 'types/address';
+import { OtpProvider, useOtpContext } from 'contexts/user/shared/OtpContext';
 
 interface AddressFormModalProps {
   open: boolean;
@@ -25,7 +25,7 @@ interface AddressFormModalProps {
   showSaveToggle?: boolean;
 }
 
-const AddressFormModal = ({
+const AddressFormModalContent = ({
   open,
   onOpenChange,
   onSubmitAddress,
@@ -55,18 +55,7 @@ const AddressFormModal = ({
     }
   });
 
-  // OTP modal state and hook
-  const {
-    otpModalOpen,
-    setOtpModalOpen,
-    verifyingPhone,
-    onVerifyClick,
-    verifyOtp,
-    loading: otpLoading,
-    error: otpError,
-    cooldown,
-    reset: resetOtp
-  } = useOtp();
+  const { loading, onVerifyClick, verifyToken } = useOtpContext();
 
   useEffect(() => {
     if (!open) return;
@@ -102,7 +91,9 @@ const AddressFormModal = ({
     setIsSubmitting(true);
     try {
       const addressData =
-        showSaveToggle && !isEdit ? { ...data, saveAddress: saveForFuture } : data;
+        saveForFuture && !isEdit
+          ? { ...data, saveAddress: saveForFuture, verifyToken }
+          : { ...data, verifyToken };
       const res = await onSubmitAddress(addressData);
       if (res) form.reset();
     } finally {
@@ -188,8 +179,10 @@ const AddressFormModal = ({
                         type="button"
                         variant="outline"
                         size="sm"
-                        disabled={otpLoading || !field.value || field.value.length < 10}
-                        onClick={() => onVerifyClick(field.value)}
+                        disabled={loading || !field.value || field.value.length < 10}
+                        onClick={async () => {
+                          await onVerifyClick(field.value);
+                        }}
                       >
                         Verify
                       </Button>
@@ -346,7 +339,7 @@ const AddressFormModal = ({
               )}
             />
 
-            {showSaveToggle && (
+            {showSaveToggle && !isEdit && (
               <div className="flex items-center space-x-2 pt-2">
                 <Switch
                   id="save-for-future"
@@ -379,25 +372,31 @@ const AddressFormModal = ({
             </div>
           </form>
         </Form>
-        <OtpModal
-          open={otpModalOpen}
-          onOpenChange={open => {
-            setOtpModalOpen(open);
-            if (!open) resetOtp();
-          }}
-          phone={verifyingPhone}
-          resendOtp={async () => {
-            if (cooldown === 0) await onVerifyClick(verifyingPhone);
-          }}
-          resendDisabled={cooldown > 0}
-          onChangeNumber={() => setOtpModalOpen(false)}
-          onSubmit={async otp => {
-            await verifyOtp(otp);
-          }}
-        />
-        {otpError && <div className="text-destructive text-sm mt-2">{otpError}</div>}
+        <OtpModal />
       </DialogContent>
     </Dialog>
+  );
+};
+
+const AddressFormModal = ({
+  open,
+  onOpenChange,
+  onSubmitAddress,
+  initialValues,
+  isEdit = false,
+  showSaveToggle = false
+}: AddressFormModalProps) => {
+  return (
+    <OtpProvider>
+      <AddressFormModalContent
+        open={open}
+        onOpenChange={onOpenChange}
+        onSubmitAddress={onSubmitAddress}
+        initialValues={initialValues}
+        isEdit={isEdit}
+        showSaveToggle={showSaveToggle}
+      ></AddressFormModalContent>
+    </OtpProvider>
   );
 };
 

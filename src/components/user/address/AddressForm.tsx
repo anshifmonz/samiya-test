@@ -4,17 +4,17 @@ import { Input } from 'ui/input';
 import { Button } from 'ui/button';
 import { Textarea } from 'ui/textarea';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { AddressFormData } from 'types/address';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { addressSchema } from 'lib/validators/address';
 import { Card, CardContent, CardHeader, CardTitle } from 'ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from 'ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui/select';
-import { useAddressContext } from 'contexts/user/AddressContext';
-import { useOtp } from 'hooks/user/shared/useOtp';
 import OtpModal from '../shared/OtpModal';
+import { useAddressContext } from 'contexts/user/AddressContext';
+import { OtpProvider, useOtpContext } from 'contexts/user/shared/OtpContext';
 
-const AddressForm = () => {
+const AddressFormContent = () => {
   const { addAddress, setShowAddForm } = useAddressContext();
   const form = useForm<AddressFormData>({
     resolver: zodResolver(addressSchema),
@@ -35,21 +35,14 @@ const AddressForm = () => {
     }
   });
 
-  // OTP modal state and hook
-  const {
-    otpModalOpen,
-    setOtpModalOpen,
-    verifyingPhone,
-    onVerifyClick,
-    verifyOtp,
-    loading: otpLoading,
-    error: otpError,
-    cooldown,
-    reset: resetOtp
-  } = useOtp();
+  const { otpModalOpen, error, loading, isVerified, verifyToken, onVerifyClick } = useOtpContext();
 
   const handleSubmit = (data: AddressFormData) => {
-    const res = addAddress(data);
+    const fullData = {
+      ...data,
+      verifyToken
+    };
+    const res = addAddress(fullData);
     if (res) form.reset();
   };
 
@@ -125,10 +118,12 @@ const AddressForm = () => {
                         type="button"
                         variant="outline"
                         size="sm"
-                        disabled={otpLoading || !field.value || field.value.length < 10}
-                        onClick={() => onVerifyClick(field.value)}
+                        disabled={loading || isVerified || !field.value || field.value.length < 10}
+                        onClick={async () => {
+                          await onVerifyClick(field.value);
+                        }}
                       >
-                        Verify
+                        {isVerified ? 'Verified' : 'Verify'}
                       </Button>
                     </div>
                     <FormMessage />
@@ -286,25 +281,18 @@ const AddressForm = () => {
             </div>
           </form>
         </Form>
-        <OtpModal
-          open={otpModalOpen}
-          onOpenChange={open => {
-            setOtpModalOpen(open);
-            if (!open) resetOtp();
-          }}
-          phone={verifyingPhone}
-          resendOtp={async () => {
-            if (cooldown === 0) await onVerifyClick(verifyingPhone);
-          }}
-          resendDisabled={cooldown > 0}
-          onChangeNumber={() => setOtpModalOpen(false)}
-          onSubmit={async otp => {
-            await verifyOtp(otp);
-          }}
-        />
-        {otpError && <div className="text-destructive text-sm mt-2">{otpError}</div>}
+        <OtpModal />
+        {error && <div className="text-destructive text-sm mt-2">{error}</div>}
       </CardContent>
     </Card>
+  );
+};
+
+const AddressForm = () => {
+  return (
+    <OtpProvider>
+      <AddressFormContent />
+    </OtpProvider>
   );
 };
 

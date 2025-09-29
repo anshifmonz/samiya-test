@@ -1,81 +1,93 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from 'ui/button';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from 'ui/input-otp';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from 'ui/dialog';
+import { useOtpContext } from 'contexts/user/shared/OtpContext';
 
-interface OtpModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSubmit: (otp: string) => Promise<void>;
-  onChangeNumber: () => void;
-  phone: string;
-  resendOtp: () => void;
-  resendDisabled: boolean;
-}
-
-const OtpModal = ({ open, onOpenChange, onSubmit, resendOtp, resendDisabled }: OtpModalProps) => {
+const OtpModal = () => {
+  const {
+    otpModalOpen,
+    setOtpModalOpen,
+    verifyOtp,
+    resend,
+    error,
+    loading,
+    remainingAttempts,
+    resetAttemptsCountdownFormatted,
+    cooldown,
+    resetAttemptsCountdown
+  } = useOtpContext();
   const [otp, setOtp] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  useEffect(() => {
+    if (!otpModalOpen) setOtp('');
+  }, [otpModalOpen]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (otp.length !== 4) return;
+    if (otp.length !== 6) return;
     setIsSubmitting(true);
-    await onSubmit(otp);
+    await verifyOtp(otp);
     setIsSubmitting(false);
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="p-4 sm:p-6 rounded-lg w-[90%] sm:w-[70%] max-w-xl">
-        <DialogHeader className="text-center">
-          <DialogTitle className="text-xl sm:text-2xl font-bold text-center">
+    <Dialog open={otpModalOpen} onOpenChange={setOtpModalOpen}>
+      <DialogContent className="p-2 sm:p-3 rounded-lg w-[90%] sm:w-[70%] max-w-xl">
+        <DialogHeader className="text-center mb-2">
+          <DialogTitle className="text-lg sm:text-xl font-bold text-center mb-1">
             Mobile Phone Verification
           </DialogTitle>
-          <DialogDescription className="text-center text-sm sm:text-base">
-            Enter the 4-digit verification code that was sent to your phone number.
+          <DialogDescription className="text-center text-xs sm:text-sm">
+            Enter the 6-digit verification code sent to your phone.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-6 flex flex-col items-center">
+        {error && <div className="text-center text-red-500 text-xs mb-1">{error}</div>}
+        <form onSubmit={handleSubmit} className="flex flex-col items-center gap-3">
           <div className="flex justify-center w-full">
-            <InputOTP maxLength={4} value={otp} onChange={setOtp}>
-              <InputOTPGroup className="gap-2 sm:gap-3">
-                <InputOTPSlot
-                  className="h-12 w-12 sm:h-14 sm:w-14 text-base sm:text-lg"
-                  index={0}
-                />
-                <InputOTPSlot
-                  className="h-12 w-12 sm:h-14 sm:w-14 text-base sm:text-lg"
-                  index={1}
-                />
-                <InputOTPSlot
-                  className="h-12 w-12 sm:h-14 sm:w-14 text-base sm:text-lg"
-                  index={2}
-                />
-                <InputOTPSlot
-                  className="h-12 w-12 sm:h-14 sm:w-14 text-base sm:text-lg"
-                  index={3}
-                />
+            <InputOTP maxLength={6} value={otp} onChange={setOtp}>
+              <InputOTPGroup className="gap-1 sm:gap-2">
+                {[...Array(6)].map((_, idx) => (
+                  <InputOTPSlot
+                    key={idx}
+                    className="h-10 w-10 sm:h-12 sm:w-12 text-base sm:text-lg"
+                    index={idx}
+                  />
+                ))}
               </InputOTPGroup>
             </InputOTP>
           </div>
           <Button
             type="submit"
             className="w-full sm:w-[50%] text-white cursor-pointer"
-            disabled={isSubmitting || otp.length !== 4}
+            disabled={isSubmitting || otp.length !== 6 || loading}
           >
             Verify
           </Button>
         </form>
-        <div className="text-center text-sm text-muted-foreground">
-          Didn’t receive code?{' '}
+        <div className="text-center text-xs text-muted-foreground mt-1">
+          <span>
+            Attempts left:{' '}
+            <span className={remainingAttempts === 0 ? 'text-red-500' : ''}>
+              {remainingAttempts}
+            </span>
+          </span>
+          {remainingAttempts === 0 && (
+            <span className="ml-2">Attempts reset in: {resetAttemptsCountdownFormatted}</span>
+          )}
+        </div>
+        <div className="text-center text-xs text-muted-foreground mt-1">
           <Button
             variant="link"
             className="p-0 h-auto text-blue-500 cursor-pointer hover:underline disabled:text-gray-400"
-            onClick={resendOtp}
-            disabled={resendDisabled}
+            onClick={resend}
+            disabled={cooldown > 0 || remainingAttempts === 0}
           >
-            Resend
+            {remainingAttempts !== 0 &&
+              (cooldown > 0
+                ? `Didn’t receive code? Resend (in ${cooldown}s)`
+                : 'Didn’t receive code? Resend')}
           </Button>
         </div>
       </DialogContent>

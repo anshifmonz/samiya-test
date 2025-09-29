@@ -63,11 +63,11 @@ const CartItemCard = ({ item }: { item: CartItem }) => {
                   <div className="flex gap-2 text-xs">
                     {item?.selectedSize && <Badge variant="outline">{item?.selectedSize}</Badge>}
                     {item.selectedColor && (
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline">
-                          {item.selectedColor}{' '}
+                      <div className="">
+                        <Badge variant="outline" className="px-1 py-1">
+                          <span className="hidden sm:inline mr-2">{item.selectedColor}{' '}</span>
                           <span
-                            className="w-3 h-3 rounded-full ml-2"
+                            className="w-3 h-3 rounded-full"
                             style={{ backgroundColor: item.colorHex }}
                           ></span>
                         </Badge>
