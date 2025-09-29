@@ -165,15 +165,27 @@ const AddressFormModalContent = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Phone Number</FormLabel>
-                    <div className="flex gap-2 items-center">
+                    <div className="flex gap-2 items-center w-full">
                       <FormControl>
-                        <Input
-                          type="text"
-                          inputMode="numeric"
-                          pattern="[0-9]*"
-                          placeholder="Enter phone number"
-                          {...field}
-                        />
+                        <div className="relative flex-1">
+                          <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 select-none">
+                            +91
+                          </span>
+                          <Input
+                            type="text"
+                            inputMode="numeric"
+                            pattern="[0-9]{10}"
+                            maxLength={10}
+                            minLength={10}
+                            placeholder="Enter phone number"
+                            value={field.value}
+                            onChange={e => {
+                              const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                              field.onChange(val);
+                            }}
+                            className="pl-12 w-full"
+                          />
+                        </div>
                       </FormControl>
                       <Button
                         type="button"
@@ -199,13 +211,25 @@ const AddressFormModalContent = ({
                   <FormItem>
                     <FormLabel>Secondary Phone (Optional)</FormLabel>
                     <FormControl>
-                      <Input
-                        type="text"
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                        placeholder="Enter secondary phone"
-                        {...field}
-                      />
+                      <div className="relative flex-1">
+                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 select-none">
+                          +91
+                        </span>
+                        <Input
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]{10}"
+                          maxLength={10}
+                          minLength={10}
+                          placeholder="Enter secondary phone"
+                          value={field.value}
+                          onChange={e => {
+                            const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                            field.onChange(val);
+                          }}
+                          className="pl-12 w-full"
+                        />
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
