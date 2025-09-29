@@ -35,6 +35,7 @@ export interface AddressFormData {
   country: string;
   type?: 'shipping' | 'billing';
   saveAddress?: boolean;
+  verifyToken?: string;
 }
 
 // Helper interface for frontend display (mapped from database fields)
