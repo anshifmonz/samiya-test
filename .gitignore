@@ -34,3 +34,4 @@ scripts
 tsconfig.tsbuildinfo
 markdown
 sql
+serviceAccountKey.json
