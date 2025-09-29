@@ -55,7 +55,7 @@ const AddressFormModalContent = ({
     }
   });
 
-  const { loading, onVerifyClick, verifyToken } = useOtpContext();
+  const { loading, onVerifyClick, isVerified, verifyToken } = useOtpContext();
 
   useEffect(() => {
     if (!open) return;
@@ -191,12 +191,20 @@ const AddressFormModalContent = ({
                         type="button"
                         variant="outline"
                         size="sm"
-                        disabled={loading || !field.value || field.value.length < 10}
+                        disabled={Boolean(
+                          loading ||
+                            isVerified ||
+                            !field.value ||
+                            field.value.length < 10 ||
+                            (initialValues as AddressDisplay | null)?.is_phone_verified
+                        )}
                         onClick={async () => {
                           await onVerifyClick(field.value);
                         }}
                       >
-                        Verify
+                        {isVerified || (initialValues as AddressDisplay | null)?.is_phone_verified
+                          ? 'Verified'
+                          : 'Verify'}
                       </Button>
                     </div>
                     <FormMessage />
