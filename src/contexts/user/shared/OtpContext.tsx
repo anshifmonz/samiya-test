@@ -1,3 +1,5 @@
+'use client';
+
 import { FC, ReactNode, createContext, useContext, useMemo } from 'react';
 import { useOtp } from 'hooks/user/shared/useOtp';
 

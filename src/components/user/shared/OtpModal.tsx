@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect } from 'react';
 import { Button } from 'ui/button';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from 'ui/input-otp';
