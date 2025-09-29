@@ -2,7 +2,7 @@
 
 import { Button } from 'ui/button';
 import { Card, CardContent } from 'ui/card';
-import { MapPin, Home, Building, Star, Edit, Trash2 } from 'lucide-react';
+import { Info, MapPin, Home, Building, Star, Edit, Trash2 } from 'lucide-react';
 import AddressFormModal from '../shared/AddressFormModal';
 import { useAddressContext } from 'contexts/user/AddressContext';
 
@@ -45,11 +45,19 @@ const AddressList = () => {
                       )}
                     </div>
                     <div className="flex items-center gap-2">
-                      <h3 className="font-semibold text-foreground hidden sm:inline">{address.label}</h3>
+                      <h3 className="font-semibold text-foreground hidden sm:inline">
+                        {address.label}
+                      </h3>
                       {address.isDefault && (
                         <div className="flex items-center gap-1 bg-primary/10 text-primary px-2 py-1 rounded-full text-xs">
                           <Star className="w-3 h-3 fill-current" />
                           Default
+                        </div>
+                      )}
+                      {!address?.is_phone_verified && (
+                        <div className="flex items-center gap-1 bg-destructive/10 text-destructive pr-2 py-1 rounded-full text-xs ml-2">
+                          <Info className="h-4" />
+                          Not Verified
                         </div>
                       )}
                     </div>

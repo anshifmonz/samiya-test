@@ -55,6 +55,7 @@ export interface AddressDisplay {
   country: string;
   isDefault: boolean;
   type: 'shipping' | 'billing';
+  is_phone_verified?: string;
   createdAt: string;
   updatedAt: string;
 }
