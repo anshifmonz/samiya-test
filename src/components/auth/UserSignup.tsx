@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Input } from 'ui/input';
 import { Label } from 'ui/label';
@@ -19,6 +19,8 @@ const UserSignup: React.FC = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const to = searchParams.get('to');
 
   useEffect(() => {
     setName('');
@@ -48,14 +50,14 @@ const UserSignup: React.FC = () => {
     try {
       const { data, error: apiError } = await apiRequest('/api/auth/signup', {
         method: 'POST',
-        body: { name, email, password },
+        body: { name, email, password, to },
         showLoadingBar: true,
         showErrorToast: false
       });
 
       if (!apiError || !data.error) {
         setSuccess('Account created successfully! Please check your email to verify your account.');
-        setTimeout(() => router.push('/login'), 3000);
+        setTimeout(() => router.push(`/signin${to ? `?to=${to}` : ''}`), 3000);
       } else {
         setError(apiError || 'Signup failed');
       }
@@ -182,7 +184,7 @@ const UserSignup: React.FC = () => {
               Already have an account?{' '}
               <Link
                 className="text-luxury-gold hover:text-luxury-gold/80 font-medium transition-colors"
-                href="/signin"
+                href={`/signin${to ? `?to=${to}` : ''}`}
               >
                 Sign in here
               </Link>

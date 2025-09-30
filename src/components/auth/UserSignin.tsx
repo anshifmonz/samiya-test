@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Input } from 'ui/input';
 import { Label } from 'ui/label';
@@ -16,6 +16,8 @@ const UserSignin: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const to = searchParams.get('to');
 
   useEffect(() => {
     setEmail('');
@@ -35,7 +37,7 @@ const UserSignin: React.FC = () => {
         showErrorToast: false
       });
 
-      if (!error) return router.push('/');
+      if (!error) return router.push(to || '/');
       setError(error || 'Signin failed');
     } catch (error) {
       setError('Network error. Please try again.');
@@ -116,7 +118,7 @@ const UserSignin: React.FC = () => {
               Don&apos;t have an account?{' '}
               <Link
                 className="text-luxury-gold hover:text-luxury-gold/80 font-medium transition-colors"
-                href="/signup"
+                href={`/signup${to ? `?to=${to}` : ''}`}
               >
                 Sign up here
               </Link>
