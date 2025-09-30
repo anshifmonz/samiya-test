@@ -115,7 +115,10 @@ export function useProductLogic(product: Product) {
   };
 
   const handlePurchase = async () => {
-    if (!user) return;
+    if (!user) {
+      router.push(`/signin?to=${window.location.pathname}`);
+      return;
+    }
     if (!selectedColor || !selectedSize || !selectedSizeData) return;
 
     const colorId = product.colorIdMapping?.[selectedColor] || selectedColor;
@@ -214,7 +217,10 @@ export function useProductLogic(product: Product) {
   };
 
   const handleAddToCart = async () => {
-    if (!user) return;
+    if (!user) {
+      router.push(`/signin?to=${window.location.pathname}`);
+      return;
+    }
 
     if (!selectedColor || !selectedSize || !selectedSizeData) return;
     setIsAddingToCart(true);
