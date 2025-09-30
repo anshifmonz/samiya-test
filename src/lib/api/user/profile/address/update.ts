@@ -1,4 +1,5 @@
 import { createClient } from 'lib/supabase/server';
+import { verifyPhone } from 'lib/firebase/verifyPhone';
 import { AddressFormData, Address } from 'types/address';
 import { ok, err, type ApiResponse } from 'utils/api/response';
 
@@ -23,6 +24,10 @@ export async function updateAddress(
   if (addressData.postal_code !== undefined) dataToUpdate.postal_code = addressData.postal_code;
   if (addressData.country !== undefined) dataToUpdate.country = addressData.country;
   if (addressData.type !== undefined) dataToUpdate.type = addressData.type;
+  if (addressData.verifyToken && addressData.phone) {
+    const isPhoneVerified = await verifyPhone(addressData.verifyToken, addressData.phone);
+    dataToUpdate.is_phone_verified = isPhoneVerified;
+  }
 
   const supabase = createClient();
   const { data: updatedAddress, error } = await supabase

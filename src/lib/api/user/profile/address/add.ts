@@ -1,4 +1,5 @@
 import { createClient } from 'lib/supabase/server';
+import { verifyPhone } from 'lib/firebase/verifyPhone';
 import { AddressFormData, Address } from 'types/address';
 import { ok, err, type ApiResponse } from 'utils/api/response';
 
@@ -6,6 +7,7 @@ export async function createAddress(
   userId: string,
   addressData: AddressFormData
 ): Promise<ApiResponse<Address>> {
+  const isPhoneVerified = await verifyPhone(addressData.verifyToken, addressData.phone);
   const dataToInsert = {
     user_id: userId,
     label: addressData.label,
@@ -21,6 +23,7 @@ export async function createAddress(
     postal_code: addressData.postal_code,
     country: addressData.country,
     type: addressData.type || 'shipping',
+    is_phone_verified: isPhoneVerified,
     is_default: false
   };
 
