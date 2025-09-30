@@ -13,6 +13,7 @@ interface ProductContextType {
   isWishlist: boolean;
   isLoadingWishlist: boolean;
   isAddingToCart: boolean;
+  isPurchasing: boolean;
   handleColorChange: (color: string) => void;
   handleSizeChange: (sizeName: string, sizeData?: Size) => void;
   setQuantity: (quantity: number) => void;

@@ -1,15 +1,16 @@
 import { Button } from 'ui/button';
-import { ShoppingCart, Loader2 } from 'lucide-react';
+import { ShoppingCart, Loader2, Zap } from 'lucide-react';
 import { useProductContext } from 'contexts/ProductContext';
 
 export default function ProductActions() {
   const {
-    selectedColor,
     selectedSize,
+    selectedColor,
     selectedSizeData,
     handlePurchase,
     handleAddToCart,
-    isAddingToCart
+    isAddingToCart,
+    isPurchasing
   } = useProductContext();
 
   const isOutOfStock = selectedSizeData?.stock_quantity === 0;
@@ -41,7 +42,17 @@ export default function ProductActions() {
         onClick={handlePurchase}
         disabled={!canAddToCart}
       >
-        Buy it now
+        {isPurchasing ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Purchasing...
+          </>
+        ) : (
+          <>
+            <Zap className="w-4 h-4" />
+            Purchase now
+          </>
+        )}
       </Button>
     </div>
   );
