@@ -15,14 +15,14 @@ interface SimilarProductCardProps {
 const SimilarProductCard: React.FC<SimilarProductCardProps> = ({ product }) => {
   const getBadgeVariant = (category: string) => {
     switch (category?.toLowerCase()) {
-      case "sale":
-        return "destructive";
-      case "new":
-        return "default";
-      case "bestseller":
-        return "secondary";
+      case 'sale':
+        return 'destructive';
+      case 'new':
+        return 'default';
+      case 'bestseller':
+        return 'secondary';
       default:
-        return "secondary";
+        return 'secondary';
     }
   };
 
@@ -80,26 +80,23 @@ const SimilarProductCard: React.FC<SimilarProductCardProps> = ({ product }) => {
         )}
 
         {product.category && (
-          <Badge
-            variant={getBadgeVariant(product.category)}
-            className="absolute top-2 left-2"
-          >
+          <Badge variant={getBadgeVariant(product.category)} className="absolute top-2 left-2">
             {product.category}
           </Badge>
         )}
       </div>
 
       <div className="p-4 space-y-2">
-        <h3 className="font-medium text-foreground line-clamp-2 text-sm">
-          {product.title}
-        </h3>
+        <h3 className="font-medium text-foreground line-clamp-2 text-sm">{product.title}</h3>
 
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <span className="font-semibold text-foreground">
               <span className="mr-2">₹{product.price.toFixed(2)}</span>
               {product.original_price && product.original_price > product.price && (
-                <span className="text-xs line-through text-muted-foreground">₹{product.original_price.toLocaleString()}</span>
+                <span className="text-xs line-through text-muted-foreground">
+                  ₹{product.original_price.toLocaleString()}
+                </span>
               )}
             </span>
           </div>
@@ -116,7 +113,11 @@ const SimilarProductCard: React.FC<SimilarProductCardProps> = ({ product }) => {
                     style={{
                       backgroundColor: getColorValue(color.color_name)
                     }}
-                    title={color.color_name.charAt(0).toUpperCase() + color.color_name.slice(1)}
+                    title={
+                      color.color_name
+                        ? color.color_name.charAt(0).toUpperCase() + color.color_name.slice(1)
+                        : ''
+                    }
                   />
                 ))}
               {product.available_colors.length > 3 && (
