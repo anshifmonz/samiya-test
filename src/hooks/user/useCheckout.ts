@@ -65,7 +65,9 @@ export function useCheckout({
   addresses: Address[];
 }) {
   const router = useRouter();
-  const { startCheckout, isLoading } = useCashfreeCheckout();
+  const { startCheckout } = useCashfreeCheckout({
+    mode: process.env.NODE_ENV === 'development' ? 'sandbox' : 'production'
+  });
 
   // Convert Address[] to AddressDisplay[] for consistency
   const [addresses, setAddresses] = useState<AddressDisplay[]>(
@@ -111,7 +113,7 @@ export function useCheckout({
     setIsAddressModalOpen(false);
     const finalAddress = { ...updatedAddress, id: 'TEMP_ID' };
     setAddresses(prev => {
-      const filtered = prev.filter(addr => addr.id !== "TEMP_ID");
+      const filtered = prev.filter(addr => addr.id !== 'TEMP_ID');
       return [...filtered, finalAddress];
     });
     return true;
@@ -122,7 +124,7 @@ export function useCheckout({
     if (!address.id.includes('TEMP')) return;
     setEditingAddress(address);
     setIsAddressModalOpen(true);
-  }
+  };
 
   const handlePlaceOrder = async () => {
     if (!selectedAddress) {
