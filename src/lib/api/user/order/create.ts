@@ -3,6 +3,13 @@ import { type ApiResponse, ok, err } from 'utils/api/response';
 import { initiatePaymentSession } from 'lib/api/user/payment';
 import { CreateOrderRequest } from 'types/order';
 
+interface PaymentDetails {
+  payment_session_id: string;
+  cf_order_id: string;
+  order_id: string;
+  payment_url?: string;
+}
+
 export async function createOrder(request: CreateOrderRequest): Promise<ApiResponse<any>> {
   const { userId, checkoutId, paymentMethod, orderAddressId, address } = request;
   if (!userId || typeof userId !== 'string')
@@ -10,7 +17,7 @@ export async function createOrder(request: CreateOrderRequest): Promise<ApiRespo
   if (!checkoutId || typeof checkoutId !== 'string')
     return err('Checkout ID is required and must be a string', 400);
   if (paymentMethod && typeof paymentMethod !== 'string')
-    return err('Payment method is required and must be a string', 400);
+    return err('Payment method must be a string', 400);
   if (paymentMethod && !['card', 'upi', 'netbanking', 'wallet'].includes(paymentMethod))
     return err('Invalid payment method', 400);
   if (orderAddressId && typeof orderAddressId !== 'string')
@@ -36,29 +43,23 @@ export async function createOrder(request: CreateOrderRequest): Promise<ApiRespo
 
   const orderId = resp.data.order_id;
 
-  let paymentDetails: {
-    payment_session_id: string;
-    cf_order_id: string;
-    order_id: string;
-    payment_url?: string;
-  } | null = null;
+  let paymentDetails: PaymentDetails | null = null;
   let paymentError: string | undefined;
 
-  if (paymentMethod && paymentMethod !== 'cod') {
-    const { data, status } = await initiatePaymentSession(userId, orderId, paymentMethod as any);
-    if (status !== 200) return err();
+  if (paymentMethod === 'cod') return err('Cash on delivery is not available', 400);
 
-    paymentDetails = data as any as {
-      payment_session_id: string;
-      cf_order_id: string;
-      order_id: string;
-      payment_url?: string;
-    };
-  }
+  const { data: paymentData, status } = await initiatePaymentSession(
+    userId,
+    orderId,
+    paymentMethod !== undefined ? paymentMethod : undefined
+  );
+  if (status !== 200) return err();
+
+  paymentDetails = paymentData as PaymentDetails;
 
   return ok({
     orderId,
-    payment_required: paymentMethod !== 'cod',
+    payment_required: true,
     payment: paymentDetails,
     payment_error: paymentError
   });

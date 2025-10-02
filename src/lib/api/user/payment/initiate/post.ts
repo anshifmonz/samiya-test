@@ -4,19 +4,25 @@ import {
   generateReturnUrl,
   type CashfreeOrderRequest
 } from 'utils/payment/cashfree';
-import { mapErrorToPaymentError, formatPaymentError } from 'utils/payment/errorHandling';
-import { retryPaymentInitiation } from 'utils/payment/retryMechanism';
-import { type PaymentInitiationResponse } from 'types/payment';
-import { cleanupExpiredReservations } from 'lib/inventory';
-import { ok, err, ApiResponse } from 'utils/api/response';
 import { isExpired } from 'utils/isExpired';
+import { type CreateOrderRequest } from 'types/order';
+import { ok, err, ApiResponse } from 'utils/api/response';
+import { cleanupExpiredReservations } from 'lib/inventory';
+import { type PaymentInitiationResponse } from 'types/payment';
+import { retryPaymentInitiation } from 'utils/payment/retryMechanism';
+import { mapErrorToPaymentError, formatPaymentError } from 'utils/payment/errorHandling';
 
-const ALLOWED_METHODS = new Set(['card', 'upi', 'netbanking', 'wallet']);
+const ALLOWED_METHODS = new Set<CreateOrderRequest['paymentMethod']>([
+  'card',
+  'upi',
+  'netbanking',
+  'wallet'
+]);
 
 export async function initiatePaymentSession(
   userId: string,
   orderId: string,
-  paymentMethod?: 'card' | 'upi' | 'netbanking' | 'wallet'
+  paymentMethod?: CreateOrderRequest['paymentMethod']
 ): Promise<ApiResponse<PaymentInitiationResponse>> {
   try {
     const supabase = createClient();
@@ -73,19 +79,18 @@ export async function initiatePaymentSession(
 
     if (userError || !userProfile) return err('User profile not found', 404);
 
-    // Validate payment method from client (no server-side default)
-    if (!paymentMethod || !ALLOWED_METHODS.has(paymentMethod))
-      return err('Invalid or unsupported payment method', 400);
-
-    // Map paymentMethod to Cashfree order_meta.payment_methods string format
-    const cfMethodMap: Record<'card' | 'upi' | 'netbanking' | 'wallet', string> = {
-      card: 'cc,dc',
-      upi: 'upi',
-      netbanking: 'nb',
-      wallet: 'wallet'
-    };
-
-    const cfPaymentMethods = cfMethodMap[paymentMethod];
+    let cfPaymentMethods = '';
+    if (paymentMethod) {
+      if (!ALLOWED_METHODS.has(paymentMethod))
+        return err('Invalid or unsupported payment method', 400);
+      const cfMethodMap: Record<'card' | 'upi' | 'netbanking' | 'wallet', string> = {
+        card: 'cc,dc',
+        upi: 'upi',
+        netbanking: 'nb',
+        wallet: 'wallet'
+      };
+      cfPaymentMethods = cfMethodMap[paymentMethod];
+    }
 
     const cashfreeOrderData: CashfreeOrderRequest = {
       order_id: orderId,

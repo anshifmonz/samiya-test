@@ -55,7 +55,7 @@ export interface CreateOrderRequest {
   userId: string;
   checkoutId: string;
   orderAddressId: string;
-  paymentMethod: string;
+  paymentMethod: 'card' | 'upi' | 'netbanking' | 'wallet' | 'cod';
   address?: AddressFormData & {
     saveAddress: boolean;
   };
