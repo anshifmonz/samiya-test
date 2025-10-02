@@ -101,7 +101,7 @@ export async function initiatePaymentSession(
         payment_methods: cfPaymentMethods
       },
       order_note: `Payment for order ${orderId}`,
-      order_expiry_time: new Date(Date.now() + 15 * 60 * 1000).toISOString()
+      order_expiry_time: new Date(Date.now() + 16 * 60 * 1000).toISOString()
     };
 
     // Create Cashfree order with retry mechanism
