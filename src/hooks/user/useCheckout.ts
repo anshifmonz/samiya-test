@@ -78,9 +78,7 @@ export function useCheckout({
   const [selectedAddress, setSelectedAddress] = useState<string>(
     addresses.find(addr => addr.isDefault)?.id || addresses[0]?.id || ''
   );
-  const [selectedPayment, setSelectedPayment] = useState<string>(
-    mockPaymentMethods.find(method => method.isDefault)?.id || mockPaymentMethods[0]?.id || ''
-  );
+  const [selectedPayment, setSelectedPayment] = useState<string>('');
   const [selectedDelivery, setSelectedDelivery] = useState<string>('standard');
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
@@ -136,15 +134,6 @@ export function useCheckout({
       return;
     }
 
-    if (!selectedPayment) {
-      toast({
-        title: 'Payment Method Required',
-        description: 'Please select a payment method.',
-        variant: 'destructive'
-      });
-      return;
-    }
-
     if (!acceptTerms) {
       toast({
         title: 'Accept Terms',
@@ -165,11 +154,6 @@ export function useCheckout({
 
     setIsPlacingOrder(true);
     try {
-      const selectedPaymentMethod = mockPaymentMethods.find(
-        method => method.id === selectedPayment
-      );
-
-      // Create the order first
       const address =
         selectedAddress === 'TEMP_ID' && addresses.find(addr => addr.id === 'TEMP_ID');
       const { data, error } = await apiRequest('/api/user/order', {
@@ -178,7 +162,7 @@ export function useCheckout({
           checkoutId: checkoutData.checkout.id,
           orderAddressId: selectedAddress,
           address,
-          paymentMethod: selectedPaymentMethod?.type || 'card'
+          paymentMethod: selectedPayment
         },
         showLoadingBar: true,
         showErrorToast: true,
