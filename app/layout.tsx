@@ -8,6 +8,7 @@ import NavBar from 'components/shared/NavBar';
 import NextLoadingBar from 'components/shared/NextLoadingBar';
 import { QueryProvider } from 'components/providers/QueryProvider';
 import { ToasterProvider } from 'components/providers/ToasterProvider';
+import { AuthModalProvider } from 'contexts/user/shared/AuthModalContext';
 import { AuthProvider } from 'contexts/AuthContext';
 
 const inter = Inter({
@@ -48,14 +49,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <QueryProvider>
           <AuthProvider>
-            <TooltipProvider>
-              <ToasterProvider />
-              <NavBar />
-              <div id="recaptcha-container" style={{ display: 'none' }}></div>
-              <NextLoadingBar color="#ef4444" />
-              {children}
-              <Footer />
-            </TooltipProvider>
+            <AuthModalProvider>
+              <TooltipProvider>
+                <ToasterProvider />
+                <NavBar />
+                <div id="recaptcha-container" style={{ display: 'none' }}></div>
+                <NextLoadingBar color="#ef4444" />
+                {children}
+                <Footer />
+              </TooltipProvider>
+            </AuthModalProvider>
           </AuthProvider>
         </QueryProvider>
         <Script src="https://www.google.com/recaptcha/api.js" strategy="afterInteractive" />
