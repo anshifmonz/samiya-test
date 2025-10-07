@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { CartItem } from 'types/cart';
-import { useAuth } from 'hooks/useAuth';
 import { useRouter } from 'next/navigation';
 import { apiRequest } from 'utils/apiRequest';
 import { useDebounce } from 'hooks/useDebounce';
+import { useAuthContext } from 'contexts/AuthContext';
 
 export const useCart = ({ initialCartItems }: { initialCartItems: CartItem[] }) => {
-  const { user } = useAuth();
+  const { user } = useAuthContext();
   const router = useRouter();
   const [cartItems, setCartItems] = useState<CartItem[]>(initialCartItems);
   const [isAddingToCart, setIsAddingToCart] = useState(false);

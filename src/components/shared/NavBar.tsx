@@ -1,22 +1,17 @@
-"use client";
+'use client';
 
-import { useNavigation } from 'hooks/useNavigation';
-import {
-  Logo,
-  NavigationLinks,
-  SearchSection,
-  MobileSearch
-} from './navbar';
 import Link from 'next/link';
-import { useAuth } from 'hooks/useAuth';
+import { Button } from 'ui/button';
+import { User } from 'lucide-react';
+import { useNavigation } from 'hooks/useNavigation';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
+  DropdownMenuTrigger
 } from 'ui/dropdown-menu';
-import { User } from 'lucide-react';
-import { Button } from 'ui/button';
+import { Logo, NavigationLinks, SearchSection, MobileSearch } from './navbar';
+import { useAuthContext } from 'contexts/AuthContext';
 
 const Navigation: React.FC = () => {
   const {
@@ -30,14 +25,18 @@ const Navigation: React.FC = () => {
     closeMobileMenu,
     closeMobileSearch,
     getNavbarStyling,
-    getTextStyling,
+    getTextStyling
   } = useNavigation();
-  const { user } = useAuth();
+
+  const { user } = useAuthContext();
 
   const textStyles = getTextStyling();
 
   return (
-    <nav id="navbar" className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${getNavbarStyling()}`}>
+    <nav
+      id="navbar"
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${getNavbarStyling()}`}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 xl:px-0">
         <div className="flex justify-between items-center h-20">
           {/* Left side - Logo (desktop) or Hamburger menu (mobile) */}
@@ -51,9 +50,19 @@ const Navigation: React.FC = () => {
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   {isMobileMenuOpen ? (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   ) : (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 6h16M4 12h16M4 18h16"
+                    />
                   )}
                 </svg>
               </button>
@@ -66,7 +75,11 @@ const Navigation: React.FC = () => {
           {/* Center - Navigation Links (desktop) or Logo (mobile) */}
           <div className="flex items-center">
             <Logo variant="mobile" textStyles={textStyles} className="pl-12" />
-            <NavigationLinks textStyles={textStyles} isAdminPage={isAdminPage} className="pl-12 lg:pl-20" />
+            <NavigationLinks
+              textStyles={textStyles}
+              isAdminPage={isAdminPage}
+              className="pl-12 lg:pl-20"
+            />
           </div>
 
           {/* Right side - Search and User Sections */}

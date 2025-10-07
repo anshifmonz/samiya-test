@@ -2,14 +2,14 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { type Product, type Size } from 'types/product';
 import { apiRequest } from 'lib/utils/apiRequest';
-import { useAuth } from 'hooks/useAuth';
+import { useAuthContext } from 'contexts/AuthContext';
+import { type Product, type Size } from 'types/product';
 
 export function useProductLogic(product: Product) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user } = useAuth();
+  const { user } = useAuthContext();
   const firstColor = Object.keys(product.images)[0];
 
   const [isWishlist, setIsWishlist] = useState(false);
