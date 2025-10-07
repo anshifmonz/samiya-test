@@ -1,49 +1,68 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Input } from 'ui/input';
 import { Label } from 'ui/label';
 import { Button } from 'ui/button';
-import { Lock, Mail } from 'lucide-react';
+import { Phone } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from 'ui/card';
 import { apiRequest } from 'lib/utils/apiRequest';
+import { useAuthContext } from 'contexts/AuthContext';
+import OtpModal from 'components/user/shared/OtpModal';
+import { OtpProvider, useOtpContext } from 'contexts/user/shared/OtpContext';
 
-const UserSignin: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const UserSigninContent: React.FC = () => {
+  const [phone, setPhone] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
   const searchParams = useSearchParams();
   const to = searchParams.get('to');
+  const { refreshSession } = useAuthContext();
+
+  const { onVerifyClick, isVerified, verifyToken, loading: otpLoading } = useOtpContext();
+
+  const handleSignin = useCallback(
+    async (token: string) => {
+      setIsLoading(true);
+      setError('');
+      try {
+        const { error } = await apiRequest('/api/auth/signin', {
+          method: 'POST',
+          body: { token },
+          showLoadingBar: true,
+          showErrorToast: false
+        });
+
+        if (!error) {
+          await refreshSession();
+          router.push(to || '/');
+        } else {
+          setError(error || 'Signin failed');
+        }
+      } catch (error) {
+        setError('Network error. Please try again.');
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [refreshSession, router, to]
+  );
 
   useEffect(() => {
-    setEmail('');
-    setPassword('');
-  }, [router]);
+    if (isVerified && verifyToken) handleSignin(verifyToken);
+  }, [isVerified, verifyToken, handleSignin]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError('');
-
-    try {
-      const { error } = await apiRequest('/api/auth/signin', {
-        method: 'POST',
-        body: { email, password },
-        showLoadingBar: true,
-        showErrorToast: false
-      });
-
-      if (!error) return router.push(to || '/');
-      setError(error || 'Signin failed');
-    } catch (error) {
-      setError('Network error. Please try again.');
-    } finally {
-      setIsLoading(false);
+    if (phone.length !== 10) {
+      setError('Please enter a valid 10-digit phone number.');
+      return;
     }
+    setError('');
+    await onVerifyClick(phone);
   };
 
   return (
@@ -51,49 +70,33 @@ const UserSignin: React.FC = () => {
       <Card className="w-full max-w-md bg-white border-luxury-gray/20 shadow-xl">
         <CardHeader className="space-y-1 text-center pb-4">
           <div className="mx-auto w-10 h-10 bg-luxury-gold/10 rounded-full flex items-center justify-center mb-2">
-            <Mail className="w-5 h-5 text-luxury-gold" />
+            <Phone className="w-5 h-5 text-luxury-gold" />
           </div>
           <CardTitle className="text-xl font-bold text-luxury-black">Welcome Back</CardTitle>
           <CardDescription className="text-sm text-luxury-gray">
-            Sign in to continue
+            Sign in with your phone number
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4 pt-0">
           <form onSubmit={handleSubmit} className="space-y-3">
             <div className="space-y-1">
-              <Label htmlFor="email" className="text-sm text-luxury-black font-medium">
-                Email Address
+              <Label htmlFor="phone" className="text-sm text-luxury-black font-medium">
+                Phone Number
               </Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-luxury-gray h-4 w-4" />
+                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-luxury-gray">
+                  +91
+                </span>
                 <Input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email address"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  className="pl-10 h-9 bg-luxury-white border-luxury-gray/30 focus:ring-luxury-gold/50 focus:border-luxury-gold/30 transition-colors"
+                  id="phone"
+                  type="tel"
+                  placeholder="Enter your phone number"
+                  value={phone}
+                  onChange={e => setPhone(e.target.value.replace(/\D/g, ''))}
+                  className="pl-12 h-9 bg-luxury-white border-luxury-gray/30 focus:ring-luxury-gold/50 focus:border-luxury-gold/30 transition-colors"
                   required
-                  disabled={isLoading}
-                />
-              </div>
-            </div>
-
-            <div className="space-y-1">
-              <Label htmlFor="password" className="text-sm text-luxury-black font-medium">
-                Password
-              </Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-luxury-gray h-4 w-4" />
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  className="pl-10 h-9 bg-luxury-white border-luxury-gray/30 focus:ring-luxury-gold/50 focus:border-luxury-gold/30 transition-colors"
-                  required
-                  disabled={isLoading}
+                  disabled={isLoading || otpLoading}
+                  maxLength={10}
                 />
               </div>
             </div>
@@ -107,35 +110,23 @@ const UserSignin: React.FC = () => {
             <Button
               type="submit"
               className="w-full bg-luxury-gold hover:bg-luxury-gold/90 text-luxury-black font-medium py-2.5 transition-colors duration-200"
-              disabled={isLoading}
+              disabled={isLoading || otpLoading}
             >
-              {isLoading ? 'Signing In...' : 'Sign In'}
+              {otpLoading ? 'Sending OTP...' : 'Send OTP'}
             </Button>
           </form>
-
-          <div className="text-center space-y-2">
-            <p className="text-sm text-luxury-gray">
-              Don&apos;t have an account?{' '}
-              <Link
-                className="text-luxury-gold hover:text-luxury-gold/80 font-medium transition-colors"
-                href={`/signup${to ? `?to=${to}` : ''}`}
-              >
-                Sign up here
-              </Link>
-            </p>
-            <p className="text-xs text-luxury-gray/60">
-              Forgot your password?{' '}
-              <Link
-                className="text-luxury-gold hover:text-luxury-gold/80 font-medium transition-colors"
-                href="/user/forgot-password"
-              >
-                Reset here
-              </Link>
-            </p>
-          </div>
         </CardContent>
       </Card>
+      <OtpModal />
     </div>
+  );
+};
+
+const UserSignin: React.FC = () => {
+  return (
+    <OtpProvider>
+      <UserSigninContent />
+    </OtpProvider>
   );
 };
 
