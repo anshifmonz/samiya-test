@@ -1,69 +1,23 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
+import { Phone } from 'lucide-react';
 import { Input } from 'ui/input';
 import { Label } from 'ui/label';
 import { Button } from 'ui/button';
-import { Phone } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from 'ui/card';
-import { apiRequest } from 'lib/utils/apiRequest';
-import { useAuthContext } from 'contexts/AuthContext';
+import { useSignin } from 'hooks/user/useSignin';
 import OtpModal from 'components/user/shared/OtpModal';
-import { OtpProvider, useOtpContext } from 'contexts/user/shared/OtpContext';
+import { OtpProvider } from 'contexts/user/shared/OtpContext';
 
 const UserSigninContent: React.FC = () => {
-  const [phone, setPhone] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
   const router = useRouter();
   const searchParams = useSearchParams();
   const to = searchParams.get('to');
-  const { refreshSession } = useAuthContext();
 
-  const { onVerifyClick, isVerified, verifyToken, loading: otpLoading } = useOtpContext();
+  const handleSuccess = () => router.push(to || '/');
 
-  const handleSignin = useCallback(
-    async (token: string) => {
-      setIsLoading(true);
-      setError('');
-      try {
-        const { error } = await apiRequest('/api/auth/signin', {
-          method: 'POST',
-          body: { token },
-          showLoadingBar: true,
-          showErrorToast: false
-        });
-
-        if (!error) {
-          await refreshSession();
-          router.push(to || '/');
-        } else {
-          setError(error || 'Signin failed');
-        }
-      } catch (error) {
-        setError('Network error. Please try again.');
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [refreshSession, router, to]
-  );
-
-  useEffect(() => {
-    if (isVerified && verifyToken) handleSignin(verifyToken);
-  }, [isVerified, verifyToken, handleSignin]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (phone.length !== 10) {
-      setError('Please enter a valid 10-digit phone number.');
-      return;
-    }
-    setError('');
-    await onVerifyClick(phone);
-  };
+  const { phone, setPhone, isLoading, error, handleSubmit, otpLoading } = useSignin(handleSuccess);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-luxury-white p-4 pt-24">
