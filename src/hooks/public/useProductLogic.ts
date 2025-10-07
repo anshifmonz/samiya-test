@@ -131,10 +131,6 @@ export function useProductLogic(product: Product) {
 
   const handlePurchase = async () => {
     setIsPurchasing(true);
-    if (!user) {
-      router.push(`/signin?to=${window.location.pathname}`);
-      return setIsPurchasing(false);
-    }
     if (!selectedColor || !selectedSize || !selectedSizeData) return setIsPurchasing(false);
 
     const colorId = product.colorIdMapping?.[selectedColor] || selectedColor;
@@ -252,11 +248,6 @@ export function useProductLogic(product: Product) {
   };
 
   const handleAddToCart = async () => {
-    if (!user) {
-      router.push(`/signin?to=${window.location.pathname}`);
-      return;
-    }
-
     if (!selectedColor || !selectedSize || !selectedSizeData) return;
     setIsAddingToCart(true);
 

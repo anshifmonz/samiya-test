@@ -1,20 +1,40 @@
 import { Button } from 'ui/button';
 import { ShoppingCart, Loader2, Zap } from 'lucide-react';
+import { useAuthContext } from 'contexts/AuthContext';
 import { useProductContext } from 'contexts/ProductContext';
+import { useAuthModal } from 'contexts/user/shared/AuthModalContext';
 
 export default function ProductActions() {
   const {
     selectedSize,
     selectedColor,
     selectedSizeData,
-    handlePurchase,
-    handleAddToCart,
+    handlePurchase: originalHandlePurchase,
+    handleAddToCart: originalHandleAddToCart,
     isAddingToCart,
     isPurchasing
   } = useProductContext();
 
+  const { user } = useAuthContext();
+  const { setAuthModalOpen, setOnSigninSuccess } = useAuthModal();
+
   const isOutOfStock = selectedSizeData?.stock_quantity === 0;
   const canAddToCart = selectedColor && selectedSize && selectedSizeData && !isOutOfStock;
+
+  const authenticateUser = (fn: () => void): void => {
+    setOnSigninSuccess(fn);
+    setAuthModalOpen(true);
+  };
+
+  const handleAddToCart = () => {
+    if (!user) return authenticateUser(originalHandleAddToCart);
+    originalHandleAddToCart();
+  };
+
+  const handlePurchase = () => {
+    if (!user) return authenticateUser(originalHandlePurchase);
+    originalHandlePurchase();
+  };
 
   return (
     <div className="space-y-3">
@@ -40,7 +60,7 @@ export default function ProductActions() {
       <Button
         className="w-full py-3 text-base font-medium bg-luxury-gold text-black hover:bg-luxury-black/90"
         onClick={handlePurchase}
-        disabled={!canAddToCart}
+        disabled={!canAddToCart || isPurchasing}
       >
         {isPurchasing ? (
           <>
@@ -49,7 +69,7 @@ export default function ProductActions() {
           </>
         ) : (
           <>
-            <Zap className="w-4 h-4" />
+            <Zap className="w-4 h-4 mr-2" />
             Purchase now
           </>
         )}
