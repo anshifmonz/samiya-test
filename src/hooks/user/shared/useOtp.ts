@@ -1,5 +1,4 @@
-// src/hooks/useOtp.ts
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { RecaptchaVerifier, signInWithPhoneNumber, ConfirmationResult } from 'firebase/auth';
 import { auth } from 'lib/firebase/firebase';
 
@@ -36,6 +35,37 @@ export interface UseOtpResult {
   onVerifyClick: (phone: string) => Promise<void>;
 }
 
+const formatSeconds = (s: number) =>
+  `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+
+const messageIncludesInvalidAppCredential = (err: unknown) => {
+  const s = String((err as any)?.message ?? (err as any)?.error ?? '');
+  return s.includes('INVALID_APP_CREDENTIAL') || s.includes('invalid_app_credential');
+};
+
+const getFriendlyErrorMessage = (err: unknown) => {
+  const code = (err as any)?.code ?? '';
+  if (typeof code === 'string') {
+    switch (code) {
+      case 'auth/invalid-phone-number':
+        return 'The phone number is invalid. Please check and try again.';
+      case 'auth/too-many-requests':
+        return 'You have requested OTP too many times. Please try again later.';
+      case 'auth/quota-exceeded':
+        return 'SMS quota exceeded. Please try again later.';
+      case 'auth/code-expired':
+        return 'The OTP has expired. Please request a new one.';
+      case 'auth/invalid-verification-code':
+        return 'Invalid OTP. Please check the code and try again.';
+      case 'auth/billing-not-enabled':
+        return 'Phone auth requires billing (Blaze). Please enable billing in Firebase Console.';
+    }
+  }
+  if (messageIncludesInvalidAppCredential(err))
+    return 'reCAPTCHA verification failed or app credential invalid. Ensure Authorized Domains include this origin and billing is enabled if using reCAPTCHA Enterprise.';
+  return 'Failed to send OTP. Please try again.';
+};
+
 export function useOtp(options: UseOtpOptions = {}): UseOtpResult {
   const {
     countryCode = '+91',
@@ -69,41 +99,8 @@ export function useOtp(options: UseOtpOptions = {}): UseOtpResult {
   const recaptchaVerifier = useRef<RecaptchaVerifier | null>(null);
   const confirmationResult = useRef<ConfirmationResult | null>(null);
 
-  // ---- helpers ----
-  const formatSeconds = (s: number) =>
-    `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
-
-  function messageIncludesInvalidAppCredential(err: unknown) {
-    const s = String((err as any)?.message ?? (err as any)?.error ?? '');
-    return s.includes('INVALID_APP_CREDENTIAL') || s.includes('invalid_app_credential');
-  }
-
-  const getFriendlyErrorMessage = (err: unknown) => {
-    const code = (err as any)?.code ?? '';
-    if (typeof code === 'string') {
-      switch (code) {
-        case 'auth/invalid-phone-number':
-          return 'The phone number is invalid. Please check and try again.';
-        case 'auth/too-many-requests':
-          return 'You have requested OTP too many times. Please try again later.';
-        case 'auth/quota-exceeded':
-          return 'SMS quota exceeded. Please try again later.';
-        case 'auth/code-expired':
-          return 'The OTP has expired. Please request a new one.';
-        case 'auth/invalid-verification-code':
-          return 'Invalid OTP. Please check the code and try again.';
-        case 'auth/billing-not-enabled':
-          return 'Phone auth requires billing (Blaze). Please enable billing in Firebase Console.';
-      }
-    }
-    if (messageIncludesInvalidAppCredential(err)) {
-      return 'reCAPTCHA verification failed or app credential invalid. Ensure Authorized Domains include this origin and billing is enabled if using reCAPTCHA Enterprise.';
-    }
-    return 'Failed to send OTP. Please try again.';
-  };
-
   // ---- attempts/cooldown management ----
-  const updateAttemptsFromStorage = () => {
+  const updateAttemptsFromStorage = useCallback(() => {
     try {
       const storedAttempts = localStorage.getItem(ATTEMPTS_STORAGE_KEY);
       const storedTimestamp = localStorage.getItem(ATTEMPTS_TIMESTAMP_KEY);
@@ -130,11 +127,11 @@ export function useOtp(options: UseOtpOptions = {}): UseOtpResult {
       setAttempts(0);
       setResetAttemptsCountdown(0);
     }
-  };
+  }, [attemptResetInterval]);
 
   const remainingAttempts = Math.max(0, maxAttempts - attempts);
 
-  const runCooldownTimer = (endTime: number) => {
+  const runCooldownTimer = useCallback((endTime: number) => {
     if (cooldownIntervalRef.current) window.clearInterval(cooldownIntervalRef.current);
     const update = () => {
       const remainingTime = endTime - Date.now();
@@ -150,9 +147,9 @@ export function useOtp(options: UseOtpOptions = {}): UseOtpResult {
     };
     update();
     cooldownIntervalRef.current = window.setInterval(update, 1000);
-  };
+  }, []);
 
-  const runAttemptsCountdown = () => {
+  const runAttemptsCountdown = useCallback(() => {
     if (attemptsCountdownIntervalRef.current)
       window.clearInterval(attemptsCountdownIntervalRef.current);
 
@@ -187,7 +184,7 @@ export function useOtp(options: UseOtpOptions = {}): UseOtpResult {
 
     update();
     attemptsCountdownIntervalRef.current = window.setInterval(update, 1000);
-  };
+  }, [attemptResetInterval]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -225,10 +222,8 @@ export function useOtp(options: UseOtpOptions = {}): UseOtpResult {
         window.clearInterval(attemptsCountdownIntervalRef.current);
         attemptsCountdownIntervalRef.current = null;
       }
-      // DO NOT clear global recaptcha verifier here — keep it stable across HMR/dev
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [attemptResetInterval]);
+  }, [attemptResetInterval, runAttemptsCountdown, runCooldownTimer, updateAttemptsFromStorage]);
 
   // ---- reCAPTCHA init (singleton, persistent) ----
   useEffect(() => {
@@ -249,7 +244,6 @@ export function useOtp(options: UseOtpOptions = {}): UseOtpResult {
         const verifier = new RecaptchaVerifier(auth, recaptchaContainerId, { size: 'invisible' });
         recaptchaVerifier.current = verifier;
         (window as any)[GLOBAL_RECAPTCHA_KEY] = verifier;
-        // attempt to render but don't block; log non-fatal render failures
         verifier.render().catch(e => {
           console.warn('reCAPTCHA render failed (non-fatal):', e);
         });
@@ -257,178 +251,136 @@ export function useOtp(options: UseOtpOptions = {}): UseOtpResult {
         console.error('recaptcha init failed:', e);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recaptchaContainerId]);
 
-  // ---- helpers to start cooldown & attempts ----
-  const startCooldown = (seconds = cooldownSeconds) => {
-    const now = Date.now();
-    localStorage.setItem(ATTEMPTS_TIMESTAMP_KEY, String(now));
-    runAttemptsCountdown();
+  const startCooldown = useCallback(
+    (seconds = cooldownSeconds) => {
+      const now = Date.now();
+      localStorage.setItem(ATTEMPTS_TIMESTAMP_KEY, String(now));
+      runAttemptsCountdown();
 
-    const endTime = now + seconds * 1000;
-    localStorage.setItem(COOLDOWN_STORAGE_KEY, String(endTime));
-    runCooldownTimer(endTime);
+      const endTime = now + seconds * 1000;
+      localStorage.setItem(COOLDOWN_STORAGE_KEY, String(endTime));
+      runCooldownTimer(endTime);
 
-    setTimeout(() => {
-      const currentEndTime = localStorage.getItem(COOLDOWN_STORAGE_KEY);
-      if (currentEndTime && parseInt(currentEndTime, 10) === endTime) {
-        localStorage.removeItem(COOLDOWN_STORAGE_KEY);
-      }
-    }, seconds * 1000);
-  };
+      setTimeout(() => {
+        const currentEndTime = localStorage.getItem(COOLDOWN_STORAGE_KEY);
+        if (currentEndTime && parseInt(currentEndTime, 10) === endTime) {
+          localStorage.removeItem(COOLDOWN_STORAGE_KEY);
+        }
+      }, seconds * 1000);
+    },
+    [cooldownSeconds, runAttemptsCountdown, runCooldownTimer]
+  );
 
-  const incrementAttempts = () => {
+  const incrementAttempts = useCallback(() => {
     const newAttempts = attempts + 1;
     setAttempts(newAttempts);
     const now = Date.now();
     localStorage.setItem(ATTEMPTS_STORAGE_KEY, String(newAttempts));
     localStorage.setItem(ATTEMPTS_TIMESTAMP_KEY, String(now));
     runAttemptsCountdown();
-  };
+  }, [attempts, runAttemptsCountdown]);
 
-  // ---- ensure recaptcha readiness helper (await render with timeout) ----
-  const ensureRecaptchaReady = async (timeoutMs = 5000) => {
-    if (typeof window === 'undefined') throw new Error('Recaptcha only available in browser');
-    if (!recaptchaVerifier.current) {
-      // try to reuse global if available
-      recaptchaVerifier.current = (window as any)[GLOBAL_RECAPTCHA_KEY] ?? null;
+  const ensureRecaptchaReady = useCallback(
+    async (timeoutMs = 5000) => {
+      if (typeof window === 'undefined') throw new Error('Recaptcha only available in browser');
       if (!recaptchaVerifier.current) {
-        recaptchaVerifier.current = new RecaptchaVerifier(auth, recaptchaContainerId, {
-          size: 'invisible'
-        });
-        (window as any)[GLOBAL_RECAPTCHA_KEY] = recaptchaVerifier.current;
+        recaptchaVerifier.current = (window as any)[GLOBAL_RECAPTCHA_KEY] ?? null;
+        if (!recaptchaVerifier.current) {
+          recaptchaVerifier.current = new RecaptchaVerifier(auth, recaptchaContainerId, {
+            size: 'invisible'
+          });
+          (window as any)[GLOBAL_RECAPTCHA_KEY] = recaptchaVerifier.current;
+        }
       }
-    }
-    try {
-      // Promise.race so we don't wait forever
-      await Promise.race([
-        recaptchaVerifier.current!.render(),
-        new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('recaptcha render timeout')), timeoutMs)
-        )
-      ]);
-      return true;
-    } catch (e) {
-      console.warn('recaptcha readiness issue:', e);
-      return false;
-    }
-  };
-
-  // ---- requestOtp ----
-  const requestOtp = async (phone: string, isResend = false): Promise<boolean> => {
-    setLoading(true);
-    setError(null);
-
-    // Pre-check attempts
-    if (attempts >= maxAttempts) {
-      setError(`Too many attempts. Please try again in ${formatSeconds(resetAttemptsCountdown)}.`);
-      setLoading(false);
-      return false;
-    }
-
-    // If not a resend and attempts exist but no remaining, block
-    if (!isResend && attempts > 0 && remainingAttempts <= 0) {
-      setLoading(false);
-      return false;
-    }
-
-    try {
-      const formatted = ((): string | null => {
-        const digits = phone.trim().replace(/\D/g, '');
-        return digits.length === 10 ? `${countryCode}${digits}` : null;
-      })();
-      if (!formatted) throw { code: 'auth/invalid-phone-number' };
-
-      // ensure recaptcha ready (try short wait)
-      const ready = await ensureRecaptchaReady(4000);
-      if (!ready) {
-        // If recaptcha couldn't render, we'll still try signInWithPhoneNumber; it may fallback,
-        // but warn user about potential domain/billing issues.
-        console.warn('reCAPTCHA not fully ready; signInWithPhoneNumber may fail.');
+      try {
+        await Promise.race([
+          recaptchaVerifier.current!.render(),
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('recaptcha render timeout')), timeoutMs)
+          )
+        ]);
+        return true;
+      } catch (e) {
+        console.warn('recaptcha readiness issue:', e);
+        return false;
       }
+    },
+    [recaptchaContainerId]
+  );
 
-      const result = await signInWithPhoneNumber(
-        auth,
-        formatted,
-        recaptchaVerifier.current as RecaptchaVerifier
-      );
-      confirmationResult.current = result;
+  const requestOtp = useCallback(
+    async (phone: string, isResend = false): Promise<boolean> => {
+      setLoading(true);
+      setError(null);
 
-      incrementAttempts();
-      startCooldown(cooldownSeconds);
-      return true;
-    } catch (err: unknown) {
-      setError(getFriendlyErrorMessage(err));
-      if (
-        messageIncludesInvalidAppCredential(err) ||
-        (err as any)?.code === 'auth/billing-not-enabled'
-      ) {
-        console.warn(
-          'OTP send failed due to recaptcha / billing status. Check Authorized Domains & billing.'
+      if (attempts >= maxAttempts) {
+        setError(
+          `Too many attempts. Please try again in ${formatSeconds(resetAttemptsCountdown)}.`
         );
-      } else {
-        console.error('requestOtp error:', err);
+        setLoading(false);
+        return false;
       }
-      return false;
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  // ---- onVerifyClick & verifyOtp ----
-  const onVerifyClick = async (phone: string) => {
-    setVerifyingPhone(phone);
-    setError(null);
-    if (cooldown > 0) {
-      setOtpModalOpen(true);
-      return;
-    }
-    const ok = await requestOtp(phone);
-    if (ok || attempts > 0) setOtpModalOpen(true);
-  };
+      if (!isResend && attempts > 0 && remainingAttempts <= 0) {
+        setLoading(false);
+        return false;
+      }
 
-  const verifyOtp = async (otp: string) => {
-    setLoading(true);
-    setError(null);
-    if (!confirmationResult.current) {
-      setError('Please request an OTP first.');
-      setLoading(false);
-      return false;
-    }
-    try {
-      const userCredential = await confirmationResult.current.confirm(otp);
-      const idToken = await userCredential.user.getIdToken();
-      setVerifyToken(idToken);
-      confirmationResult.current = null;
+      try {
+        const formatted = ((): string | null => {
+          const digits = phone.trim().replace(/\D/g, '');
+          return digits.length === 10 ? `${countryCode}${digits}` : null;
+        })();
+        if (!formatted) throw { code: 'auth/invalid-phone-number' };
 
-      setIsVerified(true);
-      // keep verifyToken & isVerified; clear flow state
-      reset();
-      setOtpModalOpen(false);
-      return true;
-    } catch (err: unknown) {
-      setError(getFriendlyErrorMessage(err));
-      return false;
-    } finally {
-      setLoading(false);
-    }
-  };
+        const ready = await ensureRecaptchaReady(4000);
+        if (!ready) {
+          console.warn('reCAPTCHA not fully ready; signInWithPhoneNumber may fail.');
+        }
 
-  // ---- resend / reset ----
-  const resend = async () => {
-    if (!verifyingPhone) {
-      setError('No phone number was provided to resend the OTP.');
-      return false;
-    }
-    if (cooldown > 0) {
-      setError(`Please wait ${cooldown} seconds before resending.`);
-      return false;
-    }
-    return await requestOtp(verifyingPhone, true);
-  };
+        const result = await signInWithPhoneNumber(
+          auth,
+          formatted,
+          recaptchaVerifier.current as RecaptchaVerifier
+        );
+        confirmationResult.current = result;
 
-  const reset = () => {
+        incrementAttempts();
+        startCooldown(cooldownSeconds);
+        return true;
+      } catch (err: unknown) {
+        setError(getFriendlyErrorMessage(err));
+        if (
+          messageIncludesInvalidAppCredential(err) ||
+          (err as any)?.code === 'auth/billing-not-enabled'
+        ) {
+          console.warn(
+            'OTP send failed due to recaptcha / billing status. Check Authorized Domains & billing.'
+          );
+        } else {
+          console.error('requestOtp error:', err);
+        }
+        return false;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [
+      attempts,
+      maxAttempts,
+      resetAttemptsCountdown,
+      remainingAttempts,
+      countryCode,
+      ensureRecaptchaReady,
+      incrementAttempts,
+      startCooldown,
+      cooldownSeconds
+    ]
+  );
+
+  const reset = useCallback(() => {
     setError(null);
     setCooldown(0);
     setAttempts(0);
@@ -449,8 +401,77 @@ export function useOtp(options: UseOtpOptions = {}): UseOtpResult {
       // ignore storage errors
     }
     confirmationResult.current = null;
-    // NOTE: do not clear global verifier by default (keeps it stable across HMR).
-  };
+  }, []);
+
+  const verifyOtp = useCallback(
+    async (otp: string) => {
+      setLoading(true);
+      setError(null);
+      if (!confirmationResult.current) {
+        setError('Please request an OTP first.');
+        setLoading(false);
+        return false;
+      }
+      try {
+        const userCredential = await confirmationResult.current.confirm(otp);
+        const idToken = await userCredential.user.getIdToken();
+        setVerifyToken(idToken);
+        confirmationResult.current = null;
+
+        setIsVerified(true);
+        reset();
+        setOtpModalOpen(false);
+        return true;
+      } catch (err: unknown) {
+        setError(getFriendlyErrorMessage(err));
+        return false;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [reset]
+  );
+
+  const resend = useCallback(async () => {
+    if (!verifyingPhone) {
+      setError('No phone number was provided to resend the OTP.');
+      return false;
+    }
+    if (cooldown > 0) {
+      setError(`Please wait ${cooldown} seconds before resending.`);
+      return false;
+    }
+    return await requestOtp(verifyingPhone, true);
+  }, [verifyingPhone, cooldown, requestOtp]);
+
+  const onVerifyClick = useCallback(
+    async (phone: string) => {
+      // OTP already verified for this phone, allow consumer to retry sign-in without sending a new OTP.
+      if (isVerified && verifyingPhone === phone) return;
+
+      // If an OTP is already pending for this exact number, show otp modal.
+      if (confirmationResult.current && verifyingPhone === phone) {
+        setOtpModalOpen(true);
+        return;
+      }
+
+      // new phone number, reset the previous verification state.
+      if (verifyingPhone !== phone) {
+        setIsVerified(false);
+        setVerifyToken('');
+      }
+
+      setVerifyingPhone(phone);
+      setError(null);
+      if (cooldown > 0) {
+        setOtpModalOpen(true);
+        return;
+      }
+      const ok = await requestOtp(phone);
+      if (ok || attempts > 0) setOtpModalOpen(true);
+    },
+    [cooldown, requestOtp, attempts, verifyingPhone, isVerified]
+  );
 
   const resetAttemptsCountdownFormatted = formatSeconds(resetAttemptsCountdown);
 

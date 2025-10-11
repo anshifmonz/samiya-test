@@ -18,9 +18,7 @@ export function useAuth() {
         error
       } = await supabase.auth.getSession();
 
-      if (error) {
-        console.error('Error getting session:', error);
-      } else {
+      if (!error) {
         setSession(session);
         setUser(session?.user ?? null);
       }
@@ -40,21 +38,20 @@ export function useAuth() {
     });
 
     return () => subscription.unsubscribe();
-  }, [supabase.auth]);
+  }, [supabase]);
 
   const refreshSession = useCallback(async (): Promise<void> => {
     await supabase.auth.refreshSession();
-  }, [supabase.auth]);
+  }, [supabase]);
 
-  const signOut = async (): Promise<void> => {
+  const signOut = useCallback(async (): Promise<void> => {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
     } catch (error) {
-      console.error('Error signing out:', error);
       throw error;
     }
-  };
+  }, [supabase]);
 
   return {
     user,
