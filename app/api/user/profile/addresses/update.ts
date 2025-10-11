@@ -22,7 +22,12 @@ export async function PUT(request: NextRequest) {
     }
 
     const addressData: Partial<AddressFormData> = await request.json();
-    const result = await updateAddress(addressId, user.id, addressData);
+    const result = await updateAddress(
+      addressId,
+      user.id,
+      user.email.split('@')[0].slice(2) || null,
+      addressData
+    );
     if (result.error) return jsonResponse(result);
 
     return jsonResponse(result);

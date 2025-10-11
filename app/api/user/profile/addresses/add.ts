@@ -22,7 +22,11 @@ export async function POST(request: NextRequest) {
       return jsonResponse(err('Missing required fields', 400));
     }
 
-    const result = await createAddress(user.id, addressData);
+    const result = await createAddress(
+      user.id,
+      user.email.split('@')[0].slice(2) || null,
+      addressData
+    );
     return jsonResponse(result);
   } catch (_) {
     return jsonResponse(err());

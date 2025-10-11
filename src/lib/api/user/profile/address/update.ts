@@ -2,31 +2,30 @@ import { createClient } from 'lib/supabase/server';
 import { verifyPhone } from 'lib/firebase/verifyPhone';
 import { AddressFormData, Address } from 'types/address';
 import { ok, err, type ApiResponse } from 'utils/api/response';
+import { addressSchema } from 'lib/validators/address';
 
 export async function updateAddress(
   addressId: string,
   userId: string,
+  userPhone: string,
   addressData: Partial<AddressFormData>
 ): Promise<ApiResponse<Address>> {
-  const dataToUpdate: any = {};
+  const validationResult = addressSchema.partial().safeParse(addressData);
+  if (!validationResult.success) {
+    const message = validationResult.error.errors
+      .map(e => `${e.path.join('.')}: ${e.message}`)
+      .join('; ');
+    return err(message);
+  }
 
-  if (addressData.label !== undefined) dataToUpdate.label = addressData.label;
-  if (addressData.full_name !== undefined) dataToUpdate.full_name = addressData.full_name;
-  if (addressData.phone !== undefined) dataToUpdate.phone = addressData.phone;
-  if (addressData.phone_secondary !== undefined)
-    dataToUpdate.phone_secondary = addressData.phone_secondary;
-  if (addressData.email !== undefined) dataToUpdate.email = addressData.email;
-  if (addressData.street !== undefined) dataToUpdate.street = addressData.street;
-  if (addressData.landmark !== undefined) dataToUpdate.landmark = addressData.landmark;
-  if (addressData.city !== undefined) dataToUpdate.city = addressData.city;
-  if (addressData.district !== undefined) dataToUpdate.district = addressData.district;
-  if (addressData.state !== undefined) dataToUpdate.state = addressData.state;
-  if (addressData.postal_code !== undefined) dataToUpdate.postal_code = addressData.postal_code;
-  if (addressData.country !== undefined) dataToUpdate.country = addressData.country;
-  if (addressData.type !== undefined) dataToUpdate.type = addressData.type;
-  if (addressData.verifyToken && addressData.phone) {
-    const isPhoneVerified = await verifyPhone(addressData.verifyToken, addressData.phone);
-    dataToUpdate.is_phone_verified = isPhoneVerified;
+  const dataToUpdate = { ...validationResult.data };
+
+  if (dataToUpdate.phone) {
+    let isPhoneVerified = false;
+    if (userPhone && userPhone.endsWith(dataToUpdate.phone)) isPhoneVerified = true;
+    if (!isPhoneVerified && addressData.verifyToken && dataToUpdate.phone)
+      isPhoneVerified = await verifyPhone(addressData.verifyToken, dataToUpdate.phone);
+    (dataToUpdate as any).is_phone_verified = isPhoneVerified;
   }
 
   const supabase = createClient();
@@ -38,7 +37,7 @@ export async function updateAddress(
     .select('*')
     .single();
 
-  if (error) return err();
+  if (error) return err('Failed to update address');
   return ok(updatedAddress);
 }
 
