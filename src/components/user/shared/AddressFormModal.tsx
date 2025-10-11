@@ -14,6 +14,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { addressSchema } from 'lib/validators/address';
 import { AddressFormData, AddressDisplay } from 'types/address';
+import { useAuthContext } from 'contexts/AuthContext';
 import { OtpProvider, useOtpContext } from 'contexts/user/shared/OtpContext';
 
 interface AddressFormModalProps {
@@ -35,6 +36,7 @@ const AddressFormModalContent = ({
 }: AddressFormModalProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [saveForFuture, setSaveForFuture] = useState(true);
+  const { user } = useAuthContext();
 
   const form = useForm<AddressFormData>({
     resolver: zodResolver(addressSchema),
@@ -67,7 +69,11 @@ const AddressFormModalContent = ({
         'full_name' in (initialValues || {})
           ? (initialValues as any).full_name
           : (initialValues as any)?.fullName || '',
-      phone: initialValues?.phone || '',
+      phone:
+        initialValues?.phone ||
+        user.email.split('@')[0].slice(2) ||
+        user.user_metadata.phone_number.replace('+91', '') ||
+        '',
       phone_secondary:
         'phone_secondary' in (initialValues || {})
           ? (initialValues as any).phone_secondary
@@ -196,13 +202,18 @@ const AddressFormModalContent = ({
                             isVerified ||
                             !field.value ||
                             field.value.length < 10 ||
-                            (initialValues as AddressDisplay | null)?.is_phone_verified
+                            (initialValues as AddressDisplay | null)?.is_phone_verified ||
+                            user.email.split('@')[0].slice(2) === field.value ||
+                            user.user_metadata.phone_number.replace('+91', '') === field.value
                         )}
                         onClick={async () => {
                           await onVerifyClick(field.value);
                         }}
                       >
-                        {isVerified || (initialValues as AddressDisplay | null)?.is_phone_verified
+                        {isVerified ||
+                        (initialValues as AddressDisplay | null)?.is_phone_verified ||
+                        user.email.split('@')[0].slice(2) === field.value ||
+                        user.user_metadata.phone_number.replace('+91', '') === field.value
                           ? 'Verified'
                           : 'Verify'}
                       </Button>

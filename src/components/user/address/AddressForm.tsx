@@ -11,17 +11,23 @@ import { Card, CardContent, CardHeader, CardTitle } from 'ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from 'ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui/select';
 import OtpModal from '../shared/OtpModal';
+import { useAuthContext } from 'contexts/AuthContext';
 import { useAddressContext } from 'contexts/user/AddressContext';
 import { OtpProvider, useOtpContext } from 'contexts/user/shared/OtpContext';
 
 const AddressFormContent = () => {
   const { addAddress, setShowAddForm } = useAddressContext();
+  const { user } = useAuthContext();
+
   const form = useForm<AddressFormData>({
     resolver: zodResolver(addressSchema),
     defaultValues: {
       label: 'Home',
       full_name: '',
-      phone: '',
+      phone:
+        user.email.split('@')[0].slice(2) ||
+        user.user_metadata.phone_number.replace('+91', '') ||
+        '',
       phone_secondary: '',
       email: '',
       postal_code: '',
@@ -35,7 +41,7 @@ const AddressFormContent = () => {
     }
   });
 
-  const { otpModalOpen, error, loading, isVerified, verifyToken, onVerifyClick } = useOtpContext();
+  const { error, loading, isVerified, verifyToken, onVerifyClick } = useOtpContext();
 
   const handleSubmit = (data: AddressFormData) => {
     const fullData = {
@@ -130,12 +136,23 @@ const AddressFormContent = () => {
                         type="button"
                         variant="outline"
                         size="sm"
-                        disabled={loading || isVerified || !field.value || field.value.length < 10}
+                        disabled={
+                          loading ||
+                          isVerified ||
+                          !field.value ||
+                          field.value.length < 10 ||
+                          user.email.split('@')[0].slice(2) === field.value ||
+                          user.user_metadata.phone_number.replace('+91', '') === field.value
+                        }
                         onClick={async () => {
                           await onVerifyClick(field.value);
                         }}
                       >
-                        {isVerified ? 'Verified' : 'Verify'}
+                        {isVerified ||
+                        user.email.split('@')[0].slice(2) === field.value ||
+                        user.user_metadata.phone_number.replace('+91', '') === field.value
+                          ? 'Verified'
+                          : 'Verify'}
                       </Button>
                     </div>
                     <FormMessage />
@@ -151,7 +168,7 @@ const AddressFormContent = () => {
                     <FormLabel>Secondary Phone (Optional)</FormLabel>
                     <FormControl>
                       <div className="relative flex-1">
-                          <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 select-none">
+                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 select-none">
                           +91
                         </span>
                         <Input
