@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
       'authenticate_user_profile',
       {
         p_uid: session.user.id,
-        p_name: session.user.user_metadata?.name || '',
+        p_name: session.user.user_metadata?.name || 'Unknown',
         p_phone: phone,
         p_status: 'verified'
       }
