@@ -22,7 +22,7 @@ const ProfileOverview = ({ profile }: ProfileOverviewProps) => {
       <div className="flex items-center gap-6">
         <div className="relative">
           <Image
-            src={profile.profile_picture || "/images/user-avatar.jpg"}
+            src={profile.profile_picture || '/images/user-avatar.jpg'}
             alt="User Avatar"
             width={96}
             height={96}
@@ -32,8 +32,8 @@ const ProfileOverview = ({ profile }: ProfileOverviewProps) => {
         </div>
 
         <div className="flex-1">
-          <h1 className="text-3xl font-bold text-foreground mb-2">{profile.name}</h1>
-          <p className="text-muted-foreground text-lg mb-3">{profile.email}</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2">{profile.name || 'Unknown'}</h1>
+          <p className="text-muted-foreground text-lg mb-3">{profile.phone}</p>
           <p className="text-sm text-muted-foreground">
             Member since: {formatMemberSince(profile.signup_date)}
           </p>

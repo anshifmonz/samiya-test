@@ -158,7 +158,7 @@ async function updateUserProfile(
         .eq('id', userId)
         .select(
           `
-          id, name, email, phone,
+          id, name, phone,
           date_of_birth, profile_picture, bio,
           role, status, is_active, address,
           created_at, updated_at, last_login, signup_date

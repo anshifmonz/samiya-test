@@ -1,10 +1,8 @@
 export interface User {
   id: string;
   name: string;
-  email: string;
   phone?: string;
   date_of_birth?: string;
-  password?: string;
   is_active: boolean;
   role: 'user' | 'moderator';
   profile_picture?: string;
@@ -20,7 +18,7 @@ export interface User {
 export interface UserProfile {
   id: string;
   name: string;
-  email: string;
+  phone: string;
   profile_picture?: string;
   signup_date: string;
 }

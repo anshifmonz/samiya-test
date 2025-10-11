@@ -10,7 +10,7 @@ async function getUserProfile(): Promise<ApiResponse<UserProfile>> {
       `
       id,
       name,
-      email,
+      phone,
       profile_picture,
       signup_date
     `
