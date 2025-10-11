@@ -14,7 +14,11 @@ export async function PATCH(request: NextRequest) {
     if (Object.keys(updateData).length === 0)
       return jsonResponse(err('No fields provided for update', 400));
 
-    const result = await updateUserProfile(user.id, updateData);
+    const result = await updateUserProfile(
+      user.id,
+      user.email.split('@')[0].slice(2) || null,
+      updateData
+    );
     return jsonResponse(result);
   } catch (_) {
     return jsonResponse(err());

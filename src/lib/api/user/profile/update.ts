@@ -8,7 +8,7 @@ interface UpdateData extends Partial<User> {
   address?: any;
 }
 
-export async function handleAddressOperation(userId: string, addressData: any) {
+export async function handleAddressOperation(userId: string, userPhone: string, addressData: any) {
   if (typeof addressData !== 'object' || Array.isArray(addressData))
     return { error: 'Address must be an object', status: 400 };
 
@@ -37,14 +37,14 @@ export async function handleAddressOperation(userId: string, addressData: any) {
           return { error: `Address field '${field}' is required`, status: 400 };
       }
 
-      addressResult = await createAddress(userId, data as AddressFormData);
+      addressResult = await createAddress(userId, userPhone, data as AddressFormData);
       break;
 
     case 'update':
       if (!addressId) return { error: 'Address ID is required for update action', status: 400 };
       if (!data) return { error: 'Address data is required for update action', status: 400 };
 
-      addressResult = await updateAddress(addressId, userId, data);
+      addressResult = await updateAddress(addressId, userId, userPhone, data);
       break;
 
     case 'setDefault':
@@ -60,6 +60,7 @@ export async function handleAddressOperation(userId: string, addressData: any) {
 
 async function updateUserProfile(
   userId: string,
+  userPhone: string,
   updateData: UpdateData
 ): Promise<ApiResponse<{ profile?: User | null; address?: any }>> {
   try {
@@ -138,7 +139,7 @@ async function updateUserProfile(
 
     let addressResult = null;
     if (updateData.address)
-      addressResult = await handleAddressOperation(userId, updateData.address);
+      addressResult = await handleAddressOperation(userId, userPhone, updateData.address);
     if (addressResult && addressResult.error) return err(addressResult.error, addressResult.status);
 
     // Only update user profile if there are validated fields to update
