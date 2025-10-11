@@ -21,7 +21,7 @@ export const AuthModalProvider = ({ children }: { children: ReactNode }) => {
       isAuthModalOpen,
       setAuthModalOpen,
       onSigninSuccess,
-      setOnSigninSuccess: (callback: () => void) => setOnSigninSuccess(() => { callback(); })
+      setOnSigninSuccess: (callback: () => void) => setOnSigninSuccess(() => callback)
     }),
     [isAuthModalOpen, onSigninSuccess]
   );
