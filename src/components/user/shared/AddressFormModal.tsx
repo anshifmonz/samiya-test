@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import OtpModal from './OtpModal';
 import { Input } from 'ui/input';
 import { Label } from 'ui/label';
@@ -37,6 +37,31 @@ const AddressFormModalContent = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [saveForFuture, setSaveForFuture] = useState(true);
   const { user } = useAuthContext();
+
+  const modalContentRef = useRef<HTMLDivElement>(null);
+  const recaptchaContainerRef = useRef<HTMLDivElement | null>(null);
+  const originalParentRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    const recaptchaEl = document.getElementById('recaptcha-container');
+
+    if (open) {
+      const modalContentEl = modalContentRef.current;
+      if (recaptchaEl && modalContentEl && !modalContentEl.contains(recaptchaEl)) {
+        recaptchaContainerRef.current = recaptchaEl as HTMLDivElement;
+        originalParentRef.current = recaptchaEl.parentElement;
+        modalContentEl.appendChild(recaptchaEl);
+      }
+    } else {
+      if (recaptchaContainerRef.current && originalParentRef.current)
+        originalParentRef.current.appendChild(recaptchaContainerRef.current);
+    }
+
+    return () => {
+      if (recaptchaContainerRef.current && originalParentRef.current)
+        originalParentRef.current.appendChild(recaptchaContainerRef.current);
+    };
+  }, [open]);
 
   const form = useForm<AddressFormData>({
     resolver: zodResolver(addressSchema),
@@ -91,7 +116,7 @@ const AddressFormModalContent = ({
       country: initialValues?.country || 'India',
       type: initialValues?.type || 'shipping'
     });
-  }, [initialValues, open, showSaveToggle, form]);
+  }, [initialValues, open, showSaveToggle, form, user.email, user.user_metadata.phone_number]);
 
   const onSubmit = async (data: AddressFormData) => {
     setIsSubmitting(true);
@@ -114,7 +139,10 @@ const AddressFormModalContent = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[90%] max-w-3xl max-h-[90vh] rounded-lg overflow-y-auto p-4 md:p-6">
+      <DialogContent
+        ref={modalContentRef}
+        className="w-[90%] max-w-3xl max-h-[90vh] rounded-lg overflow-y-auto p-4 md:p-6"
+      >
         <DialogHeader>
           <DialogTitle>{isEdit ? 'Edit Address' : 'Add New Address'}</DialogTitle>
         </DialogHeader>

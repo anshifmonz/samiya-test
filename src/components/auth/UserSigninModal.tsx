@@ -1,5 +1,6 @@
 'use client';
 
+import { useRef, useEffect } from 'react';
 import { Input } from 'ui/input';
 import { Label } from 'ui/label';
 import { Button } from 'ui/button';
@@ -87,9 +88,34 @@ const UserSigninModal: React.FC<UserSigninModalProps> = ({
   onOpenChange,
   onSigninSuccess
 }) => {
+  const modalContentRef = useRef<HTMLDivElement>(null);
+  const recaptchaContainerRef = useRef<HTMLDivElement | null>(null);
+  const originalParentRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    const recaptchaEl = document.getElementById('recaptcha-container');
+
+    if (open) {
+      const modalContentEl = modalContentRef.current;
+      if (recaptchaEl && modalContentEl && !modalContentEl.contains(recaptchaEl)) {
+        recaptchaContainerRef.current = recaptchaEl as HTMLDivElement;
+        originalParentRef.current = recaptchaEl.parentElement;
+        modalContentEl.appendChild(recaptchaEl);
+      }
+    } else {
+      if (recaptchaContainerRef.current && originalParentRef.current)
+        originalParentRef.current.appendChild(recaptchaContainerRef.current);
+    }
+
+    return () => {
+      if (recaptchaContainerRef.current && originalParentRef.current)
+        originalParentRef.current.appendChild(recaptchaContainerRef.current);
+    };
+  }, [open]);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="p-0 w-full max-w-md">
+      <DialogContent ref={modalContentRef} className="p-0 w-full max-w-md">
         <OtpProvider>
           <UserSigninContent onSigninSuccess={onSigninSuccess} onOpenChange={onOpenChange} />
         </OtpProvider>
