@@ -9,11 +9,13 @@ export async function POST(request: NextRequest) {
     const user = await getServerUser();
     if (!user) return jsonResponse(err('Unauthorized', 401));
 
+    const phone = user.user_metadata.phone_number;
     const body: CreateOrderRequest = await request.json();
     const { checkoutId, paymentMethod, orderAddressId, address } = body;
 
     const result = await createOrder({
       userId: user.id,
+      phone,
       checkoutId,
       orderAddressId,
       paymentMethod,

@@ -11,7 +11,7 @@ interface PaymentDetails {
 }
 
 export async function createOrder(request: CreateOrderRequest): Promise<ApiResponse<any>> {
-  const { userId, checkoutId, paymentMethod, orderAddressId, address } = request;
+  const { userId, phone, checkoutId, paymentMethod, orderAddressId, address } = request;
   if (!userId || typeof userId !== 'string')
     return err('User ID is required and must be a string', 400);
   if (!checkoutId || typeof checkoutId !== 'string')
@@ -20,6 +20,7 @@ export async function createOrder(request: CreateOrderRequest): Promise<ApiRespo
     return err('Payment method must be a string', 400);
   if (paymentMethod && !['card', 'upi', 'netbanking', 'wallet'].includes(paymentMethod))
     return err('Invalid payment method', 400);
+  if (paymentMethod === 'cod') return err('Cash on delivery is not available', 400);
   if (orderAddressId && typeof orderAddressId !== 'string')
     return err('Order address ID is required and must be a string', 400);
   if (orderAddressId === 'TEMP_ID' && !address)
@@ -31,7 +32,7 @@ export async function createOrder(request: CreateOrderRequest): Promise<ApiRespo
     p_user_id: userId,
     p_checkout_id: checkoutId,
     p_order_address_id: orderAddressId,
-    p_payment_method: paymentMethod,
+    p_payment_method: paymentMethod || 'any',
     p_address: address,
     p_save_address: address?.saveAddress || false
   });
@@ -46,10 +47,9 @@ export async function createOrder(request: CreateOrderRequest): Promise<ApiRespo
   let paymentDetails: PaymentDetails | null = null;
   let paymentError: string | undefined;
 
-  if (paymentMethod === 'cod') return err('Cash on delivery is not available', 400);
-
   const { data: paymentData, status } = await initiatePaymentSession(
     userId,
+    phone,
     orderId,
     paymentMethod !== undefined ? paymentMethod : undefined
   );

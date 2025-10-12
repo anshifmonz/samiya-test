@@ -21,6 +21,7 @@ const ALLOWED_METHODS = new Set<CreateOrderRequest['paymentMethod']>([
 
 export async function initiatePaymentSession(
   userId: string,
+  phone: string,
   orderId: string,
   paymentMethod?: CreateOrderRequest['paymentMethod']
 ): Promise<ApiResponse<PaymentInitiationResponse>> {
@@ -70,14 +71,17 @@ export async function initiatePaymentSession(
       });
     }
 
-    // Get user details for payment
-    const { data: userProfile, error: userError } = await supabase
-      .from('users')
-      .select('email, phone')
-      .eq('id', userId)
-      .single();
+    let phoneNumber = phone;
+    if (!phoneNumber) {
+      const { data, error } = await supabase
+        .from('users')
+        .select('phone')
+        .eq('id', userId)
+        .single();
 
-    if (userError || !userProfile) return err('User profile not found', 404);
+      if (error || !data) return err('User profile not found', 404);
+      phoneNumber = data.phone;
+    }
 
     let cfPaymentMethods = '';
     if (paymentMethod) {
@@ -98,8 +102,8 @@ export async function initiatePaymentSession(
       order_currency: 'INR',
       customer_details: {
         customer_id: userId,
-        customer_email: userProfile.email || undefined,
-        customer_phone: userProfile.phone || '9999999999'
+        customer_email: undefined,
+        customer_phone: phoneNumber || '9999999999'
       },
       order_meta: {
         return_url: generateReturnUrl(orderId),

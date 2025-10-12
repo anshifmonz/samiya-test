@@ -53,9 +53,10 @@ export interface OrderSummary {
 // For creating orders from checkout
 export interface CreateOrderRequest {
   userId: string;
+  phone: string;
   checkoutId: string;
   orderAddressId: string;
-  paymentMethod: 'card' | 'upi' | 'netbanking' | 'wallet' | 'cod';
+  paymentMethod?: 'card' | 'upi' | 'netbanking' | 'wallet' | 'cod';
   address?: AddressFormData & {
     saveAddress: boolean;
   };
