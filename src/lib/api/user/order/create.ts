@@ -1,7 +1,7 @@
-import { createClient } from 'lib/supabase/server';
-import { type ApiResponse, ok, err } from 'utils/api/response';
-import { initiatePaymentSession } from 'lib/api/user/payment';
 import { CreateOrderRequest } from 'types/order';
+import { createClient } from 'lib/supabase/server';
+import { initiatePaymentSession } from 'lib/api/user/payment';
+import { type ApiResponse, ok, err } from 'utils/api/response';
 
 interface PaymentDetails {
   payment_session_id: string;
@@ -12,6 +12,7 @@ interface PaymentDetails {
 
 export async function createOrder(request: CreateOrderRequest): Promise<ApiResponse<any>> {
   const { userId, phone, checkoutId, paymentMethod, orderAddressId, address } = request;
+
   if (!userId || typeof userId !== 'string')
     return err('User ID is required and must be a string', 400);
   if (!checkoutId || typeof checkoutId !== 'string')
@@ -40,27 +41,40 @@ export async function createOrder(request: CreateOrderRequest): Promise<ApiRespo
   if (error) return err('Failed to create order', 500);
 
   const resp = data as any;
-  if (!resp?.success) return err('Order creation failed', 400);
+  if (!resp?.success) return err(resp.error || 'Order creation failed', resp.status || 400);
 
   const orderId = resp.data.order_id;
 
-  let paymentDetails: PaymentDetails | null = null;
-  let paymentError: string | undefined;
+  try {
+    const {
+      data: paymentData,
+      status,
+      error: paymentSessionError
+    } = await initiatePaymentSession(userId, phone, orderId, paymentMethod);
 
-  const { data: paymentData, status } = await initiatePaymentSession(
-    userId,
-    phone,
-    orderId,
-    paymentMethod !== undefined ? paymentMethod : undefined
-  );
-  if (status !== 200) return err();
+    if (status !== 200 || !paymentData)
+      throw new Error(paymentSessionError || 'Failed to initiate payment session.');
 
-  paymentDetails = paymentData as PaymentDetails;
+    const paymentDetails = paymentData as PaymentDetails;
 
-  return ok({
-    orderId,
-    payment_required: true,
-    payment: paymentDetails,
-    payment_error: paymentError
-  });
+    return ok({
+      orderId,
+      payment_required: true,
+      payment: paymentDetails
+    });
+  } catch (e: any) {
+    console.error(`Payment initiation failed for order ${orderId}, rolling back...`, e);
+
+    const { error: rollbackError } = await supabase.rpc('rollback_order_creation_rpc', {
+      p_order_id: orderId
+    });
+
+    if (rollbackError) {
+      console.error(`CRITICAL: Order rollback failed for orderId: ${orderId}`, rollbackError);
+      // If rollback fails, we are in an inconsistent state. Return a critical error.
+      return err();
+    }
+
+    return err();
+  }
 }
