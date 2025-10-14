@@ -12,10 +12,10 @@ export function useProductLogic(product: Product) {
   const { user } = useAuthContext();
   const firstColor = Object.keys(product.images)[0];
 
-  const [isWishlist, setIsWishlist] = useState(false);
-  const [isLoadingWishlist, setIsLoadingWishlist] = useState(false);
-  const [isAddingToCart, setIsAddingToCart] = useState(false);
-  const [isPurchasing, setIsPurchasing] = useState(false);
+  const [isWishlist, setIsWishlist] = useState<boolean>(false);
+  const [isLoadingWishlist, setIsLoadingWishlist] = useState<boolean>(false);
+  const [isAddingToCart, setIsAddingToCart] = useState<boolean>(false);
+  const [isPurchasing, setIsPurchasing] = useState<boolean>(false);
 
   const [selectedColor, setSelectedColor] = useState<string>(
     () => searchParams?.get('color') || firstColor
@@ -24,8 +24,10 @@ export function useProductLogic(product: Product) {
   const [selectedSizeData, setSelectedSizeData] = useState<Size | undefined>(undefined);
   const [quantity, setQuantity] = useState<number>(1);
 
+  const isArchive = product.isArchive;
+
   const updateUrlParams = useCallback(
-    (color: string, size: string = '') => {
+    (color: string, size: string = ''): void => {
       const current = new URLSearchParams(Array.from(searchParams?.entries() || []));
       current.set('color', color);
       if (size) {
@@ -92,7 +94,7 @@ export function useProductLogic(product: Product) {
     setIsWishlist(!!currentWishlistId);
   }, [user, selectedColor, selectedSizeData]);
 
-  const handleColorChange = (color: string) => {
+  const handleColorChange = (color: string): void => {
     const availableSizes = getAvailableSizesForColor(color);
     const firstValidSize = availableSizes.find(size => !isSizeOutOfStock(size));
     const newSize = firstValidSize ? firstValidSize.name : '';
@@ -102,7 +104,7 @@ export function useProductLogic(product: Product) {
     updateUrlParams(color, newSize);
   };
 
-  const handleSizeChange = (sizeName: string, sizeData?: Size) => {
+  const handleSizeChange = (sizeName: string, sizeData?: Size): void => {
     if (sizeData && !isSizeOutOfStock(sizeData)) {
       setSelectedSize(sizeName);
       setSelectedSizeData(sizeData);
@@ -114,7 +116,7 @@ export function useProductLogic(product: Product) {
     }
   };
 
-  const handleWhatsApp = () => {
+  const handleWhatsApp = (): void => {
     const url = typeof window !== 'undefined' ? window.location.href : '';
     const message =
       `Hello, I'm interested in this product!\n` +
@@ -129,7 +131,7 @@ export function useProductLogic(product: Product) {
     window.open(whatsappUrl, '_blank');
   };
 
-  const handlePurchase = async () => {
+  const handlePurchase = async (): Promise<void> => {
     setIsPurchasing(true);
     if (!selectedColor || !selectedSize || !selectedSizeData) return setIsPurchasing(false);
 
@@ -154,7 +156,7 @@ export function useProductLogic(product: Product) {
     }
   };
 
-  const handleWishlistToggle = async () => {
+  const handleWishlistToggle = async (): Promise<void> => {
     if (!user) return;
     if (!selectedSizeData?.id) return;
     setIsLoadingWishlist(true);
@@ -213,7 +215,7 @@ export function useProductLogic(product: Product) {
     }
   };
 
-  const getColorStyle = (color: string) => {
+  const getColorStyle = (color: string): string => {
     const colorData = product.images[color];
     if (colorData?.hex && colorData.hex !== '######') return colorData.hex;
 
@@ -247,7 +249,7 @@ export function useProductLogic(product: Product) {
     return colorMap[color] || color;
   };
 
-  const handleAddToCart = async () => {
+  const handleAddToCart = async (): Promise<void> => {
     if (!selectedColor || !selectedSize || !selectedSizeData) return;
     setIsAddingToCart(true);
 
@@ -274,8 +276,10 @@ export function useProductLogic(product: Product) {
   };
 
   return {
+    product,
     quantity,
     isWishlist,
+    isArchive,
     isPurchasing,
     isAddingToCart,
     isLoadingWishlist,

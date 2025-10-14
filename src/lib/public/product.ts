@@ -77,6 +77,7 @@ const getProduct = async (id: string, userId?: string): Promise<Product | null> 
       tags,
       categoryId: data.category_id || '',
       active: data.is_active,
+      isArchive: data.is_archive,
       colorSizes,
       colorIdMapping
     };

@@ -4,25 +4,7 @@ import { createContext, useContext, ReactNode } from 'react';
 import { type Product, type Size } from 'types/product';
 import { useProductLogic } from 'hooks/public/useProductLogic';
 
-interface ProductContextType {
-  product: Product;
-  selectedColor: string;
-  selectedSize: string;
-  selectedSizeData: Size | undefined;
-  quantity: number;
-  isWishlist: boolean;
-  isLoadingWishlist: boolean;
-  isAddingToCart: boolean;
-  isPurchasing: boolean;
-  handleColorChange: (color: string) => void;
-  handleSizeChange: (sizeName: string, sizeData?: Size) => void;
-  setQuantity: (quantity: number) => void;
-  handleWhatsApp: () => void;
-  handleWishlistToggle: () => Promise<void>;
-  handleAddToCart: () => Promise<void>;
-  handlePurchase: () => Promise<void>;
-  getColorStyle: (color: string) => string;
-}
+type ProductContextType = ReturnType<typeof useProductLogic>;
 
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
 

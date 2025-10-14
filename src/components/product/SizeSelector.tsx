@@ -3,12 +3,16 @@ import { useSizes } from 'hooks/public/useSizes';
 import { useProductContext } from 'contexts/ProductContext';
 
 export default function SizeSelector() {
-  const { product, selectedColor, selectedSize, handleSizeChange } = useProductContext();
+  const { product, isArchive, selectedColor, selectedSize, handleSizeChange } = useProductContext();
   const { sizes: allSizes } = useSizes();
 
   const getAvailableSizes = (): Size[] => {
     // if the selected color has specific sizes from product_color_size data
-    if (product.colorSizes && product.colorSizes[selectedColor] && product.colorSizes[selectedColor].length > 0)
+    if (
+      product.colorSizes &&
+      product.colorSizes[selectedColor] &&
+      product.colorSizes[selectedColor].length > 0
+    )
       return product.colorSizes[selectedColor];
 
     // if the color data itself has sizes (from images object)
@@ -17,16 +21,19 @@ export default function SizeSelector() {
   };
 
   const sizes = getAvailableSizes();
-  const standardSizes = ["S", "M", "L", "XL"];
+  const standardSizes = ['S', 'M', 'L', 'XL'];
   const availableSizes = sizes?.map(size => size.name) || [];
 
-  const allPossibleSizes = allSizes.length > 0
-    ? allSizes.map(size => size.name).sort((a, b) => {
-        const aSize = allSizes.find(s => s.name === a);
-        const bSize = allSizes.find(s => s.name === b);
-        return (aSize?.sort_order || 0) - (bSize?.sort_order || 0);
-      })
-    : standardSizes;
+  const allPossibleSizes =
+    allSizes.length > 0
+      ? allSizes
+          .map(size => size.name)
+          .sort((a, b) => {
+            const aSize = allSizes.find(s => s.name === a);
+            const bSize = allSizes.find(s => s.name === b);
+            return (aSize?.sort_order || 0) - (bSize?.sort_order || 0);
+          })
+      : standardSizes;
 
   let sizesToDisplay: string[];
 
@@ -49,7 +56,8 @@ export default function SizeSelector() {
         {sizesToDisplay.map(sizeName => {
           const sizeData = sizes?.find(s => s.name === sizeName);
           const isAvailable = availableSizes.includes(sizeName);
-          const isOutOfStock = sizeData && sizeData.stock_quantity !== undefined && sizeData.stock_quantity === 0;
+          const isOutOfStock =
+            sizeData && sizeData.stock_quantity !== undefined && sizeData.stock_quantity === 0;
           const isLowStock = sizeData && sizeData.is_low_stock;
 
           return (
@@ -61,16 +69,22 @@ export default function SizeSelector() {
                 }
               }}
               className={`relative px-4 py-2 text-sm font-medium rounded border transition-all duration-200 ${
-                !isAvailable || isOutOfStock
+                !isAvailable || isOutOfStock || isArchive
                   ? 'bg-muted/50 text-muted-foreground/50 border-muted cursor-not-allowed'
                   : selectedSize === sizeName
-                    ? 'bg-foreground text-background border-foreground'
-                    : isLowStock
-                      ? 'bg-background text-foreground border-orange-300 hover:border-orange-400'
-                      : 'bg-background text-foreground border-border hover:border-foreground'
+                  ? 'bg-foreground text-background border-foreground'
+                  : isLowStock
+                  ? 'bg-background text-foreground border-orange-300 hover:border-orange-400'
+                  : 'bg-background text-foreground border-border hover:border-foreground'
               }`}
-              disabled={!isAvailable || isOutOfStock}
-              title={isOutOfStock ? 'Out of stock' : isLowStock ? `Low stock - ${sizeData?.stock_quantity} left` : undefined}
+              disabled={!isAvailable || isOutOfStock || isArchive}
+              title={
+                isOutOfStock
+                  ? 'Out of stock'
+                  : isLowStock
+                  ? `Low stock - ${sizeData?.stock_quantity} left`
+                  : undefined
+              }
             >
               {sizeName}
               {(!isAvailable || isOutOfStock) && (

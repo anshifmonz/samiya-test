@@ -37,6 +37,7 @@ export interface Product {
   colorSizes?: Record<string, Size[]>; // Color-specific sizes mapping
   colorIdMapping?: Record<string, string>; // Map color names to color IDs
   active?: boolean;
+  isArchive?: boolean;
 }
 
 export type CreateProductData = Omit<Product, 'id' | 'short_code'> & {

@@ -1,16 +1,20 @@
 import { Minus, Plus } from 'lucide-react';
-
 import { useProductContext } from 'contexts/ProductContext';
 
 export default function QuantitySelector() {
-  const { quantity, setQuantity } = useProductContext();
+  const { isArchive, quantity, setQuantity } = useProductContext();
   return (
     <div className="space-y-3">
       <span className="text-sm font-medium">Quantity</span>
-      <div className="flex items-center border border-border rounded w-fit">
+      <div
+        className={`flex items-center border border-border rounded w-fit ${
+          isArchive ? 'opacity-50' : ''
+        }`}
+      >
         <button
           onClick={() => setQuantity(Math.max(1, quantity - 1))}
           className="p-2 hover:bg-muted"
+          disabled={isArchive}
         >
           <Minus className="h-4 w-4" />
         </button>
@@ -18,6 +22,7 @@ export default function QuantitySelector() {
         <button
           onClick={() => setQuantity(quantity + 1)}
           className="p-2 hover:bg-muted"
+          disabled={isArchive}
         >
           <Plus className="h-4 w-4" />
         </button>
