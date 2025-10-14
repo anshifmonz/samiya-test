@@ -3,10 +3,11 @@
 import { Button } from 'ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import LinkedAccounts from './LinkedAccounts';
-import SessionManagement from './SessionManagement';
+import { UserProfile } from 'types/user';
+// import LinkedAccounts from './LinkedAccounts';
+// import SessionManagement from './SessionManagement';
 import AccountInformation from './AccountInformation';
-import PasswordAuthentication from './PasswordAuthentication';
+// import PasswordAuthentication from './PasswordAuthentication';
 import { SecurityContextProvider } from 'contexts/user/SecurityContext';
 
 const SecurityContent = () => {
@@ -35,18 +36,18 @@ const SecurityContent = () => {
 
         <div className="space-y-8">
           <AccountInformation />
-          <PasswordAuthentication />
+          {/* <PasswordAuthentication />
           <LinkedAccounts />
-          <SessionManagement />
+          <SessionManagement /> */}
         </div>
       </div>
     </div>
   );
 };
 
-const Security = () => {
+const Security = ({ profile }: { profile: UserProfile }) => {
   return (
-    <SecurityContextProvider>
+    <SecurityContextProvider profile={profile}>
       <SecurityContent />
     </SecurityContextProvider>
   );
