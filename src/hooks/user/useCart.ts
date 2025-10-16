@@ -10,14 +10,15 @@ export const useCart = ({ initialCartItems }: { initialCartItems: CartItem[] }) 
   const { user } = useAuthContext();
   const router = useRouter();
   const [cartItems, setCartItems] = useState<CartItem[]>(initialCartItems);
-  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [isAddingToCart, setIsAddingToCart] = useState<boolean>(false);
+  const [isSelectionUpdating, setIsSelectionUpdating] = useState<boolean>(false);
 
   const handleAddToCart = async (
     productId: string,
     quantity: number,
     selectedColor: string,
     variant: any
-  ) => {
+  ): Promise<void> => {
     if (!user) return;
 
     setIsAddingToCart(true);
@@ -40,51 +41,60 @@ export const useCart = ({ initialCartItems }: { initialCartItems: CartItem[] }) 
     }
   };
 
-  const updateCartQuantity = async (cartItemId: string, quantity: number) => {
+  const updateCartQuantity = async (cartItemId: string, quantity: number): Promise<void> => {
     apiRequest('/api/user/cart', {
       method: 'PUT',
       body: { cartItemId, quantity }
     });
   };
 
-  const updateCartSelection = async (cartItemId: string, isSelected: boolean) => {
-    apiRequest('/api/user/cart', {
-      method: 'PATCH',
-      body: {
-        cartItemId,
-        isSelected
-      }
-    });
-  };
-
-  const bulkUpdateCartSelection = async (isSelected: boolean) => {
-    apiRequest('/api/user/cart/bulk-select', {
-      method: 'PATCH',
-      body: { isSelected }
-    });
-  };
-
   const debouncedUpdateCartQuantity = useDebounce(updateCartQuantity, 1000);
-  const debouncedUpdateCartSelection = useDebounce(updateCartSelection, 1000);
-  const debouncedUpdateCartBulkSelection = useDebounce(bulkUpdateCartSelection, 1000);
 
-  const handleSelectItem = (itemId: string, isSelected: boolean) => {
+  const debouncedUpdateCartSelection = useDebounce(
+    async (cartItemId: string, isSelected: boolean): Promise<void> => {
+      await apiRequest('/api/user/cart', {
+        method: 'PATCH',
+        body: {
+          cartItemId,
+          isSelected
+        }
+      });
+      setIsSelectionUpdating(false);
+    },
+    1000
+  );
+
+  const debouncedUpdateCartBulkSelection = useDebounce(
+    async (isSelected: boolean): Promise<void> => {
+      await apiRequest('/api/user/cart/bulk-select', {
+        method: 'PATCH',
+        body: { isSelected }
+      });
+      setIsSelectionUpdating(false);
+    },
+    1000
+  );
+
+  const handleSelectItem = (itemId: string, isSelected: boolean): void => {
+    setIsSelectionUpdating(true);
     setCartItems(items => items.map(item => (item.id === itemId ? { ...item, isSelected } : item)));
 
     debouncedUpdateCartSelection(itemId, isSelected);
   };
 
-  const handleSelectAll = () => {
+  const handleSelectAll = (): void => {
+    setIsSelectionUpdating(true);
     setCartItems(items => items.map(item => ({ ...item, isSelected: true })));
     debouncedUpdateCartBulkSelection(true);
   };
 
-  const handleDeselectAll = () => {
+  const handleDeselectAll = (): void => {
+    setIsSelectionUpdating(true);
     setCartItems(items => items.map(item => ({ ...item, isSelected: false })));
     debouncedUpdateCartBulkSelection(false);
   };
 
-  const handleQuantityChange = (itemId: string, newQuantity: number) => {
+  const handleQuantityChange = (itemId: string, newQuantity: number): void => {
     if (newQuantity < 1) return;
 
     setCartItems(items =>
@@ -94,7 +104,7 @@ export const useCart = ({ initialCartItems }: { initialCartItems: CartItem[] }) 
     debouncedUpdateCartQuantity(itemId, newQuantity);
   };
 
-  const handleRemoveItem = async (itemId: string) => {
+  const handleRemoveItem = async (itemId: string): Promise<void> => {
     const { data, error } = await apiRequest('/api/user/cart', {
       method: 'DELETE',
       body: { cartId: itemId },
@@ -108,7 +118,7 @@ export const useCart = ({ initialCartItems }: { initialCartItems: CartItem[] }) 
     setCartItems(items => items.filter(item => item.id !== itemId));
   };
 
-  const handleProceedToCheckout = async () => {
+  const handleProceedToCheckout = async (): Promise<void> => {
     const { data, error } = await apiRequest('/api/user/checkout', {
       method: 'POST',
       showLoadingBar: true,
@@ -119,8 +129,8 @@ export const useCart = ({ initialCartItems }: { initialCartItems: CartItem[] }) 
     if (data.data.checkoutId) router.push('/user/checkout');
   };
 
-  const handleContinueShopping = () => router.push('/');
-  const handleGoBack = () => router.back();
+  const handleContinueShopping = (): void => router.push('/');
+  const handleGoBack = (): void => router.back();
 
   // Computed values
   const selectedItems = cartItems.filter(item => item.isSelected);
@@ -135,14 +145,15 @@ export const useCart = ({ initialCartItems }: { initialCartItems: CartItem[] }) 
   return {
     // State
     cartItems,
-    isAddingToCart,
     selectedItems,
+    isAddingToCart,
+    isSelectionUpdating,
 
     // Computed values
     subtotal,
+    totalAmount,
     totalDiscount,
     deliveryCharges,
-    totalAmount,
 
     // Handlers
     handleAddToCart,

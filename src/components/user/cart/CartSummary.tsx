@@ -7,11 +7,12 @@ import { useCartContext } from 'contexts/user/CartContext';
 
 const CartSummary = () => {
   const {
-    selectedItems,
     subtotal,
+    totalAmount,
+    selectedItems,
     totalDiscount,
     deliveryCharges,
-    totalAmount,
+    isSelectionUpdating,
     handleProceedToCheckout,
     handleContinueShopping
   } = useCartContext();
@@ -64,7 +65,7 @@ const CartSummary = () => {
         <Button
           className="w-full"
           size="lg"
-          disabled={selectedItems.length === 0}
+          disabled={selectedItems.length === 0 || isSelectionUpdating}
           onClick={handleProceedToCheckout}
         >
           Proceed to Checkout ({selectedItems.length} items)
