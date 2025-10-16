@@ -22,7 +22,14 @@ export function useProductLogic(product: Product) {
   );
   const [selectedSize, setSelectedSize] = useState<string>(() => searchParams?.get('size') || '');
   const [selectedSizeData, setSelectedSizeData] = useState<Size | undefined>(undefined);
-  const [quantity, setQuantity] = useState<number>(1);
+  const [quantity, setQuantityState] = useState<number>(1);
+
+  const setQuantity = (newQuantity: number) => {
+    const stock = selectedSizeData?.stock_quantity;
+    let finalQuantity = Math.max(1, newQuantity);
+    if (stock !== undefined) finalQuantity = Math.min(finalQuantity, stock);
+    setQuantityState(finalQuantity);
+  };
 
   const isArchive = product.isArchive;
 
