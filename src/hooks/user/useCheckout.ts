@@ -2,12 +2,13 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'hooks/ui/use-toast';
 import { apiRequest } from 'lib/utils/apiRequest';
-import { useCashfreeCheckout } from 'hooks/useCashfreeCheckout';
+import type { CheckoutData } from 'types/checkout';
+import type { DeliveryOption } from 'types/delivery';
+import type { Address, AddressDisplay } from 'types/address';
+import type { PaymentMethod as PaymentMethodType } from 'types/payment';
 import { mapAddressToDisplay } from 'utils/addressMapper';
-import { type CheckoutData } from 'types/checkout';
-import { Address, AddressDisplay } from 'types/address';
-import { PaymentMethod as PaymentMethodType } from 'types/payment';
-import { DeliveryOption } from 'types/delivery';
+import { useCashfreeCheckout } from 'hooks/useCashfreeCheckout';
+import { calculateDeliveryCharge } from 'utils/calculateDeliveryCharge';
 
 export const mockPaymentMethods: PaymentMethodType[] = [
   {
@@ -37,7 +38,7 @@ export const deliveryOptions: DeliveryOption[] = [
   {
     id: 'standard',
     name: 'Standard Delivery',
-    price: 99,
+    price: 40,
     estimatedDays: '5-7 business days',
     description: 'Free delivery on orders above ₹1000'
   },
@@ -86,9 +87,9 @@ export function useCheckout({
   const [editingAddress, setEditingAddress] = useState<AddressDisplay | null>(null);
 
   const subtotal = checkoutData?.total || 0;
-  const selectedDeliveryOption = deliveryOptions.find(option => option.id === selectedDelivery);
-  const deliveryCharges =
-    subtotal > 1000 && selectedDelivery === 'standard' ? 0 : selectedDeliveryOption?.price || 0;
+  // const selectedDeliveryOption = deliveryOptions.find(option => option.id === selectedDelivery);
+  // const deliveryCharges = subtotal >= 1000 && selectedDelivery === 'standard' ? 0 : selectedDeliveryOption.price || 40;
+  const deliveryCharges = calculateDeliveryCharge(subtotal);
   const totalAmount = subtotal + deliveryCharges;
 
   useEffect(() => {

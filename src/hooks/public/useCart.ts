@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { apiRequest } from 'utils/apiRequest';
 import { useDebounce } from 'hooks/useDebounce';
 import { useAuthContext } from 'contexts/AuthContext';
+import { calculateDeliveryCharge } from 'utils/calculateDeliveryCharge';
 
 export const useCart = ({ initialCartItems }: { initialCartItems: CartItem[] }) => {
   const { user } = useAuthContext();
@@ -68,11 +69,7 @@ export const useCart = ({ initialCartItems }: { initialCartItems: CartItem[] }) 
   const debouncedUpdateCartBulkSelection = useDebounce(bulkUpdateCartSelection, 1000);
 
   const handleSelectItem = (itemId: string, isSelected: boolean) => {
-    setCartItems(items => items.map(item => (
-      item.id === itemId
-      ? { ...item, isSelected }
-      : item
-    )));
+    setCartItems(items => items.map(item => (item.id === itemId ? { ...item, isSelected } : item)));
 
     debouncedUpdateCartSelection(itemId, isSelected);
   };
@@ -90,11 +87,9 @@ export const useCart = ({ initialCartItems }: { initialCartItems: CartItem[] }) 
   const handleQuantityChange = (itemId: string, newQuantity: number) => {
     if (newQuantity < 1) return;
 
-    setCartItems(items => items.map(item => (
-      item.id === itemId
-      ? { ...item, quantity: newQuantity }
-      : item
-    )));
+    setCartItems(items =>
+      items.map(item => (item.id === itemId ? { ...item, quantity: newQuantity } : item))
+    );
 
     debouncedUpdateCartQuantity(itemId, newQuantity);
   };
@@ -134,7 +129,7 @@ export const useCart = ({ initialCartItems }: { initialCartItems: CartItem[] }) 
     if (item.originalPrice) return sum + (item.originalPrice - item.price) * item.quantity;
     return sum;
   }, 0);
-  const deliveryCharges = selectedItems.length > 0 ? (subtotal > 1000 ? 0 : 99) : 0;
+  const deliveryCharges = calculateDeliveryCharge(subtotal);
   const totalAmount = subtotal + deliveryCharges;
 
   return {

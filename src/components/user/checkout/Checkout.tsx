@@ -22,7 +22,7 @@ const CheckoutContent = () => {
           {/* main content */}
           <div className="lg:col-span-2 space-y-6">
             <ShippingAddress />
-            <DeliveryMethod />
+            {/* <DeliveryMethod /> */}
           </div>
 
           {/* order summary */}
