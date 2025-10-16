@@ -7,11 +7,7 @@ export async function deleteCartItem(userId: string, cartId: string): Promise<Ap
 
   const supabase = createClient();
 
-  const { data: cart, error: cartError } = await supabase
-    .from('carts')
-    .select('id')
-    .eq('user_id', userId)
-    .maybeSingle();
+  const { data: cart, error: cartError } = await supabase.from('carts').select('id').single();
 
   if (cartError) return err();
   if (!cart) return err('Cart not found', 404);
@@ -19,8 +15,7 @@ export async function deleteCartItem(userId: string, cartId: string): Promise<Ap
   const { data: existingItem, error: checkError } = await supabase
     .from('cart_items')
     .select('cart_id')
-    .eq('cart_id', cart.id)
-    .maybeSingle();
+    .eq('cart_id', cart.id);
 
   if (checkError && checkError.code !== 'PGRST116') return err();
   if (!existingItem) return err('Item not found in cart', 404);
