@@ -1,9 +1,13 @@
 import { supabaseAdmin } from 'lib/supabase';
 import { Product } from 'types/product';
-import { prepareImagesForRPC, validateProductImagesOrder } from 'utils/imageOrderingUtils';
 import { logAdminActivity, createProductMessage } from 'utils/adminActivityLogger';
+import { prepareImagesForRPC, validateProductImagesOrder } from 'utils/imageOrderingUtils';
 
-export default async function updateProduct(product: Product, adminUserId?: string, requestInfo = {}): Promise<{ product: Product | null, error: string | null, status?: number }> {
+export default async function updateProduct(
+  product: Product,
+  adminUserId?: string,
+  requestInfo = {}
+): Promise<{ product: Product | null; error: string | null; status?: number }> {
   if (!product.id || typeof product.id !== 'string')
     return { product: null, error: 'Product ID is required and must be a string', status: 400 };
   if (!product.title || typeof product.title !== 'string')
@@ -14,7 +18,8 @@ export default async function updateProduct(product: Product, adminUserId?: stri
     return { product: null, error: 'Category ID is required and must be a string', status: 400 };
 
   const { isValid, errors } = validateProductImagesOrder(product);
-  if (!isValid) return { product: null, error: `Product images validation failed: ${errors}`, status: 400 };
+  if (!isValid)
+    return { product: null, error: `Product images validation failed: ${errors}`, status: 400 };
 
   if (product.sizes)
     for (const size of product.sizes) {
@@ -57,7 +62,7 @@ export default async function updateProduct(product: Product, adminUserId?: stri
     p_sizes: sizeIds,
     p_tags: product.tags || [],
     p_is_active: product.active ?? true,
-    p_preserve_stock: true
+    p_preserve_stock: false
   });
 
   if (adminUserId) {
@@ -70,7 +75,7 @@ export default async function updateProduct(product: Product, adminUserId?: stri
       message: createProductMessage('update', product.title),
       error: error || null,
       status: error != null || data == null ? 'failed' : 'success',
-      ...requestInfo,
+      ...requestInfo
     });
   }
 
