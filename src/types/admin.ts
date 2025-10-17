@@ -2,6 +2,7 @@ export interface AdminUser {
   id: string;
   username: string;
   is_superuser: boolean;
+  role: 'admin' | 'editor' | null;
   created_at: string;
   updated_at: string;
 }

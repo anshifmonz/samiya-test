@@ -12,7 +12,7 @@ const login = async (username: string, password: string, requestInfo = {}): Prom
 
     const { data, error } = await supabaseAdmin
       .from('admin_users')
-      .select('id, username, password, is_superuser, created_at, updated_at')
+      .select('id, username, password, is_superuser, role, created_at, updated_at')
       .eq('username', username)
       .maybeSingle();
 
@@ -21,11 +21,12 @@ const login = async (username: string, password: string, requestInfo = {}): Prom
     const isValid = await bcrypt.compare(password, data.password);
     if (!isValid) return { adminUser: null, error: 'Invalid username or password', status: 401 };
 
-    const { id, username: uname, is_superuser, created_at, updated_at } = data;
+    const { id, username: uname, is_superuser, role, created_at, updated_at } = data;
     const adminUser = {
       id,
       username: uname,
       is_superuser,
+      role,
       created_at,
       updated_at
     };
