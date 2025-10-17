@@ -1,13 +1,16 @@
+'use client';
+
 import { createContext, useContext } from 'react';
-import { useAdminAdminsTab } from 'hooks/admin/user/useAdminAdminsTab';
 import { type AdminUser } from 'types/admin';
+import { useAdmins } from 'hooks/admin/admins/useAdminAdmins';
 import { ConfirmationDialog } from 'ui/confirmation-dialog';
 
 interface AdminsTabProviderProps {
+  initialAdmins: AdminUser[];
   children: React.ReactNode;
 }
 
-interface AdminsTabContextType {
+interface AdminsContextType {
   // State
   admins: AdminUser[];
   loading: boolean;
@@ -56,13 +59,13 @@ interface AdminsTabContextType {
   confirmation: any;
 }
 
-const AdminsTabContext = createContext<AdminsTabContextType | undefined>(undefined);
+const AdminsContext = createContext<AdminsContextType | undefined>(undefined);
 
-export const AdminsTabProvider = ({ children }: AdminsTabProviderProps) => {
-  const adminAdminsTab = useAdminAdminsTab();
+export const AdminsTabProvider = ({ initialAdmins, children }: AdminsTabProviderProps) => {
+  const adminAdminsTab = useAdmins(initialAdmins);
 
   return (
-    <AdminsTabContext.Provider value={adminAdminsTab}>
+    <AdminsContext.Provider value={adminAdminsTab}>
       {children}
       {adminAdminsTab.confirmation && (
         <ConfirmationDialog
@@ -77,12 +80,12 @@ export const AdminsTabProvider = ({ children }: AdminsTabProviderProps) => {
           isLoading={adminAdminsTab.confirmation.isLoading}
         />
       )}
-    </AdminsTabContext.Provider>
+    </AdminsContext.Provider>
   );
 };
 
 export const useAdminsTab = () => {
-  const context = useContext(AdminsTabContext);
+  const context = useContext(AdminsContext);
   if (!context) throw new Error('useAdminsTab must be used within an AdminsTabProvider');
   return context;
 };

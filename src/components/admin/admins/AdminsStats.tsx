@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAdminsTab } from 'contexts/admin/AdminsTabContext';
+import { useAdminsTab } from 'contexts/admin/admins/AdminsContext';
 
 const AdminsStats: React.FC = () => {
   const { adminsCountText } = useAdminsTab();

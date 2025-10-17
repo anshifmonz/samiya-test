@@ -1,3 +1,5 @@
+'use client';
+
 import React, { createContext, useContext } from 'react';
 import { useCurrentAdmin as Admin } from 'hooks/admin/useCurrentAdmin';
 
@@ -21,6 +23,7 @@ export const AdminDashboardProvider = ({ children }: { children: React.ReactNode
 
 export const useCurrentAdmin = () => {
   const context = useContext(AdminDashboardContext);
-  if (!context) throw new Error('useAdminDashboardContext must be used within an AdminDashboardProvider');
+  if (!context)
+    throw new Error('useAdminDashboardContext must be used within an AdminDashboardProvider');
   return context;
 };

@@ -1,5 +1,5 @@
 import { UserPlus } from 'lucide-react';
-import { useAdminsTab } from 'contexts/admin/AdminsTabContext';
+import { useAdminsTab } from 'contexts/admin/admins/AdminsContext';
 
 const AddAdminModal: React.FC = () => {
   const {
@@ -11,7 +11,7 @@ const AddAdminModal: React.FC = () => {
     handleAddAdmin,
     handleCancelAddForm,
     setAddUsername,
-    setAddPassword,
+    setAddPassword
   } = useAdminsTab();
 
   if (!showAddDialog) return null;

@@ -11,12 +11,10 @@ import AdminProductsTab from './product/AdminProductsTab';
 import AdminCollectionsTab from './collection/AdminCollectionsTab';
 import AdminCategoriesTab from './category/AdminCategoriesTab';
 import { AdminSectionsTab } from './section';
-import AdminAdminsTab from './admins/AdminAdminsTab';
 import { ProductsTabProvider } from 'contexts/admin/ProductsTabContext';
 import { SectionsTabProvider } from 'contexts/admin/SectionsTabContext';
 import { CategoriesTabProvider } from 'contexts/admin/CategoriesTabContext';
 import { CollectionsTabProvider } from 'contexts/admin/CollectionsTabContext';
-import { AdminsTabProvider } from 'contexts/admin/AdminsTabContext';
 import { AdminDashboardProvider } from 'contexts/admin/AdminDashboardContext';
 
 interface AdminDashboardProps {
@@ -42,8 +40,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
     { value: 'products', label: 'Products' },
     { value: 'collections', label: 'Collections' },
     { value: 'categories', label: 'Categories' },
-    { value: 'sections', label: 'Sections' },
-    { value: 'admins', label: 'Admins' },
+    { value: 'sections', label: 'Sections' }
   ];
 
   return (
@@ -60,7 +57,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
             <SelectValue placeholder="Select section" />
           </SelectTrigger>
           <SelectContent className="bg-white border border-gray-200 rounded-lg shadow-lg">
-            {tabOptions.map((option) => (
+            {tabOptions.map(option => (
               <SelectItem
                 key={option.value}
                 value={option.value}
@@ -74,7 +71,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
       </div>
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
         <TabsList
-          className="hidden sm:grid w-full grid-cols-5 bg-transparent border-none p-1 mb-8"
+          className="hidden sm:grid w-full grid-cols-4 bg-transparent border-none p-1 mb-8"
           aria-label="Admin dashboard sections"
         >
           <TabsTrigger
@@ -101,17 +98,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
           >
             Sections
           </TabsTrigger>
-          <TabsTrigger
-            value="admins"
-            className="rounded-lg px-6 py-3 text-sm font-medium tracking-wide transition-all duration-300 data-[state=active]:bg-luxury-gold data-[state=active]:text-luxury-black data-[state=active]:shadow-md"
-          >
-            Admins
-          </TabsTrigger>
         </TabsList>
 
         <AdminDashboardProvider>
           <TabsContent value="products" className="mt-0">
-            <ProductsTabProvider initialProducts={initialProducts} categories={initialCategories} >
+            <ProductsTabProvider initialProducts={initialProducts} categories={initialCategories}>
               <AdminProductsTab />
             </ProductsTabProvider>
           </TabsContent>
@@ -132,12 +123,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
             <SectionsTabProvider initialSections={initialSections}>
               <AdminSectionsTab />
             </SectionsTabProvider>
-          </TabsContent>
-
-          <TabsContent value="admins" className="mt-0">
-            <AdminsTabProvider>
-              <AdminAdminsTab />
-            </AdminsTabProvider>
           </TabsContent>
         </AdminDashboardProvider>
       </Tabs>

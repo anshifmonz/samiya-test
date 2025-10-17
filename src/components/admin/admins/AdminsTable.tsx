@@ -1,17 +1,11 @@
 import { Edit, Trash2 } from 'lucide-react';
 import { Button } from 'ui/button';
-import { useAdminsTab } from 'contexts/admin/AdminsTabContext';
+import { useAdminsTab } from 'contexts/admin/admins/AdminsContext';
 import { useCurrentAdmin } from 'contexts/admin/AdminDashboardContext';
 
 const AdminsTable: React.FC = () => {
-  const {
-    loading,
-    error,
-    filteredAdmins,
-    deleteLoading,
-    openEditDialog,
-    handleDelete,
-  } = useAdminsTab();
+  const { loading, error, filteredAdmins, deleteLoading, openEditDialog, handleDelete } =
+    useAdminsTab();
   const { admin } = useCurrentAdmin();
   const currentAdmin = admin;
 
@@ -59,8 +53,11 @@ const AdminsTable: React.FC = () => {
                 </td>
               </tr>
             ) : (
-              filteredAdmins.map((admin) => (
-                <tr key={admin.id} className="hover:bg-luxury-gray/5 transition-colors duration-200">
+              filteredAdmins.map(admin => (
+                <tr
+                  key={admin.id}
+                  className="hover:bg-luxury-gray/5 transition-colors duration-200"
+                >
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="flex-shrink-0 h-8 w-8 bg-luxury-gold/10 rounded-full flex items-center justify-center">
@@ -75,39 +72,46 @@ const AdminsTable: React.FC = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      admin.is_superuser
-                        ? 'bg-luxury-gold/10 text-luxury-gold'
-                        : 'bg-luxury-gray/10 text-luxury-gray'
-                    }`}>
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        admin.is_superuser
+                          ? 'bg-luxury-gold/10 text-luxury-gold'
+                          : 'bg-luxury-gray/10 text-luxury-gray'
+                      }`}
+                    >
                       {admin.is_superuser ? 'Super Admin' : 'Admin'}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex items-center justify-end gap-2">
                       {/* show edit button for own account or if super admin and target is not a super admin */}
-                      {currentAdmin && (currentAdmin.id === admin.id || (currentAdmin.is_superuser && !admin.is_superuser)) && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => openEditDialog(admin)}
-                          className="text-luxury-gold hover:text-yellow-500 hover:bg-yellow-50"
-                        >
-                          <Edit size={16} />
-                        </Button>
-                      )}
+                      {currentAdmin &&
+                        (currentAdmin.id === admin.id ||
+                          (currentAdmin.is_superuser && !admin.is_superuser)) && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => openEditDialog(admin)}
+                            className="text-luxury-gold hover:text-yellow-500 hover:bg-yellow-50"
+                          >
+                            <Edit size={16} />
+                          </Button>
+                        )}
                       {/* only show delete if current admin is super admin and target is not a super admin and not current admin */}
-                      {currentAdmin.is_superuser && !admin.is_superuser && currentAdmin?.id !== admin.id && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDelete(admin)}
-                          disabled={deleteLoading === admin.id}
-                          className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                        >
-                          <Trash2 size={16} />
-                        </Button>
-                      )}
+                      {currentAdmin &&
+                        currentAdmin.is_superuser &&
+                        !admin.is_superuser &&
+                        currentAdmin?.id !== admin.id && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDelete(admin)}
+                            disabled={deleteLoading === admin.id}
+                            className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 size={16} />
+                          </Button>
+                        )}
                     </div>
                   </td>
                 </tr>

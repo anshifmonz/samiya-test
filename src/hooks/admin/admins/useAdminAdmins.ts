@@ -1,19 +1,12 @@
 import { useState, useEffect } from 'react';
+import { type AdminUser } from 'types/admin';
 import { apiRequest } from 'lib/utils/apiRequest';
-import { useConfirmation } from '@/hooks/useConfirmation';
+import { useConfirmation } from 'hooks/useConfirmation';
 
-interface AdminUser {
-  id: string;
-  username: string;
-  is_superuser: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
-export const useAdminAdminsTab = () => {
-  const [admins, setAdmins] = useState<AdminUser[]>([]);
+export const useAdmins = (initialAdmins: AdminUser[]) => {
+  const [admins, setAdmins] = useState<AdminUser[]>(initialAdmins);
   const confirmation = useConfirmation();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [addUsername, setAddUsername] = useState('');
   const [addPassword, setAddPassword] = useState('');
@@ -33,29 +26,6 @@ export const useAdminAdminsTab = () => {
     setMounted(true);
   }, []);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const adminsRes = await apiRequest('/api/admin', {
-          showLoadingBar: true,
-          loadingBarDelay: 150
-        });
-        if (adminsRes.error) {
-          setError(adminsRes.error);
-          setAdmins([]);
-        } else {
-          setAdmins(adminsRes.data?.admins || []);
-        }
-      } catch (e) {
-        setError('Failed to fetch data');
-        setAdmins([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
-
   const filteredAdmins = admins;
   const adminsCountText = `${filteredAdmins.length} admin${filteredAdmins.length !== 1 ? 's' : ''}`;
 
@@ -64,13 +34,13 @@ export const useAdminAdminsTab = () => {
     setAddLoading(true);
     setAddError('');
     try {
-        const res = await apiRequest('/api/admin', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: { username: addUsername, password: addPassword },
-          showLoadingBar: true, // Admin operations now show loading bar
-          loadingBarDelay: 200
-        });
+      const res = await apiRequest('/api/admin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: { username: addUsername, password: addPassword },
+        showLoadingBar: true, // Admin operations now show loading bar
+        loadingBarDelay: 200
+      });
       if (res.error) {
         setAddError(res.error || 'Failed to add admin');
         setAddLoading(false);
@@ -79,7 +49,7 @@ export const useAdminAdminsTab = () => {
       setAddUsername('');
       setAddPassword('');
       setShowAddDialog(false);
-      setAdmins((prev) => [...prev, ...(res.data?.admins || [])]);
+      setAdmins(prev => [...prev, ...(res.data?.admins || [])]);
     } catch (e) {
       setAddError('Failed to add admin');
     } finally {
@@ -93,7 +63,7 @@ export const useAdminAdminsTab = () => {
       message: `Are you sure you want to permanently delete the admin '${admin.username}'? This action cannot be undone.`,
       confirmText: 'Delete',
       cancelText: 'Cancel',
-      variant: 'destructive',
+      variant: 'destructive'
     });
     if (!confirmed) return;
     setDeleteLoading(admin.id);
@@ -109,7 +79,7 @@ export const useAdminAdminsTab = () => {
         setDeleteLoading(null);
         return;
       }
-      setAdmins((prev) => prev.filter((a) => a.id !== admin.id));
+      setAdmins(prev => prev.filter(a => a.id !== admin.id));
     } catch (e) {
       setError('Failed to delete admin');
     } finally {
@@ -149,7 +119,7 @@ export const useAdminAdminsTab = () => {
         return;
       }
       setEditDialog(null);
-      setAdmins((prev) => prev.map((a) => a.id === res.data?.admins[0].id ? res.data.admins[0] : a));
+      setAdmins(prev => prev.map(a => (a.id === res.data?.admins[0].id ? res.data.admins[0] : a)));
     } catch (e) {
       setEditError('Failed to update admin');
     } finally {
@@ -225,6 +195,6 @@ export const useAdminAdminsTab = () => {
     setEditSuper,
 
     // Confirmation dialog
-    confirmation,
+    confirmation
   };
 };

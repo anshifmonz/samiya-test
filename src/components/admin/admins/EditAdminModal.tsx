@@ -1,5 +1,5 @@
 import { UserPlus } from 'lucide-react';
-import { useAdminsTab } from 'contexts/admin/AdminsTabContext';
+import { useAdminsTab } from 'contexts/admin/admins/AdminsContext';
 import { useCurrentAdmin } from 'contexts/admin/AdminDashboardContext';
 
 const EditAdminModal: React.FC = () => {
@@ -15,7 +15,7 @@ const EditAdminModal: React.FC = () => {
     handleCancelEditForm,
     setEditUsername,
     setEditPassword,
-    setEditSuper,
+    setEditSuper
   } = useAdminsTab();
   const { admin } = useCurrentAdmin();
   const currentAdmin = admin;
@@ -46,11 +46,14 @@ const EditAdminModal: React.FC = () => {
               disabled={!currentAdmin?.is_superuser && editDialog?.id !== currentAdmin?.id}
             />
             <p className="text-xs text-luxury-gray mt-1">
-              {editDialog?.id === currentAdmin?.id && "You can change your own username and password"}
+              {editDialog?.id === currentAdmin?.id &&
+                'You can change your own username and password'}
             </p>
           </div>
           <div>
-            <label className="block text-sm font-medium text-luxury-black mb-2">Password (leave blank to keep unchanged)</label>
+            <label className="block text-sm font-medium text-luxury-black mb-2">
+              Password (leave blank to keep unchanged)
+            </label>
             <input
               type="password"
               className="w-full px-4 py-3 rounded-lg border border-luxury-gray/20 focus:outline-none focus:ring-2 focus:ring-luxury-gold/50 focus:border-luxury-gold/30 transition-all duration-200"
@@ -60,10 +63,8 @@ const EditAdminModal: React.FC = () => {
             />
             <p className="text-xs text-luxury-gray mt-1">
               {editDialog?.id === currentAdmin?.id
-                ? "You can change your own username and password"
-                : currentAdmin?.is_superuser
-                  && "Super admins can change passwords"
-              }
+                ? 'You can change your own username and password'
+                : currentAdmin?.is_superuser && 'Super admins can change passwords'}
             </p>
           </div>
           <div className="flex items-center space-x-3">
@@ -72,16 +73,27 @@ const EditAdminModal: React.FC = () => {
               id="edit-super"
               checked={editSuper}
               onChange={e => setEditSuper(e.target.checked)}
-              disabled={!currentAdmin?.is_superuser || (editDialog?.id === currentAdmin?.id && editSuper && admins.filter(a => a.is_superuser).length === 1)}
+              disabled={
+                !currentAdmin?.is_superuser ||
+                (editDialog?.id === currentAdmin?.id &&
+                  editSuper &&
+                  admins.filter(a => a.is_superuser).length === 1)
+              }
               className="h-4 w-4 text-luxury-gold focus:ring-luxury-gold/50 border-luxury-gray/30 rounded"
             />
-            <label htmlFor="edit-super" className="text-sm font-medium text-luxury-black">Super Admin</label>
+            <label htmlFor="edit-super" className="text-sm font-medium text-luxury-black">
+              Super Admin
+            </label>
             {!currentAdmin?.is_superuser && (
               <span className="text-xs text-luxury-gray">(Only super admins can change this)</span>
             )}
-            {editDialog?.id === currentAdmin?.id && editSuper && admins.filter(a => a.is_superuser).length === 1 && (
-              <span className="text-xs text-luxury-gray">(You cannot demote yourself as the only super admin)</span>
-            )}
+            {editDialog?.id === currentAdmin?.id &&
+              editSuper &&
+              admins.filter(a => a.is_superuser).length === 1 && (
+                <span className="text-xs text-luxury-gray">
+                  (You cannot demote yourself as the only super admin)
+                </span>
+              )}
           </div>
           {editError && (
             <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
