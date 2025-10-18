@@ -1,11 +1,21 @@
 import { supabaseAdmin } from 'lib/supabase';
 import { type Product, type Size } from 'types/product';
 
-async function getProduct(limit: number, offset: number, query: string, sortBy: string): Promise<{ products: Product[], error: string | null, status: number }> {
+async function getProduct(
+  limit: number,
+  offset: number,
+  query: string,
+  sortBy: string,
+  stock_filter: string | null
+): Promise<{ products: Product[]; error: string | null; status: number }> {
   if (limit === undefined || typeof limit !== 'number' || limit <= 0)
     return { products: [], error: 'Limit is required and must be a positive number', status: 400 };
   if (offset === undefined || typeof offset !== 'number' || offset < 0)
-    return { products: [], error: 'Offset is required and must be a non-negative number', status: 400 };
+    return {
+      products: [],
+      error: 'Offset is required and must be a non-negative number',
+      status: 400
+    };
   if (sortBy === undefined || typeof sortBy !== 'string')
     return { products: [], error: 'Sort by is required and must be a string', status: 400 };
 
@@ -13,7 +23,8 @@ async function getProduct(limit: number, offset: number, query: string, sortBy: 
     limit_count: limit,
     offset_count: offset,
     query_text: query,
-    sort_by: sortBy
+    sort_by: sortBy,
+    stock_filter
   });
 
   if (error) {
@@ -67,8 +78,7 @@ async function getProduct(limit: number, offset: number, query: string, sortBy: 
         }));
 
         // Also store sizes in the color data for the images object
-        if (images[colorName])
-          images[colorName].sizes = colorSizes[colorName];
+        if (images[colorName]) images[colorName].sizes = colorSizes[colorName];
       });
     }
 
@@ -94,7 +104,7 @@ async function getProduct(limit: number, offset: number, query: string, sortBy: 
       categoryId: row.category_id || '',
       sizes: globalSizes, // Global fallback sizes
       colorSizes, // Color-specific sizes mapping
-      active: row.is_active,
+      active: row.is_active
     };
   });
 

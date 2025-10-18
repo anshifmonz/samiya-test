@@ -8,6 +8,7 @@ export async function GET(request: NextRequest) {
     const offset = searchParams.get('offset');
     const query = searchParams.get('q');
     const sortBy = searchParams.get('sort_by');
+    const stock_filter = searchParams.get('stock_filter');
     const limitNumber = limit ? parseInt(limit) : 16;
     const offsetNumber = offset ? parseInt(offset) : 0;
     const queryText = query || '';
@@ -16,7 +17,8 @@ export async function GET(request: NextRequest) {
       limitNumber,
       offsetNumber,
       queryText,
-      sortByValue
+      sortByValue,
+      stock_filter
     );
     if (error) return NextResponse.json({ error }, { status: status || 500 });
     return NextResponse.json({ products });

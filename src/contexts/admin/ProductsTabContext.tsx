@@ -12,48 +12,54 @@ interface ProductsTabProviderProps {
 }
 
 interface ProductsTabContextType {
-    categories: Category[];
-    sortOption: Record<string, string>;
-    searchQuery: string;
-    showAddForm: boolean;
-    editingProduct: Product | null;
-    products: Product[];
-    loading: boolean;
-    hasMore: boolean;
-    error: string | null;
-    isSearching: boolean;
-    sizes: Size[];
+  categories: Category[];
+  sortOption: Record<string, string>;
+  searchQuery: string;
+  stockFilter: string | null;
+  showAddForm: boolean;
+  editingProduct: Product | null;
+  products: Product[];
+  loading: boolean;
+  hasMore: boolean;
+  error: string | null;
+  isSearching: boolean;
+  sizes: Size[];
 
-    // Refs
-    loaderRef: React.RefObject<HTMLDivElement>;
+  // Refs
+  loaderRef: React.RefObject<HTMLDivElement>;
 
-    // Handlers
-    handleSearchChange: (query: string) => void;
-    handleAddProduct: (product: Product) => void;
-    handleEditProduct: (product: Product) => void;
-    handleDeleteProduct: (productId: string, productTitle?: string) => Promise<boolean>;
-    handleShowAddForm: () => void;
-    handleHideAddForm: () => void;
-    handleStartEditing: (product: Product) => void;
-    handleStopEditing: () => void;
-    handleCancelForm: () => void;
-    handleSortChange: (sort: string) => void;
+  // Handlers
+  handleSearchChange: (query: string) => void;
+  handleAddProduct: (product: Product) => void;
+  handleEditProduct: (product: Product) => void;
+  handleDeleteProduct: (productId: string, productTitle?: string) => Promise<boolean>;
+  handleShowAddForm: () => void;
+  handleHideAddForm: () => void;
+  handleStartEditing: (product: Product) => void;
+  handleStopEditing: () => void;
+  handleCancelForm: () => void;
+  handleSortChange: (sort: string) => void;
+  handleStockFilterChange: (filter: string) => void;
 
-    // Computed values
-    isFormVisible: boolean;
-    currentProduct: Product | null;
-    productsCountText: string;
+  // Computed values
+  isFormVisible: boolean;
+  currentProduct: Product | null;
+  productsCountText: string;
 
-    // Utility functions
-    refreshProducts: () => void;
+  // Utility functions
+  refreshProducts: () => void;
 }
 
 const ProductsTabContext = createContext<ProductsTabContextType | undefined>(undefined);
 
-export const ProductsTabProvider = ({ children, initialProducts, categories }: ProductsTabProviderProps) => {
+export const ProductsTabProvider = ({
+  children,
+  initialProducts,
+  categories
+}: ProductsTabProviderProps) => {
   const adminProductsTab = useAdminProductsTab({ initialProducts });
   return (
-    <ProductsTabContext.Provider value={{categories, ...adminProductsTab}}>
+    <ProductsTabContext.Provider value={{ categories, ...adminProductsTab }}>
       {children}
       {adminProductsTab.confirmation && (
         <ConfirmationDialog

@@ -27,6 +27,8 @@ const AdminProductsTab: React.FC = () => {
     handleSortChange,
     handleSearchChange,
     handleShowAddForm,
+    stockFilter,
+    handleStockFilterChange,
     isSearching,
     isFormVisible,
     productsCountText,
@@ -93,7 +95,9 @@ const AdminProductsTab: React.FC = () => {
             disabled={sizesLoading || isBulkImporting}
           >
             <Upload size={20} className={isBulkImporting ? 'animate-spin' : ''} />
-            <span className="hidden sm:block">{isBulkImporting ? 'Importing...' : 'Bulk Import'}</span>
+            <span className="hidden sm:block">
+              {isBulkImporting ? 'Importing...' : 'Bulk Import'}
+            </span>
           </button>
         }
         forceSmLabel={true}
@@ -101,8 +105,58 @@ const AdminProductsTab: React.FC = () => {
         <Plus size={20} />
       </AdminTabHeader>
 
-      <div className="mb-6">
-        <div className="flex items-center justify-between">
+      <div className="mb-2 -mt-4 sm:mt-0">
+        <div className="flex flex-col items-start justify-between gap-6 sm:gap-0">
+          <div className="flex items-center justify-end gap-3 sm:gap-4 w-[100%]">
+            <Select value={sortOption.sort} onValueChange={handleSortChange}>
+              <SelectTrigger className="w-48 max-w-[50%]">
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem className="cursor-pointer" value="relevance">
+                  Relevance
+                </SelectItem>
+                <SelectItem className="cursor-pointer" value="price-low">
+                  Price: Low to High
+                </SelectItem>
+                <SelectItem className="cursor-pointer" value="price-high">
+                  Price: High to Low
+                </SelectItem>
+                <SelectItem className="cursor-pointer" value="newest">
+                  Newest First
+                </SelectItem>
+                <SelectItem className="cursor-pointer" value="oldest">
+                  Oldest First
+                </SelectItem>
+                <SelectItem className="cursor-pointer" value="first-updated">
+                  First Updated
+                </SelectItem>
+                <SelectItem className="cursor-pointer" value="last-updated">
+                  Last Updated
+                </SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={stockFilter || 'all'} onValueChange={handleStockFilterChange}>
+              <SelectTrigger className="w-48 max-w-[50%]">
+                <SelectValue placeholder="Filter by stock" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem className="cursor-pointer" value="all">
+                  All Products
+                </SelectItem>
+                <SelectItem className="cursor-pointer" value="in_stock">
+                  In Stock
+                </SelectItem>
+                <SelectItem className="cursor-pointer" value="out_of_stock">
+                  Out of Stock
+                </SelectItem>
+                <SelectItem className="cursor-pointer" value="partially_out_of_stock">
+                  Partially Out of Stock
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           {isSearching ? (
             <div className="flex items-center space-x-2 text-luxury-gray">
               <Search size={16} className="animate-pulse" />
@@ -113,28 +167,12 @@ const AdminProductsTab: React.FC = () => {
               {productsCountText}
             </p>
           )}
-          <Select value={sortOption.sort} onValueChange={handleSortChange}>
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="relevance">Relevance</SelectItem>
-              <SelectItem value="price-low">Price: Low to High</SelectItem>
-              <SelectItem value="price-high">Price: High to Low</SelectItem>
-              <SelectItem value="newest">Newest First</SelectItem>
-              <SelectItem value="oldest">Oldest First</SelectItem>
-              <SelectItem value="first-updated">First Updated</SelectItem>
-              <SelectItem value="last-updated">Last Updated</SelectItem>
-            </SelectContent>
-          </Select>
         </div>
       </div>
 
       <AdminProductGrid />
 
-      {isFormVisible && (
-        <AdminProductForm />
-      )}
+      {isFormVisible && <AdminProductForm />}
 
       {showBulkImport && isLoaded && (
         <BulkImportModal

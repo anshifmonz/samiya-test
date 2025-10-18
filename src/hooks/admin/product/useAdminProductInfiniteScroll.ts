@@ -6,16 +6,28 @@ import { useDebounce } from 'hooks/ui/useDebounce';
 const PAGE_SIZE = 16;
 const DEBOUNCE_DELAY = 500; // 500ms delay
 
-function buildAdminProductSearchParams(query?: string, limit: number = PAGE_SIZE, offset: number = 0, sort?: Record<string, string>) {
+function buildAdminProductSearchParams(
+  query?: string,
+  limit: number = PAGE_SIZE,
+  offset: number = 0,
+  sort?: Record<string, string>,
+  stock_filter?: string | null
+) {
   const params = new URLSearchParams();
   if (query) params.set('q', query);
   if (sort && sort.sort !== 'relevance') params.set('sort_by', sort.sort);
+  if (stock_filter) params.set('stock_filter', stock_filter);
   params.set('limit', limit.toString());
   params.set('offset', offset.toString());
   return params;
 }
 
-export function useAdminProductInfiniteScroll(initialProducts: Product[], searchQuery?: string, sortOption?: Record<string, string>) {
+export function useAdminProductInfiniteScroll(
+  initialProducts: Product[],
+  searchQuery?: string,
+  sortOption?: Record<string, string>,
+  stockFilter?: string | null
+) {
   const [products, setProducts] = useState(initialProducts);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -31,7 +43,13 @@ export function useAdminProductInfiniteScroll(initialProducts: Product[], search
     setError(null);
 
     try {
-      const params = buildAdminProductSearchParams(debouncedQuery, PAGE_SIZE, offset, sortOption);
+      const params = buildAdminProductSearchParams(
+        debouncedQuery,
+        PAGE_SIZE,
+        offset,
+        sortOption,
+        stockFilter
+      );
       const res = await apiRequest(`/api/admin/product?${params.toString()}`, {
         showLoadingBar: true,
         loadingBarDelay: 200
@@ -48,7 +66,7 @@ export function useAdminProductInfiniteScroll(initialProducts: Product[], search
     } finally {
       setLoading(false);
     }
-  }, [debouncedQuery, sortOption, offset, loading, hasMore]);
+  }, [debouncedQuery, sortOption, offset, loading, hasMore, stockFilter]);
 
   useEffect(() => {
     let ignore = false;
@@ -60,7 +78,13 @@ export function useAdminProductInfiniteScroll(initialProducts: Product[], search
       setError(null);
 
       try {
-        const params = buildAdminProductSearchParams(debouncedQuery, PAGE_SIZE, 0, sortOption);
+        const params = buildAdminProductSearchParams(
+          debouncedQuery,
+          PAGE_SIZE,
+          0,
+          sortOption,
+          stockFilter
+        );
         const res = await apiRequest(`/api/admin/product?${params.toString()}`, {
           showLoadingBar: true,
           loadingBarDelay: 150
@@ -84,15 +108,17 @@ export function useAdminProductInfiniteScroll(initialProducts: Product[], search
     }
 
     fetchFirstPage();
-    return () => { ignore = true; };
-  }, [debouncedQuery, sortOption]);
+    return () => {
+      ignore = true;
+    };
+  }, [debouncedQuery, sortOption, stockFilter]);
 
   // intersection observer to trigger fetchMoreProducts
   useEffect(() => {
     if (!hasMore) return;
 
     const observer = new window.IntersectionObserver(
-      (entries) => {
+      entries => {
         if (entries[0].isIntersecting) {
           fetchMoreProducts();
         }
@@ -116,7 +142,13 @@ export function useAdminProductInfiniteScroll(initialProducts: Product[], search
     setError(null);
 
     try {
-      const params = buildAdminProductSearchParams(debouncedQuery, PAGE_SIZE, 0, sortOption);
+      const params = buildAdminProductSearchParams(
+        debouncedQuery,
+        PAGE_SIZE,
+        0,
+        sortOption,
+        stockFilter
+      );
       const res = await apiRequest(`/api/admin/product?${params.toString()}`, {
         showLoadingBar: true,
         loadingBarDelay: 150
@@ -133,7 +165,7 @@ export function useAdminProductInfiniteScroll(initialProducts: Product[], search
     } finally {
       setLoading(false);
     }
-  }, [debouncedQuery, sortOption]);
+  }, [debouncedQuery, sortOption, stockFilter]);
 
   return {
     products,
