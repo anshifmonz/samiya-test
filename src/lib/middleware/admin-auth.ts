@@ -32,6 +32,23 @@ export async function handleAdminAuth(request: NextRequest, response: NextRespon
   response.headers.set('x-admin-id', currentAdmin.id);
   response.headers.set('x-admin-username', currentAdmin.username);
   response.headers.set('x-admin-superuser', String(currentAdmin.is_superuser));
+  if (currentAdmin.role) response.headers.set('x-admin-role', currentAdmin.role);
+
+  // Superadmin restrictions for activity logs and admin management
+  if (
+    pathname.startsWith('/admin/admins') ||
+    pathname.startsWith('/admin/coupons') ||
+    pathname.startsWith('/admin/activity-logs') ||
+    pathname.startsWith('api/admin/users') ||
+    pathname.startsWith('api/admin/coupons') ||
+    pathname.startsWith('/api/admin/activity-logs')
+  ) {
+    if (!currentAdmin.is_superuser) {
+      if (pathname.startsWith('/api/'))
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      return NextResponse.redirect(new URL('/admin', request.url));
+    }
+  }
 
   if (pathname === '/api/admin' && (method === 'POST' || method === 'DELETE')) {
     if (!currentAdmin.is_superuser)
@@ -47,8 +64,12 @@ export async function handleAdminAuth(request: NextRequest, response: NextRespon
   }
 
   if (method === 'DELETE' && pathname.startsWith('/api/admin/') && pathname !== '/api/admin') {
-    if (!currentAdmin.is_superuser)
-      return NextResponse.json({ error: 'Only super admin can delete entries' }, { status: 403 });
+    if (currentAdmin.role === 'editor') {
+      return NextResponse.json(
+        { error: 'You do not have permission to delete entries.' },
+        { status: 403 }
+      );
+    }
   }
 
   return response;
