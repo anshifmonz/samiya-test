@@ -10,7 +10,7 @@ const navigationItems = [
     icon: LayoutDashboard,
     label: 'Inventory',
     description: 'Overview of the store',
-    href: '/admin/dashboard',
+    href: '/admin/inventory',
     superadmin: false
   },
   {

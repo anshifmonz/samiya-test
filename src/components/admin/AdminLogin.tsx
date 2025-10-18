@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from 'ui/button';
 import { Input } from 'ui/input';
 import { Label } from 'ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from 'ui/card';
+import { Button } from 'ui/button';
 import { Lock, Shield, User } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from 'ui/card';
 import { apiRequest } from 'lib/utils/apiRequest';
 
 const AdminLogin: React.FC = () => {
@@ -31,11 +31,11 @@ const AdminLogin: React.FC = () => {
         method: 'POST',
         body: { username, password },
         showLoadingBar: true,
-        showErrorToast: false // Handle errors manually
+        showErrorToast: false
       });
 
       if (!apiError) {
-        router.push('/admin/dashboard');
+        router.push('/admin');
       } else {
         setError(apiError || 'Login failed');
       }
@@ -54,9 +54,7 @@ const AdminLogin: React.FC = () => {
           <div className="mx-auto w-12 h-12 bg-luxury-gold/10 rounded-full flex items-center justify-center mb-4">
             <Shield className="w-6 h-6 text-luxury-gold" />
           </div>
-          <CardTitle className="text-2xl font-bold text-luxury-black">
-            Admin Access
-          </CardTitle>
+          <CardTitle className="text-2xl font-bold text-luxury-black">Admin Access</CardTitle>
           <CardDescription className="text-luxury-gray">
             Enter your credentials to access the admin dashboard
           </CardDescription>
@@ -74,7 +72,7 @@ const AdminLogin: React.FC = () => {
                   type="text"
                   placeholder="Enter admin username"
                   value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  onChange={e => setUsername(e.target.value)}
                   className="pl-10 bg-luxury-white border-luxury-gray/30 focus:ring-luxury-gold/50 focus:border-luxury-gold/30 transition-colors"
                   required
                   disabled={isLoading}
@@ -92,7 +90,7 @@ const AdminLogin: React.FC = () => {
                   type="password"
                   placeholder="Enter admin password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={e => setPassword(e.target.value)}
                   className="pl-10 bg-luxury-white border-luxury-gray/30 focus:ring-luxury-gold/50 focus:border-luxury-gold/30 transition-colors"
                   required
                   disabled={isLoading}
