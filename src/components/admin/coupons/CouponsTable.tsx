@@ -1,14 +1,9 @@
 import { Edit } from 'lucide-react';
 import { Button } from 'components/ui/button';
-import type { Coupon } from 'types/coupon';
 import { useCouponsTab } from '@/contexts/admin/coupons/CouponsContext';
 
-interface CouponsTableProps {
-  openEditDialog: (coupon: Coupon) => void;
-}
-
-const CouponsTable: React.FC<CouponsTableProps> = ({ openEditDialog }) => {
-  const { coupons, loading, error, expireCoupon } = useCouponsTab();
+const CouponsTable = () => {
+  const { coupons, loading, error, expireCoupon, openEditDialog } = useCouponsTab();
 
   if (error) {
     return (

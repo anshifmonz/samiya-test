@@ -1,5 +1,3 @@
-import { Coupon } from '@/types/coupon';
-import { useForm } from 'react-hook-form';
 import { format } from 'date-fns';
 import { Input } from 'ui/input';
 import { Button } from 'ui/button';
@@ -9,44 +7,21 @@ import { Popover, PopoverContent, PopoverTrigger } from 'ui/popover';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from 'ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from 'ui/dialog';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useCouponsTab } from '@/contexts/admin/coupons/CouponsContext';
-import { couponSchema, CouponFormValues } from 'lib/validators/coupon';
+import { useCouponsTab } from 'contexts/admin/coupons/CouponsContext';
 
-interface AddCouponDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-const AddCouponDialog: React.FC<AddCouponDialogProps> = ({ isOpen, onClose }) => {
-  const { addCoupon } = useCouponsTab();
-  const form = useForm<CouponFormValues>({
-    resolver: zodResolver(couponSchema),
-    defaultValues: {
-      code: '',
-      amount: 0,
-      type: 'fixed',
-      start_date: new Date().toISOString(),
-      end_date: new Date().toISOString(),
-      is_active: true
-    }
-  });
-
-  const onSubmit = async (values: CouponFormValues): Promise<void> => {
-    await addCoupon(values as Omit<Coupon, 'id' | 'created_at'>);
-    onClose();
-  };
+const AddCouponDialog = () => {
+  const { isAddDialogOpen, closeAddDialog, addCouponForm, onAddCouponSubmit } = useCouponsTab();
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isAddDialogOpen} onOpenChange={closeAddDialog}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Add Coupon</DialogTitle>
         </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <Form {...addCouponForm}>
+          <form onSubmit={addCouponForm.handleSubmit(onAddCouponSubmit)} className="space-y-4">
             <FormField
-              control={form.control}
+              control={addCouponForm.control}
               name="code"
               render={({ field }) => (
                 <FormItem>
@@ -59,7 +34,7 @@ const AddCouponDialog: React.FC<AddCouponDialogProps> = ({ isOpen, onClose }) =>
               )}
             />
             <FormField
-              control={form.control}
+              control={addCouponForm.control}
               name="amount"
               render={({ field }) => (
                 <FormItem>
@@ -76,7 +51,7 @@ const AddCouponDialog: React.FC<AddCouponDialogProps> = ({ isOpen, onClose }) =>
               )}
             />
             <FormField
-              control={form.control}
+              control={addCouponForm.control}
               name="type"
               render={({ field }) => (
                 <FormItem>
@@ -97,7 +72,7 @@ const AddCouponDialog: React.FC<AddCouponDialogProps> = ({ isOpen, onClose }) =>
               )}
             />
             <FormField
-              control={form.control}
+              control={addCouponForm.control}
               name="start_date"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
@@ -129,7 +104,7 @@ const AddCouponDialog: React.FC<AddCouponDialogProps> = ({ isOpen, onClose }) =>
               )}
             />
             <FormField
-              control={form.control}
+              control={addCouponForm.control}
               name="end_date"
               render={({ field }) => (
                 <FormItem className="flex flex-col">

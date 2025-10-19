@@ -1,5 +1,3 @@
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from 'ui/input';
 import { Button } from 'ui/button';
 import { Calendar } from 'ui/calendar';
@@ -8,48 +6,30 @@ import { Popover, PopoverContent, PopoverTrigger } from 'ui/popover';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from 'ui/form';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from 'ui/dialog';
 import { format } from 'date-fns';
-import { Coupon } from 'types/coupon';
-import { useCouponsTab } from '@/contexts/admin/coupons/CouponsContext';
-import { editCouponSchema, EditCouponFormValues } from 'lib/validators/coupon';
+import { useCouponsTab } from 'contexts/admin/coupons/CouponsContext';
 
-interface EditCouponDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
-  coupon: Coupon;
-}
+const EditCouponDialog = () => {
+  const { isEditDialogOpen, closeEditDialog, selectedCoupon, editCouponForm, onEditCouponSubmit } =
+    useCouponsTab();
 
-const EditCouponDialog: React.FC<EditCouponDialogProps> = ({ isOpen, onClose, coupon }) => {
-  const { editCoupon } = useCouponsTab();
-  const form = useForm<EditCouponFormValues>({
-    resolver: zodResolver(editCouponSchema),
-    defaultValues: {
-      amount: coupon.amount,
-      start_date: coupon.start_date,
-      end_date: coupon.end_date
-    }
-  });
-
-  const onSubmit = async (values: EditCouponFormValues) => {
-    await editCoupon(coupon.id, values);
-    onClose();
-  };
+  if (!selectedCoupon) return null;
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isEditDialogOpen} onOpenChange={closeEditDialog}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Edit Coupon</DialogTitle>
         </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <Form {...editCouponForm}>
+          <form onSubmit={editCouponForm.handleSubmit(onEditCouponSubmit)} className="space-y-4">
             <div className="space-y-2">
               <p className="text-sm font-medium">Coupon Code</p>
               <p className="text-sm text-muted-foreground p-2 border rounded-md bg-gray-100">
-                {coupon.code}
+                {selectedCoupon.code}
               </p>
             </div>
             <FormField
-              control={form.control}
+              control={editCouponForm.control}
               name="amount"
               render={({ field }) => (
                 <FormItem>
@@ -66,7 +46,7 @@ const EditCouponDialog: React.FC<EditCouponDialogProps> = ({ isOpen, onClose, co
               )}
             />
             <FormField
-              control={form.control}
+              control={editCouponForm.control}
               name="start_date"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
@@ -98,7 +78,7 @@ const EditCouponDialog: React.FC<EditCouponDialogProps> = ({ isOpen, onClose, co
               )}
             />
             <FormField
-              control={form.control}
+              control={editCouponForm.control}
               name="end_date"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
