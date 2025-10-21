@@ -1,3 +1,15 @@
+export type Order = {
+  id: string;
+  created_at: string;
+  status: string;
+  total_amount: number;
+  payment_status: string;
+  user_name: string;
+  user_email: string;
+  user_phone: string;
+  skus: string[];
+};
+
 export type EventRow = {
   id: string;
   order_id: string | null;
