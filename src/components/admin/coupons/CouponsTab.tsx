@@ -1,10 +1,11 @@
 'use client';
 
 import type { Coupon } from 'types/coupon';
+import { Plus } from 'lucide-react';
 import CouponsTable from './CouponsTable';
-import { Button } from 'components/ui/button';
 import AddCouponDialog from './AddCouponDialog';
 import EditCouponDialog from './EditCouponDialog';
+import AdminTabHeaderButton from 'components/admin/shared/AdminTabHeaderButton';
 import { CouponsTabProvider, useCouponsTab } from 'contexts/admin/coupons/CouponsContext';
 
 const CouponsTabContent = () => {
@@ -14,7 +15,9 @@ const CouponsTabContent = () => {
     <div className="container max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-8 pt-24">
       <h1 className="text-2xl font-bold mb-4">Coupons</h1>
       <div className="flex justify-end mb-4">
-        <Button onClick={openAddDialog}>Add Coupon</Button>
+        <AdminTabHeaderButton onClick={openAddDialog} label="Add Coupon">
+          <Plus size={20} />
+        </AdminTabHeaderButton>
       </div>
       <CouponsTable />
       <AddCouponDialog />
