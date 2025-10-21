@@ -5,6 +5,6 @@ export interface Coupon {
   type: 'fixed' | 'percentage';
   start_date: string;
   end_date: string;
-  is_active: boolean;
+  expired_at?: string;
   created_at: string;
 }
