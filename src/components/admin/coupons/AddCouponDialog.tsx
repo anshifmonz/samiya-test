@@ -77,7 +77,7 @@ const AddCouponDialog = () => {
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>Start Date</FormLabel>
-                  <Popover>
+                  <Popover modal={true}>
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button variant={'outline'}>
@@ -90,7 +90,7 @@ const AddCouponDialog = () => {
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
+                    <PopoverContent className="w-auto p-0 z-[100]" align="start">
                       <Calendar
                         mode="single"
                         selected={new Date(field.value)}
@@ -109,7 +109,7 @@ const AddCouponDialog = () => {
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>End Date</FormLabel>
-                  <Popover>
+                  <Popover modal={true}>
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button variant={'outline'}>
@@ -122,7 +122,7 @@ const AddCouponDialog = () => {
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
+                    <PopoverContent className="w-auto p-0 z-[100]" align="start">
                       <Calendar
                         mode="single"
                         selected={new Date(field.value)}
