@@ -35,3 +35,62 @@ export type ApiResponseData = {
   events: EventRow[];
   summary: Summary;
 };
+
+export interface OrderDetail {
+  id: string;
+  created_at: string;
+  status: string;
+  total_amount: number;
+  payment_status: string;
+  payment_method: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    phone: string;
+  };
+  shipping_address: {
+    full_name: string;
+    phone: string;
+    street: string;
+    landmark: string;
+    city: string;
+    district: string;
+    state: string;
+    postal_code: string;
+    country: string;
+  };
+  billing_address: {
+    full_name: string;
+    phone: string;
+    street: string;
+    landmark: string;
+    city: string;
+    district: string;
+    state: string;
+    postal_code: string;
+    country: string;
+  };
+  order_items: {
+    id: string;
+    quantity: number;
+    final_price: number;
+    total_price: number;
+    product_name: string;
+    color_name: string;
+    size_name: string;
+    sku: string;
+    product_image: string;
+  }[];
+  payment: {
+    transaction_id: string;
+    cf_payment_id: string;
+  };
+  financial_summary: {
+    subtotal: number;
+    discount: number;
+    shipping_cost: number;
+    taxes: number;
+    grand_total: number;
+  };
+}
