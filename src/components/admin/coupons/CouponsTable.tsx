@@ -1,6 +1,6 @@
 import { Edit } from 'lucide-react';
-import { Button } from 'components/ui/button';
-import { useCouponsTab } from '@/contexts/admin/coupons/CouponsContext';
+import { Button } from 'ui/button';
+import { useCouponsTab } from 'contexts/admin/coupons/CouponsContext';
 
 const CouponsTable = () => {
   const { coupons, loading, error, expireCoupon, openEditDialog } = useCouponsTab();
@@ -34,6 +34,9 @@ const CouponsTable = () => {
               <th className="px-6 py-4 text-left text-xs font-medium text-luxury-gray uppercase tracking-wider">
                 Created At
               </th>
+              <th className="px-6 py-4 text-left text-xs font-medium text-luxury-gray uppercase tracking-wider">
+                Expired At
+              </th>
               <th className="px-6 py-4 text-right text-xs font-medium text-luxury-gray uppercase tracking-wider">
                 Actions
               </th>
@@ -42,7 +45,7 @@ const CouponsTable = () => {
           <tbody className="bg-white divide-y divide-luxury-gray/10">
             {loading ? (
               <tr>
-                <td colSpan={6} className="px-6 py-8 text-center">
+                <td colSpan={7} className="px-6 py-8 text-center">
                   <div className="flex items-center justify-center space-x-2 text-luxury-gray">
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-luxury-gold"></div>
                     <span className="text-sm">Loading coupons...</span>
@@ -51,7 +54,7 @@ const CouponsTable = () => {
               </tr>
             ) : coupons.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-6 py-8 text-center">
+                <td colSpan={7} className="px-6 py-8 text-center">
                   <div className="text-luxury-gray">
                     <p className="text-sm font-medium">No coupons found</p>
                   </div>
@@ -77,6 +80,9 @@ const CouponsTable = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-luxury-gray">
                     {new Date(coupon.created_at).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-luxury-gray">
+                    {coupon.expired_at && new Date(coupon.expired_at).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex items-center justify-end gap-2">
