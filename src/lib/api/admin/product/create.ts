@@ -3,7 +3,11 @@ import type { Product, CreateProductData } from 'types/product';
 import { prepareImagesForRPC, validateProductImagesOrder } from 'utils/imageOrderingUtils';
 import { logAdminActivity, createProductMessage } from 'utils/adminActivityLogger';
 
-export default async function createProduct(newProduct: CreateProductData, adminUserId?: string, requestInfo = {}): Promise<{ product: Product | null, error: string | null, status?: number }> {
+export default async function createProduct(
+  newProduct: CreateProductData,
+  adminUserId?: string,
+  requestInfo = {}
+): Promise<{ product: Product | null; error: string | null; status?: number }> {
   try {
     if (!newProduct.title || typeof newProduct.title !== 'string')
       return { product: null, error: 'Title is required and must be a string', status: 400 };
@@ -19,7 +23,8 @@ export default async function createProduct(newProduct: CreateProductData, admin
         short_code: 'temp'
       } as Product);
 
-      if (!isValid) return { product: null, error: `Product images validation failed: ${errors}`, status: 400 };
+      if (!isValid)
+        return { product: null, error: `Product images validation failed: ${errors}`, status: 400 };
     }
 
     if (newProduct.sizes)
@@ -51,7 +56,7 @@ export default async function createProduct(newProduct: CreateProductData, admin
             id: size.id,
             name: size.name,
             stock_quantity: size.stock_quantity || 0,
-            low_stock_threshold: size.low_stock_threshold || 5
+            low_stock_threshold: size.low_stock_threshold || 1
           }));
 
           return {
@@ -88,13 +93,20 @@ export default async function createProduct(newProduct: CreateProductData, admin
         message: createProductMessage('create', newProduct.title),
         error: error || null,
         status: error != null || data == null ? 'failed' : 'success',
-        ...requestInfo,
+        ...requestInfo
       });
     }
 
-    if (error) return { product: null, error: `Error calling create_product_rpc: ${error.message}`, status: 500 };
-    if (data && data.status === 'error') return { product: null, error: `RPC Error: ${data.message}`, status: 500 };
-    if (!data || data.status !== 'success' || !data.product_id) return { product: null, error: `Unexpected RPC response: ${data}`, status: 500 };
+    if (error)
+      return {
+        product: null,
+        error: `Error calling create_product_rpc: ${error.message}`,
+        status: 500
+      };
+    if (data && data.status === 'error')
+      return { product: null, error: `RPC Error: ${data.message}`, status: 500 };
+    if (!data || data.status !== 'success' || !data.product_id)
+      return { product: null, error: `Unexpected RPC response: ${data}`, status: 500 };
 
     const product = {
       id: data.product_id,

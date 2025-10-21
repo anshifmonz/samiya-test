@@ -1,18 +1,37 @@
+import { useState, useEffect, FC } from 'react';
+import { Input } from 'ui/input';
+import { Label } from 'ui/label';
 import { type Size } from 'types/product';
-import React, { useState } from 'react';
-import { useAdminProductFormColorSizes } from './AdminProductFormContext';
-import { useProductsTab } from 'contexts/admin/ProductsTabContext';
 import { Package, TrendingDown } from 'lucide-react';
+import { useProductsTab } from 'contexts/admin/ProductsTabContext';
+import { useAdminProductFormColorSizes } from './AdminProductFormContext';
 
 interface ColorSizeSelectProps {
   color: string;
 }
 
-const ColorSizeSelect: React.FC<ColorSizeSelectProps> = ({ color }) => {
+const ColorSizeSelect: FC<ColorSizeSelectProps> = ({ color }) => {
   const { handleColorSizesChange, getColorSizes } = useAdminProductFormColorSizes();
   const sizes = getColorSizes(color);
   const { sizes: availableSizes } = useProductsTab();
   const [expandedSizes, setExpandedSizes] = useState<Set<string>>(new Set());
+
+  // New state for local input values
+  const [localInputValues, setLocalInputValues] = useState<
+    Record<string, { stock_quantity: string; low_stock_threshold: string }>
+  >({});
+
+  // Effect to sync local state with sizes from context
+  useEffect(() => {
+    const newValues: Record<string, { stock_quantity: string; low_stock_threshold: string }> = {};
+    sizes.forEach(size => {
+      newValues[size.id] = {
+        stock_quantity: size.stock_quantity?.toString() ?? '',
+        low_stock_threshold: size.low_stock_threshold?.toString() ?? ''
+      };
+    });
+    setLocalInputValues(newValues);
+  }, [sizes]);
 
   const handleSizeToggle = (size: Size) => {
     const isSelected = sizes.some(s => s.id === size.id || s.name === size.name);
@@ -26,8 +45,8 @@ const ColorSizeSelect: React.FC<ColorSizeSelectProps> = ({ color }) => {
     } else {
       const newSize: Size = {
         ...size,
-        stock_quantity: 0,
-        low_stock_threshold: 3,
+        stock_quantity: undefined,
+        low_stock_threshold: undefined,
         is_in_stock: false,
         is_low_stock: false
       };
@@ -36,22 +55,52 @@ const ColorSizeSelect: React.FC<ColorSizeSelectProps> = ({ color }) => {
     }
   };
 
-  const handleStockUpdate = (sizeId: string, field: 'stock_quantity' | 'low_stock_threshold', value: number) => {
+  const handleStockUpdate = (
+    sizeId: string,
+    field: 'stock_quantity' | 'low_stock_threshold',
+    value: number
+  ) => {
     const updatedSizes = sizes.map(size => {
       if (size.id === sizeId) {
         const updatedSize = { ...size, [field]: value };
         // auto-calculate stock status
         if (field === 'stock_quantity') {
           updatedSize.is_in_stock = value > 0;
-          updatedSize.is_low_stock = value > 0 && value <= (updatedSize.low_stock_threshold || 5);
+          updatedSize.is_low_stock = value > 0 && value <= (updatedSize.low_stock_threshold || 1);
         } else if (field === 'low_stock_threshold') {
-          updatedSize.is_low_stock = (updatedSize.stock_quantity || 0) > 0 && (updatedSize.stock_quantity || 0) <= value;
+          updatedSize.is_low_stock =
+            (updatedSize.stock_quantity || 0) > 0 && (updatedSize.stock_quantity || 0) <= value;
         }
         return updatedSize;
       }
       return size;
     });
     handleColorSizesChange(color, updatedSizes);
+  };
+
+  // New handlers for local input state
+  const handleLocalInputChange = (
+    sizeId: string,
+    field: 'stock_quantity' | 'low_stock_threshold',
+    value: string
+  ) => {
+    setLocalInputValues(prev => ({
+      ...prev,
+      [sizeId]: {
+        ...(prev[sizeId] || { stock_quantity: '', low_stock_threshold: '' }),
+        [field]: value
+      }
+    }));
+  };
+
+  const handleInputBlur = (sizeId: string, field: 'stock_quantity' | 'low_stock_threshold') => {
+    const stringValue = localInputValues[sizeId]?.[field];
+    const defaultValue = field === 'stock_quantity' ? 0 : 1;
+    let valueToUpdate = parseInt(stringValue, 10);
+    if (isNaN(valueToUpdate)) {
+      valueToUpdate = defaultValue;
+    }
+    handleStockUpdate(sizeId, field, valueToUpdate);
   };
 
   const toggleSizeExpansion = (sizeId: string) => {
@@ -70,9 +119,9 @@ const ColorSizeSelect: React.FC<ColorSizeSelectProps> = ({ color }) => {
 
   return (
     <div className="mt-4">
-      <label className="block luxury-subheading text-sm text-luxury-black mb-2">
+      <Label className="block luxury-subheading text-sm text-luxury-black mb-2">
         Available Sizes for {color.charAt(0).toUpperCase() + color.slice(1)}
-      </label>
+      </Label>
       <div className="flex gap-2 flex-wrap">
         {availableSizes.map(size => {
           const isSelected = isSizeSelected(size);
@@ -118,13 +167,15 @@ const ColorSizeSelect: React.FC<ColorSizeSelectProps> = ({ color }) => {
                 >
                   <div className="flex items-center gap-3">
                     <span className="font-medium text-luxury-black">{size.name}</span>
-                    <span className={`text-xs px-2 py-1 rounded-full ${
-                      size.is_in_stock
-                        ? isLowStock
-                          ? 'bg-yellow-100 text-yellow-800'
-                          : 'bg-green-100 text-green-800'
-                        : 'bg-red-100 text-red-800'
-                    }`}>
+                    <span
+                      className={`text-xs px-2 py-1 rounded-full ${
+                        size.is_in_stock
+                          ? isLowStock
+                            ? 'bg-yellow-100 text-yellow-800'
+                            : 'bg-green-100 text-green-800'
+                          : 'bg-red-100 text-red-800'
+                      }`}
+                    >
                       {isLowStock ? 'Low Stock' : stockStatus}
                     </span>
                   </div>
@@ -132,9 +183,9 @@ const ColorSizeSelect: React.FC<ColorSizeSelectProps> = ({ color }) => {
                     <span className="text-sm text-luxury-gray">
                       Stock: {size.stock_quantity || 0}
                     </span>
-                    <span className={`transform transition-transform ${
-                      isExpanded ? 'rotate-180' : ''
-                    }`}>
+                    <span
+                      className={`transform transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                    >
                       ▼
                     </span>
                   </div>
@@ -143,35 +194,33 @@ const ColorSizeSelect: React.FC<ColorSizeSelectProps> = ({ color }) => {
                 {isExpanded && (
                   <div className="mt-3 grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs text-luxury-gray mb-1">
-                        Stock Quantity
-                      </label>
-                      <input
-                        type="number"
-                        min="0"
-                        value={size.stock_quantity || 0}
-                        onChange={(e) => handleStockUpdate(
-                          size.id,
-                          'stock_quantity',
-                          Math.max(0, parseInt(e.target.value) || 0)
-                        )}
+                      <Label className="block text-xs text-luxury-gray mb-1">Stock Quantity</Label>
+                      <Input
+                        type="text"
+                        inputMode="numeric"
+                        placeholder="Enter available stock"
+                        value={localInputValues[size.id]?.stock_quantity ?? ''}
+                        onChange={e =>
+                          handleLocalInputChange(size.id, 'stock_quantity', e.target.value)
+                        }
+                        onBlur={() => handleInputBlur(size.id, 'stock_quantity')}
                         className="w-full px-2 py-1 border border-luxury-gray/30 rounded text-sm focus:outline-none focus:ring-2 focus:ring-luxury-gold/50"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs text-luxury-gray mb-1 flex items-center gap-1">
+                      <Label className="block text-xs text-luxury-gray mb-1 flex items-center gap-1">
                         <TrendingDown size={12} />
                         Low Stock Threshold
-                      </label>
-                      <input
-                        type="number"
-                        min="1"
-                        value={size.low_stock_threshold || 5}
-                        onChange={(e) => handleStockUpdate(
-                          size.id,
-                          'low_stock_threshold',
-                          Math.max(1, parseInt(e.target.value) || 5)
-                        )}
+                      </Label>
+                      <Input
+                        type="text"
+                        inputMode="numeric"
+                        placeholder="Enter low stock threshold"
+                        value={localInputValues[size.id]?.low_stock_threshold ?? ''}
+                        onChange={e =>
+                          handleLocalInputChange(size.id, 'low_stock_threshold', e.target.value)
+                        }
+                        onBlur={() => handleInputBlur(size.id, 'low_stock_threshold')}
                         className="w-full px-2 py-1 border border-luxury-gray/30 rounded text-sm focus:outline-none focus:ring-2 focus:ring-luxury-gold/50"
                       />
                     </div>
