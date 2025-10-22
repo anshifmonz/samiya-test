@@ -43,6 +43,11 @@ const PriceBreakdown = () => {
           </div>
         )}
 
+        <div className="flex justify-between font-semibold text-lg">
+          <span>Total Amount</span>
+          <span>₹{totalAmount.toFixed(2)}</span>
+        </div>
+
         <Separator />
 
         <div className="space-y-2">
@@ -63,13 +68,6 @@ const PriceBreakdown = () => {
               {couponMessage}
             </span>
           )}
-        </div>
-
-        <Separator />
-
-        <div className="flex justify-between font-semibold text-lg">
-          <span>Total Amount</span>
-          <span>₹{totalAmount.toFixed(2)}</span>
         </div>
       </CardContent>
     </Card>

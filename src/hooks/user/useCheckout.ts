@@ -132,8 +132,10 @@ export function useCheckout({
         body: JSON.stringify({ code: couponCode })
       });
 
-      if (response.data && response.data.data) {
-        const { amount, type } = response.data.data;
+      const couponData = response?.data?.data;
+      const isValid = couponData?.valid;
+      if (couponData && isValid) {
+        const { amount, type } = couponData;
         let calculatedDiscount = 0;
         if (type === 'fixed') {
           calculatedDiscount = amount;
@@ -141,10 +143,9 @@ export function useCheckout({
           calculatedDiscount = (subtotal * amount) / 100;
         }
         setDiscount(calculatedDiscount);
-        setCouponMessage(response.data.message);
       } else {
         setDiscount(0);
-        setCouponMessage(response.data.message || 'Invalid coupon code');
+        setCouponMessage(couponData.message || 'Invalid coupon code');
       }
     } catch (error) {
       setDiscount(0);
