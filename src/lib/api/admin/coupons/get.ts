@@ -1,6 +1,9 @@
 import { supabaseAdmin } from 'lib/supabase';
 import { err, ok } from 'utils/api/response';
 
+export const revalidate = 0;
+export const dynamic = 'force-dynamic';
+
 export async function getCoupons() {
   const { data, error } = await supabaseAdmin.from('coupons').select('*');
   if (error) return err(error.message);
