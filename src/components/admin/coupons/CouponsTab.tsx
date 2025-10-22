@@ -13,7 +13,14 @@ const CouponsTabContent = () => {
 
   return (
     <div className="container max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-8 pt-24">
-      <h1 className="text-2xl font-bold mb-4">Coupons</h1>
+      <div className="mb-6">
+        <h1 className="luxury-heading xs:text-2xl text-3xl sm:text-4xl text-luxury-black mb-2 sm:mb-4">
+          Coupons & Discounts
+        </h1>
+        <p className="luxury-body text-luxury-gray xs:text-sm text-base sm:text-lg">
+          Manage your coupons & discounts with ease
+        </p>
+      </div>
       <div className="flex justify-end mb-4">
         <AdminTabHeaderButton onClick={openAddDialog} label="Add Coupon">
           <Plus size={20} />
