@@ -90,10 +90,21 @@ export function useCheckout({
   const [couponMessage, setCouponMessage] = useState('');
   const [discount, setDiscount] = useState(0);
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
+  const [totalAmount, setTotalAmount] = useState(0);
+  const [subtotal, setSubtotal] = useState(0);
+  const [deliveryCharges, setDeliveryCharges] = useState(0);
 
-  const subtotal = checkoutData?.total || 0;
-  const deliveryCharges = calculateDeliveryCharge(subtotal);
-  const totalAmount = subtotal + deliveryCharges - discount;
+  useEffect(() => {
+    setSubtotal(checkoutData?.total || 0);
+  }, [checkoutData]);
+
+  useEffect(() => {
+    setDeliveryCharges(calculateDeliveryCharge(subtotal));
+  }, [subtotal]);
+
+  useEffect(() => {
+    setTotalAmount(subtotal + deliveryCharges - discount);
+  }, [subtotal, deliveryCharges, discount]);
 
   useEffect(() => {
     if (addresses && addresses.length > 0) {
@@ -121,8 +132,8 @@ export function useCheckout({
         body: JSON.stringify({ code: couponCode })
       });
 
-      if (response.data && response.data.valid) {
-        const { amount, type } = response.data;
+      if (response.data && response.data.data) {
+        const { amount, type } = response.data.data;
         let calculatedDiscount = 0;
         if (type === 'fixed') {
           calculatedDiscount = amount;
