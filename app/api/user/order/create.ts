@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
 
     const phone = user.user_metadata.phone_number;
     const body: CreateOrderRequest = await request.json();
-    const { checkoutId, paymentMethod, orderAddressId, address } = body;
+    const { checkoutId, paymentMethod, orderAddressId, address, couponCode } = body;
 
     const result = await createOrder({
       userId: user.id,
@@ -19,7 +19,8 @@ export async function POST(request: NextRequest) {
       checkoutId,
       orderAddressId,
       paymentMethod,
-      address
+      address,
+      couponCode
     });
     return jsonResponse(result);
   } catch (error) {

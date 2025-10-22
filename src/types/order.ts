@@ -60,6 +60,7 @@ export interface CreateOrderRequest {
   address?: AddressFormData & {
     saveAddress: boolean;
   };
+  couponCode?: string;
 }
 
 export interface CreateOrderResponse {

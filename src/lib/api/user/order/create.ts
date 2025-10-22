@@ -11,7 +11,7 @@ interface PaymentDetails {
 }
 
 export async function createOrder(request: CreateOrderRequest): Promise<ApiResponse<any>> {
-  const { userId, phone, checkoutId, paymentMethod, orderAddressId, address } = request;
+  const { userId, phone, checkoutId, paymentMethod, orderAddressId, address, couponCode } = request;
 
   if (!userId || typeof userId !== 'string')
     return err('User ID is required and must be a string', 400);
@@ -26,6 +26,7 @@ export async function createOrder(request: CreateOrderRequest): Promise<ApiRespo
     return err('Order address ID is required and must be a string', 400);
   if (orderAddressId === 'TEMP_ID' && !address)
     return err('Address is required when using new order address', 400);
+  if (couponCode && typeof couponCode !== 'string') return err('Coupon code must be a string', 400);
 
   const supabase = createClient();
 
@@ -35,7 +36,8 @@ export async function createOrder(request: CreateOrderRequest): Promise<ApiRespo
     p_order_address_id: orderAddressId,
     p_payment_method: paymentMethod || 'any',
     p_address: address,
-    p_save_address: address?.saveAddress || false
+    p_save_address: address?.saveAddress || false,
+    p_coupon_code: couponCode || null
   });
 
   if (error) return err('Failed to create order', 500);
