@@ -39,9 +39,9 @@ export const usePayment = (orderId?: string) => {
 
   const verifyPaymentStatus = useCallback(async () => {
     if (!orderId) {
-        setLoading(false);
-        return;
-    };
+      setLoading(false);
+      return;
+    }
     try {
       setVerifying(true);
       const { data: verifyData, error: verifyError } = await apiRequest(
@@ -67,20 +67,20 @@ export const usePayment = (orderId?: string) => {
 
   useEffect(() => {
     if (!isFirstLoad.current || !orderId) {
-        setLoading(false);
-        return;
-    };
+      setLoading(false);
+      return;
+    }
     isFirstLoad.current = false;
     verifyPaymentStatus();
   }, [orderId, verifyPaymentStatus]);
 
   const getStatusIcon = (size: 'sm' | 'md' | 'lg' = 'md') => {
     const sizeClasses = {
-        sm: 'h-8 w-8',
-        md: 'h-12 w-12',
-        lg: 'h-16 w-16',
-    }
-    const className = `${sizeClasses[size]} text-muted-foreground`;
+      sm: 'h-8 w-8',
+      md: 'h-12 w-12',
+      lg: 'h-16 w-16'
+    };
+    const className = `${sizeClasses[size]} text-muted-foreground animate-spin`;
 
     if (!paymentStatus) return { icon: Clock, className };
 
@@ -183,6 +183,6 @@ export const usePayment = (orderId?: string) => {
     getStatusMessage,
     getStatusDescription,
     handleContinue,
-    handleRetryPayment,
+    handleRetryPayment
   };
 };
