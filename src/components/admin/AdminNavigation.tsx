@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Card } from 'ui/card';
-import { LayoutDashboard, History, Globe, Package, Users } from 'lucide-react';
+import { LayoutDashboard, History, Globe, Package, Gift, Users } from 'lucide-react';
 import { useCurrentAdmin } from 'hooks/admin/useCurrentAdmin';
 
 const navigationItems = [
@@ -12,6 +12,20 @@ const navigationItems = [
     description: 'Overview of the store',
     href: '/admin/inventory',
     superadmin: false
+  },
+  {
+    icon: Package,
+    label: 'Order Management',
+    description: 'Manage orders placed in the store',
+    href: '/admin/orders',
+    superadmin: true
+  },
+  {
+    icon: Gift,
+    label: 'Coupon Management',
+    description: 'Manage Coupons and Discounts',
+    href: '/admin/coupons',
+    superadmin: true
   },
   {
     icon: History,
@@ -25,13 +39,6 @@ const navigationItems = [
     label: 'IP Logs',
     description: 'Track IP addresses accessing the store',
     href: '/admin/activity-logs/ip',
-    superadmin: true
-  },
-  {
-    icon: Package,
-    label: 'Order Logs',
-    description: 'Review order-related activities',
-    href: '/admin/activity-logs/orders',
     superadmin: true
   },
   {
