@@ -86,11 +86,14 @@ export function useCheckout({
   const [hasTemp, setHasTemp] = useState(false);
   const [editingAddress, setEditingAddress] = useState<AddressDisplay | null>(null);
 
+  const [couponCode, setCouponCode] = useState('');
+  const [couponMessage, setCouponMessage] = useState('');
+  const [discount, setDiscount] = useState(0);
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
+
   const subtotal = checkoutData?.total || 0;
-  // const selectedDeliveryOption = deliveryOptions.find(option => option.id === selectedDelivery);
-  // const deliveryCharges = subtotal >= 1000 && selectedDelivery === 'standard' ? 0 : selectedDeliveryOption.price || 40;
   const deliveryCharges = calculateDeliveryCharge(subtotal);
-  const totalAmount = subtotal + deliveryCharges;
+  const totalAmount = subtotal + deliveryCharges - discount;
 
   useEffect(() => {
     if (addresses && addresses.length > 0) {
@@ -99,6 +102,46 @@ export function useCheckout({
       setHasTemp(false);
     }
   }, [addresses]);
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode) {
+      setCouponMessage('Please enter a coupon code.');
+      return;
+    }
+
+    setIsApplyingCoupon(true);
+    setCouponMessage('');
+
+    try {
+      const response = await apiRequest('/api/public/coupon/validate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ code: couponCode })
+      });
+
+      if (response.data && response.data.valid) {
+        const { amount, type } = response.data;
+        let calculatedDiscount = 0;
+        if (type === 'fixed') {
+          calculatedDiscount = amount;
+        } else if (type === 'percentage') {
+          calculatedDiscount = (subtotal * amount) / 100;
+        }
+        setDiscount(calculatedDiscount);
+        setCouponMessage(response.data.message);
+      } else {
+        setDiscount(0);
+        setCouponMessage(response.data.message || 'Invalid coupon code');
+      }
+    } catch (error) {
+      setDiscount(0);
+      setCouponMessage('Failed to validate coupon. Please try again.');
+    } finally {
+      setIsApplyingCoupon(false);
+    }
+  };
 
   const handleAddAddress = (newAddress: AddressDisplay) => {
     setIsAddressModalOpen(false);
@@ -163,7 +206,8 @@ export function useCheckout({
           checkoutId: checkoutData.checkout.id,
           orderAddressId: selectedAddress,
           address,
-          paymentMethod: selectedPayment
+          paymentMethod: selectedPayment,
+          couponCode: couponCode || undefined
         },
         showLoadingBar: true,
         showErrorToast: true,
@@ -226,6 +270,10 @@ export function useCheckout({
     selectedPayment,
     selectedDelivery,
     isAddressModalOpen,
+    couponCode,
+    couponMessage,
+    discount,
+    isApplyingCoupon,
 
     // State handlers
     setAddresses,
@@ -235,6 +283,7 @@ export function useCheckout({
     setSelectedPayment,
     setSelectedDelivery,
     setIsAddressModalOpen,
+    setCouponCode,
 
     // Data
     checkoutData,
@@ -251,6 +300,7 @@ export function useCheckout({
     onEditAddress,
     handleAddAddress,
     handleEditAddress,
-    handlePlaceOrder
+    handlePlaceOrder,
+    handleApplyCoupon
   };
 }
