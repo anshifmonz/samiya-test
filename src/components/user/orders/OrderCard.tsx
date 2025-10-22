@@ -68,9 +68,7 @@ const OrderCard = ({ order }: OrderCardProps) => {
                 {DbEnumToMessage(order.status).title}
               </Badge>
             </div>
-            <p className="text-lg font-semibold text-foreground">
-              ₹{order.total_amount.toFixed(2)}
-            </p>
+            <p className="text-lg font-semibold text-foreground">₹{order.final_price.toFixed(2)}</p>
           </div>
         </div>
       </CardHeader>

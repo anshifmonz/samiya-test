@@ -1,6 +1,6 @@
 import { createClient } from 'lib/supabase/server';
 import { GetOrderHistoryResponse, OrderHistory } from 'types/order';
-import { generateOrderNumber, getOrderIndexForYear } from 'utils/orderUtils';
+import { generateOrderNumber } from 'utils/orderUtils';
 import { ok, err, type ApiResponse } from 'utils/api/response';
 
 export async function getUserOrders(
@@ -35,12 +35,9 @@ export async function getUserOrders(
     }
 
     const orderHistory: OrderHistory[] = orders.map((order: any) => {
-      const orderIndex = getOrderIndexForYear(order.created_at, orders);
-      const orderNumber = generateOrderNumber(order.created_at, orderIndex);
-
       return {
         ...order,
-        order_number: orderNumber,
+        order_number: `#${order.id.substring(0, 6).toLocaleUpperCase()}`,
         items: order.items || [],
         shipping_address: order.shipping_address
       };
@@ -77,11 +74,9 @@ export async function getUserOrderById(
     if (error) return err('Failed to fetch order details. Please try again later.');
     if (!order) return err('Order not found', 404);
 
-    const orderNumber = generateOrderNumber(order.created_at, 1);
-
     const orderHistory: OrderHistory = {
       ...(order as any),
-      order_number: orderNumber,
+      order_number: `#${order.id.substring(0, 6).toLocaleUpperCase()}`,
       items: (order as any).items || [],
       shipping_address: (order as any).shipping_address
     };

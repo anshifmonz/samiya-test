@@ -102,7 +102,7 @@ export interface OrderHistory {
   id: string;
   user_id: string;
   order_number: string; // Generated order number like ORD-2024-001
-  total_amount: number;
+  final_price: number;
   status: string;
   payment_method?: string;
   payment_status: string;
