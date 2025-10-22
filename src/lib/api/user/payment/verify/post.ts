@@ -1,6 +1,5 @@
 import retry from 'utils/retry';
 import { createClient } from 'lib/supabase/server';
-import { SRCreateOrder } from 'lib/shiprocket/createOrder';
 import { ok, err, type ApiResponse } from 'utils/api/response';
 import { consumeStock, releaseStock } from 'lib/inventory';
 import { fetchCashfreeOrder, mapCashfreeStatus } from 'utils/payment/cashfree';
@@ -127,8 +126,6 @@ export async function verifyPayment(
 
       if (orderUpdateError) console.error('Failed to update order status:', orderUpdateError);
     }
-
-    await SRCreateOrder(payment.orders.id);
 
     return ok({
       payment_status: newPaymentStatus,

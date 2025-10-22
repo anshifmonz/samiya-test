@@ -4,6 +4,7 @@ import { err, jsonResponse } from 'utils/api/response';
 
 export async function POST(request: NextRequest) {
   try {
+    return jsonResponse(err('Invalid path', 404));
     const { orderId } = await request.json();
     if (!orderId) return jsonResponse(err('Missing required field: orderId', 400));
 

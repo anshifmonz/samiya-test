@@ -1,5 +1,4 @@
 import { supabaseAdmin } from 'lib/supabase';
-import { SRCreateOrder } from 'lib/shiprocket';
 import { verifyCashfreeWebhook } from 'utils/payment/cashfree';
 
 export async function processWebhook(
@@ -49,10 +48,6 @@ export async function processWebhook(
 
   if (rpcError) return 500;
   if (!(rpcData as any)?.success) return 500;
-
-  const { success, error } = await SRCreateOrder(rpcData.order_id);
-  if (error == 'Order is already in progress') return 200;
-  if (!success) return 500;
 
   return 200;
 }
