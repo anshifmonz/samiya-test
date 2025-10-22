@@ -2,7 +2,7 @@ export type Order = {
   id: string;
   created_at: string;
   status: string;
-  total_amount: number;
+  final_price: number;
   payment_status: string;
   user_name: string;
   user_email: string;

@@ -120,7 +120,7 @@ const OrdersTable = ({
                     {getStatusBadge(order.status)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-luxury-gray">
-                    ₹{order.total_amount.toFixed(2)}
+                    ₹{order.final_price.toFixed(2)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-luxury-gray">
                     <Badge variant={order.payment_status === 'paid' ? 'success' : 'warning'}>
