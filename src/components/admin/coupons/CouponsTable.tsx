@@ -82,11 +82,12 @@ const CouponsTable = () => {
                         variant="ghost"
                         size="sm"
                         onClick={() => openEditDialog(coupon)}
+                        disabled={!!coupon.expired_at}
                         className="text-luxury-gold hover:text-yellow-500 hover:bg-yellow-50"
                       >
                         <Edit size={16} />
                       </Button>
-                      <Button variant="outline" size="sm" onClick={() => expireCoupon(coupon.id)}>
+                      <Button variant="outline" size="sm" onClick={() => expireCoupon(coupon.id)} disabled={!!coupon.expired_at}>
                         Expire
                       </Button>
                     </div>
