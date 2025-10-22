@@ -8,7 +8,7 @@ export async function POST(req: Request) {
 
     const { data: coupon, error } = await supabasePublic
       .from('coupons')
-      .select('end_date, expired_at, amount, type')
+      .select('start_date, end_date, expired_at, amount, type')
       .eq('code', code)
       .single();
 
@@ -16,8 +16,11 @@ export async function POST(req: Request) {
     if (!coupon) return jsonResponse(ok({ valid: false, message: 'Coupon not found' }));
 
     const currentDate = new Date();
-    const endDate = new Date(coupon.end_date);
+    const startDate = new Date(coupon.start_date);
+    if (currentDate < startDate)
+      return jsonResponse(ok({ valid: false, message: 'Coupon is not active yet' }));
 
+    const endDate = new Date(coupon.end_date);
     const isExpired = currentDate > endDate || coupon.expired_at !== null;
 
     if (isExpired) return jsonResponse(ok({ valid: false, message: 'Coupon has expired' }));
