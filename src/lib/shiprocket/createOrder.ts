@@ -14,7 +14,7 @@ async function createSROrderForLocalOrder(localOrderId: string): Promise<ApiResp
         `id,
         user_id,
         status,
-        total_amount,
+        final_price,
         order_address_id,
         shiprocket_order_id,
         shiprocket_shipment_id,
@@ -149,7 +149,7 @@ async function createSROrderForLocalOrder(localOrderId: string): Promise<ApiResp
       })),
 
       payment_method: 'Prepaid',
-      sub_total: Number(order.total_amount),
+      sub_total: Number(order.final_price),
 
       length: 30,
       breadth: 5,

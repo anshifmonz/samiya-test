@@ -12,7 +12,7 @@ async function postCancellation(localOrderId: string) {
       .from('orders')
       .update({ status: 'cancelled' })
       .eq('id', localOrderId)
-      .select('total_amount')
+      .select('final_price')
       .single();
   });
 
@@ -31,8 +31,7 @@ async function postCancellation(localOrderId: string) {
 
   createCashfreeRefund(
     localOrderId,
-    localOrderId,
-    orderData.total_amount,
+    orderData.final_price,
     "Customer don't need this product anymore."
   );
 }

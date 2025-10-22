@@ -8,7 +8,7 @@ import { type SRReturnOrderPayload } from 'lib/shiprocket/types';
 export async function handleMappedAction3(order_id: string) {
   const { data: orderData, error: orderError } = await supabaseAdmin
     .from('orders')
-    .select('id, user_id, total_amount, shipping_address_id, created_at, payment_method')
+    .select('id, user_id, final_price, shipping_address_id, created_at, payment_method')
     .eq('id', order_id)
     .single();
   if (orderError || !orderData) return 500;
@@ -54,14 +54,14 @@ export async function handleMappedAction3(order_id: string) {
       selling_price: item.final_price
     })),
     payment_method: 'Prepaid',
-    sub_total: orderData.total_amount,
+    sub_total: orderData.final_price,
     length: 10,
     breadth: 10,
     height: 10,
     weight: 1
   };
 
-  await retry(() => createRefund(order_id, orderData.total_amount), 3, 1000);
+  await retry(() => createRefund(order_id, orderData.final_price), 3, 1000);
   await retry(() => createReturnForOrder(order_id, payload), 3, 1000);
   return 200;
 }

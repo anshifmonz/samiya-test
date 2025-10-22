@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
 import { ok, err, ApiResponse } from 'utils/api/response';
 import { createCashfreeRefund } from 'utils/payment/cashfree';
 
@@ -17,14 +16,14 @@ export async function createRefund(
   amount: number,
   reason?: string
 ): Promise<ApiResponse<Refund>> {
-  const refundId = `refund_${uuidv4()}`;
-  const result = await createCashfreeRefund(orderId, refundId, amount, reason);
+  const refundId = `refund_${orderId}`;
+  const result = await createCashfreeRefund(orderId, amount, reason);
   if (!result || !result.success) return err(result.error || 'Failed to create refund');
   return ok({
     refundId,
     orderId,
     amount,
     reason,
-    status: 'PENDING',
+    status: 'PENDING'
   });
 }

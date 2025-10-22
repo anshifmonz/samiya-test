@@ -10,7 +10,6 @@ import { ok, err, ApiResponse } from 'utils/api/response';
 import { cleanupExpiredReservations } from 'lib/inventory';
 import { type PaymentInitiationResponse } from 'types/payment';
 import { retryPaymentInitiation } from 'utils/payment/retryMechanism';
-import { calculateDeliveryCharge } from 'utils/calculateDeliveryCharge';
 import { mapErrorToPaymentError, formatPaymentError } from 'utils/payment/errorHandling';
 
 const ALLOWED_METHODS = new Set<CreateOrderRequest['paymentMethod']>([
@@ -36,7 +35,7 @@ export async function initiatePaymentSession(
         `
         id,
         user_id,
-        total_amount,
+        final_price,
         status,
         payment_status,
         created_at
@@ -97,10 +96,9 @@ export async function initiatePaymentSession(
       cfPaymentMethods = cfMethodMap[paymentMethod];
     }
 
-    const totalAmount = calculateDeliveryCharge(order.total_amount);
     const cashfreeOrderData: CashfreeOrderRequest = {
       order_id: orderId,
-      order_amount: parseFloat(totalAmount.toString()),
+      order_amount: parseFloat(order.final_price.toString()),
       order_currency: 'INR',
       customer_details: {
         customer_id: userId,
@@ -139,7 +137,7 @@ export async function initiatePaymentSession(
       order_id: orderId,
       cf_order_id: String(paymentResult.data!.cf_order_id),
       payment_session_id: paymentResult.data!.payment_session_id,
-      payment_amount: order.total_amount,
+      payment_amount: order.final_price,
       payment_currency: 'INR',
       payment_gateway: 'cashfree',
       method: paymentMethod,
@@ -155,7 +153,6 @@ export async function initiatePaymentSession(
 
     if (paymentError) return err();
 
-    // Update order status to processing
     await supabase
       .from('orders')
       .update({

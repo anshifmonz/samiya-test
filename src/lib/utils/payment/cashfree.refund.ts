@@ -41,10 +41,10 @@ const pendingRefunds = async (orderId: string, totalAmount: number) => {
 
 export const createCashfreeRefund = async (
   orderId: string,
-  refundId: string,
   amount: number,
   reason?: string
 ): Promise<ApiResponse<null>> => {
+  const refundId = `refund_${orderId}`;
   try {
     const cashfree = getCashfreeInstance();
     await cashfree.PGOrderCreateRefund(orderId, {
