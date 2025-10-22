@@ -1,17 +1,9 @@
-import { Edit } from 'lucide-react';
 import { Button } from 'ui/button';
+import { Edit } from 'lucide-react';
 import { useCouponsTab } from 'contexts/admin/coupons/CouponsContext';
 
 const CouponsTable = () => {
-  const { coupons, loading, error, expireCoupon, openEditDialog } = useCouponsTab();
-
-  if (error) {
-    return (
-      <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl">
-        <p className="text-red-600 text-sm">{error}</p>
-      </div>
-    );
-  }
+  const { coupons, loading, expireCoupon, openEditDialog } = useCouponsTab();
 
   return (
     <div className="overflow-hidden rounded-xl border border-luxury-gray/20 bg-white/95 shadow-sm">

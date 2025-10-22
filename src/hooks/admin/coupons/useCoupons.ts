@@ -64,7 +64,12 @@ export const useCoupons = (initialCoupons: Coupon[]) => {
   const onAddCouponSubmit = async (values: CouponFormValues): Promise<void> => {
     const { data, error } = await apiRequest<{ data: Coupon }>('/api/admin/coupons', {
       method: 'POST',
-      body: values
+      body: values,
+      showErrorToast: true,
+      showLoadingBar: true,
+      showSuccessToast: true,
+      errorMessage: 'Failed to add coupon',
+      successMessage: 'Coupon added successfully'
     });
     if (error) {
       setError(error);
@@ -80,7 +85,12 @@ export const useCoupons = (initialCoupons: Coupon[]) => {
       `/api/admin/coupons/${selectedCoupon.id}`,
       {
         method: 'PUT',
-        body: values
+        body: values,
+        showErrorToast: true,
+        showLoadingBar: true,
+        showSuccessToast: true,
+        errorMessage: 'Failed to update coupon',
+        successMessage: 'Coupon updated successfully'
       }
     );
     if (error) {
@@ -94,7 +104,12 @@ export const useCoupons = (initialCoupons: Coupon[]) => {
   const expireCoupon = async (id: number): Promise<void> => {
     const { data, error } = await apiRequest<{ data: Coupon }>(`/api/admin/coupons/${id}`, {
       method: 'PUT',
-      body: { expired_at: new Date().toISOString() }
+      body: { expired_at: new Date().toISOString() },
+      showErrorToast: true,
+      showLoadingBar: true,
+      showSuccessToast: true,
+      errorMessage: 'Failed to expire coupon',
+      successMessage: 'Coupon expired successfully'
     });
     if (error) {
       setError(error);
