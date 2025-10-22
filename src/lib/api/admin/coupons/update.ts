@@ -3,7 +3,7 @@ import { supabaseAdmin } from 'lib/supabase';
 import { err, ok } from 'utils/api/response';
 import { editCouponSchema } from 'lib/validators/coupon';
 
-export async function updateCoupon(id: number, couponData: Partial<Coupon>) {
+export async function updateCoupon(id: string, couponData: Partial<Coupon>) {
   if (!id) return err('Coupon ID is required');
 
   const { error: validationError } = editCouponSchema.safeParse(couponData);

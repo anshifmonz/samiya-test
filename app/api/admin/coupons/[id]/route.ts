@@ -17,7 +17,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
   try {
     const { id } = params;
     const body = await request.json();
-    const result = await updateCoupon(Number(id), body);
+    const result = await updateCoupon(id, body);
     return jsonResponse(result);
   } catch (_) {
     return jsonResponse(err());
