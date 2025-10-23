@@ -1,11 +1,11 @@
 import { useState, useCallback } from 'react';
 import { DragEndEvent } from '@dnd-kit/core';
-import { type ProductImage, type ProductColorData } from 'types/product';
-import { deleteImageFromCloudinary, deleteMultipleImagesFromCloudinary } from 'lib/upload/cloudinary';
-import { createProductImageWithId } from 'utils/imageIdUtils';
 import isValidPublicId from 'utils/isValidPublicId';
 import isCloudinaryUrl from 'utils/isCloudinaryUrls';
-import { useConfirmation } from '@/hooks/useConfirmation';
+import { useConfirmation } from 'hooks/useConfirmation';
+import { createProductImageWithId } from 'utils/imageIdUtils';
+import type { ProductImage, ProductColorData } from 'types/product';
+import { deleteImageFromCloudinary, deleteMultipleImagesFromCloudinary } from 'lib/upload/cloudinary';
 
 export interface ProductImagesSectionProps {
   images: Record<string, ProductColorData>;
@@ -68,6 +68,7 @@ export function useProductImagesSection({ images, onImagesChange, activeColorTab
       onImagesChange({
         ...images,
         [selectedColorForImage]: {
+          ...currentColorData,
           hex: currentColorData?.hex || '######',
           images: [...existingImages, newImage]
         }
@@ -93,6 +94,7 @@ export function useProductImagesSection({ images, onImagesChange, activeColorTab
     onImagesChange({
       ...images,
       [color]: {
+        ...currentColorData,
         hex: currentColorData?.hex || '######',
         images: newImages
       }
@@ -118,7 +120,7 @@ export function useProductImagesSection({ images, onImagesChange, activeColorTab
         delete updatedImages[color];
       } else {
         updatedImages[color] = {
-          hex: colorData.hex,
+          ...colorData,
           images: updatedColorImages
         };
       }
@@ -131,7 +133,7 @@ export function useProductImagesSection({ images, onImagesChange, activeColorTab
         delete updatedImages[color];
       } else {
         updatedImages[color] = {
-          hex: colorData.hex,
+          ...colorData,
           images: updatedColorImages
         };
       }
