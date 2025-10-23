@@ -60,13 +60,27 @@ const OrdersTabContent = () => {
                       <SelectValue placeholder="Filter by status" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">All Statuses</SelectItem>
-                      <SelectItem value="pending">Pending</SelectItem>
-                      <SelectItem value="processing">Processing</SelectItem>
-                      <SelectItem value="shipped">Shipped</SelectItem>
-                      <SelectItem value="delivered">Delivered</SelectItem>
-                      <SelectItem value="cancelled">Cancelled</SelectItem>
-                      <SelectItem value="refunded">Refunded</SelectItem>
+                      <SelectItem value="all" className="cursor-pointer">
+                        All Statuses
+                      </SelectItem>
+                      <SelectItem value="pending" className="cursor-pointer">
+                        Pending
+                      </SelectItem>
+                      <SelectItem value="processing" className="cursor-pointer">
+                        Processing
+                      </SelectItem>
+                      <SelectItem value="shipped" className="cursor-pointer">
+                        Shipped
+                      </SelectItem>
+                      <SelectItem value="delivered" className="cursor-pointer">
+                        Delivered
+                      </SelectItem>
+                      <SelectItem value="cancelled" className="cursor-pointer">
+                        Cancelled
+                      </SelectItem>
+                      <SelectItem value="refunded" className="cursor-pointer">
+                        Refunded
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
