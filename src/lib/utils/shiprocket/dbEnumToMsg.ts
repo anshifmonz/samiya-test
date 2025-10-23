@@ -20,8 +20,8 @@ export const DbEnumToMessage = (status?: string): StatusInfo => {
     case 'pending':
       return returnHelper('Pending', 'Your order is pending and will be processed soon.', '#f59e0b'); // amber
 
-    case 'new':
     case 'invoiced':
+    case 'processing':
     case 'ready_to_ship':
     case 'pickup_scheduled':
       return returnHelper('Order Placed', 'Your order has been received and is being processed.', '#06b6d4'); // teal/cyan
