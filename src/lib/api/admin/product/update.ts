@@ -40,7 +40,7 @@ export default async function updateProduct(
         id: size.id,
         name: size.name,
         stock_quantity: size.stock_quantity || 0,
-        low_stock_threshold: size.low_stock_threshold || 5
+        low_stock_threshold: size.low_stock_threshold || 1
       }));
       return {
         ...color,
