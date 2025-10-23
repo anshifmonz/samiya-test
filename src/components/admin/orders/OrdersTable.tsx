@@ -1,6 +1,10 @@
+'use client';
+
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
 import { Badge } from 'ui/badge';
 import { Button } from 'ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui/select';
 import { useOrders } from 'contexts/admin/orders/OrdersContext';
 
 import { type Order } from 'types/admin/order';
@@ -14,7 +18,17 @@ const OrdersTable = ({
   loading: boolean;
   error: string | null;
 }) => {
-  const { approveOrder, cancelOrder } = useOrders();
+  const { approveOrder, cancelOrder, updateStatus } = useOrders();
+  const [localOrders, setLocalOrders] = useState<Order[]>(orders || []);
+  const [updatingStatus, setUpdatingStatus] = useState<Record<string, boolean>>({});
+
+  // keep localOrders in sync when parent updates
+  useEffect(() => {
+    setLocalOrders(orders || []);
+  }, [orders]);
+
+  const setUpdating = (orderId: string, value: boolean) =>
+    setUpdatingStatus(prev => ({ ...prev, [orderId]: value }));
 
   if (error) {
     return (
@@ -85,7 +99,7 @@ const OrdersTable = ({
                   </div>
                 </td>
               </tr>
-            ) : orders.length === 0 ? (
+            ) : localOrders.length === 0 ? (
               <tr>
                 <td colSpan={7} className="px-6 py-8 text-center">
                   <div className="text-luxury-gray">
@@ -94,7 +108,7 @@ const OrdersTable = ({
                 </td>
               </tr>
             ) : (
-              orders.map(order => (
+              localOrders.map(order => (
                 <tr
                   key={order.id}
                   className="hover:bg-luxury-gray/5 transition-colors duration-200"
@@ -149,6 +163,52 @@ const OrdersTable = ({
                             Cancel
                           </Button>
                         </>
+                      )}
+                      {order.status !== 'pending' && (
+                        <Select
+                          value={order.status}
+                          onValueChange={async (val: string) => {
+                            // prevent duplicate updates
+                            if (updatingStatus[order.id]) return;
+                            const prevStatus = order.status;
+                            try {
+                              // optimistic update
+                              setLocalOrders(prev =>
+                                prev.map(o => (o.id === order.id ? { ...o, status: val } : o))
+                              );
+                              setUpdating(order.id, true);
+                              const { error } = await updateStatus(order.id, val);
+                              if (error) {
+                                // revert on failure
+                                setLocalOrders(prev =>
+                                  prev.map(o =>
+                                    o.id === order.id ? { ...o, status: prevStatus } : o
+                                  )
+                                );
+                              }
+                            } finally {
+                              setUpdating(order.id, false);
+                            }
+                          }}
+                        >
+                          <SelectTrigger className="h-8 w-40" disabled={!!updatingStatus[order.id]}>
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm text-luxury-gray">Update status</span>
+                              <SelectValue className="sr-only" />
+                              {updatingStatus[order.id] && (
+                                <div className="ml-2 animate-spin rounded-full h-3 w-3 border-b-2 border-luxury-gold" />
+                              )}
+                            </div>
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="shipped" className="cursor-pointer">
+                              Shipped
+                            </SelectItem>
+                            <SelectItem value="delivered" className="cursor-pointer">
+                              Delivered
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
                       )}
                     </div>
                   </td>

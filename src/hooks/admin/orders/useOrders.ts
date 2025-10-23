@@ -96,6 +96,20 @@ export const useOrdersLogic = () => {
     if (!error) refreshOrders();
   };
 
+  const updateStatus = async (orderId: string, status: string): Promise<{ error: any | null }> => {
+    const { error } = await apiRequest(`/api/admin/orders/${orderId}/status`, {
+      method: 'PUT',
+      body: { status },
+      showErrorToast: true,
+      showSuccessToast: true,
+      errorMessage: 'Failed to update order status',
+      successMessage: 'Order status updated successfully!'
+    });
+
+    if (!error) refreshOrders();
+    return { error };
+  };
+
   useEffect(() => {
     fetchOrders();
   }, [fetchOrders]);
@@ -120,6 +134,7 @@ export const useOrdersLogic = () => {
 
     cancelOrder,
     approveOrder,
+    updateStatus,
     refreshOrders
   };
 };

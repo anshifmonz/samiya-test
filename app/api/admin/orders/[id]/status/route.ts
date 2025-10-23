@@ -1,10 +1,13 @@
 import { supabaseAdmin } from 'lib/supabase';
 import { err, ok, jsonResponse } from 'utils/api/response';
 
+const ALLOWED_STATUSES = ['shipped', 'delivered'];
+
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
   const orderId = params.id;
   const { status } = await request.json();
 
+  if (!ALLOWED_STATUSES.includes(status)) return jsonResponse(err('Invalid status value', 400));
   if (!orderId) return jsonResponse(err('Order ID is required', 400));
   if (!status) return jsonResponse(err('Status is required', 400));
 
