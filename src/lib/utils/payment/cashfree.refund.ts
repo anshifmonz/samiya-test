@@ -14,7 +14,15 @@ const postRefund = async (orderId: string, refundId: string) => {
       })
       .eq('order_id', orderId);
   }, 5);
-  if (!error) return;
+
+  const { error: orderUpdateERR } = await retry(async () => {
+    return supabaseAdmin
+      .from('orders')
+      .update({ payment_status: 'refunded' })
+      .eq('id', orderId);
+  }, 5);
+
+  if (!error && !orderUpdateERR) return;
 
   const { error: statusUpdateError } = await retry(async () => {
     return supabaseAdmin
