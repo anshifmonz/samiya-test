@@ -232,7 +232,7 @@ export const useOrder = (initialOrders: OrderHistory[]) => {
   };
 
   const totalSpent = useMemo(
-    () => filteredOrders.reduce((sum, order) => sum + order.total_amount, 0),
+    () => filteredOrders.reduce((sum, order) => sum + order.final_price, 0),
     [filteredOrders]
   );
   const deliveredOrders = useMemo(

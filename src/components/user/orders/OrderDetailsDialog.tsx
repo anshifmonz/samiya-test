@@ -24,7 +24,7 @@ export default function OrderDetailsDialog() {
 
   const totals = {
     subtotal: selectedOrder.items.reduce((s, it) => s + it.total_price, 0),
-    total: selectedOrder.total_amount
+    total: selectedOrder.final_price
   };
 
   return (
