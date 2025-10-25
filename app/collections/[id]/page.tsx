@@ -1,5 +1,5 @@
-import Collections from '@/components/collections/Collections';
-import { getSectionProducts } from 'lib/api/public/collections/get';
+import Collections from 'components/collections/[id]/Collections';
+import { getSectionProducts } from 'lib/api/public/collections/[id]/get';
 
 export const revalidate = 0;
 

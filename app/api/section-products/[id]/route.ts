@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { getSectionProducts } from 'lib/api/public/collections/get';
+import { getSectionProducts } from 'lib/api/public/collections/[id]/get';
 import { err, jsonResponse } from 'utils/api/response';
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
