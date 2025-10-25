@@ -15,7 +15,7 @@ const ProductsGridClient: FC<{ section: SectionWithProducts }> = ({ section }) =
     setLoading(true);
     try {
       const { data } = await apiRequest(
-        `/api/collection-products/${section.id}?limit=12&offset=${offset}`,
+        `/api/section-products/${section.id}?limit=12&offset=${offset}`,
         {
           showLoadingBar: true
         }
