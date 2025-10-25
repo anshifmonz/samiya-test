@@ -8,15 +8,13 @@ interface SectionHeadingProps {
 
 const SectionHeading: React.FC<SectionHeadingProps> = ({
   title,
-  className = "text-2xl sm:text-3xl",
-  animationDelay = "0s"
+  className = 'text-2xl sm:text-3xl',
+  animationDelay = '0s'
 }) => {
   return (
-    <div className="text-center mb-10">
+    <div className="text-center">
       <div className="animate-fade-in-up" style={{ animationDelay }}>
-        <h2 className={`luxury-heading ${className} text-luxury-black mb-6`}>
-          {title}
-        </h2>
+        <h2 className={`luxury-heading ${className} text-luxury-black`}>{title}</h2>
       </div>
     </div>
   );
