@@ -1,9 +1,10 @@
-import { Button } from 'ui/button';
-import { Input } from 'ui/input';
-import { useSectionsTab } from 'contexts/admin/SectionsTabContext';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { useSectionsTab } from '@/contexts/admin/SectionsTabContext';
 
 const AddSectionForm: React.FC = () => {
-  const { showAddSection, newSectionTitle, setNewSectionTitle, handleAddSection, closeAddSection } = useSectionsTab();
+  const { showAddSection, newSectionTitle, setNewSectionTitle, newSectionDescription, setNewSectionDescription, handleAddSection, closeAddSection } = useSectionsTab();
   if (!showAddSection) return null;
 
   return (
@@ -14,14 +15,23 @@ const AddSectionForm: React.FC = () => {
         onChange={(e) => setNewSectionTitle(e.target.value)}
         className="border-luxury-gray/30 focus:border-luxury-gold"
         onKeyDown={(e) => {
-          if (e.key === 'Enter') handleAddSection();
+          if (e.key === 'Escape') closeAddSection();
+        }}
+      />
+      <Textarea
+        placeholder="Enter section description..."
+        value={newSectionDescription}
+        onChange={(e) => setNewSectionDescription(e.target.value)}
+        className="border-luxury-gray/30 focus:border-luxury-gold"
+        rows={3}
+        onKeyDown={(e) => {
           if (e.key === 'Escape') closeAddSection();
         }}
       />
       <div className="flex gap-2">
         <Button
           onClick={handleAddSection}
-          disabled={!newSectionTitle.trim()}
+          disabled={!newSectionTitle.trim() || !newSectionDescription.trim()}
           className="bg-luxury-gold hover:bg-luxury-gold/90 text-luxury-black px-4 py-2 rounded-lg"
         >
           Add Section

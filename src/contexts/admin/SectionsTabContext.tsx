@@ -15,8 +15,10 @@ interface SectionsTabContextType {
 
   // State
   editingTitle: string;
+  editingDescription: string;
   showAddSection: boolean;
   newSectionTitle: string;
+  newSectionDescription: string;
   searchModalOpen: string | null;
   localProductOrders: Record<string, SectionProductItem[]>;
   setLocalProductOrders: (orders: Record<string, SectionProductItem[]>) => void;
@@ -62,6 +64,8 @@ interface SectionsTabContextType {
   // Setters
   setEditingTitle: (title: string) => void;
   setNewSectionTitle: (title: string) => void;
+  setEditingDescription: (description: string) => void;
+  setNewSectionDescription: (description: string) => void;
 }
 
 const SectionsTabContext = createContext<SectionsTabContextType | undefined>(undefined);

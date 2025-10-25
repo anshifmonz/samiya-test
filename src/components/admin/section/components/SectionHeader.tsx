@@ -1,11 +1,12 @@
 import { ChevronDown, ChevronRight, Edit2, Trash2, GripVertical } from 'lucide-react';
-import { Button } from 'ui/button';
-import { Input } from 'ui/input';
-import { Switch } from 'ui/switch';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { type Section } from 'types/section';
-import { useSectionsTab } from 'contexts/admin/SectionsTabContext';
+import { useSectionsTab } from '@/contexts/admin/SectionsTabContext';
+import { Textarea } from '@/components/ui/textarea';
 
 interface SectionHeaderProps {
   section: Section;
@@ -14,6 +15,7 @@ interface SectionHeaderProps {
 const SectionHeader: React.FC<SectionHeaderProps> = ({ section }) => {
   const {
     editingTitle,
+    editingDescription,
     isSectionExpanded,
     isSectionEditing,
     toggleSection,
@@ -21,6 +23,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({ section }) => {
     saveEdit,
     cancelEdit,
     setEditingTitle,
+    setEditingDescription,
     handleToggleActive,
     handleDeleteSectionApi
   } = useSectionsTab();
@@ -69,37 +72,56 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({ section }) => {
           </button>
 
           {isEditing ? (
-            <div className="flex items-center gap-2 flex-1">
+            <div className="flex flex-col items-stretch gap-2 flex-1">
               <Input
                 value={editingTitle}
                 onChange={(e) => setEditingTitle(e.target.value)}
                 className="border-luxury-gray/30 focus:border-luxury-gold flex-1"
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') saveEdit();
                   if (e.key === 'Escape') cancelEdit();
                 }}
                 autoFocus
               />
-              <Button
-                onClick={saveEdit}
-                size="sm"
-                className="bg-luxury-gold hover:bg-luxury-gold/90 text-luxury-black"
-              >
-                Save
-              </Button>
-              <Button
-                onClick={cancelEdit}
-                size="sm"
-                variant="outline"
-                className="border-luxury-gray/30"
-              >
-                Cancel
-              </Button>
+              <Textarea
+                value={editingDescription}
+                onChange={(e) => setEditingDescription(e.target.value)}
+                className="border-luxury-gray/30 focus:border-luxury-gold flex-1"
+                placeholder="Enter section description..."
+                rows={3}
+                onKeyDown={(e) => {
+                  if (e.key === 'Escape') cancelEdit();
+                }}
+              />
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={saveEdit}
+                  size="sm"
+                  disabled={!editingTitle.trim() || !editingDescription.trim()}
+                  className="bg-luxury-gold hover:bg-luxury-gold/90 text-luxury-black"
+                >
+                  Save
+                </Button>
+                <Button
+                  onClick={cancelEdit}
+                  size="sm"
+                  variant="outline"
+                  className="border-luxury-gray/30"
+                >
+                  Cancel
+                </Button>
+              </div>
             </div>
           ) : (
-            <h4 className="luxury-heading xs:text-base text-lg text-luxury-black flex-1">
-              {section.title}
-            </h4>
+            <div className="flex-1">
+              <h4 className="luxury-heading xs:text-base text-lg text-luxury-black flex-1">
+                {section.title}
+              </h4>
+              {section.description && (
+                <p className="luxury-body text-sm text-luxury-gray mt-1">
+                  {section.description}
+                </p>
+              )}
+            </div>
           )}
         </div>
 

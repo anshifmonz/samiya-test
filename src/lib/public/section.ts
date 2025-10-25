@@ -24,6 +24,7 @@ async function getSectionsWithProducts(): Promise<SectionWithProducts[]> {
       return {
         id: section.id,
         title: section.title,
+        description: section.description,
         isActive: section.is_active,
         sortOrder: section.sort_order,
         createdAt: section.created_at,

@@ -17,6 +17,7 @@ export default async function getSections(): Promise<{ sections: Section[] | nul
     const transformedData: Section[] = (data || []).map((section: any) => ({
       id: section.id,
       title: section.title,
+      description: section.description,
       isActive: section.is_active,
       sortOrder: section.sort_order,
       createdAt: section.created_at,
@@ -53,6 +54,7 @@ export async function getSectionsWithProducts(): Promise<{ sections: SectionWith
       return {
         id: section.id,
         title: section.title,
+        description: section.description,
         isActive: section.is_active,
         sortOrder: section.sort_order,
         createdAt: section.created_at,

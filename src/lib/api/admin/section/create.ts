@@ -3,15 +3,17 @@ import { type Section } from 'types/section';
 import { logAdminActivity, createSectionMessage } from 'utils/adminActivityLogger';
 
 export default async function createSection(section: Omit<Section, 'id' | 'createdAt' | 'updatedAt'>, adminUserId?: string, requestInfo = {}) :Promise<{ section: Section | null, error: string | null, status?: number }> {
-  if (!section.title || typeof section.title !== 'string')
-    return { section: null, error: 'Title is required and must be a string', status: 400 };
-  if (section.title.trim().length === 0)
-    return { section: null, error: 'Title cannot be empty', status: 400 };
+  if (!section.title || typeof section.title !== 'string' || section.title.trim().length === 0)
+    return { section: null, error: 'Title is required and cannot be empty', status: 400 };
+
+  if (!section.description || typeof section.description !== 'string' || section.description.trim().length === 0)
+    return { section: null, error: 'Description is required and cannot be empty', status: 400 };
 
   const { data, error } = await supabaseAdmin
     .from('sections')
     .insert({
       title: section.title,
+      description: section.description,
       is_active: section.isActive ?? true,
       sort_order: section.sortOrder ?? 0
     })
@@ -40,6 +42,7 @@ export default async function createSection(section: Omit<Section, 'id' | 'creat
   const createdSection = {
     id: data.id,
     title: data.title,
+    description: data.description,
     isActive: data.is_active,
     sortOrder: data.sort_order,
     createdAt: data.created_at,

@@ -14,6 +14,7 @@ export default async function updateSection(section: Section, adminUserId?: stri
     .from('sections')
     .update({
       title: section.title,
+      description: section.description,
       is_active: section.isActive,
       sort_order: section.sortOrder,
       updated_at: new Date().toISOString()
@@ -44,6 +45,7 @@ export default async function updateSection(section: Section, adminUserId?: stri
   const updatedSection = {
     id: data.id,
     title: data.title,
+    description: data.description,
     isActive: data.is_active,
     sortOrder: data.sort_order,
     createdAt: data.created_at,

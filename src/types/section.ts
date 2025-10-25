@@ -1,6 +1,7 @@
 export interface Section {
   id: string;
   title: string;
+  description: string;
   isActive?: boolean;
   sortOrder?: number;
   createdAt?: string;

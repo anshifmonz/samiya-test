@@ -17,8 +17,10 @@ export const useAdminSectionsTab = ({
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
   const [editingSection, setEditingSection] = useState<string | null>(null);
   const [editingTitle, setEditingTitle] = useState('');
+  const [editingDescription, setEditingDescription] = useState('');
   const [showAddSection, setShowAddSection] = useState(false);
   const [newSectionTitle, setNewSectionTitle] = useState('');
+  const [newSectionDescription, setNewSectionDescription] = useState('');
   const [searchModalOpen, setSearchModalOpen] = useState<string | null>(null);
   const [localProductOrders, setLocalProductOrders] = useState<Record<string, SectionProductItem[]>>({});
   const confirmation = useConfirmation();
@@ -33,7 +35,7 @@ export const useAdminSectionsTab = ({
     if (data && data.sections) setSectionList(data.sections);
   };
 
-  const handleAddSectionApi = async (newSection: Omit<Section, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const handleAddSectionApi = async (newSection: Omit<Section, 'id' | 'createdAt' | 'updatedAt' | 'products'>) => {
     const { error } = await apiRequest('/api/admin/section', { method: 'POST', body: newSection, showLoadingBar: true });
     if (!error) {
       await fetchSections();
@@ -137,32 +139,37 @@ export const useAdminSectionsTab = ({
   const startEditing = (section: Section) => {
     setEditingSection(section.id);
     setEditingTitle(section.title);
+    setEditingDescription(section.description || '');
   };
 
   const saveEdit = () => {
-    if (editingSection && editingTitle.trim()) {
+    if (editingSection && editingTitle.trim() && editingDescription.trim()) {
       const section = sectionList.find(s => s.id === editingSection);
       if (section) {
-        handleEditSectionApi({ ...section, title: editingTitle.trim() });
+        handleEditSectionApi({ ...section, title: editingTitle.trim(), description: editingDescription.trim() });
       }
     }
     setEditingSection(null);
     setEditingTitle('');
+    setEditingDescription('');
   };
 
   const cancelEdit = () => {
     setEditingSection(null);
     setEditingTitle('');
+    setEditingDescription('');
   };
 
   const handleAddSection = () => {
-    if (newSectionTitle.trim()) {
+    if (newSectionTitle.trim() && newSectionDescription.trim()) {
       handleAddSectionApi({
         title: newSectionTitle.trim(),
+        description: newSectionDescription.trim(),
         isActive: true,
         sortOrder: 0
       });
       setNewSectionTitle('');
+      setNewSectionDescription('');
       setShowAddSection(false);
     }
   };
@@ -248,8 +255,10 @@ export const useAdminSectionsTab = ({
 
     // State
     editingTitle,
+    editingDescription,
     showAddSection,
     newSectionTitle,
+    newSectionDescription,
     searchModalOpen,
     localProductOrders,
     setLocalProductOrders,
@@ -294,7 +303,9 @@ export const useAdminSectionsTab = ({
 
     // Setters
     setEditingTitle,
+    setEditingDescription,
     setNewSectionTitle,
+    setNewSectionDescription,
 
     // Confirmation dialog state
     confirmation
