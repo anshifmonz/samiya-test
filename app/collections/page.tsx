@@ -1,15 +1,9 @@
-import React, { Suspense } from 'react';
-import CollectionsHero from 'components/collections/CollectionsHero';
-import CollectionsGridServer from 'components/collections/CollectionsGridServer';
-import LoadingSpinner from 'components/shared/LoadingSpinner';
+import { getCollections } from 'lib/api/public/collections/get';
+import Collections from 'src/components/collections/Collections';
 
-export default function CollectionsPage() {
-  return (
-    <div className="min-h-screen bg-luxury-cream">
-      <CollectionsHero />
-      <Suspense fallback={<LoadingSpinner text="Loading collections..." />}>
-        <CollectionsGridServer />
-      </Suspense>
-    </div>
-  );
+export default async function CollectionsPage() {
+  const { data, error } = await getCollections();
+  if (error) return <div>Error loading collections</div>;
+
+  return <Collections collections={data} />;
 }

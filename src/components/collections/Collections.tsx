@@ -1,80 +1,89 @@
 'use client';
 
-import { useState, FC } from 'react';
-import { apiRequest } from 'utils/apiRequest';
-import ProductCardSection from 'components/shared/ProductCardSection';
-import type { SectionWithProducts, SectionProduct } from 'types/collection';
+import { FC } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { NewCollection } from 'types/collection';
 
-const ProductsGridClient: FC<{ section: SectionWithProducts }> = ({ section }) => {
-  const [products, setProducts] = useState<SectionProduct[]>(section.products);
-  const [offset, setOffset] = useState<number>(section.products.length);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [hasMore, setHasMore] = useState<boolean>(true);
-
-  const fetchMoreProducts = async (): Promise<void> => {
-    setLoading(true);
-    try {
-      const { data } = await apiRequest(
-        `/api/section-products/${section.id}?limit=12&offset=${offset}`,
-        {
-          showLoadingBar: true
-        }
-      );
-      const newProducts = data?.data?.products || [];
-      if (newProducts.length === 0) {
-        setHasMore(false);
-      } else {
-        setProducts(prev => [...prev, ...newProducts]);
-        setOffset(prev => prev + newProducts.length);
-      }
-    } catch (_) {
-      setHasMore(false);
-    }
-    setLoading(false);
-  };
-
+const Collections: FC<{ collections: NewCollection[] }> = ({ collections }) => {
   return (
-    <div className="py-28 bg-luxury-white">
+    <div className="py-32 bg-luxury-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-24">
           <div className="animate-fade-in-up">
             <span className="luxury-subheading block text-luxury-gold text-2xl sm:text-3xl mb-4 tracking-[0.3em]">
               Trending Now
             </span>
-            <h2 className="luxury-heading text-5xl sm:text-6xl text-luxury-black mb-8">
-              {section.title}
+            <h2 className="luxury-heading text-5xl sm:text-6xl text-luxury-black mb-4">
+              Featured Collections
             </h2>
             <p className="luxury-body text-xl text-luxury-gray max-w-3xl mx-auto">
-              {section.description}
+              Explore our handpicked selections that define today&apos;s fashion landscape
             </p>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {products.map((product, index) => (
-            <div
-              key={product.id}
-              style={{ animationDelay: `${0.2 + index * 0.1}s` }}
-              className="animate-fade-in-up"
-            >
-              <ProductCardSection product={product} />
-            </div>
+          {collections.map((collection, index) => (
+            <Link href={`/collections/${collection.id}`} key={collection.id}>
+              <div
+                className={`group cursor-pointer luxury-card rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-700 transform hover:-translate-y-6 animate-fade-in-up`}
+                style={{ animationDelay: `${0.2 + index * 0.1}s` }}
+              >
+                <div className="relative overflow-hidden aspect-[4/5]">
+                  <Image
+                    src={collection.image_url || '/placeholder.svg'}
+                    alt={collection.title}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    width={400}
+                    height={500}
+                    priority
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-luxury-black/80 via-luxury-black/20 to-transparent group-hover:opacity-90 transition-opacity duration-500"></div>
+                  <div className="absolute inset-0 flex flex-col justify-end p-8">
+                    <div className="glass-dark rounded-xl p-4 backdrop-blur-sm transition-all duration-500 ease-out group-hover:pb-6 flex items-center group-hover:items-start">
+                      <div className="transform group-hover:translate-y-0 transition-transform duration-500 w-full">
+                        <h3 className="luxury-heading text-3xl text-white  group-hover:mb-4 transition-all duration-500 group-hover:text-luxury-gold text-left">
+                          {collection.title}
+                        </h3>
+                        <div className="overflow-hidden transition-all duration-500 ease-out max-h-0 group-hover:max-h-32">
+                          <p className="luxury-body text-white/90 text-lg leading-relaxed pt-2">
+                            {collection.description}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                      <div className="w-12 h-12 bg-luxury-gold rounded-full flex items-center justify-center">
+                        <svg
+                          className="w-6 h-6 text-luxury-black"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M17 8l4 4m0 0l-4 4m4-4H3"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-700">
+                    <div className="shimmer absolute inset-0"></div>
+                  </div>
+                </div>
+              </div>
+            </Link>
           ))}
         </div>
-        {hasMore && (
-          <div className="text-center mt-8">
-            <button
-              onClick={fetchMoreProducts}
-              className="luxury-btn-primary px-8 py-3 rounded-full text-lg font-light tracking-wide"
-              disabled={loading}
-            >
-              {loading ? 'Loading...' : 'Load More'}
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );
 };
 
-export default ProductsGridClient;
+export default Collections;

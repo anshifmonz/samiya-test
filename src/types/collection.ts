@@ -5,6 +5,15 @@ export type Collection = {
   image: string;
 };
 
+export interface NewCollection {
+  id: string;
+  title: string;
+  description: string;
+  product_id: string;
+  product_title: string;
+  image_url: string;
+}
+
 interface ProductColors {
   color_name: string;
   hex_code: string;
