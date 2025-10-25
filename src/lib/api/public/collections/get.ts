@@ -1,4 +1,4 @@
-import { supabasePublic } from 'lib/supabasePublic';
+import { supabaseAdmin } from 'lib/supabase';
 import type { NewCollection } from 'types/collection';
 import { ok, err, type ApiResponse } from 'utils/api/response';
 
@@ -7,7 +7,7 @@ export const getCollections = async (
   offset: number = 0
 ): Promise<ApiResponse<NewCollection[]>> => {
   try {
-    const { data, error } = await supabasePublic.rpc('get_sections_with_first_product_image', {
+    const { data, error } = await supabaseAdmin.rpc('get_sections_with_first_product_image', {
       in_limit: limit,
       in_offset: offset
     });
