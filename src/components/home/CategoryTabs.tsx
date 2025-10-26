@@ -71,7 +71,7 @@ const CategoryTabs: React.FC = () => {
           <div
             ref={containerRef}
             onScroll={handleScroll}
-            className="category-tabs-scroll flex items-center gap-x-2 sm:gap-x-6 md:gap-x-8 lg:gap-x-10 overflow-x-auto px-2 py-2 snap-x snap-mandatory scroll-smooth"
+            className="category-tabs-scroll flex items-center gap-x-2 sm:gap-x-6 md:gap-x-8 lg:gap-x-10 overflow-x-auto px-2 py-2 snap-x snap-mandatory scroll-smooth md:justify-center"
             style={{ WebkitOverflowScrolling: 'touch' }}
           >
             {categoryImages.map((image, index) => (
