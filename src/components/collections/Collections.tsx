@@ -4,8 +4,11 @@ import { FC } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { NewCollection } from 'types/collection';
+import { useInputDevice } from 'src/hooks/useInputDevice';
 
 const Collections: FC<{ collections: NewCollection[] }> = ({ collections }) => {
+  const isTouch = useInputDevice();
+
   return (
     <div className="py-32 bg-luxury-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -40,14 +43,35 @@ const Collections: FC<{ collections: NewCollection[] }> = ({ collections }) => {
                     priority
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-luxury-black/80 via-luxury-black/20 to-transparent group-hover:opacity-90 transition-opacity duration-500"></div>
-                  <div className="absolute inset-0 flex flex-col justify-end p-8">
-                    <div className="glass-dark rounded-xl p-4 backdrop-blur-sm transition-all duration-500 ease-out group-hover:pb-6 flex items-center group-hover:items-start">
-                      <div className="transform group-hover:translate-y-0 transition-transform duration-500 w-full">
-                        <h3 className="luxury-heading text-3xl text-white  group-hover:mb-4 transition-all duration-500 group-hover:text-luxury-gold text-left">
+                  <div className="absolute inset-0 flex flex-col justify-end p-4 sm:p-8">
+                    <div
+                      className={`glass-dark rounded-xl max-h-[60%] p-4 backdrop-blur-sm transition-all duration-500 ease-out flex items-center ${
+                        isTouch
+                          ? 'pb-6 items-start'
+                          : 'group-hover:pb-6 group-hover:items-start group'
+                      }`}
+                    >
+                      <div
+                        className={`transform transition-transform duration-500 w-full ${
+                          isTouch ? 'translate-y-0' : 'group-hover:translate-y-0'
+                        }`}
+                      >
+                        <h3
+                          className={`luxury-heading text-3xl text-white transition-all duration-500 text-left ${
+                            isTouch
+                              ? 'mb-1 sm:mb-4 text-luxury-gold'
+                              : 'group-hover:mb-4 group-hover:text-luxury-gold'
+                          }`}
+                        >
                           {collection.title}
                         </h3>
-                        <div className="overflow-hidden transition-all duration-500 ease-out max-h-0 group-hover:max-h-32">
-                          <p className="luxury-body text-white/90 text-lg leading-relaxed pt-2">
+
+                        <div
+                          className={`overflow-hidden transition-all duration-500 ease-out ${
+                            isTouch ? 'max-h-32' : 'max-h-0 group-hover:max-h-32'
+                          }`}
+                        >
+                          <p className="luxury-body text-white/90 text-lg leading-relaxed pt-2 line-clamp-3">
                             {collection.description}
                           </p>
                         </div>

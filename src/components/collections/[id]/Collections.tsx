@@ -36,12 +36,12 @@ const ProductsGridClient: FC<{ section: SectionWithProducts }> = ({ section }) =
   return (
     <div className="py-28 bg-luxury-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-24">
+        <div className="text-center mb-12 sm:mb-24">
           <div className="animate-fade-in-up">
             <span className="luxury-subheading block text-luxury-gold text-2xl sm:text-3xl mb-4 tracking-[0.3em]">
               Trending Now
             </span>
-            <h2 className="luxury-heading text-5xl sm:text-6xl text-luxury-black mb-8">
+            <h2 className="luxury-heading text-5xl sm:text-6xl text-luxury-black mb-4">
               {section.title}
             </h2>
             <p className="luxury-body text-xl text-luxury-gray max-w-3xl mx-auto">
