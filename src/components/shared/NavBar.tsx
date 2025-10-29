@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from 'ui/button';
 import { User } from 'lucide-react';
 import { useNavigation } from 'hooks/useNavigation';
@@ -74,7 +75,7 @@ const Navigation: React.FC = () => {
 
           {/* Center - Navigation Links (desktop) or Logo (mobile) */}
           <div className="flex items-center">
-            <Logo variant="mobile" textStyles={textStyles} className="pl-12" />
+            <Logo variant="mobile" textStyles={textStyles} className="" />
             <NavigationLinks
               textStyles={textStyles}
               isAdminPage={isAdminPage}
@@ -147,7 +148,7 @@ const Navigation: React.FC = () => {
               About
             </Link>
             <Link
-              href="#navbar"
+              href="/collections"
               onClick={closeMobileMenu}
               className={`block ${textStyles.navLinks} text-base py-2`}
             >
