@@ -1,17 +1,14 @@
-"use client";
+'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { MapPin, Clock, Phone } from 'lucide-react';
 import Image from 'next/image';
 import stores from '@/data/stores';
 
 const OurStoreSection: React.FC = () => {
-  const handleViewOnMap = (mapLink: string) => {
-    window.open(mapLink, '_blank');
-  };
-
   return (
-    <div className="bg-luxury-cream py-32 relative overflow-hidden">
+    <div className="bg-luxury-white py-32 relative overflow-hidden">
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-72 h-72 bg-luxury-gold/5 rounded-full blur-3xl"></div>
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-luxury-beige/30 rounded-full blur-3xl"></div>
@@ -29,8 +26,8 @@ const OurStoreSection: React.FC = () => {
           </div>
           <div className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
             <p className="luxury-body text-xl text-luxury-gray max-w-3xl mx-auto leading-relaxed">
-              Experience our collections in person at our beautifully designed showrooms across Kerala,
-              where luxury meets personalized service.
+              Experience our collections in person at our beautifully designed showrooms across
+              Kerala, where luxury meets personalized service.
             </p>
           </div>
         </div>
@@ -43,7 +40,7 @@ const OurStoreSection: React.FC = () => {
               style={{ animationDelay: `${0.4 + index * 0.1}s` }}
             >
               <div className="relative">
-                <div className="aspect-[16/10] overflow-hidden">
+                <div className="sm:aspect-[16/10] overflow-hidden">
                   <Image
                     src={store.image}
                     alt={store.name}
@@ -55,11 +52,13 @@ const OurStoreSection: React.FC = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-luxury-black/80 via-luxury-black/20 to-transparent"></div>
                 </div>
 
-                <div className="absolute bottom-0 left-0 right-0 p-6">
+                <div className="absolute bottom-0 left-0 right-0 p-6 pb-2 lg:pb-6">
                   <div className="glass-dark rounded-xl p-4 backdrop-blur-sm">
-                    <h3 className="luxury-heading text-2xl sm:text-3xl mb-3 text-white">{store.name}</h3>
+                    <h3 className="luxury-heading text-2xl sm:text-3xl mb-3 text-white">
+                      {store.name}
+                    </h3>
 
-                    <div className="space-y-2 mb-4">
+                    <div className="space-y-2 mb-">
                       <div className="flex items-start gap-3">
                         <MapPin className="w-4 h-4 mt-1 text-luxury-gold flex-shrink-0" />
                         <span className="luxury-body text-white/90 text-sm">{store.address}</span>
@@ -78,31 +77,15 @@ const OurStoreSection: React.FC = () => {
               </div>
 
               <div className="p-6 bg-white">
-                <button
-                  onClick={() => handleViewOnMap(store.mapLink)}
-                  className="w-full luxury-btn-primary py-3 px-6 rounded-xl font-medium text-sm tracking-wider uppercase transition-all duration-300 hover:shadow-lg"
-                >
-                  <MapPin className="w-4 h-4 inline-block mr-2" />
-                  View on Map
-                </button>
+                <Link href={store.mapLink} target="_blank" rel="noopener noreferrer">
+                  <div className="flex justify-center align-center w-full luxury-btn-primary py-3 px-6 rounded-xl font-medium text-sm tracking-wider uppercase transition-all duration-300 hover:shadow-lg">
+                    <MapPin className="w-4 h-4 inline-block mr-2 self-center" />
+                    View on Map
+                  </div>
+                </Link>
               </div>
             </div>
           ))}
-        </div>
-
-        <div className="text-center mt-20 animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
-          <div className="glass-dark rounded-2xl p-8 max-w-2xl mx-auto">
-            <h3 className="luxury-heading text-3xl text-white mb-4">
-              Visit Us Today
-            </h3>
-            <p className="luxury-body text-white/90 text-lg mb-6 leading-relaxed">
-              Experience our premium collections and receive personalized styling consultation
-              from our expert team.
-            </p>
-            <button className="luxury-btn-secondary px-8 py-3 rounded-full font-medium text-sm tracking-wider uppercase">
-              Schedule Appointment
-            </button>
-          </div>
         </div>
       </div>
     </div>
