@@ -1,3 +1,26 @@
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Cancellation & Refund Policy - Samiya Online',
+  description:
+    'Read our cancellation and refund policy to understand the terms and conditions for cancelling orders and requesting refunds on our products.',
+  openGraph: {
+    title: 'Cancellation & Refund Policy - Samiya Online',
+    description:
+      'Read our cancellation and refund policy to understand the terms and conditions for cancelling orders and requesting refunds on our products.',
+    type: 'website',
+    images: ['/opengraph-image.png']
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@samiya_online',
+    title: 'Cancellation & Refund Policy - Samiya Online',
+    description:
+      'Read our cancellation and refund policy to understand the terms and conditions for cancelling orders and requesting refunds on our products.',
+    images: ['/opengraph-image.png']
+  }
+};
+
 export default function CancellationAndRefundPolicyPage() {
   return (
     <main className="min-h-screen bg-luxury-white">
@@ -15,49 +38,68 @@ export default function CancellationAndRefundPolicyPage() {
           <section className="prose prose-lg max-w-none">
             <div className="luxury-body text-luxury-black leading-relaxed space-y-6">
               <p className="text-lg">
-                <strong>SAMIYA SILKS</strong> believes in helping its customers as far as possible, and has therefore a liberal
-                cancellation policy. Under this policy:
+                <strong>SAMIYA SILKS</strong> believes in helping its customers as far as possible,
+                and has therefore a liberal cancellation policy. Under this policy:
               </p>
 
               <h2 className="luxury-heading text-2xl text-luxury-black mt-8 mb-6">Policy Terms</h2>
 
               <ul className="space-y-6 list-none">
                 <li className="flex items-start space-x-4">
-                  <span className="flex-shrink-0 w-2 h-2 bg-luxury-gold rounded-full mt-3" aria-hidden="true"></span>
+                  <span
+                    className="flex-shrink-0 w-2 h-2 bg-luxury-gold rounded-full mt-3"
+                    aria-hidden="true"
+                  ></span>
                   <p>
-                    <strong>Order Cancellation:</strong> Cancellations will be considered only if the request is made immediately after placing the order.
-                    However, the cancellation request may not be entertained if the orders have been communicated to the
-                    vendors/merchants and they have initiated the process of shipping them.
+                    <strong>Order Cancellation:</strong> Cancellations will be considered only if
+                    the request is made immediately after placing the order. However, the
+                    cancellation request may not be entertained if the orders have been communicated
+                    to the vendors/merchants and they have initiated the process of shipping them.
                   </p>
                 </li>
 
                 <li className="flex items-start space-x-4">
-                  <span className="flex-shrink-0 w-2 h-2 bg-luxury-gold rounded-full mt-3" aria-hidden="true"></span>
+                  <span
+                    className="flex-shrink-0 w-2 h-2 bg-luxury-gold rounded-full mt-3"
+                    aria-hidden="true"
+                  ></span>
                   <p>
-                    <strong>Perishable Items:</strong> SAMIYA SILKS does not accept cancellation requests for perishable items like flowers, eatables etc.
-                    However, refund/replacement can be made if the customer establishes that the quality of product
-                    delivered is not good.
+                    <strong>Perishable Items:</strong> SAMIYA SILKS does not accept cancellation
+                    requests for perishable items like flowers, eatables etc. However,
+                    refund/replacement can be made if the customer establishes that the quality of
+                    product delivered is not good.
                   </p>
                 </li>
 
                 <li className="flex items-start space-x-4">
-                  <span className="flex-shrink-0 w-2 h-2 bg-luxury-gold rounded-full mt-3" aria-hidden="true"></span>
+                  <span
+                    className="flex-shrink-0 w-2 h-2 bg-luxury-gold rounded-full mt-3"
+                    aria-hidden="true"
+                  ></span>
                   <p>
-                    <strong>Damaged or Defective Items:</strong> In case of receipt of damaged or defective items please report the same to our Customer Service team.
-                    The request will, however, be entertained once the merchant has checked and determined the same at his
-                    own end. This should be reported within <strong>7 days</strong> of receipt of the products. In case you feel that the
-                    product received is not as shown on the site or as per your expectations, you must bring it to the notice of
-                    our customer service within <strong>7 days</strong> of receiving the product. The Customer Service Team after
-                    looking into your complaint will take an appropriate decision.
+                    <strong>Damaged or Defective Items:</strong> In case of receipt of damaged or
+                    defective items please report the same to our Customer Service team. The request
+                    will, however, be entertained once the merchant has checked and determined the
+                    same at his own end. This should be reported within <strong>7 days</strong> of
+                    receipt of the products. In case you feel that the product received is not as
+                    shown on the site or as per your expectations, you must bring it to the notice
+                    of our customer service within <strong>7 days</strong> of receiving the product.
+                    The Customer Service Team after looking into your complaint will take an
+                    appropriate decision.
                   </p>
                 </li>
 
                 <li className="flex items-start space-x-4">
-                  <span className="flex-shrink-0 w-2 h-2 bg-luxury-gold rounded-full mt-3" aria-hidden="true"></span>
+                  <span
+                    className="flex-shrink-0 w-2 h-2 bg-luxury-gold rounded-full mt-3"
+                    aria-hidden="true"
+                  ></span>
                   <p>
-                    <strong>Warranty Claims and Refund Processing:</strong> In case of complaints regarding products that come with a warranty from manufacturers, please refer
-                    the issue to them. In case of any Refunds approved by the SAMIYA SILKS, it&apos;ll take <strong>3-5 days</strong> for
-                    the refund to be processed to the end customer.
+                    <strong>Warranty Claims and Refund Processing:</strong> In case of complaints
+                    regarding products that come with a warranty from manufacturers, please refer
+                    the issue to them. In case of any Refunds approved by the SAMIYA SILKS,
+                    it&apos;ll take <strong>3-5 days</strong> for the refund to be processed to the
+                    end customer.
                   </p>
                 </li>
               </ul>

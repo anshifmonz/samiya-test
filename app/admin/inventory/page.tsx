@@ -1,5 +1,4 @@
-import React, { Suspense } from 'react';
-import LoadingSpinner from 'components/shared/LoadingSpinner';
+import type { Metadata } from 'next';
 import AdminDashboard from 'components/admin/AdminDashboard';
 import getProducts from 'lib/api/admin/product/get';
 import getCollections from 'lib/api/admin/collection/get';
@@ -8,6 +7,24 @@ import { getSectionsWithProducts } from 'lib/api/admin/section/get';
 import LogoutButton from 'components/admin/LogoutButton';
 
 export const revalidate = 0;
+
+export const metadata: Metadata = {
+  title: 'Inventory Management - Admin',
+  description: 'Manage product inventory, collections, and categories.',
+  openGraph: {
+    title: 'Inventory Management - Admin',
+    description: 'Manage product inventory, collections, and categories.',
+    type: 'website',
+    images: ['/opengraph-image.png']
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@samiya_online',
+    title: 'Inventory Management - Admin',
+    description: 'Manage product inventory, collections, and categories.',
+    images: ['/opengraph-image.png']
+  }
+};
 
 async function getAdminData() {
   const { products } = await getProducts(16, 0, null, 'last-updated', null);
@@ -49,14 +66,12 @@ export default async function Admin() {
         </div>
 
         <div className="bg-white/80 backdrop-blur-sm border border-luxury-gray/20 rounded-xl p-3 sm:p-6">
-          <Suspense fallback={<LoadingSpinner text="Loading admin dashboard..." />}>
-            <AdminDashboard
-              initialProducts={productList}
-              initialCollections={collectionList}
-              initialCategories={categoryList}
-              initialSections={sectionList}
-            />
-          </Suspense>
+          <AdminDashboard
+            initialProducts={productList}
+            initialCollections={collectionList}
+            initialCategories={categoryList}
+            initialSections={sectionList}
+          />
         </div>
       </div>
     </div>

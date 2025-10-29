@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    site: '@samiya_wedding',
+    site: '@samiya_online',
     images: ['https://lovable.dev/opengraph-image-p98pqg.png']
   },
   icons: {

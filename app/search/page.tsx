@@ -1,10 +1,10 @@
-import React from 'react';
+import type { Metadata } from 'next';
+import Search from 'components/search';
 import { redirect } from 'next/navigation';
 import searchProducts from 'lib/public/search';
 import getCategories from 'lib/public/category';
-import Search from 'components/search';
-import { type SearchResult, type ProductFilters } from 'types/product';
 import { type Category } from 'types/category';
+import type { SearchResult, ProductFilters } from 'types/product';
 
 export const revalidate = 180;
 
@@ -25,8 +25,7 @@ interface Props {
 function parseFilters(searchParams: Props['searchParams']): ProductFilters {
   const filters: ProductFilters = {};
 
-  if (searchParams.category)
-    filters.category = searchParams.category;
+  if (searchParams.category) filters.category = searchParams.category;
 
   if (searchParams.minPrice) {
     const minPrice = parseFloat(searchParams.minPrice);
@@ -38,16 +37,45 @@ function parseFilters(searchParams: Props['searchParams']): ProductFilters {
     if (!isNaN(maxPrice)) filters.maxPrice = maxPrice;
   }
 
-  if (searchParams.colors)
-    filters.colors = searchParams.colors.split(',').filter(Boolean);
+  if (searchParams.colors) filters.colors = searchParams.colors.split(',').filter(Boolean);
 
-  if (searchParams.tags)
-    filters.tags = searchParams.tags.split(',').filter(Boolean);
+  if (searchParams.tags) filters.tags = searchParams.tags.split(',').filter(Boolean);
 
-  if (searchParams.sortOrder)
-    filters.sortOrder = searchParams.sortOrder;
+  if (searchParams.sortOrder) filters.sortOrder = searchParams.sortOrder;
 
   return filters;
+}
+
+export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
+  const query = searchParams.q || '';
+  const category = searchParams.category || '';
+
+  const title = query
+    ? `Search results for "${query}"${category ? ` in ${category}` : ''} - Samiya Online`
+    : `Search - Samiya Online`;
+  const description = query
+    ? `Explore our wide range of products matching "${query}"${
+        category ? ` in the ${category} category` : ''
+      }. Find your perfect wedding or party dress.`
+    : `Search for wedding dresses, party wear, and traditional attire at Samiya Online.`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: 'website',
+      images: ['/opengraph-image.png']
+    },
+    twitter: {
+      card: 'summary_large_image',
+      site: '@samiya_online',
+      title,
+      description,
+      images: ['/opengraph-image.png']
+    }
+  };
 }
 
 export default async function SearchPage({ searchParams }: Props) {

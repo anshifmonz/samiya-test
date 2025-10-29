@@ -1,27 +1,41 @@
-import React from "react";
-import fs from "fs";
-import path from "path";
+import fs from 'fs';
+import path from 'path';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Privacy Policy - Samiya Online',
+  description:
+    'Read our privacy policy to understand how Samiya Online collects, uses, and protects your personal information.',
+  openGraph: {
+    title: 'Privacy Policy - Samiya Online',
+    description:
+      'Read our privacy policy to understand how Samiya Online collects, uses, and protects your personal information.',
+    type: 'website',
+    images: ['/opengraph-image.png']
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@samiya_online',
+    title: 'Privacy Policy - Samiya Online',
+    description:
+      'Read our privacy policy to understand how Samiya Online collects, uses, and protects your personal information.',
+    images: ['/opengraph-image.png']
+  }
+};
 
 export default function PrivacyPolicyPage() {
-  let content = "";
+  let content = '';
   try {
-    content = fs.readFileSync(
-      path.join(process.cwd(), "app/privacy-policy/content.txt"),
-      "utf-8"
-    );
+    content = fs.readFileSync(path.join(process.cwd(), 'app/privacy-policy/content.txt'), 'utf-8');
   } catch (e) {
-    content = "Privacy Policy content could not be loaded.";
+    content = 'Privacy Policy content could not be loaded.';
   }
 
   // Split content into lines and process for rendering
-  const lines = content.split("\n");
-  const lastUpdatedLine = lines.find((line) =>
-    line.toLowerCase().startsWith("last updated")
-  );
-  const lastUpdated = lastUpdatedLine
-    ? lastUpdatedLine.replace("Last updated on ", "")
-    : "";
-  const title = lines[0] || "Privacy Policy";
+  const lines = content.split('\n');
+  const lastUpdatedLine = lines.find(line => line.toLowerCase().startsWith('last updated'));
+  const lastUpdated = lastUpdatedLine ? lastUpdatedLine.replace('Last updated on ', '') : '';
+  const title = lines[0] || 'Privacy Policy';
   const bodyLines = lines.slice(2); // skip title and last updated
 
   // Helper to render bullet points
@@ -34,7 +48,7 @@ export default function PrivacyPolicyPage() {
               className="flex-shrink-0 w-2 h-2 bg-luxury-gold rounded-full mt-3"
               aria-hidden="true"
             ></span>
-            <p>{line.replace(/^•\s*/, "")}</p>
+            <p>{line.replace(/^•\s*/, '')}</p>
           </li>
         ))}
       </ul>
@@ -44,17 +58,17 @@ export default function PrivacyPolicyPage() {
   // Parse sections
   let sections = [];
   let currentSection = null;
-  bodyLines.forEach((line) => {
+  bodyLines.forEach(line => {
     if (/^[A-Za-z ]+:$/.test(line)) {
       if (currentSection) sections.push(currentSection);
       currentSection = {
-        heading: line.replace(":", ""),
+        heading: line.replace(':', ''),
         bullets: [],
-        paragraphs: [],
+        paragraphs: []
       };
     } else if (/^• /.test(line)) {
       if (currentSection) currentSection.bullets.push(line);
-    } else if (line.trim() !== "") {
+    } else if (line.trim() !== '') {
       if (currentSection) currentSection.paragraphs.push(line);
     }
   });
@@ -65,14 +79,10 @@ export default function PrivacyPolicyPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <article className="bg-white rounded-lg shadow-lg p-8 md:p-12">
           <header className="text-center mb-12">
-            <h1 className="luxury-heading text-4xl md:text-5xl text-luxury-black mb-4">
-              {title}
-            </h1>
+            <h1 className="luxury-heading text-4xl md:text-5xl text-luxury-black mb-4">{title}</h1>
             {lastUpdated && (
               <p className="luxury-body text-luxury-gray text-sm">
-                <time
-                  dateTime={lastUpdated}
-                >{`Last updated on ${lastUpdated}`}</time>
+                <time dateTime={lastUpdated}>{`Last updated on ${lastUpdated}`}</time>
               </p>
             )}
           </header>
