@@ -1,5 +1,6 @@
 import './globals.css';
 import Script from 'next/script';
+import type { Viewport } from 'next';
 import { TooltipProvider } from 'ui/tooltip';
 import { Inter, Playfair_Display } from 'next/font/google';
 import Footer from 'components/shared/Footer';
@@ -26,6 +27,19 @@ export const metadata = generateBaseMetadata({
   description:
     "Discover exquisite wedding attire and traditional wear crafted for life's most precious moments. Elegant bridal collection, sherwanis, kurtis, salwar suits, and festive wear."
 });
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#000000' }
+  ],
+  colorScheme: 'light dark',
+  viewportFit: 'cover'
+};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

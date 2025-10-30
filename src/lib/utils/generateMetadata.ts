@@ -86,12 +86,6 @@ export function generateBaseMetadata({
     authors: [{ name: SITE_NAME, url: BASE_URL }],
     publisher: SITE_NAME,
     category: 'Shopping',
-    themeColor: '#000000',
-    viewport: {
-      width: 'device-width',
-      initialScale: 1,
-      maximumScale: 1
-    },
     icons: {
       icon: '/favicon.ico',
       apple: '/apple-touch-icon.png'
