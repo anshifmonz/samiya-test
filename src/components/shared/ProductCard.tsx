@@ -221,7 +221,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   if (isAdmin) return <CardContent />;
 
   return (
-    <Link href={`/product/${product.id}`}>
+    <Link href={`/product/${product.slug || product.id}`}>
       <CardContent />
     </Link>
   );

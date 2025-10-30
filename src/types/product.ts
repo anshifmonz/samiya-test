@@ -25,6 +25,7 @@ export interface Size {
 
 export interface Product {
   id: string;
+  slug?: string;
   short_code: string;
   title: string;
   description: string;
@@ -86,6 +87,7 @@ export type ProductFilters = {
 
 export interface SimilarProduct {
   id: string;
+  slug?: string;
   title: string;
   price: number;
   original_price?: number;
@@ -102,6 +104,7 @@ export interface SimilarProduct {
 
 export interface SearchProduct {
   id: string;
+  slug?: string;
   title: string;
   price: number;
   original_price?: number;
@@ -116,6 +119,7 @@ export interface SearchProduct {
 // Raw database result from search_products_rpc with total_count
 export interface SearchProductRaw {
   id: string;
+  slug?: string;
   title: string;
   price: number;
   original_price?: number;

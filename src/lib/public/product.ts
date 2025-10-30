@@ -68,6 +68,7 @@ const getProduct = async (idOrSlug: string, userId?: string): Promise<Product | 
 
     return {
       id: data.id,
+      slug: data.slug || '',
       short_code: data.short_code,
       title: data.title,
       description: data.description,

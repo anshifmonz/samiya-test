@@ -133,7 +133,7 @@ const SimilarProductCard: React.FC<SimilarProductCardProps> = ({ product }) => {
   );
 
   return (
-    <Link href={`/product/${product.id}`}>
+    <Link href={`/product/${product.slug || product.id}`}>
       <CardContent />
     </Link>
   );

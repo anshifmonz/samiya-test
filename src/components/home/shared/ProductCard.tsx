@@ -26,7 +26,7 @@ const Productcard = ({ product, className, showDiscountBadge = true }: Productca
   const discountPercentage = product?.originalPrice && product?.price ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) : 0;
 
   return (
-    <Link href={`/product/${product.id}`}>
+    <Link href={`/product/${product.slug || product.id}`}>
       <div className="relative flex flex-col gap-1 rounded-sm overflow-hidden shadow-sm group cursor-pointer w-[clamp(164px,calc(50vw-30px),458px)] lg:w-[clamp(200px,calc(17.5vw-16px),277px)]">
         <div className="relative flex-grow w-full aspect-[4/5] overflow-hidden">
           {image ? (

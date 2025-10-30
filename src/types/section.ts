@@ -18,6 +18,7 @@ export interface SectionProduct {
 
 export interface SectionProductItem {
   id: string;
+  slug?: string;
   title: string;
   price: number;
   images: string;

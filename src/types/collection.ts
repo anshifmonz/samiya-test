@@ -21,6 +21,7 @@ interface ProductColors {
 
 export interface SectionProduct {
   id: string;
+  slug?: string;
   title: string;
   price: number;
   original_price: number | null;

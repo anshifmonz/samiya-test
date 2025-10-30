@@ -143,6 +143,7 @@ async function searchProducts(
 
     return {
       id: row.id,
+      slug: row.slug || '',
       title: row.title,
       images,
       price: Number(row.price),
