@@ -1,11 +1,11 @@
-import React from 'react';
+import { FC } from 'react';
 import ProductCard from 'components/shared/ProductCard';
 import { useProductsTab } from 'contexts/admin/ProductsTabContext';
 import { useCurrentAdmin } from 'contexts/admin/AdminDashboardContext';
 
-const AdminProductGrid: React.FC = () => {
+const AdminProductGrid: FC = () => {
   const { products, loading, hasMore, error, isSearching, loaderRef, handleDeleteProduct, handleStartEditing } = useProductsTab();
-  const { isSuperAdmin } = useCurrentAdmin();
+  const { admin, isSuperAdmin } = useCurrentAdmin();
 
   if (products.length === 0 && !loading && !isSearching) {
     return (
@@ -29,7 +29,7 @@ const AdminProductGrid: React.FC = () => {
             product={product}
             isAdmin={true}
             onEdit={handleStartEditing}
-            onDelete={isSuperAdmin ? handleDeleteProduct : undefined}
+            onDelete={isSuperAdmin || admin?.role === 'admin' ? handleDeleteProduct : undefined}
             showTags={true}
           />
         ))}

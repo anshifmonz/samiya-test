@@ -7,13 +7,14 @@ export async function GET(request: NextRequest) {
     const adminId = request.headers.get('x-admin-id');
     const adminUsername = request.headers.get('x-admin-username');
     const isSuperuser = request.headers.get('x-admin-superuser');
+    const adminRole = request.headers.get('x-admin-role');
 
-    if (!adminId || !adminUsername || isSuperuser === null) {
+    if (!adminId || !adminUsername || isSuperuser === null)
       return NextResponse.json({ error: 'Not authenticated', admin: null }, { status: 401 });
-    }
 
     const admin = {
       id: adminId,
+      role: adminRole,
       username: adminUsername,
       is_superuser: isSuperuser === 'true',
       created_at: new Date().toISOString(),
