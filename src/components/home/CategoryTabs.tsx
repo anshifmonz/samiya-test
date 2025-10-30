@@ -8,10 +8,10 @@ const categoryImages = [
   { src: '/assets/images/home/tabs/saree.jpg', name: 'saree', alt: 'Saree' },
   { src: '/assets/images/home/tabs/kurtis.jpg', name: 'kurti', alt: 'Kurtis' },
   { src: '/assets/images/home/tabs/westerns.jpg', name: 'western', alt: 'Westerns' },
-  { src: '/assets/images/home/tabs/salwars.jpg', name: 'salwar', alt: 'Salwars' },
+  { src: '/assets/images/home/tabs/abaya.png', name: 'abaya', alt: 'Abayas' },
   { src: '/assets/images/home/tabs/kids.jpg', name: 'kid', alt: 'Kids' },
-  { src: '/assets/images/home/tabs/duppattas.jpg', name: 'duppatta', alt: 'Duppattas' },
-  { src: '/assets/images/home/tabs/blouses.jpg', name: 'blouse', alt: 'Blouses' }
+  { src: '/assets/images/home/tabs/salwars.jpg', name: 'salwar', alt: 'Salwars' },
+  { src: '/assets/images/home/tabs/duppattas.jpg', name: 'duppatta', alt: 'Duppattas' }
 ];
 
 const CategoryTabs: React.FC = () => {
