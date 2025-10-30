@@ -1,23 +1,11 @@
-import type { Metadata } from 'next';
+import { generateBaseMetadata } from 'lib/utils/generateMetadata';
 import ActivityLogs from 'components/admin/activity-logs/ActivityLogs';
 
-export const metadata: Metadata = {
-  title: 'Activity Logs - Admin',
+export const metadata = generateBaseMetadata({
+  title: 'Activity Logs',
   description: 'View and manage all system activity logs.',
-  openGraph: {
-    title: 'Activity Logs - Admin',
-    description: 'View and manage all system activity logs.',
-    type: 'website',
-    images: ['/opengraph-image.png']
-  },
-  twitter: {
-    card: 'summary_large_image',
-    site: '@samiya_online',
-    title: 'Activity Logs - Admin',
-    description: 'View and manage all system activity logs.',
-    images: ['/opengraph-image.png']
-  }
-};
+  noIndex: true
+});
 
 const Page = () => {
   return <ActivityLogs />;

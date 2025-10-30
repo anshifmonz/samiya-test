@@ -1,27 +1,13 @@
 import fs from 'fs';
 import path from 'path';
-import type { Metadata } from 'next';
+import { generateBaseMetadata } from 'lib/utils/generateMetadata';
 
-export const metadata: Metadata = {
-  title: 'Privacy Policy - Samiya Online',
+export const metadata = generateBaseMetadata({
+  title: 'Privacy Policy',
   description:
     'Read our privacy policy to understand how Samiya Online collects, uses, and protects your personal information.',
-  openGraph: {
-    title: 'Privacy Policy - Samiya Online',
-    description:
-      'Read our privacy policy to understand how Samiya Online collects, uses, and protects your personal information.',
-    type: 'website',
-    images: ['/opengraph-image.png']
-  },
-  twitter: {
-    card: 'summary_large_image',
-    site: '@samiya_online',
-    title: 'Privacy Policy - Samiya Online',
-    description:
-      'Read our privacy policy to understand how Samiya Online collects, uses, and protects your personal information.',
-    images: ['/opengraph-image.png']
-  }
-};
+  url: '/privacy-policy'
+});
 
 export default function PrivacyPolicyPage() {
   let content = '';

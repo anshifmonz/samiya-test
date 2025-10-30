@@ -5,6 +5,7 @@ import searchProducts from 'lib/public/search';
 import getCategories from 'lib/public/category';
 import { type Category } from 'types/category';
 import type { SearchResult, ProductFilters } from 'types/product';
+import { generateBaseMetadata } from 'lib/utils/generateMetadata';
 
 export const revalidate = 180;
 
@@ -51,31 +52,19 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   const category = searchParams.category || '';
 
   const title = query
-    ? `Search results for "${query}"${category ? ` in ${category}` : ''} - Samiya Online`
-    : `Search - Samiya Online`;
+    ? `Search results for "${query}"${category ? ` in ${category}` : ''}`
+    : `Search`;
   const description = query
     ? `Explore our wide range of products matching "${query}"${
         category ? ` in the ${category} category` : ''
       }. Find your perfect wedding or party dress.`
     : `Search for wedding dresses, party wear, and traditional attire at Samiya Online.`;
 
-  return {
+  return generateBaseMetadata({
     title,
     description,
-    openGraph: {
-      title,
-      description,
-      type: 'website',
-      images: ['/opengraph-image.png']
-    },
-    twitter: {
-      card: 'summary_large_image',
-      site: '@samiya_online',
-      title,
-      description,
-      images: ['/opengraph-image.png']
-    }
-  };
+    url: `/search?q=${query}`
+  });
 }
 
 export default async function SearchPage({ searchParams }: Props) {

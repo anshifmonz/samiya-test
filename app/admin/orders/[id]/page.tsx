@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { supabaseAdmin } from 'lib/supabase';
 import type { OrderDetail } from 'types/admin/order';
+import { generateBaseMetadata } from 'lib/utils/generateMetadata';
 import OrderDetails from 'components/admin/orders/[id]/OrderDetails';
 
 async function getOrderDetails(orderId: string): Promise<OrderDetail | null> {
@@ -17,32 +18,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const order = await getOrderDetails(params.id);
 
   if (!order) {
-    return {
-      title: 'Order Not Found - Admin',
-      description: 'The requested order could not be found.'
-    };
+    return generateBaseMetadata({
+      title: 'Order Not Found',
+      description: 'The requested order could not be found.',
+      noIndex: true
+    });
   }
 
-  const title = `Order #${order.id} - Admin`;
+  const title = `Order #${order.id}`;
   const description = `Details for order #${order.id} placed by ${order.user.name}. Status: ${order.status}.`;
 
-  return {
+  return generateBaseMetadata({
     title,
     description,
-    openGraph: {
-      title,
-      description,
-      type: 'website',
-      images: ['/opengraph-image.png']
-    },
-    twitter: {
-      card: 'summary_large_image',
-      site: '@samiya_online',
-      title,
-      description,
-      images: ['/opengraph-image.png']
-    }
-  };
+    noIndex: true
+  });
 }
 
 export default async function OrderDetailsPage({ params }: { params: { id: string } }) {

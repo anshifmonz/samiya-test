@@ -1,26 +1,12 @@
-import type { Metadata } from 'next';
 import { MapPin, Phone, Mail, Building2 } from 'lucide-react';
+import { generateBaseMetadata } from 'lib/utils/generateMetadata';
 
-export const metadata: Metadata = {
-  title: 'Contact Us - Samiya Online',
+export const metadata = generateBaseMetadata({
+  title: 'Contact Us',
   description:
     'Get in touch with Samiya Online for inquiries, support, or feedback. Find our contact details, business information, and location.',
-  openGraph: {
-    title: 'Contact Us - Samiya Online',
-    description:
-      'Get in touch with Samiya Online for inquiries, support, or feedback. Find our contact details, business information, and location.',
-    type: 'website',
-    images: ['/opengraph-image.png']
-  },
-  twitter: {
-    card: 'summary_large_image',
-    site: '@samiya_online',
-    title: 'Contact Us - Samiya Online',
-    description:
-      'Get in touch with Samiya Online for inquiries, support, or feedback. Find our contact details, business information, and location.',
-    images: ['/opengraph-image.png']
-  }
-};
+  url: '/contact'
+});
 
 export default function ContactPage() {
   return (

@@ -1,25 +1,11 @@
-import type { Metadata } from 'next';
+import { generateBaseMetadata } from 'lib/utils/generateMetadata';
 
-export const metadata: Metadata = {
-  title: 'Cancellation & Refund Policy - Samiya Online',
+export const metadata = generateBaseMetadata({
+  title: 'Cancellation & Refund Policy',
   description:
     'Read our cancellation and refund policy to understand the terms and conditions for cancelling orders and requesting refunds on our products.',
-  openGraph: {
-    title: 'Cancellation & Refund Policy - Samiya Online',
-    description:
-      'Read our cancellation and refund policy to understand the terms and conditions for cancelling orders and requesting refunds on our products.',
-    type: 'website',
-    images: ['/opengraph-image.png']
-  },
-  twitter: {
-    card: 'summary_large_image',
-    site: '@samiya_online',
-    title: 'Cancellation & Refund Policy - Samiya Online',
-    description:
-      'Read our cancellation and refund policy to understand the terms and conditions for cancelling orders and requesting refunds on our products.',
-    images: ['/opengraph-image.png']
-  }
-};
+  url: '/cancellation-and-refund-policy'
+});
 
 export default function CancellationAndRefundPolicyPage() {
   return (

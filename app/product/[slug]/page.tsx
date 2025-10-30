@@ -6,6 +6,7 @@ import { getServerUser } from 'lib/auth/getServerUser';
 import similarProducts from 'lib/public/similarProducts';
 import ProductPage from 'components/product/Product';
 import SimilarProducts from 'components/product/SimilarProducts';
+import { generateBaseMetadata } from 'lib/utils/generateMetadata';
 
 export const revalidate = 600;
 
@@ -18,36 +19,59 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const product: Product | null = await getProduct(slug);
 
   if (!product) {
-    return {
+    return generateBaseMetadata({
       title: 'Product Not Found',
-      description: 'The requested product could not be found.'
-    };
+      description: 'The requested product could not be found.',
+      noIndex: true
+    });
   }
 
-  const title = product.title + ' - Samiya Online';
+  const pageUrl = `/product/${slug}`;
+  const title = `${product.title}`;
   const description =
     product.description ||
-    `Shop for ${product.title} at Samiya Online. Discover our exquisite collection of wedding and party dresses.`;
-  const firstColor = Object.keys(product.images)[0];
-  const imageUrl = product.images[firstColor]?.images[0]?.url || '/opengraph-image.png';
+    `Shop ${product.title} at Samiya Online. Discover our exclusive collection of wedding, party, and casual dresses with elegant designs and premium fabric.`;
 
-  return {
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-      type: 'website',
-      images: [imageUrl]
+  const firstColor = Object.keys(product.images || {})[0];
+  const imageUrl = product.images?.[firstColor]?.images?.[0]?.url;
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.title,
+    image: imageUrl,
+    description: description,
+    brand: {
+      '@type': 'Brand',
+      name: 'Samiya Online'
     },
-    twitter: {
-      card: 'summary_large_image',
-      site: '@samiya_online',
-      title,
-      description,
-      images: [imageUrl]
+    offers: {
+      '@type': 'Offer',
+      url: `https://www.samiyaonline.com${pageUrl}`,
+      priceCurrency: 'INR',
+      price: product.price || '0'
     }
   };
+
+  return generateBaseMetadata({
+    title,
+    description,
+    url: pageUrl,
+    image: imageUrl,
+    type: 'product',
+    keywords: [
+      product.title,
+      'Samiya Online',
+      'fashion',
+      'dresses',
+      'wedding wear',
+      'abaya',
+      'gown',
+      'saree',
+      'party wear'
+    ],
+    schema: jsonLd
+  });
 }
 
 export default async function ProductDetailPage({ params }: Props) {

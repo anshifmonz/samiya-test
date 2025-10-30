@@ -1,9 +1,13 @@
-'use client';
-
-import React from 'react';
+import Link from 'next/link';
 import { Button } from 'ui/button';
 import { Home, ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
+import { generateBaseMetadata } from 'lib/utils/generateMetadata';
+
+export const metadata = generateBaseMetadata({
+  title: 'Page Not Found',
+  description: "The page you're looking for doesn't exist or has been moved.",
+  noIndex: true
+});
 
 export default function NotFound() {
   return (
@@ -12,9 +16,7 @@ export default function NotFound() {
         <div className="max-w-md mx-auto text-center px-4">
           <div className="mb-8">
             <h1 className="text-6xl font-bold text-luxury-black mb-4">404</h1>
-            <h2 className="text-2xl font-semibold text-luxury-black mb-4">
-              Page Not Found
-            </h2>
+            <h2 className="text-2xl font-semibold text-luxury-black mb-4">Page Not Found</h2>
             <p className="text-luxury-gray mb-8">
               The page you&apos;re looking for doesn&apos;t exist or has been moved.
             </p>

@@ -1,27 +1,13 @@
 import fs from 'fs';
 import path from 'path';
-import type { Metadata } from 'next';
+import { generateBaseMetadata } from 'lib/utils/generateMetadata';
 
-export const metadata: Metadata = {
-  title: 'Shipping Policy - Samiya Online',
+export const metadata = generateBaseMetadata({
+  title: 'Shipping Policy',
   description:
     'Read our shipping policy to understand delivery times, shipping methods, costs, and international shipping options for your Samiya Online orders.',
-  openGraph: {
-    title: 'Shipping Policy - Samiya Online',
-    description:
-      'Read our shipping policy to understand delivery times, shipping methods, costs, and international shipping options for your Samiya Online orders.',
-    type: 'website',
-    images: ['/opengraph-image.png']
-  },
-  twitter: {
-    card: 'summary_large_image',
-    site: '@samiya_online',
-    title: 'Shipping Policy - Samiya Online',
-    description:
-      'Read our shipping policy to understand delivery times, shipping methods, costs, and international shipping options for your Samiya Online orders.',
-    images: ['/opengraph-image.png']
-  }
-};
+  url: '/shipping-policy'
+});
 
 export default function ShippingPolicyPage() {
   let content = '';

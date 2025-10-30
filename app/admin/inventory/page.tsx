@@ -1,30 +1,18 @@
-import type { Metadata } from 'next';
+import LogoutButton from 'components/admin/LogoutButton';
 import AdminDashboard from 'components/admin/AdminDashboard';
 import getProducts from 'lib/api/admin/product/get';
-import getCollections from 'lib/api/admin/collection/get';
 import getCategories from 'lib/api/admin/category/get';
+import getCollections from 'lib/api/admin/collection/get';
+import { generateBaseMetadata } from 'lib/utils/generateMetadata';
 import { getSectionsWithProducts } from 'lib/api/admin/section/get';
-import LogoutButton from 'components/admin/LogoutButton';
 
 export const revalidate = 0;
 
-export const metadata: Metadata = {
-  title: 'Inventory Management - Admin',
+export const metadata = generateBaseMetadata({
+  title: 'Inventory Management',
   description: 'Manage product inventory, collections, and categories.',
-  openGraph: {
-    title: 'Inventory Management - Admin',
-    description: 'Manage product inventory, collections, and categories.',
-    type: 'website',
-    images: ['/opengraph-image.png']
-  },
-  twitter: {
-    card: 'summary_large_image',
-    site: '@samiya_online',
-    title: 'Inventory Management - Admin',
-    description: 'Manage product inventory, collections, and categories.',
-    images: ['/opengraph-image.png']
-  }
-};
+  noIndex: true
+});
 
 async function getAdminData() {
   const { products } = await getProducts(16, 0, null, 'last-updated', null);

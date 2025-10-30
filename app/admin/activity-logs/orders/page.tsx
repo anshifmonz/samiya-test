@@ -1,23 +1,11 @@
-import type { Metadata } from 'next';
+import { generateBaseMetadata } from 'lib/utils/generateMetadata';
 import OrdersDashboard from 'components/admin/activity-logs/orders/OrdersDashboard';
 
-export const metadata: Metadata = {
-  title: 'Order Activity Dashboard - Admin',
+export const metadata = generateBaseMetadata({
+  title: 'Order Activity Dashboard',
   description: 'View and manage order-related activity logs and statistics.',
-  openGraph: {
-    title: 'Order Activity Dashboard - Admin',
-    description: 'View and manage order-related activity logs and statistics.',
-    type: 'website',
-    images: ['/opengraph-image.png']
-  },
-  twitter: {
-    card: 'summary_large_image',
-    site: '@samiya_online',
-    title: 'Order Activity Dashboard - Admin',
-    description: 'View and manage order-related activity logs and statistics.',
-    images: ['/opengraph-image.png']
-  }
-};
+  noIndex: true
+});
 
 export default function Page() {
   return <OrdersDashboard />;

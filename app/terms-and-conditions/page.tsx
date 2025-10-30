@@ -1,22 +1,10 @@
-import type { Metadata } from 'next';
+import { generateBaseMetadata } from 'lib/utils/generateMetadata';
 
-export const metadata: Metadata = {
-  title: 'Terms & Conditions - Samiya Online',
+export const metadata = generateBaseMetadata({
+  title: 'Terms & Conditions',
   description: `Read the terms and conditions for using Samiya Online's website and services. Understand your rights and obligations as a user.`,
-  openGraph: {
-    title: 'Terms & Conditions - Samiya Online',
-    description: `Read the terms and conditions for using Samiya Online's website and services. Understand your rights and obligations as a user.`,
-    type: 'website',
-    images: ['/opengraph-image.png']
-  },
-  twitter: {
-    card: 'summary_large_image',
-    site: '@samiya_online',
-    title: 'Terms & Conditions - Samiya Online',
-    description: `Read the terms and conditions for using Samiya Online's website and services. Understand your rights and obligations as a user.`,
-    images: ['/opengraph-image.png']
-  }
-};
+  url: '/terms-and-conditions'
+});
 
 export default function TermsAndConditionsPage() {
   return (

@@ -1,27 +1,15 @@
-import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import getUserProfile from 'lib/api/user/profile/get';
 import { getServerUser } from 'utils/getServerSession';
+import { generateBaseMetadata } from 'lib/utils/generateMetadata';
 import ProfileOverview from 'components/user/profile/ProfileOverview';
 import ProfileNavigation from 'components/user/profile/ProfileNavigation';
 
-export const metadata: Metadata = {
-  title: 'My Profile - Samiya Online',
+export const metadata = generateBaseMetadata({
+  title: 'My Profile',
   description: 'Manage your personal information, account settings, and preferences.',
-  openGraph: {
-    title: 'My Profile - Samiya Online',
-    description: 'Manage your personal information, account settings, and preferences.',
-    type: 'website',
-    images: ['/opengraph-image.png']
-  },
-  twitter: {
-    card: 'summary_large_image',
-    site: '@samiya_online',
-    title: 'My Profile - Samiya Online',
-    description: 'Manage your personal information, account settings, and preferences.',
-    images: ['/opengraph-image.png']
-  }
-};
+  noIndex: true
+});
 
 export default async function ProfilePage() {
   const user = await getServerUser();

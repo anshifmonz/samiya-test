@@ -1,6 +1,7 @@
+import type { Metadata } from 'next';
+import { generateBaseMetadata } from 'lib/utils/generateMetadata';
 import Collections from 'components/collections/[id]/Collections';
 import { getSectionProducts } from 'lib/api/public/collections/[id]/get';
-import type { Metadata } from 'next';
 
 export const revalidate = 0;
 
@@ -13,34 +14,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { data: section, error } = await getSectionProducts(sectionId, 1, 0);
 
   if (error || !section) {
-    return {
+    return generateBaseMetadata({
       title: 'Collection Not Found',
-      description: 'The requested collection could not be found.'
-    };
+      description: 'The requested collection could not be found.',
+      noIndex: true
+    });
   }
 
-  const title = section.title + ' Collection - Samiya Online';
+  const title = section.title + ' Collection';
   const description =
     section.description || `Explore the exclusive ${section.title} collection at Samiya Online.`;
-  const imageUrl = '/opengraph-image.png'; // SectionWithProducts does not have an image property
 
-  return {
+  return generateBaseMetadata({
     title,
     description,
-    openGraph: {
-      title,
-      description,
-      type: 'website',
-      images: [imageUrl]
-    },
-    twitter: {
-      card: 'summary_large_image',
-      site: '@samiya_online',
-      title,
-      description,
-      images: [imageUrl]
-    }
-  };
+    url: `/collections/${sectionId}`
+  });
 }
 
 export default async function CollectionsPage({ params }: { params: { id: string } }) {

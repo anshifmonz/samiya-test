@@ -1,23 +1,11 @@
-import type { Metadata } from 'next';
+import { generateBaseMetadata } from 'lib/utils/generateMetadata';
 import IpAnalysis from 'components/admin/activity-logs/ip/IpAnalysis';
 
-export const metadata: Metadata = {
-  title: 'IP Activity Analysis - Admin',
+export const metadata = generateBaseMetadata({
+  title: 'IP Activity Analysis',
   description: 'Analyze IP activity logs for security and monitoring purposes.',
-  openGraph: {
-    title: 'IP Activity Analysis - Admin',
-    description: 'Analyze IP activity logs for security and monitoring purposes.',
-    type: 'website',
-    images: ['/opengraph-image.png']
-  },
-  twitter: {
-    card: 'summary_large_image',
-    site: '@samiya_online',
-    title: 'IP Activity Analysis - Admin',
-    description: 'Analyze IP activity logs for security and monitoring purposes.',
-    images: ['/opengraph-image.png']
-  }
-};
+  noIndex: true
+});
 
 export default function IpAnalysisPage() {
   return <IpAnalysis />;
