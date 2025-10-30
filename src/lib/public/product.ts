@@ -1,11 +1,11 @@
 import { createClient } from 'lib/supabase/server';
-import { type Product, type ProductColorData, type Size } from 'types/product';
+import type { Product, ProductColorData, Size } from 'types/product';
 
-const getProduct = async (id: string, userId?: string): Promise<Product | null> => {
+const getProduct = async (idOrSlug: string, userId?: string): Promise<Product | null> => {
   try {
     const supabase = createClient();
     const { data, error } = await supabase.rpc('get_product_details_rpc', {
-      product_id: id,
+      identifier: idOrSlug,
       user_id: userId || null
     });
     if (error) throw new Error(`Error fetching products from Supabase: ${error.message}`);

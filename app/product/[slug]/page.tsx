@@ -10,12 +10,12 @@ import SimilarProducts from 'components/product/SimilarProducts';
 export const revalidate = 600;
 
 interface Props {
-  params: { id: string };
+  params: { slug: string };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { id } = params;
-  const product: Product | null = await getProduct(id);
+  const { slug } = params;
+  const product: Product | null = await getProduct(slug);
 
   if (!product) {
     return {
@@ -51,16 +51,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ProductDetailPage({ params }: Props) {
-  const { id } = params;
+  const { slug } = params;
   const user = await getServerUser();
-  const product: Product | null = await getProduct(id, user?.id);
-  const similarProductsData = await similarProducts(id, 8, 0);
+
+  const product: Product | null = await getProduct(slug, user?.id);
   if (!product) notFound();
+
+  const similarProductsData = await similarProducts(product.id, 8, 0);
 
   return (
     <>
       <ProductPage product={product} />
-      <SimilarProducts productId={id} initialProducts={similarProductsData || []} />
+      <SimilarProducts productId={product.id} initialProducts={similarProductsData || []} />
     </>
   );
 }
