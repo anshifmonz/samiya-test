@@ -58,7 +58,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description,
     url: pageUrl,
     image: imageUrl,
-    type: 'product',
+    type: 'website',
     keywords: [
       product.title,
       'Samiya Online',
