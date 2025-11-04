@@ -21,17 +21,15 @@ const TagsSection: React.FC = () => {
 
   return (
     <div>
-      <label className="block luxury-subheading text-sm text-luxury-black mb-2">
-        Tags
-      </label>
+      <label className="block luxury-subheading text-sm text-luxury-black mb-2">Tags</label>
       <div className="space-y-4">
         <div className="flex gap-2">
           <input
             type="text"
             placeholder="Add tag"
             value={newTag}
-            onChange={(e) => setNewTag(e.target.value)}
-            className="flex-1 px-4 py-3 luxury-body text-sm rounded-xl bg-luxury-cream/50 text-luxury-black border border-luxury-gray/20 focus:outline-none focus:ring-2 focus:ring-luxury-gold/50 focus:border-luxury-gold/30 transition-all duration-300"
+            onChange={e => setNewTag(e.target.value)}
+            className="flex-1 px-4 py-3 luxury-body text-sm rounded-xl bg-transparent text-luxury-black border border-luxury-gray/20 focus:outline-none focus:ring-2 focus:ring-luxury-gold/50 focus:border-luxury-gold/30 transition-all duration-300"
           />
           <button
             type="button"
@@ -43,7 +41,7 @@ const TagsSection: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap gap-2">
-          {tags.map((tag) => (
+          {tags.map(tag => (
             <span
               key={tag}
               className="bg-luxury-cream text-luxury-gray px-3 py-1 rounded-full text-sm flex items-center gap-2"

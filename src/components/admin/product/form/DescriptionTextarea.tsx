@@ -14,7 +14,7 @@ const DescriptionTextarea: React.FC = () => {
         value={formData.description}
         onChange={(e) => handleDescriptionChange(e.target.value)}
         rows={4}
-        className={`w-full px-4 py-3 luxury-body text-sm rounded-xl bg-luxury-cream/50 text-luxury-black border transition-all duration-300 resize-none focus:outline-none focus:ring-2 ${
+        className={`w-full px-4 py-3 luxury-body text-sm rounded-xl bg-transparent text-luxury-black border transition-all duration-300 resize-none focus:outline-none focus:ring-2 ${
           hasError
             ? 'border-red-300 focus:ring-red-200 focus:border-red-400'
             : 'border-luxury-gray/20 focus:ring-luxury-gold/50 focus:border-luxury-gold/30'
