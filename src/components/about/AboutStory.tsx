@@ -3,13 +3,10 @@ import Image from 'next/image';
 
 const AboutStory: React.FC = () => {
   return (
-    <div className="py-32 bg-luxury-cream">
+    <div className="pb-22 bg-luxury-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div className="animate-fade-in-left">
-            <h2 className="luxury-heading text-5xl sm:text-6xl text-luxury-black mb-8">
-              Our Story
-            </h2>
             <div className="space-y-6">
               <p className="luxury-body text-xl text-luxury-gray leading-relaxed">
                 Founded in 2006, Samiya Online began as a small boutique with a simple vision: to

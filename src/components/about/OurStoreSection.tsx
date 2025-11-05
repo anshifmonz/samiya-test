@@ -8,7 +8,7 @@ import stores from '@/data/stores';
 
 const OurStoreSection: React.FC = () => {
   return (
-    <div className="bg-luxury-white py-32 relative overflow-hidden">
+    <div className="bg-luxury-white pt-32 pb-12 relative overflow-hidden">
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-72 h-72 bg-luxury-gold/5 rounded-full blur-3xl"></div>
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-luxury-beige/30 rounded-full blur-3xl"></div>
@@ -17,8 +17,8 @@ const OurStoreSection: React.FC = () => {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-20">
           <div className="animate-fade-in-up">
-            <h2 className="luxury-heading text-6xl sm:text-7xl text-luxury-black mb-8">
-              <span className="luxury-subheading block text-luxury-gold-dark text-2xl sm:text-3xl mb-8 tracking-[0.3em]">
+            <h2 className="luxury-heading text-5xl text-luxury-black mb-4">
+              <span className="luxury-subheading block text-luxury-gold text-xl sm:text-2xl tracking-[0.3em]">
                 Visit Our Locations
               </span>
               Our Stores
