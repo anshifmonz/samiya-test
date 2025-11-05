@@ -155,6 +155,13 @@ const Navigation: React.FC = () => {
               Collections
             </Link>
             <Link
+              href="/categories"
+              onClick={closeMobileMenu}
+              className={`block ${textStyles.navLinks} text-base py-2`}
+            >
+              Categories
+            </Link>
+            <Link
               href="/contact"
               onClick={closeMobileMenu}
               className={`block ${textStyles.navLinks} text-base py-2`}

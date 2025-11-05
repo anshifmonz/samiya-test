@@ -24,6 +24,9 @@ const NavigationLinks: React.FC<NavigationLinksProps> = ({
       <Link href="/collections" className={`${textStyles.navLinks}`}>
         Collections
       </Link>
+      <Link href="/categories" className={`${textStyles.navLinks}`}>
+        Categories
+      </Link>
       <Link href="/contact" className={`${textStyles.navLinks}`}>
         Contact
       </Link>
